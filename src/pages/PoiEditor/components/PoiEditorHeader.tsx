@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import Icon from '../../../components/common/Icon';
-import { POI_STATUS_CONFIG } from '../../../constants/poi';
+import { POI_STATUS_CONFIG, POI_STATUS_OPTIONS } from '../../../constants/poi';
 import { ROUTES } from '../../../constants/routes';
 import type { PoiStatus } from '../../../types/admin';
 
@@ -10,6 +10,7 @@ interface PoiEditorHeaderProps {
   /** Tên rút gọn của POI đã lưu */
   poiName: string;
   status: PoiStatus;
+  onStatusChange: (status: PoiStatus) => void;
   onCancel: () => void;
   onPreview: () => void;
   onSave: () => void;
@@ -19,6 +20,7 @@ export default function PoiEditorHeader({
   poiId,
   poiName,
   status,
+  onStatusChange,
   onCancel,
   onPreview,
   onSave,
@@ -83,19 +85,34 @@ export default function PoiEditorHeader({
                 'Thêm điểm đến POI mới'
               )}
             </h1>
-            {poiId ? (
+            {/* Badge trạng thái — bấm để đổi trạng thái hiển thị */}
+            <label
+              title="Đổi trạng thái hiển thị"
+              className={`relative inline-flex cursor-pointer items-center gap-1.5 rounded-full px-space-sm py-1 font-label-sm text-label-sm font-semibold shadow-xs ${statusConfig.badgeClass}`}
+            >
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-space-sm py-1 font-label-sm text-label-sm font-semibold shadow-xs ${statusConfig.badgeClass}`}
+                className={`h-2 w-2 rounded-full ${status === 'active' ? 'animate-pulse bg-secondary' : statusConfig.dotClass}`}
+              />
+              {statusConfig.longLabel}
+              <Icon name="expand_more" className="text-[14px]" />
+              <select
+                aria-label="Trạng thái POI"
+                value={status}
+                onChange={(event) => {
+                  const next = POI_STATUS_OPTIONS.find(
+                    (option) => option.value === event.target.value,
+                  );
+                  if (next) onStatusChange(next.value);
+                }}
+                className="absolute inset-0 cursor-pointer opacity-0"
               >
-                <span className={`h-2 w-2 rounded-full ${statusConfig.dotClass}`} />
-                {statusConfig.label}
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-tertiary-fixed px-space-sm py-1 font-label-sm text-label-sm font-semibold text-on-tertiary-fixed shadow-xs">
-                <span className="h-2 w-2 rounded-full bg-tertiary" />
-                Bản nháp – chưa lưu
-              </span>
-            )}
+                {POI_STATUS_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
         </div>
 

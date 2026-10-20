@@ -9,7 +9,7 @@ export type PoiFormErrors = Partial<Record<'name' | 'hotline' | 'website' | 'ema
 
 export function toPoiFormValues(poi: Poi): PoiFormValues {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id, updatedAt, updatedBy, ...values } = poi;
+  const { id, updatedAt, updatedBy, source, sourceLabel, rating, reviewCount, ...values } = poi;
   return values;
 }
 
@@ -34,11 +34,6 @@ export function validatePoi(values: PoiFormValues): PoiFormErrors {
     errors.email = 'Email không đúng định dạng';
   }
   return errors;
-}
-
-/** "Phố cổ Hội An (Hoi An Ancient Town)" → "Phố cổ Hội An" */
-export function shortPoiName(name: string): string {
-  return name.replace(/\s*\(.*\)\s*$/, '').trim() || name;
 }
 
 /** Lấy tên thành phố từ địa chỉ, ví dụ "…, TP. Hội An, …" → "Hội An" */

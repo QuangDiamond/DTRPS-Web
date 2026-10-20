@@ -16,6 +16,7 @@ import NotificationsPage from '../pages/Notifications';
 import PartnerDetailPage from '../pages/PartnerDetail';
 import PartnersPage from '../pages/Partners';
 import PoiEditorPage from '../pages/PoiEditor';
+import ProfilePage from '../pages/Profile';
 import RejectedListingsPage from '../pages/RejectedListings';
 import ReportsPage from '../pages/Reports';
 import SettingsPage from '../pages/Settings';
@@ -60,6 +61,7 @@ export const router = createBrowserRouter([
           { path: ROUTES.REPORTS, element: <ReportsPage /> },
           { path: ROUTES.NOTIFICATIONS, element: <NotificationsPage /> },
           { path: ROUTES.SETTINGS, element: <SettingsPage /> },
+          { path: ROUTES.PROFILE, element: <ProfilePage /> },
         ],
       },
     ],

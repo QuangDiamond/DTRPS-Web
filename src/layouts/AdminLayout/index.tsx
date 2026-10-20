@@ -1,9 +1,12 @@
 import { Outlet } from 'react-router-dom';
+import { useIdleLogout } from '../../hooks/useIdleLogout';
 import Header from './Header';
 import Sidebar from './Sidebar';
 
 /** Khung chung cho mọi trang admin: Sidebar cố định bên trái + Header cố định phía trên */
 export default function AdminLayout() {
+  useIdleLogout();
+
   return (
     <>
       <Sidebar />

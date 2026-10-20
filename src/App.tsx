@@ -2,8 +2,11 @@ import { RouterProvider } from 'react-router-dom';
 import AuthProvider from './components/auth/AuthProvider';
 import ToastProvider from './components/common/ToastProvider';
 import ListingsProvider from './components/listings/ListingsProvider';
+import NotificationsProvider from './components/notifications/NotificationsProvider';
 import PartnersProvider from './components/partners/PartnersProvider';
 import PoisProvider from './components/pois/PoisProvider';
+import AdminProfileProvider from './components/profile/AdminProfileProvider';
+import SettingsProvider from './components/settings/SettingsProvider';
 import UsersProvider from './components/users/UsersProvider';
 import { router } from './routes';
 
@@ -15,7 +18,13 @@ export default function App() {
           <PartnersProvider>
             <UsersProvider>
               <PoisProvider>
-                <RouterProvider router={router} />
+                <NotificationsProvider>
+                  <SettingsProvider>
+                    <AdminProfileProvider>
+                      <RouterProvider router={router} />
+                    </AdminProfileProvider>
+                  </SettingsProvider>
+                </NotificationsProvider>
               </PoisProvider>
             </UsersProvider>
           </PartnersProvider>

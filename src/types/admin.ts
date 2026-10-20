@@ -584,7 +584,8 @@ export interface Poi {
 }
 
 /** Các trường do hệ thống quản lý, không sửa trên form */
-export type PoiSystemField = 'id' | 'updatedAt' | 'updatedBy' | 'source' | 'sourceLabel' | 'rating' | 'reviewCount';
+export type PoiSystemField =
+  'id' | 'updatedAt' | 'updatedBy' | 'source' | 'sourceLabel' | 'rating' | 'reviewCount';
 
 export type PoiFormValues = Omit<Poi, PoiSystemField>;
 
@@ -601,4 +602,186 @@ export interface PoiStats {
   available: number;
   byGroup: Record<PoiKpiGroup, number>;
   byTab: Record<PoiCategoryTab, number>;
+}
+
+// ===== Thông báo quản trị =====
+export type NotificationTab = 'all' | 'listings' | 'users' | 'system';
+
+export type NotificationCategory = Exclude<NotificationTab, 'all'>;
+
+export type NotificationPriority = 'urgent' | 'high' | 'normal' | 'low';
+
+export type NotificationChannel = 'app' | 'email' | 'telegram' | 'sms';
+
+export type NotificationEvent =
+  'newListing' | 'newPartner' | 'complaint' | 'aiLoad' | 'dataSync' | 'security';
+
+/** Một đoạn nội dung thông báo; strong = in đậm tên đối tượng */
+export interface NotificationTextPart {
+  text: string;
+  strong?: boolean;
+  /** Màu nhấn cho số liệu cảnh báo */
+  tone?: 'tertiary';
+}
+
+export interface NotificationMeta {
+  text: string;
+  icon?: string;
+}
+
+export interface NotificationAction {
+  label: string;
+  icon?: string;
+  variant: 'primary' | 'tertiary' | 'neutral';
+  /** Đường dẫn trang xử lý */
+  to: string;
+}
+
+export interface AdminNotification {
+  id: string;
+  category: NotificationCategory;
+  priority: NotificationPriority;
+  title: string;
+  tag: { label: string; className: string; icon?: string };
+  icon: string;
+  /** Màu nền + màu chữ ô icon */
+  iconBoxClass: string;
+  /** Màu chấm chưa đọc */
+  dotClass: string;
+  message: NotificationTextPart[];
+  meta: NotificationMeta[];
+  action: NotificationAction;
+  /** ISO datetime */
+  createdAt: string;
+  read: boolean;
+}
+
+export interface NotificationRules {
+  /** Banner "Kênh tiếp nhận cảnh báo khẩn (Telegram & SMS)" */
+  urgentChannelsEnabled: boolean;
+  /** Ngưỡng tải AI (%) để gửi cảnh báo khẩn */
+  aiLoadThreshold: number;
+  channels: Record<NotificationChannel, boolean>;
+  events: Record<NotificationEvent, boolean>;
+}
+
+export interface NotificationStats {
+  unread: number;
+  newLastHour: number;
+  systemAlerts: number;
+  systemAlertNote: string;
+  resolvedRate: number;
+  avgResponseMinutes: number;
+  byTab: Record<NotificationTab, number>;
+}
+
+// ===== Cài đặt hệ thống =====
+export type SettingsTab = 'general' | 'listing' | 'ai' | 'security' | 'notifications';
+
+export type SystemTimezone = 'gmt+7' | 'gmt+8' | 'utc';
+
+export type MapSyncFrequency = '1h' | '6h' | '12h' | '24h';
+
+export type ListingSlaHours = 24 | 48 | 72;
+
+export type SessionTimeoutMinutes = 15 | 30 | 60;
+
+export interface IpWhitelistEntry {
+  id: string;
+  /** Ví dụ "118.70.192.0/24" */
+  cidr: string;
+  label: string;
+}
+
+export interface SystemSettings {
+  platformName: string;
+  timezone: SystemTimezone;
+  /** Tiếng Việt luôn là ngôn ngữ chính; English là ngôn ngữ dự phòng */
+  englishFallback: boolean;
+  listingSlaHours: ListingSlaHours;
+  requireLegalDocs: boolean;
+  gpsDuplicateCheck: boolean;
+  autoEmailPartnerResult: boolean;
+  twoFactorRequired: boolean;
+  sessionTimeoutMinutes: SessionTimeoutMinutes;
+  ipWhitelist: IpWhitelistEntry[];
+  /** 50 - 95 */
+  poiTrustThreshold: number;
+  mapSyncFrequency: MapSyncFrequency;
+  maxPoiPerDay: number;
+}
+
+export interface SettingsMeta {
+  /** ISO datetime lần lưu cấu hình gần nhất */
+  updatedAt: string;
+  updatedBy: string;
+  updatedIp: string;
+  /** ISO datetime lần đồng bộ cụm máy chủ gần nhất */
+  syncedAt: string;
+}
+
+export type PermissionLevel = 'full' | 'edit' | 'view' | 'none';
+
+export interface PermissionRow {
+  module: string;
+  icon: string;
+  superAdmin: PermissionLevel;
+  moderator: PermissionLevel;
+  support: PermissionLevel;
+}
+
+// ===== Hồ sơ Admin =====
+export interface AdminContactInfo {
+  fullName: string;
+  /** Email nhận cảnh báo khẩn cấp (SOC Alert) */
+  socAlertEmail: string;
+  hotline: string;
+}
+
+export interface AdminAccountDetails extends AdminContactInfo {
+  id: string;
+  jobTitle: string;
+  department: string;
+  /** ISO datetime */
+  passwordChangedAt: string;
+  totpEnabledAt: string;
+  backupCodes: string[];
+}
+
+export type AdminSessionStatus = 'current' | 'expired' | 'closed' | 'revoked';
+
+export interface AdminSession {
+  id: string;
+  device: string;
+  icon: string;
+  ip: string;
+  location: string;
+  /** ISO datetime */
+  signedInAt: string;
+  status: AdminSessionStatus;
+}
+
+export interface SecurityKey {
+  id: string;
+  name: string;
+  serial: string;
+  /** ISO datetime */
+  addedAt: string;
+}
+
+export interface AdminActivity {
+  id: string;
+  icon: string;
+  title: string;
+  detail: string;
+  /** ISO datetime */
+  createdAt: string;
+  ip: string;
+}
+
+export interface SecurityCheckItem {
+  id: string;
+  label: string;
+  detail: string;
+  passed: boolean;
 }

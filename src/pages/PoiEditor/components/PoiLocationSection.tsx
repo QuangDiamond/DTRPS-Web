@@ -1,5 +1,5 @@
 import Icon from '../../../components/common/Icon';
-import { POI_CLUSTER_RADIUS } from '../../../constants/poi';
+import { POI_CLUSTER_RADIUS, POI_PROVINCE_OPTIONS } from '../../../constants/poi';
 import { useToast } from '../../../hooks/useToast';
 import type { PoiFormValues } from '../../../types/admin';
 import { googleMapsUrl, openStreetMapEmbedUrl, type PoiFieldChange } from '../poiFormUtils';
@@ -30,6 +30,34 @@ export default function PoiLocationSection({ poiCode, values, onChange }: PoiLoc
       title="4. Tọa độ địa lý & Bản đồ số"
       description="Định vị vi mô (Micro-location Pinning)"
     >
+      <div className="flex flex-col gap-1">
+        <span className="font-label-md text-label-md font-semibold text-on-surface">
+          Tỉnh / Thành phố
+        </span>
+        <div className="relative">
+          <select
+            value={values.province}
+            onChange={(event) => {
+              const next = POI_PROVINCE_OPTIONS.find(
+                (option) => option.value === event.target.value,
+              );
+              if (next) onChange('province', next.value);
+            }}
+            className="w-full cursor-pointer appearance-none rounded-lg bg-surface-container-low px-space-sm py-2.5 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary/30 focus:outline-none"
+          >
+            {POI_PROVINCE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <Icon
+            name="expand_more"
+            className="pointer-events-none absolute top-2.5 right-3 text-[20px] text-outline"
+          />
+        </div>
+      </div>
+
       <div className="flex flex-col gap-1">
         <span className="font-label-md text-label-md font-semibold text-on-surface">
           Địa chỉ chi tiết

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../../components/common/Icon';
 import { useAuth } from '../../hooks/useAuth';
+import { useNotifications } from '../../hooks/useNotifications';
 import { ROUTES } from '../../constants/routes';
 import { useToast } from '../../hooks/useToast';
 import type { Language } from '../../types/admin';
@@ -15,6 +16,7 @@ export default function Header() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { admin } = useAuth();
+  const { unreadCount } = useNotifications();
   const [keyword, setKeyword] = useState('');
   const [language, setLanguage] = useState<Language>('vi');
 
@@ -60,10 +62,12 @@ export default function Header() {
           type="button"
           onClick={() => navigate(ROUTES.NOTIFICATIONS)}
           className={`relative ${ICON_BUTTON_CLASS}`}
-          title="Thông báo"
+          title={unreadCount > 0 ? `Thông báo (${unreadCount} chưa đọc)` : 'Thông báo'}
         >
           <Icon name="notifications" className="text-[20px]" />
-          <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-error ring-2 ring-surface-container-lowest" />
+          {unreadCount > 0 && (
+            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-error ring-2 ring-surface-container-lowest" />
+          )}
         </button>
 
         <button
@@ -77,7 +81,12 @@ export default function Header() {
 
         <div className="h-6 w-px bg-surface-container-high" />
 
-        <div className="flex items-center gap-3 pl-1">
+        <button
+          type="button"
+          title="Hồ sơ Admin"
+          onClick={() => navigate(ROUTES.PROFILE)}
+          className="flex items-center gap-3 rounded-full py-1 pr-2 pl-1 transition-colors hover:bg-surface-container-low"
+        >
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
             <Icon name="person" className="text-[18px] text-on-primary" />
           </div>
@@ -89,7 +98,7 @@ export default function Header() {
               {admin?.role}
             </span>
           </div>
-        </div>
+        </button>
       </div>
     </header>
   );

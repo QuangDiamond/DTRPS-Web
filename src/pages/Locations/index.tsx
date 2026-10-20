@@ -1,287 +1,189 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FilterSelect from '../../components/common/FilterSelect';
 import Icon from '../../components/common/Icon';
-import PageHeader from '../../components/common/PageHeader';
-import StatCard from '../../components/common/StatCard';
-import { ADMIN_ROOT_CRUMB } from '../../constants/navigation';
-import { POI_CATEGORY_CONFIG, POI_CATEGORY_OPTIONS, POI_STATUS_CONFIG } from '../../constants/poi';
+import {
+  DEFAULT_POI_FILTERS,
+  POI_CATEGORY_CONFIG,
+  POI_PAGE_SIZE_OPTIONS,
+  POI_PROVINCE_LABELS,
+  POI_SOURCE_CONFIG,
+  POI_STATUS_CONFIG,
+} from '../../constants/poi';
 import { poiEditPath, ROUTES } from '../../constants/routes';
 import { usePois } from '../../hooks/usePois';
 import { useToast } from '../../hooks/useToast';
-import type { Poi, PoiCategory, PoiStatus, SelectOption } from '../../types/admin';
-import { formatDayTime, formatNumber } from '../../utils/format';
-import { normalizeText } from '../../utils/string';
-import { shortPoiName } from '../PoiEditor/poiFormUtils';
+import type { Poi, PoiCategoryTab, PoiFilters } from '../../types/admin';
+import { downloadCsv } from '../../utils/exportCsv';
+import { formatNumber, todayIsoDate } from '../../utils/format';
+import { priceSummary, shortPoiName } from '../../utils/poi';
+import PoiMobilePreviewModal from '../PoiEditor/components/PoiMobilePreviewModal';
+import LocationsHeader from './components/LocationsHeader';
+import PoiCategoryTabs from './components/PoiCategoryTabs';
+import PoiFilterBar from './components/PoiFilterBar';
+import PoiStatsCards from './components/PoiStatsCards';
+import PoiTable from './components/PoiTable';
+import PoiTablePagination from './components/PoiTablePagination';
+import { filterPois, hasActiveFilters } from './locationsUtils';
 
-type CategoryFilter = PoiCategory | 'all';
-type StatusFilter = PoiStatus | 'all';
+const SYNC_DURATION_MS = 1500;
 
-const CATEGORY_FILTER_OPTIONS: SelectOption<CategoryFilter>[] = [
-  { value: 'all', label: 'Tất cả danh mục' },
-  ...POI_CATEGORY_OPTIONS,
-];
-
-const STATUS_FILTER_OPTIONS: SelectOption<StatusFilter>[] = [
-  { value: 'all', label: 'Tất cả trạng thái' },
-  { value: 'active', label: 'Đang công khai' },
-  { value: 'hidden', label: 'Đang ẩn' },
-];
-
-/**
- * Danh sách điểm đến POI: /admin/locations
- * TODO: bản dựng tạm để nối luồng Thêm / Sửa POI — thay bằng thiết kế Stitch khi có HTML màn danh sách.
- */
+/** Màn Kho dữ liệu điểm đến (POI Master Data): /admin/locations */
 export default function LocationsPage() {
   const navigate = useNavigate();
-  const { pois, setPoiStatus } = usePois();
   const { showToast } = useToast();
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState<CategoryFilter>('all');
-  const [status, setStatus] = useState<StatusFilter>('all');
+  const { pois, stats } = usePois();
 
-  const filtered = useMemo(() => {
-    const keyword = normalizeText(search.trim());
-    return pois.filter(
-      (poi) =>
-        (category === 'all' || poi.category === category) &&
-        (status === 'all' || poi.status === status) &&
-        (!keyword ||
-          normalizeText(`${poi.id} ${poi.name} ${poi.address} ${poi.tags}`).includes(keyword)),
-    );
-  }, [pois, search, category, status]);
+  const [tab, setTab] = useState<PoiCategoryTab>('all');
+  // Bộ lọc đang soạn (draft) và bộ lọc đã áp dụng cho bảng
+  const [draftFilters, setDraftFilters] = useState<PoiFilters>(DEFAULT_POI_FILTERS);
+  const [filters, setFilters] = useState<PoiFilters>(DEFAULT_POI_FILTERS);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(POI_PAGE_SIZE_OPTIONS[0]);
+  const [viewingPoi, setViewingPoi] = useState<Poi | null>(null);
+  const [syncing, setSyncing] = useState(false);
 
-  const activeCount = pois.filter((poi) => poi.status === 'active').length;
-  const mustVisitCount = pois.filter((poi) => poi.priorityScore >= 90).length;
+  const filtered = useMemo(() => filterPois(pois, tab, filters), [pois, tab, filters]);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pagePois = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const isFiltered = hasActiveFilters(tab, filters);
 
-  const toggleStatus = (poi: Poi) => {
-    const next: PoiStatus = poi.status === 'active' ? 'hidden' : 'active';
-    setPoiStatus(poi.id, next);
-    showToast(
-      next === 'active'
-        ? `Đã công khai "${shortPoiName(poi.name)}" trên ứng dụng`
-        : `Đã ẩn "${shortPoiName(poi.name)}" khỏi ứng dụng`,
-      next === 'active' ? 'success' : 'info',
-    );
+  // Mô phỏng đồng bộ với AI Engine — khi có backend thay bằng gọi API
+  useEffect(() => {
+    if (!syncing) return;
+    const timer = window.setTimeout(() => {
+      setSyncing(false);
+      showToast(`Đã đồng bộ ${formatNumber(stats.total)} POI với AI Travel Engine v2.4`);
+    }, SYNC_DURATION_MS);
+    return () => window.clearTimeout(timer);
+  }, [syncing, stats.total, showToast]);
+
+  const changeTab = (next: PoiCategoryTab) => {
+    setTab(next);
+    setPage(1);
   };
 
+  const applyFilters = () => {
+    setFilters(draftFilters);
+    setPage(1);
+  };
+
+  const resetFilters = () => {
+    setDraftFilters(DEFAULT_POI_FILTERS);
+    setFilters(DEFAULT_POI_FILTERS);
+    setTab('all');
+    setPage(1);
+    showToast('Đã xóa bộ lọc', 'info');
+  };
+
+  const handleExport = () => {
+    if (filtered.length === 0) {
+      showToast('Không có POI nào để xuất', 'info');
+      return;
+    }
+    downloadCsv(
+      `danh-muc-poi-${todayIsoDate()}.csv`,
+      [
+        'Mã POI',
+        'Tên POI',
+        'Danh mục',
+        'Tỉnh/Thành',
+        'Địa chỉ',
+        'Mức giá dự kiến',
+        'Giờ mở cửa',
+        'Nguồn dữ liệu',
+        'Đánh giá',
+        'Lượt đánh giá',
+        'Priority Score',
+        'Trạng thái',
+      ],
+      filtered.map((poi) => [
+        poi.id,
+        poi.name,
+        poi.subCategory || POI_CATEGORY_CONFIG[poi.category].label,
+        POI_PROVINCE_LABELS[poi.province],
+        poi.address,
+        priceSummary(poi.price),
+        poi.openingHours,
+        poi.sourceLabel ?? POI_SOURCE_CONFIG[poi.source].label,
+        poi.reviewCount > 0 ? poi.rating : '',
+        poi.reviewCount,
+        poi.priorityScore,
+        POI_STATUS_CONFIG[poi.status].label,
+      ]),
+    );
+    showToast(`Đã xuất ${filtered.length} POI ra file Excel (CSV)`);
+  };
+
+  const openEditor = (poi: Poi) => navigate(poiEditPath(poi.id));
+
   return (
-    <div className="flex flex-col gap-space-lg">
-      <PageHeader
-        breadcrumbs={[ADMIN_ROOT_CRUMB, { label: 'Quản lý điểm đến POI', icon: 'pin_drop' }]}
-        title="Quản lý điểm đến POI"
-        description="Dữ liệu điểm tham quan dùng cho App Mobile và thuật toán gợi ý lộ trình AI Planner."
-        actions={
-          <button
-            type="button"
-            onClick={() => navigate(ROUTES.LOCATION_NEW)}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-md transition-all hover:bg-surface-tint"
-          >
-            <Icon name="add_location_alt" className="text-[18px]" /> Thêm POI mới
-          </button>
+    <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-space-lg">
+      <LocationsHeader
+        syncing={syncing}
+        onSync={() => setSyncing(true)}
+        onExport={handleExport}
+        onAdd={() => navigate(ROUTES.LOCATION_NEW)}
+      />
+
+      <PoiStatsCards stats={stats} />
+
+      <PoiCategoryTabs active={tab} counts={stats.byTab} onChange={changeTab} />
+
+      <PoiFilterBar
+        filters={draftFilters}
+        onChange={(changes) => setDraftFilters((current) => ({ ...current, ...changes }))}
+        onApply={applyFilters}
+        onReset={resetFilters}
+      />
+
+      <PoiTable
+        pois={pagePois}
+        onEdit={openEditor}
+        onView={setViewingPoi}
+        onResetFilters={resetFilters}
+        footer={
+          <PoiTablePagination
+            page={currentPage}
+            pageSize={pageSize}
+            totalItems={filtered.length}
+            itemLabel={isFiltered ? 'điểm đến phù hợp' : 'điểm đến toàn quốc'}
+            pageSizeOptions={POI_PAGE_SIZE_OPTIONS}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+          />
         }
       />
 
-      <div className="grid grid-cols-1 gap-space-md md:grid-cols-3">
-        <StatCard
-          label="Tổng số POI"
-          value={formatNumber(pois.length)}
-          icon="pin_drop"
-          iconClassName="bg-secondary-container text-on-secondary-container"
+      {viewingPoi && (
+        <PoiMobilePreviewModal
+          values={viewingPoi}
+          title={shortPoiName(viewingPoi.name)}
+          description={`${viewingPoi.id} • Hiển thị trên App Mobile`}
+          onClose={() => setViewingPoi(null)}
           footer={
-            <span className="mt-3 font-body-sm text-body-sm text-outline">Trên toàn hệ thống</span>
+            <>
+              <button
+                type="button"
+                onClick={() => setViewingPoi(null)}
+                className="rounded-full bg-surface-container-low px-4 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
+              >
+                Đóng
+              </button>
+              <button
+                type="button"
+                onClick={() => openEditor(viewingPoi)}
+                className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
+              >
+                <Icon name="edit" className="text-[18px]" /> Chỉnh sửa POI
+              </button>
+            </>
           }
         />
-        <StatCard
-          label="Đang công khai"
-          value={formatNumber(activeCount)}
-          icon="visibility"
-          iconClassName="bg-primary-fixed text-on-primary-fixed-variant"
-          footer={
-            <span className="mt-3 font-body-sm text-body-sm text-outline">
-              {formatNumber(pois.length - activeCount)} POI đang ẩn
-            </span>
-          }
-        />
-        <StatCard
-          label="Must-visit (≥ 90 điểm)"
-          value={formatNumber(mustVisitCount)}
-          icon="psychology"
-          iconClassName="bg-tertiary-fixed text-tertiary"
-          footer={
-            <span className="mt-3 font-body-sm text-body-sm text-outline">
-              Ưu tiên cao trong AI Planner
-            </span>
-          }
-        />
-      </div>
-
-      <div className="flex flex-col gap-space-md rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm">
-        <div className="grid grid-cols-1 items-end gap-space-md md:grid-cols-[1fr_240px_200px]">
-          <div className="flex flex-col gap-1.5">
-            <label className="flex items-center gap-1.5 font-label-sm text-label-sm font-semibold text-on-surface-variant">
-              <Icon name="search" className="text-[16px] text-primary" /> Tìm kiếm
-            </label>
-            <input
-              type="text"
-              value={search}
-              placeholder="Tên, mã POI, địa chỉ hoặc tag..."
-              onChange={(event) => setSearch(event.target.value)}
-              className="h-10 w-full rounded-xl bg-surface-container-low px-3 font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary focus:outline-none"
-            />
-          </div>
-          <FilterSelect
-            label="Danh mục"
-            icon="category"
-            value={category}
-            options={CATEGORY_FILTER_OPTIONS}
-            onChange={setCategory}
-          />
-          <FilterSelect
-            label="Trạng thái"
-            icon="toggle_on"
-            value={status}
-            options={STATUS_FILTER_OPTIONS}
-            onChange={setStatus}
-          />
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[960px] text-left">
-            <thead>
-              <tr className="border-b border-surface-container font-label-sm text-label-sm tracking-wider text-on-surface-variant uppercase">
-                <th className="px-3 py-3 font-semibold">Điểm đến</th>
-                <th className="px-3 py-3 font-semibold">Danh mục</th>
-                <th className="px-3 py-3 font-semibold">Địa chỉ</th>
-                <th className="px-3 py-3 font-semibold">Priority</th>
-                <th className="px-3 py-3 font-semibold">Trạng thái</th>
-                <th className="px-3 py-3 font-semibold">Cập nhật</th>
-                <th className="px-3 py-3 text-right font-semibold">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((poi) => {
-                const categoryConfig = POI_CATEGORY_CONFIG[poi.category];
-                const statusConfig = POI_STATUS_CONFIG[poi.status];
-                return (
-                  <tr
-                    key={poi.id}
-                    onClick={() => navigate(poiEditPath(poi.id))}
-                    className="cursor-pointer border-b border-surface-container/60 transition-colors hover:bg-surface-container-low/60"
-                  >
-                    <td className="px-3 py-3">
-                      <div className="flex items-center gap-3">
-                        {poi.cover ? (
-                          <img
-                            src={poi.cover.url}
-                            alt={poi.name}
-                            loading="lazy"
-                            className="h-12 w-16 shrink-0 rounded-lg object-cover shadow-sm"
-                          />
-                        ) : (
-                          <div
-                            className={`flex h-12 w-16 shrink-0 items-center justify-center rounded-lg ${categoryConfig.badgeClass}`}
-                          >
-                            <Icon name={categoryConfig.icon} className="text-[22px]" />
-                          </div>
-                        )}
-                        <div className="flex min-w-0 flex-col">
-                          <span className="truncate font-body-md text-body-md font-semibold text-on-surface">
-                            {shortPoiName(poi.name)}
-                          </span>
-                          <span className="font-label-sm text-label-sm text-outline">{poi.id}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-3 py-3">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-label-sm text-label-sm font-semibold ${categoryConfig.badgeClass}`}
-                      >
-                        <Icon name={categoryConfig.icon} className="text-[14px]" />
-                        {categoryConfig.label}
-                      </span>
-                    </td>
-                    <td className="max-w-[240px] px-3 py-3 font-body-sm text-body-sm text-on-surface-variant">
-                      <span className="line-clamp-2">{poi.address}</span>
-                    </td>
-                    <td className="px-3 py-3">
-                      <div className="flex w-24 flex-col gap-1">
-                        <span className="font-label-md text-label-md font-bold text-primary">
-                          {poi.priorityScore}/100
-                        </span>
-                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-container-highest">
-                          <div
-                            className="h-full rounded-full bg-primary"
-                            style={{ width: `${poi.priorityScore}%` }}
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-3 py-3">
-                      <span
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-label-sm text-label-sm font-semibold ${statusConfig.badgeClass}`}
-                      >
-                        <span className={`h-1.5 w-1.5 rounded-full ${statusConfig.dotClass}`} />
-                        {poi.status === 'active' ? 'Công khai' : 'Đang ẩn'}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 font-body-sm text-body-sm text-on-surface-variant">
-                      <div className="flex flex-col">
-                        <span>{formatDayTime(poi.updatedAt)}</span>
-                        <span className="font-label-sm text-label-sm text-outline">
-                          {poi.updatedBy}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-3 py-3">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          title={
-                            poi.status === 'active' ? 'Ẩn khỏi ứng dụng' : 'Công khai trên ứng dụng'
-                          }
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            toggleStatus(poi);
-                          }}
-                          className="flex h-8 w-8 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
-                        >
-                          <Icon
-                            name={poi.status === 'active' ? 'visibility_off' : 'visibility'}
-                            className="text-[18px]"
-                          />
-                        </button>
-                        <button
-                          type="button"
-                          title="Chỉnh sửa POI"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            navigate(poiEditPath(poi.id));
-                          }}
-                          className="flex h-8 w-8 items-center justify-center rounded-full text-primary transition-colors hover:bg-secondary-container/40"
-                        >
-                          <Icon name="edit_location" className="text-[18px]" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-              {filtered.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="py-12 text-center font-body-md text-body-md text-outline"
-                  >
-                    <Icon name="wrong_location" className="mb-2 block text-[40px]" />
-                    Không tìm thấy điểm đến phù hợp
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

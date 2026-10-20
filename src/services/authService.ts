@@ -49,3 +49,20 @@ export async function resetPassword(email: string, newPassword: string): Promise
   }
   account.password = newPassword;
 }
+
+/** Đổi mật khẩu khi đã đăng nhập (màn Hồ sơ Admin) */
+export async function changePassword(
+  email: string,
+  currentPassword: string,
+  newPassword: string,
+): Promise<void> {
+  await delay(800);
+  const account = findAccount(email);
+  if (!account) {
+    throw new Error('Không tìm thấy tài khoản quản trị');
+  }
+  if (account.password !== currentPassword) {
+    throw new Error('Mật khẩu hiện tại không chính xác');
+  }
+  account.password = newPassword;
+}

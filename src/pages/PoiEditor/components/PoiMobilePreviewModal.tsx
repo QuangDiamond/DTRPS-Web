@@ -1,11 +1,15 @@
+import type { ReactNode } from 'react';
 import Icon from '../../../components/common/Icon';
 import Modal from '../../../components/common/Modal';
 import { POI_CATEGORY_CONFIG } from '../../../constants/poi';
 import type { PoiFormValues } from '../../../types/admin';
-import { shortPoiName } from '../poiFormUtils';
+import { shortPoiName } from '../../../utils/poi';
 
 interface PoiMobilePreviewModalProps {
   values: PoiFormValues;
+  title?: string;
+  description?: string;
+  footer?: ReactNode;
   onClose: () => void;
 }
 
@@ -18,7 +22,13 @@ const toPlainText = (markdown: string): string =>
     .replace(/^> /gm, '');
 
 /** Mô phỏng màn chi tiết điểm đến trên App Mobile, dùng dữ liệu đang chỉnh sửa */
-export default function PoiMobilePreviewModal({ values, onClose }: PoiMobilePreviewModalProps) {
+export default function PoiMobilePreviewModal({
+  values,
+  title = 'Xem thử hiển thị App Mobile',
+  description = 'Bản xem trước dựa trên dữ liệu đang chỉnh sửa (chưa lưu)',
+  footer,
+  onClose,
+}: PoiMobilePreviewModalProps) {
   const category = POI_CATEGORY_CONFIG[values.category];
   const tags = values.tags
     .split(',')
@@ -32,11 +42,7 @@ export default function PoiMobilePreviewModal({ values, onClose }: PoiMobilePrev
   ].filter((row) => row.value.trim());
 
   return (
-    <Modal
-      title="Xem thử hiển thị App Mobile"
-      description="Bản xem trước dựa trên dữ liệu đang chỉnh sửa (chưa lưu)"
-      onClose={onClose}
-    >
+    <Modal title={title} description={description} footer={footer} onClose={onClose}>
       <div className="mx-auto w-[300px] overflow-hidden rounded-[2.5rem] border-[10px] border-inverse-surface bg-surface shadow-xl">
         <div className="relative h-[560px] overflow-y-auto">
           {/* Ảnh bìa */}

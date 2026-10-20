@@ -56,6 +56,8 @@ export default function PoiMediaSection({
         return;
       }
       onChange('cover', photo);
+      // Ảnh thu nhỏ ở bảng danh sách sẽ lấy theo ảnh bìa mới
+      onChange('thumbnailUrl', undefined);
       warnLowResolution([{ caption: photo.caption, width, height }]);
       showToast(cover ? 'Đã thay ảnh bìa đại diện' : 'Đã thêm ảnh bìa đại diện', 'success');
     } catch (error) {
@@ -108,6 +110,7 @@ export default function PoiMediaSection({
       if (item.id !== photo.id) return [item];
       return cover ? [{ ...cover, caption: captionFromFileName(cover.caption) }] : [];
     });
+    onChange('thumbnailUrl', undefined);
     onChange('cover', {
       ...photo,
       meta: photo.meta ?? `Chọn từ thư viện ảnh • Cập nhật bởi ${uploader}`,

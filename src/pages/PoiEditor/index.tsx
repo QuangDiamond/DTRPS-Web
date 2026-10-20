@@ -8,6 +8,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { usePois } from '../../hooks/usePois';
 import { useToast } from '../../hooks/useToast';
 import type { Poi, PoiFormValues, PoiPhoto } from '../../types/admin';
+import { shortPoiName } from '../../utils/poi';
 import PoiAiPlannerSection from './components/PoiAiPlannerSection';
 import PoiBasicInfoSection from './components/PoiBasicInfoSection';
 import PoiContactSection from './components/PoiContactSection';
@@ -19,7 +20,6 @@ import PoiMobilePreviewModal from './components/PoiMobilePreviewModal';
 import PoiPhotoViewerModal from './components/PoiPhotoViewerModal';
 import {
   isSamePoiValues,
-  shortPoiName,
   toPoiFormValues,
   validatePoi,
   type PoiFieldChange,
@@ -127,6 +127,7 @@ function PoiEditorForm({ poi }: { poi: Poi | null }) {
         poiId={poi?.id ?? null}
         poiName={poi ? shortPoiName(poi.name) : ''}
         status={values.status}
+        onStatusChange={(status) => handleChange('status', status)}
         onCancel={handleCancel}
         onPreview={() => setShowPreview(true)}
         onSave={handleSave}

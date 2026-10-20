@@ -1,3 +1,4 @@
+import Button from '../../../components/common/Button';
 import Icon from '../../../components/common/Icon';
 import Modal from '../../../components/common/Modal';
 import type { UserTrip } from '../../../types/admin';
@@ -33,13 +34,9 @@ export default function TripDetailModal({ trip, onClose, onDownload }: TripDetai
       onClose={onClose}
       size="lg"
       footer={
-        <button
-          type="button"
-          onClick={() => onDownload(trip)}
-          className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
-        >
-          <Icon name="download" className="text-[18px]" /> Tải file lịch trình
-        </button>
+        <Button icon="download" onClick={() => onDownload(trip)}>
+          Tải file lịch trình
+        </Button>
       }
     >
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

@@ -161,9 +161,9 @@ export default function RejectedListingsPage() {
           </nav>
           <div>
             <h1 className="flex items-center gap-3 font-headline-lg text-headline-lg tracking-tight text-on-surface">
-              Địa điểm bị từ chối
+              Địa điểm bị từ chối{' '}
               <span className="rounded-full bg-error-container px-2.5 py-0.5 font-label-sm text-label-sm font-bold tracking-wider text-on-error-container uppercase">
-                Rejected Listings
+                Không đạt thẩm định
               </span>
             </h1>
             <p className="mt-1 max-w-3xl font-body-md text-body-md text-on-surface-variant">

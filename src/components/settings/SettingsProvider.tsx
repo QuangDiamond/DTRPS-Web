@@ -2,35 +2,47 @@ import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { DEFAULT_SYSTEM_SETTINGS } from '../../constants/settings';
 import { SettingsContext } from '../../contexts/settings';
 import { useAuth } from '../../hooks/useAuth';
+import { useInitialData } from '../../hooks/useInitialData';
+import { usePersist } from '../../hooks/usePersist';
+import { settingsService, settingsSource } from '../../services/settingsService';
 import type { SettingsMeta, SystemSettings } from '../../types/admin';
 
-/** IP giả lập của máy quản trị — khi có backend lấy từ phiên đăng nhập */
-const MOCK_ADMIN_IP = '118.70.192.14';
+const EMPTY_META: SettingsMeta = { updatedAt: '', updatedBy: '', updatedIp: '', syncedAt: '' };
 
-const INITIAL_META: SettingsMeta = {
-  updatedAt: '2024-10-24T14:32:08+07:00',
-  updatedBy: 'Quản trị viên Super Admin',
-  updatedIp: MOCK_ADMIN_IP,
-  syncedAt: new Date(Date.now() - 4 * 60_000).toISOString(),
-};
-
-/** Store cấu hình hệ thống. Khi có backend: thay bằng API GET/PUT /settings. */
+/** Store cấu hình hệ thống — đọc/ghi qua settingsService (GET/PUT /settings) */
 export default function SettingsProvider({ children }: { children: ReactNode }) {
   const { admin } = useAuth();
-  const [settings, setSettings] = useState<SystemSettings>(DEFAULT_SYSTEM_SETTINGS);
-  const [meta, setMeta] = useState<SettingsMeta>(INITIAL_META);
+  const seed = settingsSource.seed;
+  const [settings, setSettings] = useState<SystemSettings>(
+    seed?.settings ?? DEFAULT_SYSTEM_SETTINGS,
+  );
+  const [meta, setMeta] = useState<SettingsMeta>(seed?.meta ?? EMPTY_META);
   const actor = admin ? `${admin.name} ${admin.role}` : 'Quản trị viên';
+
+  const dataStatus = useInitialData(
+    settingsSource,
+    (snapshot) => {
+      setSettings(snapshot.settings);
+      setMeta(snapshot.meta);
+    },
+    Boolean(admin),
+  );
+  const persist = usePersist(dataStatus.reload);
 
   const saveSettings = useCallback(
     (next: SystemSettings) => {
       const now = new Date().toISOString();
       setSettings(next);
-      setMeta({ updatedAt: now, updatedBy: actor, updatedIp: MOCK_ADMIN_IP, syncedAt: now });
+      setMeta((current) => ({ ...current, updatedAt: now, updatedBy: actor, syncedAt: now }));
+      persist(settingsService.save(next), 'Không lưu được cấu hình hệ thống');
     },
-    [actor],
+    [actor, persist],
   );
 
-  const value = useMemo(() => ({ settings, meta, saveSettings }), [settings, meta, saveSettings]);
+  const value = useMemo(
+    () => ({ settings, meta, dataStatus, saveSettings }),
+    [settings, meta, dataStatus, saveSettings],
+  );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
 }

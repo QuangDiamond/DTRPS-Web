@@ -11,7 +11,7 @@ interface DocumentPreviewModalProps {
 export default function DocumentPreviewModal({ document, onClose }: DocumentPreviewModalProps) {
   return (
     <Modal title={document.title} description={document.meta} onClose={onClose} size="lg">
-      <div className="flex h-72 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-500">
+      <div className="flex h-72 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-outline-variant bg-surface-container-low text-outline">
         <Icon
           name={document.fileType === 'pdf' ? 'picture_as_pdf' : 'image'}
           className="text-[48px]"
@@ -22,7 +22,9 @@ export default function DocumentPreviewModal({ document, onClose }: DocumentPrev
         </span>
         <span
           className={`rounded-full px-3 py-1 text-[11px] font-bold ${
-            document.verified ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+            document.verified
+              ? 'bg-secondary-container/60 text-on-secondary-fixed-variant'
+              : 'bg-tertiary-fixed/60 text-on-tertiary-fixed-variant'
           }`}
         >
           {document.verified ? 'Đã đối chiếu với CSDL quốc gia' : 'Chưa đối chiếu'}

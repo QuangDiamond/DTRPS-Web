@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Link, useBlocker } from 'react-router-dom';
+import { useCallback, useState } from 'react';
+import { Link } from 'react-router-dom';
 import ConfirmModal from '../../components/common/ConfirmModal';
+import UnsavedChangesDialog from '../../components/common/UnsavedChangesDialog';
 import Icon from '../../components/common/Icon';
-import { countEnabledChannels } from '../../components/notifications/NotificationRulesFields';
+import { countEnabledChannels } from '../../utils/notificationRules';
 import { DEFAULT_NOTIFICATION_RULES } from '../../constants/notification';
 import { ROUTES } from '../../constants/routes';
 import { DEFAULT_SYSTEM_SETTINGS, PLATFORM_INFO, SETTINGS_TABS } from '../../constants/settings';
 import { useNotifications } from '../../hooks/useNotifications';
 import { useSettings } from '../../hooks/useSettings';
+import { useUnsavedChangesGuard } from '../../hooks/useUnsavedChangesGuard';
 import { useToast } from '../../hooks/useToast';
 import type { NotificationRules, SettingsTab, SystemSettings } from '../../types/admin';
 import { formatRelativeTime } from '../../utils/format';
@@ -40,17 +42,7 @@ export default function SettingsPage() {
   const dirtyTabs = getDirtyTabs(draft, settings, draftRules, rules);
   const isDirty = dirtyTabs.size > 0;
 
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      isDirty && currentLocation.pathname !== nextLocation.pathname,
-  );
-
-  useEffect(() => {
-    if (!isDirty) return;
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => event.preventDefault();
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isDirty]);
+  const { blocker } = useUnsavedChangesGuard(isDirty);
 
   const handleChange = useCallback<SettingsFieldChange>((key, value) => {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -288,18 +280,10 @@ export default function SettingsPage() {
         </ConfirmModal>
       )}
 
-      {blocker.state === 'blocked' && (
-        <ConfirmModal
-          title="Rời trang khi chưa lưu cấu hình?"
-          confirmLabel="Rời trang"
-          confirmIcon="logout"
-          onConfirm={() => blocker.proceed()}
-          onClose={() => blocker.reset()}
-        >
-          Các thay đổi ở {dirtyTabs.size} nhóm cấu hình chưa được lưu và sẽ bị hủy nếu bạn rời khỏi
-          trang này.
-        </ConfirmModal>
-      )}
+      <UnsavedChangesDialog blocker={blocker} title="Rời trang khi chưa lưu cấu hình?">
+        Các thay đổi ở {dirtyTabs.size} nhóm cấu hình chưa được lưu và sẽ bị hủy nếu bạn rời khỏi
+        trang này.
+      </UnsavedChangesDialog>
     </div>
   );
 }

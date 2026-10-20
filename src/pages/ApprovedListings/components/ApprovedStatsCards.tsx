@@ -1,5 +1,4 @@
 import Icon from '../../../components/common/Icon';
-import { APPROVED_LISTING_STATS } from '../../../constants/mockData';
 import type { ListingStats } from '../../../types/admin';
 import { formatNumber, formatPercent } from '../../../utils/format';
 
@@ -51,7 +50,7 @@ export default function ApprovedStatsCards({ stats }: { stats: ListingStats }) {
           </span>
           <span className={`${PILL_CLASS} bg-primary-fixed text-on-primary-fixed-variant`}>
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-            {formatPercent(visible, stats.approved)} Active
+            {formatPercent(visible, stats.approved)} đang hiển thị
           </span>
         </div>
         <div className="mt-2 font-body-sm text-body-sm text-outline">
@@ -94,11 +93,10 @@ export default function ApprovedStatsCards({ stats }: { stats: ListingStats }) {
         </div>
         <div className="mt-3 flex items-baseline justify-between">
           <span className="font-display-sm text-display-sm font-bold tracking-tight text-on-surface">
-            {formatNumber(APPROVED_LISTING_STATS.weeklyEngagements)}
+            {formatNumber(stats.weeklyEngagements)}
           </span>
           <span className={`${PILL_CLASS} bg-secondary-container text-on-secondary-container`}>
-            <Icon name="trending_up" className="text-[12px]" />+
-            {APPROVED_LISTING_STATS.weeklyEngagementGrowth}%
+            <Icon name="trending_up" className="text-[12px]" />+{stats.weeklyEngagementGrowth}%
           </span>
         </div>
         <div className="mt-2 font-body-sm text-body-sm text-outline">

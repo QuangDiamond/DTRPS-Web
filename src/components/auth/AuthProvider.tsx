@@ -1,6 +1,9 @@
-import { useCallback, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { AuthContext } from '../../contexts/auth';
+import { useToast } from '../../hooks/useToast';
 import * as authService from '../../services/authService';
+import { onUnauthorized } from '../../services/httpClient';
+import { clearAccessToken } from '../../services/tokenStore';
 import type { AdminProfile } from '../../types/admin';
 
 const STORAGE_KEY = 'smarttravel.admin';
@@ -53,9 +56,10 @@ function clearStoredAdmin(): void {
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [admin, setAdmin] = useState<AdminProfile | null>(readStoredAdmin);
+  const { showToast } = useToast();
 
   const login = useCallback(async (email: string, password: string, remember: boolean) => {
-    const profile = await authService.login(email, password);
+    const profile = await authService.login(email, password, remember);
     clearStoredAdmin();
     try {
       const storage = remember ? window.localStorage : window.sessionStorage;
@@ -68,9 +72,21 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
+    authService.logout();
     clearStoredAdmin();
     setAdmin(null);
   }, []);
+
+  // API trả 401 (token hết hạn / bị thu hồi) → đăng xuất và báo cho người dùng
+  useEffect(() => {
+    onUnauthorized(() => {
+      clearAccessToken();
+      clearStoredAdmin();
+      setAdmin(null);
+      showToast('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại', 'info');
+    });
+    return () => onUnauthorized(null);
+  }, [showToast]);
 
   const value = useMemo(() => ({ admin, login, logout }), [admin, login, logout]);
 

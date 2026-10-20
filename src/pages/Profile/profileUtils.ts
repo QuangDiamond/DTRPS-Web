@@ -20,7 +20,7 @@ export function getPasswordStrength(password: string): PasswordStrength {
   if (score >= 4 && password.length >= 12) {
     return {
       score: 4,
-      label: 'Rất mạnh (Enterprise Safe)',
+      label: 'Rất mạnh',
       barClass: 'bg-primary',
       textClass: 'text-primary',
     };
@@ -103,19 +103,8 @@ export function securityScore(checks: SecurityCheckItem[]): number {
 }
 
 export function securityTier(score: number): string {
-  if (score >= 100) return 'Bảo mật cấp độ Enterprise Tier 4';
-  if (score >= 80) return 'Bảo mật cấp độ Tier 3 — cần rà soát';
-  if (score >= 50) return 'Bảo mật cấp độ Tier 2 — rủi ro trung bình';
+  if (score >= 100) return 'Bảo mật cấp độ doanh nghiệp (cấp 4)';
+  if (score >= 80) return 'Bảo mật cấp 3 — cần rà soát';
+  if (score >= 50) return 'Bảo mật cấp 2 — rủi ro trung bình';
   return 'Rủi ro cao — cần xử lý ngay';
-}
-
-/** Tải nội dung văn bản thành file .txt */
-export function downloadTextFile(filename: string, content: string): void {
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(url);
 }

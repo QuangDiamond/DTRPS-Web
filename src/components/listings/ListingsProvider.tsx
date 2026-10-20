@@ -1,19 +1,17 @@
 import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
 import { LISTING_CATEGORY_CONFIG } from '../../constants/listing';
-import { ListingsContext, type RejectOptions } from '../../contexts/listings';
-import {
-  APPROVED_LISTING_STATS,
-  DASHBOARD_STATS,
-  MOCK_ACTIVITIES,
-  MOCK_LISTINGS,
-  REJECTED_LISTING_STATS,
-} from '../../constants/mockData';
+import { ListingsContext } from '../../contexts/listings';
+import { useAuth } from '../../hooks/useAuth';
+import { useInitialData } from '../../hooks/useInitialData';
+import { usePersist } from '../../hooks/usePersist';
+import { listingService, listingsSource } from '../../services/listingService';
 import type {
   ActivityItem,
   Listing,
   ListingFormValues,
   ListingStats,
   ListingVisibility,
+  RejectOptions,
 } from '../../types/admin';
 
 /** Phần chênh lệch so với số liệu gốc, phát sinh do thao tác trong phiên */
@@ -36,17 +34,44 @@ const ZERO_DELTA: StatsDelta = {
   locked: 0,
 };
 
+const EMPTY_STATS: ListingStats = {
+  total: 0,
+  pending: 0,
+  approved: 0,
+  rejected: 0,
+  hidden: 0,
+  resubmitted: 0,
+  locked: 0,
+  weeklyEngagements: 0,
+  weeklyEngagementGrowth: 0,
+};
+
 /**
  * Store niêm yết dùng chung cho Bảng điều khiển, Quản lý niêm yết, màn Thẩm định
  * và Địa điểm đã duyệt — thao tác ở đâu thì số liệu & danh sách ở mọi nơi đều cập nhật theo.
- * Khi có backend: thay state bằng dữ liệu gọi API.
+ * Dữ liệu tải qua listingService (mock hoặc API); thao tác ghi cập nhật lạc quan rồi lưu xuống server.
  */
 export default function ListingsProvider({ children }: { children: ReactNode }) {
-  const [listings, setListings] = useState<Listing[]>(MOCK_LISTINGS);
-  const [activities, setActivities] = useState<ActivityItem[]>(MOCK_ACTIVITIES);
+  const { admin } = useAuth();
+  const seed = listingsSource.seed;
+  const [listings, setListings] = useState<Listing[]>(seed?.listings ?? []);
+  const [activities, setActivities] = useState<ActivityItem[]>(seed?.activities ?? []);
+  const [baseStats, setBaseStats] = useState<ListingStats>(seed?.stats ?? EMPTY_STATS);
   const [delta, setDelta] = useState<StatsDelta>(ZERO_DELTA);
   const nextActivityId = useRef(0);
   const nextManualId = useRef(1);
+
+  const dataStatus = useInitialData(
+    listingsSource,
+    (snapshot) => {
+      setListings(snapshot.listings);
+      setActivities(snapshot.activities);
+      setBaseStats(snapshot.stats);
+      setDelta(ZERO_DELTA);
+    },
+    Boolean(admin),
+  );
+  const persist = usePersist(dataStatus.reload);
 
   // Đọc danh sách mới nhất trong callback mà không phải đưa listings vào dependency
   const listingsRef = useRef(listings);
@@ -92,9 +117,10 @@ export default function ListingsProvider({ children }: { children: ReactNode }) 
         ...targets.map((listing) => createActivity('listing_approved', listing.name)),
         ...current,
       ]);
+      persist(listingService.approve([...targetIds], note), 'Không lưu được kết quả phê duyệt');
       return targets.length;
     },
-    [createActivity],
+    [createActivity, persist],
   );
 
   const rejectListing = useCallback(
@@ -127,59 +153,68 @@ export default function ListingsProvider({ children }: { children: ReactNode }) 
         createActivity('listing_rejected', target.name, reason),
         ...current,
       ]);
+      persist(listingService.reject(id, reason, options), 'Không lưu được kết quả từ chối');
     },
-    [createActivity],
+    [createActivity, persist],
   );
 
   // ===== Hồ sơ bị từ chối =====
   /** Mở lại hồ sơ đối tác đã gửi lại → quay về hàng chờ duyệt */
-  const reopenListing = useCallback((id: string) => {
-    const target = listingsRef.current.find(
-      (listing) => listing.id === id && listing.status === 'rejected' && listing.resubmittedAt,
-    );
-    if (!target) return false;
+  const reopenListing = useCallback(
+    (id: string) => {
+      const target = listingsRef.current.find(
+        (listing) => listing.id === id && listing.status === 'rejected' && listing.resubmittedAt,
+      );
+      if (!target) return false;
 
-    setListings((current) =>
-      current.map((listing) =>
-        listing.id === id
-          ? {
-              ...listing,
-              status: 'pending',
-              submittedAt: listing.resubmittedAt ?? new Date().toISOString(),
-              reviewedAt: undefined,
-              rejectReason: undefined,
-              rejectReasonCode: undefined,
-              rejectIcon: undefined,
-              partnerFeedback: undefined,
-              resubmittedAt: undefined,
-            }
-          : listing,
-      ),
-    );
-    setDelta((current) => ({ ...current, reopened: current.reopened + 1 }));
-    return true;
-  }, []);
+      setListings((current) =>
+        current.map((listing) =>
+          listing.id === id
+            ? {
+                ...listing,
+                status: 'pending',
+                submittedAt: listing.resubmittedAt ?? new Date().toISOString(),
+                reviewedAt: undefined,
+                rejectReason: undefined,
+                rejectReasonCode: undefined,
+                rejectIcon: undefined,
+                partnerFeedback: undefined,
+                resubmittedAt: undefined,
+              }
+            : listing,
+        ),
+      );
+      setDelta((current) => ({ ...current, reopened: current.reopened + 1 }));
+      persist(listingService.reopen(id), 'Không mở lại được hồ sơ');
+      return true;
+    },
+    [persist],
+  );
 
   /** Đóng vĩnh viễn các hồ sơ bị từ chối chưa gửi lại */
-  const lockListings = useCallback((ids: string[]) => {
-    const targets = listingsRef.current.filter(
-      (listing) =>
-        ids.includes(listing.id) &&
-        listing.status === 'rejected' &&
-        !listing.locked &&
-        !listing.resubmittedAt,
-    );
-    if (targets.length === 0) return 0;
+  const lockListings = useCallback(
+    (ids: string[]) => {
+      const targets = listingsRef.current.filter(
+        (listing) =>
+          ids.includes(listing.id) &&
+          listing.status === 'rejected' &&
+          !listing.locked &&
+          !listing.resubmittedAt,
+      );
+      if (targets.length === 0) return 0;
 
-    const targetIds = new Set(targets.map((listing) => listing.id));
-    setListings((current) =>
-      current.map((listing) =>
-        targetIds.has(listing.id) ? { ...listing, locked: true } : listing,
-      ),
-    );
-    setDelta((current) => ({ ...current, locked: current.locked + targets.length }));
-    return targets.length;
-  }, []);
+      const targetIds = new Set(targets.map((listing) => listing.id));
+      setListings((current) =>
+        current.map((listing) =>
+          targetIds.has(listing.id) ? { ...listing, locked: true } : listing,
+        ),
+      );
+      setDelta((current) => ({ ...current, locked: current.locked + targets.length }));
+      persist(listingService.lock([...targetIds]), 'Không đóng được hồ sơ');
+      return targets.length;
+    },
+    [persist],
+  );
 
   // ===== Quản lý niêm yết đã duyệt =====
   const setListingsVisibility = useCallback(
@@ -206,80 +241,95 @@ export default function ListingsProvider({ children }: { children: ReactNode }) 
       );
       const change = visibility === 'hidden' ? targets.length : -targets.length;
       setDelta((current) => ({ ...current, hidden: current.hidden + change }));
+      persist(
+        listingService.setVisibility([...targetIds], visibility, reason),
+        'Không cập nhật được trạng thái hiển thị',
+      );
       return targets.length;
     },
-    [],
+    [persist],
   );
 
-  const updateListing = useCallback((id: string, values: ListingFormValues) => {
-    setListings((current) =>
-      current.map((listing) => {
-        if (listing.id !== id) return listing;
-        const categoryChanged = listing.category !== values.category;
-        return {
-          ...listing,
-          ...values,
-          categoryIcon: categoryChanged
-            ? LISTING_CATEGORY_CONFIG[values.category].defaultIcon
-            : listing.categoryIcon,
-        };
-      }),
-    );
-  }, []);
+  const updateListing = useCallback(
+    (id: string, values: ListingFormValues) => {
+      setListings((current) =>
+        current.map((listing) => {
+          if (listing.id !== id) return listing;
+          const categoryChanged = listing.category !== values.category;
+          return {
+            ...listing,
+            ...values,
+            categoryIcon: categoryChanged
+              ? LISTING_CATEGORY_CONFIG[values.category].defaultIcon
+              : listing.categoryIcon,
+          };
+        }),
+      );
+      persist(listingService.update(id, values), 'Không lưu được thông tin địa điểm');
+    },
+    [persist],
+  );
 
-  const assignCategory = useCallback((ids: string[], category: Listing['category']) => {
-    const config = LISTING_CATEGORY_CONFIG[category];
-    setListings((current) =>
-      current.map((listing) =>
-        ids.includes(listing.id)
-          ? {
-              ...listing,
-              category,
-              categoryLabel: config.filterLabel,
-              categoryIcon: config.defaultIcon,
-            }
-          : listing,
-      ),
-    );
-  }, []);
+  const assignCategory = useCallback(
+    (ids: string[], category: Listing['category']) => {
+      const config = LISTING_CATEGORY_CONFIG[category];
+      setListings((current) =>
+        current.map((listing) =>
+          ids.includes(listing.id)
+            ? {
+                ...listing,
+                category,
+                categoryLabel: config.filterLabel,
+                categoryIcon: config.defaultIcon,
+              }
+            : listing,
+        ),
+      );
+      persist(listingService.assignCategory(ids, category), 'Không gán được danh mục');
+    },
+    [persist],
+  );
 
-  const addListing = useCallback((values: ListingFormValues) => {
-    const now = new Date().toISOString();
-    const icon = LISTING_CATEGORY_CONFIG[values.category].defaultIcon;
-    const listing: Listing = {
-      ...values,
-      id: `POI-M${String(nextManualId.current++).padStart(4, '0')}`,
-      icon,
-      categoryIcon: icon,
-      partnerTier: 'verified',
-      submittedAt: now,
-      reviewedAt: now,
-      status: 'approved',
-      visibility: 'visible',
-      reviewNote: 'Admin thêm thủ công',
-      rating: 0,
-      reviewCount: 0,
-      views: 0,
-    };
-    setListings((current) => [listing, ...current]);
-    setDelta((current) => ({ ...current, added: current.added + 1 }));
-    return listing;
-  }, []);
+  const addListing = useCallback(
+    (values: ListingFormValues) => {
+      const now = new Date().toISOString();
+      const icon = LISTING_CATEGORY_CONFIG[values.category].defaultIcon;
+      const listing: Listing = {
+        ...values,
+        id: `POI-M${String(nextManualId.current++).padStart(4, '0')}`,
+        icon,
+        categoryIcon: icon,
+        partnerTier: 'verified',
+        submittedAt: now,
+        reviewedAt: now,
+        status: 'approved',
+        visibility: 'visible',
+        reviewNote: 'Quản trị viên thêm thủ công',
+        rating: 0,
+        reviewCount: 0,
+        views: 0,
+      };
+      setListings((current) => [listing, ...current]);
+      setDelta((current) => ({ ...current, added: current.added + 1 }));
+      persist(listingService.create(listing), 'Không lưu được địa điểm mới');
+      return listing;
+    },
+    [persist],
+  );
 
   const stats: ListingStats = useMemo(
     () => ({
-      total: DASHBOARD_STATS.totalListings + delta.added,
-      pending: Math.max(
-        0,
-        DASHBOARD_STATS.pendingReviews - delta.approved - delta.rejected + delta.reopened,
-      ),
-      approved: DASHBOARD_STATS.approvedListings + delta.approved + delta.added,
-      rejected: DASHBOARD_STATS.rejectedListings + delta.rejected - delta.reopened,
-      hidden: Math.max(0, APPROVED_LISTING_STATS.hidden + delta.hidden),
-      resubmitted: Math.max(0, REJECTED_LISTING_STATS.resubmitted - delta.reopened),
-      locked: REJECTED_LISTING_STATS.locked + delta.locked,
+      total: baseStats.total + delta.added,
+      pending: Math.max(0, baseStats.pending - delta.approved - delta.rejected + delta.reopened),
+      approved: baseStats.approved + delta.approved + delta.added,
+      rejected: baseStats.rejected + delta.rejected - delta.reopened,
+      hidden: Math.max(0, baseStats.hidden + delta.hidden),
+      resubmitted: Math.max(0, baseStats.resubmitted - delta.reopened),
+      locked: baseStats.locked + delta.locked,
+      weeklyEngagements: baseStats.weeklyEngagements,
+      weeklyEngagementGrowth: baseStats.weeklyEngagementGrowth,
     }),
-    [delta],
+    [baseStats, delta],
   );
 
   const value = useMemo(
@@ -287,6 +337,7 @@ export default function ListingsProvider({ children }: { children: ReactNode }) 
       listings,
       activities,
       stats,
+      dataStatus,
       approveListings,
       rejectListing,
       reopenListing,
@@ -300,6 +351,7 @@ export default function ListingsProvider({ children }: { children: ReactNode }) 
       listings,
       activities,
       stats,
+      dataStatus,
       approveListings,
       rejectListing,
       reopenListing,

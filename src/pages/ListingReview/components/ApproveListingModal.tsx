@@ -170,7 +170,7 @@ export default function ApproveListingModal({
               htmlFor="reviewNotes"
               className="flex items-center justify-between font-label-md text-label-md font-semibold text-on-surface"
             >
-              <span>Ghi chú duyệt nội bộ của Admin (Optional review notes)</span>
+              <span>Ghi chú duyệt nội bộ (không bắt buộc)</span>
               <span className="font-label-sm text-label-sm font-normal text-outline">
                 {note.length} / {REVIEW_NOTE_MAX_LENGTH} ký tự
               </span>

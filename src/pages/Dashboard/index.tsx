@@ -1,15 +1,21 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ErrorState from '../../components/common/ErrorState';
 import PageHeader from '../../components/common/PageHeader';
+import PageLoader from '../../components/common/PageLoader';
 import { LISTING_CATEGORY_CONFIG } from '../../constants/listing';
-import { CATEGORY_SHARES, DASHBOARD_STATS, GROWTH_SERIES } from '../../constants/mockData';
 import { ADMIN_ROOT_CRUMB } from '../../constants/navigation';
 import { PROVINCE_NAMES } from '../../constants/partner';
 import { listingReviewPath, ROUTES } from '../../constants/routes';
 import { useAuth } from '../../hooks/useAuth';
 import { useListings } from '../../hooks/useListings';
+import { usePartners } from '../../hooks/usePartners';
+import { useResource } from '../../hooks/useResource';
 import { useToast } from '../../hooks/useToast';
+import { useUsers } from '../../hooks/useUsers';
+import { dashboardService } from '../../services/dashboardService';
 import type { DashboardRange, DashboardStats, DateRange, Listing } from '../../types/admin';
+import type { DashboardOverview } from '../../types/api';
 import { downloadCsv } from '../../utils/exportCsv';
 import { formatDayTime, todayIsoDate } from '../../utils/format';
 import ActivityFeed from './components/ActivityFeed';
@@ -23,19 +29,44 @@ import { formatDateRange, getPresetRange } from './dashboardUtils';
 const PREVIEW_LIMIT = 4;
 const REFRESH_DELAY_MS = 800;
 
+/** Tải dữ liệu tổng quan (KPI gốc, biểu đồ tăng trưởng, cơ cấu danh mục) qua dashboardService */
 export default function DashboardPage() {
+  const overview = useResource(
+    () => dashboardService.getOverview(),
+    () => dashboardService.peekOverview(),
+  );
+
+  if (overview.status === 'error') {
+    return (
+      <ErrorState
+        title="Không tải được dữ liệu tổng quan"
+        message={overview.error}
+        onRetry={overview.reload}
+      />
+    );
+  }
+  if (!overview.data) return <PageLoader />;
+  return <DashboardContent overview={overview.data} />;
+}
+
+function DashboardContent({ overview }: { overview: DashboardOverview }) {
   const navigate = useNavigate();
   const { admin } = useAuth();
   const { showToast } = useToast();
   const { listings, activities, stats: listingStats, approveListings } = useListings();
+  const { stats: userStats } = useUsers();
+  const { stats: partnerStats } = usePartners();
 
   const [range, setRange] = useState<DashboardRange>('7days');
   const [dateRange, setDateRange] = useState<DateRange>(() => getPresetRange('7days'));
   const [refreshing, setRefreshing] = useState(false);
 
-  // Số liệu niêm yết lấy từ store chung → duyệt ở trang nào cũng cập nhật ở đây
+  // Người dùng / đối tác / niêm yết lấy từ store chung → thao tác ở trang nào cũng cập nhật ở đây
   const stats: DashboardStats = {
-    ...DASHBOARD_STATS,
+    ...overview.stats,
+    totalUsers: userStats.total,
+    totalPartners: partnerStats.total,
+    newPartnersThisMonth: partnerStats.newThisMonth,
     pendingReviews: listingStats.pending,
     approvedListings: listingStats.approved,
     rejectedListings: listingStats.rejected,
@@ -134,8 +165,8 @@ export default function DashboardPage() {
       <KpiGrid stats={stats} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <GrowthChart data={GROWTH_SERIES} onViewReport={() => navigate(ROUTES.REPORTS)} />
-        <CategoryDonut data={CATEGORY_SHARES} />
+        <GrowthChart data={overview.growthSeries} onViewReport={() => navigate(ROUTES.REPORTS)} />
+        <CategoryDonut data={overview.categoryShares} />
       </div>
 
       <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-12">

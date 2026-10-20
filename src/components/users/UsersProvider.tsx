@@ -1,9 +1,14 @@
 import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
-import { MOCK_USERS, USER_STATS } from '../../constants/mockData';
 import { UsersContext } from '../../contexts/users';
 import { useAuth } from '../../hooks/useAuth';
+import { useInitialData } from '../../hooks/useInitialData';
+import { usePersist } from '../../hooks/usePersist';
+import { userService, usersSource } from '../../services/userService';
 import type { AppUser, UserAuditEntry, UserFormValues, UserStats } from '../../types/admin';
 import { todayIsoDate } from '../../utils/format';
+
+const EMPTY_STATS: UserStats = { total: 0, active: 0, newThisMonth: 0, newToday: 0, suspended: 0 };
+const ZERO_DELTA = { created: 0, locked: 0 };
 
 function nextUserId(users: AppUser[]): string {
   const maxNumber = users.reduce(
@@ -16,14 +21,26 @@ function nextUserId(users: AppUser[]): string {
 /**
  * Store người dùng dùng chung cho Quản lý người dùng & Chi tiết người dùng.
  * Thao tác của admin trên tài khoản được ghi vào nhật ký của người dùng đó.
- * Khi có backend: thay state bằng dữ liệu gọi API.
  */
 export default function UsersProvider({ children }: { children: ReactNode }) {
   const { admin } = useAuth();
-  const [users, setUsers] = useState<AppUser[]>(MOCK_USERS);
-  const [delta, setDelta] = useState({ created: 0, locked: 0 });
+  const seed = usersSource.seed;
+  const [users, setUsers] = useState<AppUser[]>(seed?.users ?? []);
+  const [baseStats, setBaseStats] = useState<UserStats>(seed?.stats ?? EMPTY_STATS);
+  const [delta, setDelta] = useState(ZERO_DELTA);
   const [auditLogs, setAuditLogs] = useState<Record<string, UserAuditEntry[]>>({});
   const nextAuditId = useRef(0);
+
+  const dataStatus = useInitialData(
+    usersSource,
+    (snapshot) => {
+      setUsers(snapshot.users);
+      setBaseStats(snapshot.stats);
+      setDelta(ZERO_DELTA);
+    },
+    Boolean(admin),
+  );
+  const persist = usePersist(dataStatus.reload);
 
   const usersRef = useRef(users);
   usersRef.current = users;
@@ -56,9 +73,10 @@ export default function UsersProvider({ children }: { children: ReactNode }) {
       setUsers((current) => [user, ...current]);
       setDelta((current) => ({ ...current, created: current.created + 1 }));
       logAudit(user.id, 'person_add', 'Tạo tài khoản');
+      persist(userService.create(user), 'Không lưu được tài khoản mới');
       return user;
     },
-    [logAudit],
+    [logAudit, persist],
   );
 
   const updateUser = useCallback(
@@ -67,8 +85,9 @@ export default function UsersProvider({ children }: { children: ReactNode }) {
         current.map((user) => (user.id === id ? { ...user, ...values } : user)),
       );
       logAudit(id, 'manage_accounts', 'Cập nhật hồ sơ / quyền tài khoản');
+      persist(userService.update(id, values), 'Không lưu được hồ sơ người dùng');
     },
-    [logAudit],
+    [logAudit, persist],
   );
 
   const lockUsers = useCallback(
@@ -85,9 +104,10 @@ export default function UsersProvider({ children }: { children: ReactNode }) {
       );
       setDelta((current) => ({ ...current, locked: current.locked + targets.length }));
       targets.forEach((user) => logAudit(user.id, 'lock_person', `Khóa tài khoản — ${reason}`));
+      persist(userService.lock([...targetIds], reason), 'Không khóa được tài khoản');
       return targets.length;
     },
-    [logAudit],
+    [logAudit, persist],
   );
 
   const unlockUsers = useCallback(
@@ -104,26 +124,28 @@ export default function UsersProvider({ children }: { children: ReactNode }) {
       );
       setDelta((current) => ({ ...current, locked: current.locked - targets.length }));
       targets.forEach((user) => logAudit(user.id, 'lock_open', 'Mở khóa tài khoản'));
+      persist(userService.unlock([...targetIds]), 'Không mở khóa được tài khoản');
       return targets.length;
     },
-    [logAudit],
+    [logAudit, persist],
   );
 
   const stats: UserStats = useMemo(
     () => ({
-      total: USER_STATS.total + delta.created,
-      active: USER_STATS.active + delta.created - delta.locked,
-      newThisMonth: USER_STATS.newThisMonth + delta.created,
-      newToday: USER_STATS.newToday + delta.created,
-      suspended: Math.max(0, USER_STATS.suspended + delta.locked),
+      total: baseStats.total + delta.created,
+      active: baseStats.active + delta.created - delta.locked,
+      newThisMonth: baseStats.newThisMonth + delta.created,
+      newToday: baseStats.newToday + delta.created,
+      suspended: Math.max(0, baseStats.suspended + delta.locked),
     }),
-    [delta],
+    [baseStats, delta],
   );
 
   const value = useMemo(
     () => ({
       users,
       stats,
+      dataStatus,
       createUser,
       updateUser,
       lockUsers,
@@ -131,7 +153,7 @@ export default function UsersProvider({ children }: { children: ReactNode }) {
       auditLogs,
       logAudit,
     }),
-    [users, stats, createUser, updateUser, lockUsers, unlockUsers, auditLogs, logAudit],
+    [users, stats, dataStatus, createUser, updateUser, lockUsers, unlockUsers, auditLogs, logAudit],
   );
 
   return <UsersContext.Provider value={value}>{children}</UsersContext.Provider>;

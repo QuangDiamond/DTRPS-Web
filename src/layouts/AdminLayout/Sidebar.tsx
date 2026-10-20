@@ -30,14 +30,14 @@ export default function Sidebar() {
       <div className="flex flex-1 flex-col overflow-y-auto">
         {/* Logo */}
         <div className="flex h-[68px] items-center gap-3 bg-surface-container-lowest px-space-lg">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#0d9488] shadow-sm">
-            <Icon name="public" className="text-[20px] text-white" />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand shadow-sm">
+            <Icon name="public" className="text-[20px] text-on-primary" />
           </div>
           <div className="flex min-w-0 flex-col">
-            <span className="text-base leading-none font-black tracking-tight text-slate-900">
-              Smart<span className="text-[#0d9488]">Travel</span>
+            <span className="text-base leading-none font-black tracking-tight text-on-surface">
+              Smart<span className="text-brand">Travel</span>
             </span>
-            <span className="mt-0.5 block text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+            <span className="mt-0.5 block text-[10px] font-bold tracking-wider text-outline uppercase">
               VIETNAM AI ADMIN
             </span>
           </div>
@@ -85,7 +85,7 @@ export default function Sidebar() {
 
       {/* Thông tin admin + đăng xuất */}
       <div className="bg-surface-container-low/60 p-space-md">
-        {/* Bấm vào thẻ để mở Hồ sơ Admin — thẻ được tô sáng khi đang ở trang hồ sơ */}
+        {/* Bấm vào thẻ để mở Hồ sơ quản trị viên — thẻ được tô sáng khi đang ở trang hồ sơ */}
         <div
           className={`flex items-center justify-between rounded-xl p-space-sm transition-all ${
             isProfileActive
@@ -95,7 +95,7 @@ export default function Sidebar() {
         >
           <NavLink
             to={ROUTES.PROFILE}
-            title="Hồ sơ Admin"
+            title="Hồ sơ quản trị viên"
             className="flex min-w-0 flex-1 items-center gap-3"
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary">

@@ -32,7 +32,7 @@ export default function BasicInfoSection({ listing, detail }: BasicInfoSectionPr
       title="Thông tin cơ bản địa điểm"
       subtitle="Đối chiếu thông tin tiếp thị, danh mục và giấy tờ niêm yết"
       badge={
-        <span className="rounded-full border border-teal-200/60 bg-teal-50 px-3 py-1 text-[11.5px] font-bold text-teal-800">
+        <span className="rounded-full border border-primary-fixed/60 bg-primary-fixed/20 px-3 py-1 text-[11.5px] font-bold text-on-primary-fixed-variant">
           {detail.categoryDetail}
         </span>
       }
@@ -40,7 +40,7 @@ export default function BasicInfoSection({ listing, detail }: BasicInfoSectionPr
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="md:col-span-2">
           <FieldLabel>Tên địa điểm đăng ký</FieldLabel>
-          <div className={`${READONLY_FIELD_CLASS} text-[15px] font-bold text-slate-900`}>
+          <div className={`${READONLY_FIELD_CLASS} text-[15px] font-bold text-on-surface`}>
             {listing.name}
           </div>
         </div>
@@ -48,7 +48,7 @@ export default function BasicInfoSection({ listing, detail }: BasicInfoSectionPr
         <div className="md:col-span-2">
           <FieldLabel>Mô tả chi tiết từ chủ cơ sở</FieldLabel>
           <div
-            className={`${READONLY_FIELD_CLASS} p-3.5 text-[13px] leading-relaxed text-slate-700`}
+            className={`${READONLY_FIELD_CLASS} p-3.5 text-[13px] leading-relaxed text-on-surface-variant`}
           >
             {detail.description}
           </div>
@@ -86,7 +86,7 @@ export default function BasicInfoSection({ listing, detail }: BasicInfoSectionPr
                 {detail.website}
               </a>
             ) : (
-              <span className="text-slate-500">Chưa cung cấp</span>
+              <span className="text-outline">Chưa cung cấp</span>
             )}
           </IconField>
         </div>
@@ -100,12 +100,12 @@ export default function BasicInfoSection({ listing, detail }: BasicInfoSectionPr
         {detail.price && (
           <div className="md:col-span-2">
             <FieldLabel>Mức giá tham chiếu niêm yết</FieldLabel>
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-teal-200/80 bg-teal-50/70 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary-fixed/80 bg-primary-fixed/20 px-4 py-3">
               <div className="flex items-center gap-2.5 text-[16px] font-bold text-primary">
                 <Icon name="payments" className="text-[22px]" />
                 <span>{detail.price.range}</span>
               </div>
-              <span className="rounded-md border border-teal-200 bg-white px-3 py-1 text-[11.5px] font-bold text-teal-900 shadow-2xs">
+              <span className="rounded-md border border-primary-fixed bg-surface-container-lowest px-3 py-1 text-[11.5px] font-bold text-on-primary-fixed-variant shadow-2xs">
                 {detail.price.note}
               </span>
             </div>

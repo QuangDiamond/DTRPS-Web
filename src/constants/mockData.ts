@@ -10,6 +10,7 @@ import type {
   UserStats,
   Listing,
 } from '../types/admin';
+import { minutesAgo } from '../utils/mockTime';
 import type { AdminAccount } from '../types/auth';
 
 // ===== Tài khoản quản trị =====
@@ -246,9 +247,6 @@ export const MOCK_PARTNERS: Partner[] = [
 ];
 
 // ===== Bảng điều khiển =====
-/** Thời điểm cách hiện tại n phút — để mốc "Hôm nay", "10 phút trước" luôn đúng khi demo */
-const minutesAgo = (minutes: number): string =>
-  new Date(Date.now() - minutes * 60_000).toISOString();
 
 export const DASHBOARD_STATS: DashboardStats = {
   totalUsers: 148250,
@@ -742,7 +740,7 @@ export const MOCK_USERS: AppUser[] = [
     accountType: 'vip',
     status: 'active',
     tripCount: 22,
-    tripNote: 'VIP Travel Member',
+    tripNote: 'Thành viên VIP',
     avatarTone: 'teal',
   },
   {
@@ -823,7 +821,7 @@ export const MOCK_USERS: AppUser[] = [
     accountType: 'vip',
     status: 'active',
     tripCount: 31,
-    tripNote: 'VIP Travel Member',
+    tripNote: 'Thành viên VIP',
     avatarTone: 'teal',
   },
   {

@@ -28,7 +28,7 @@ export default function PoiLocationSection({ poiCode, values, onChange }: PoiLoc
       compact
       icon="explore"
       title="4. Tọa độ địa lý & Bản đồ số"
-      description="Định vị vi mô (Micro-location Pinning)"
+      description="Định vị chính xác vị trí điểm đến trên bản đồ"
     >
       <div className="flex flex-col gap-1">
         <span className="font-label-md text-label-md font-semibold text-on-surface">

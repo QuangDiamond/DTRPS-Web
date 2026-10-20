@@ -69,14 +69,14 @@ export default function TwoFactorCard({
       <ProfileCardHeader
         icon="security_update_good"
         title="Bảo mật 2 lớp & Khóa xác thực"
-        description="Các phương thức xác thực đa yếu tố bắt buộc đối với tài khoản Root Admin"
+        description="Các phương thức xác thực đa yếu tố bắt buộc đối với tài khoản quản trị cấp cao nhất"
       />
       <div className="grid grid-cols-1 gap-space-md md:grid-cols-2">
         <MethodBox
           icon="phone_android"
           title="Google Authenticator / 2FA"
           subtitle="Mã xác thực TOTP"
-          status="Active"
+          status="Đang bật"
           description={`Ứng dụng xác minh sinh mã mỗi 30 giây được kích hoạt từ ngày ${formatDate(
             toIsoDate(new Date(details.totpEnabledAt)),
           )}.`}

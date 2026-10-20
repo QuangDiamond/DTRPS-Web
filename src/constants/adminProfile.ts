@@ -5,13 +5,7 @@ import type {
   AdminSessionStatus,
   SecurityKey,
 } from '../types/admin';
-
-const daysAgoAt = (days: number, hours: number, minutes: number): string => {
-  const date = new Date();
-  date.setDate(date.getDate() - days);
-  date.setHours(hours, minutes, 0, 0);
-  return date.toISOString();
-};
+import { daysAgoAt } from '../utils/mockTime';
 
 /** IP + vị trí giả lập của phiên hiện tại — khi có backend lấy từ server */
 export const CURRENT_SESSION_NETWORK = { ip: '118.70.12.84', location: 'Đà Nẵng, Việt Nam' };
@@ -145,7 +139,7 @@ export const ADMIN_PERMISSION_SUMMARY: {
   {
     icon: 'group',
     title: 'Quản lý người dùng',
-    level: 'Full Control',
+    level: 'Toàn quyền',
     description: 'Tạo lập, phân quyền, khóa tài khoản và kiểm toán dữ liệu',
     tone: 'primary',
   },
@@ -166,7 +160,7 @@ export const ADMIN_PERMISSION_SUMMARY: {
   {
     icon: 'neurology',
     title: 'Cấu hình hệ thống & AI',
-    level: 'Master Access',
+    level: 'Quyền cấu hình tối cao',
     description: 'Điều chỉnh thuật toán gợi ý hành trình AI và API Keys Gateway',
     tone: 'tertiary',
   },

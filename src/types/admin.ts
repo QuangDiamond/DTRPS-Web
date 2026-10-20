@@ -310,6 +310,10 @@ export interface ListingStats {
   resubmitted: number;
   /** Hồ sơ bị từ chối đã đóng vĩnh viễn */
   locked: number;
+  /** Lượt tương tác với niêm yết trong 7 ngày */
+  weeklyEngagements: number;
+  /** % tăng trưởng lượt tương tác so với tuần trước */
+  weeklyEngagementGrowth: number;
 }
 
 export type RejectionReasonCode =
@@ -784,4 +788,20 @@ export interface SecurityCheckItem {
   label: string;
   detail: string;
   passed: boolean;
+}
+
+// ===== Tham số thao tác (dùng chung store ↔ service) =====
+export interface RejectOptions {
+  /** Góp ý & hướng dẫn sửa đổi gửi cho đối tác */
+  feedback?: string;
+  /** Ghi chú kiểm duyệt nội bộ */
+  note?: string;
+  /** Nhóm lý do (phục vụ lọc ở màn Địa điểm bị từ chối) */
+  reasonCode?: RejectionReasonCode;
+}
+
+/** Các giá trị hồ sơ admin chỉnh được ở màn Chi tiết đối tác */
+export interface PartnerProfileOverrides {
+  nextReviewDate?: string;
+  commission?: number;
 }

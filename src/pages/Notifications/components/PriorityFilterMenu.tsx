@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import Icon from '../../../components/common/Icon';
 import {
   NOTIFICATION_PRIORITIES,
   NOTIFICATION_PRIORITY_CONFIG,
 } from '../../../constants/notification';
 import type { NotificationPriority } from '../../../types/admin';
+import { useDismiss } from '../../../hooks/useDismiss';
 
 interface PriorityFilterMenuProps {
   value: NotificationPriority | 'all';
@@ -17,21 +18,7 @@ export default function PriorityFilterMenu({ value, counts, onChange }: Priority
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!open) return;
-    const handleClick = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
-    };
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false);
-    };
-    document.addEventListener('mousedown', handleClick);
-    document.addEventListener('keydown', handleKey);
-    return () => {
-      document.removeEventListener('mousedown', handleClick);
-      document.removeEventListener('keydown', handleKey);
-    };
-  }, [open]);
+  useDismiss(containerRef, open, () => setOpen(false));
 
   const select = (next: NotificationPriority | 'all') => {
     onChange(next);

@@ -75,7 +75,7 @@ export default function SecurityCard({ values, onChange, onRequestDisable2fa }: 
             <Icon name="history_toggle_off" className="text-[20px] text-primary" />
             <div className="flex flex-col">
               <span className="font-label-md text-label-md font-semibold text-on-surface">
-                Nhật ký kiểm toán bảo mật (Security Audit Logs)
+                Nhật ký kiểm toán bảo mật
               </span>
               <span className="font-body-sm text-body-sm text-on-surface-variant">
                 Lưu trữ tự động phân tán, chống sửa đổi
@@ -84,7 +84,7 @@ export default function SecurityCard({ values, onChange, onRequestDisable2fa }: 
           </div>
           <span className="flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-space-sm py-1 font-label-sm text-label-sm font-bold text-primary">
             <Icon name="check" className="text-[14px]" />
-            {PLATFORM_INFO.auditLogRetentionDays} ngày (Active)
+            {PLATFORM_INFO.auditLogRetentionDays} ngày (đang bật)
           </span>
         </div>
       </div>

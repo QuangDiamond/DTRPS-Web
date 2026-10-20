@@ -1,8 +1,9 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
+import Button from '../../../components/common/Button';
 import Modal from '../../../components/common/Modal';
 import { USER_ACCOUNT_TYPE_LABELS, USER_CITIES } from '../../../constants/user';
 import type { AppUser, UserAccountType, UserFormValues } from '../../../types/admin';
+import { isValidEmail, isValidPhone, VALIDATION_MESSAGES } from '../../../utils/validation';
 
 interface UserFormModalProps {
   /** null = thêm mới, có giá trị = chỉnh sửa */
@@ -54,9 +55,8 @@ export default function UserFormModal({ user, onSubmit, onClose }: UserFormModal
     event.preventDefault();
     const nextErrors: FormErrors = {};
     if (!values.name.trim()) nextErrors.name = 'Vui lòng nhập họ tên';
-    if (!/^\S+@\S+\.\S+$/.test(values.email.trim())) nextErrors.email = 'Email không hợp lệ';
-    if (!/^[0-9\s]{9,15}$/.test(values.phone.trim()))
-      nextErrors.phone = 'Số điện thoại không hợp lệ';
+    if (!isValidEmail(values.email)) nextErrors.email = VALIDATION_MESSAGES.email;
+    if (!isValidPhone(values.phone)) nextErrors.phone = VALIDATION_MESSAGES.phone;
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
     onSubmit({
@@ -77,21 +77,12 @@ export default function UserFormModal({ user, onSubmit, onClose }: UserFormModal
       size="lg"
       footer={
         <>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full bg-surface-container-low px-4 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
-          >
+          <Button variant="neutral" onClick={onClose}>
             Hủy
-          </button>
-          <button
-            type="submit"
-            form={FORM_ID}
-            className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
-          >
-            <Icon name={isEdit ? 'save' : 'person_add'} className="text-[18px]" />
+          </Button>
+          <Button icon={isEdit ? 'save' : 'person_add'} type="submit" form={FORM_ID}>
             {isEdit ? 'Lưu thay đổi' : 'Thêm người dùng'}
-          </button>
+          </Button>
         </>
       }
     >

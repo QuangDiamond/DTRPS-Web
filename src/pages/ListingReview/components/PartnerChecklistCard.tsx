@@ -22,45 +22,45 @@ export default function PartnerChecklistCard({
   const allPassed = passedCount === checklist.length;
 
   const stats = [
-    { value: partner.yearsActive, label: 'Hoạt động', className: 'text-slate-900' },
+    { value: partner.yearsActive, label: 'Hoạt động', className: 'text-on-surface' },
     { value: `${partner.approvedCount} POI`, label: 'Đã duyệt', className: 'text-primary' },
-    { value: partner.responseRate, label: 'Phản hồi', className: 'text-emerald-700' },
+    { value: partner.responseRate, label: 'Phản hồi', className: 'text-secondary' },
   ];
 
   return (
     <div className={REVIEW_CARD_CLASS}>
       <div className="mb-3.5 flex items-center justify-between">
-        <span className="text-[11px] font-extrabold tracking-wider text-slate-600 uppercase">
+        <span className="text-[11px] font-extrabold tracking-wider text-on-surface-variant uppercase">
           Đơn vị gửi hồ sơ
         </span>
         {partner.verified ? (
-          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
+          <span className="rounded-full border border-secondary-fixed-dim/50 bg-secondary-container/30 px-2.5 py-0.5 text-[11px] font-bold text-on-secondary-fixed-variant">
             Đối tác đã xác thực
           </span>
         ) : (
-          <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-800">
+          <span className="rounded-full border border-tertiary-fixed bg-tertiary-fixed/30 px-2.5 py-0.5 text-[11px] font-bold text-on-tertiary-fixed-variant">
             Đối tác mới
           </span>
         )}
       </div>
 
-      <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+      <div className="flex items-center justify-between gap-3 border-b border-surface-container pb-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-on-primary shadow-sm">
             <Icon name="business" className="text-[26px]" />
           </div>
           <div>
-            <h3 className="text-[15px] leading-snug font-bold text-slate-900">
+            <h3 className="text-[15px] leading-snug font-bold text-on-surface">
               {listing.partnerName}
             </h3>
-            <p className="text-[12px] font-medium text-slate-600">
+            <p className="text-[12px] font-medium text-on-surface-variant">
               {partner.code} • Đại diện:{' '}
-              <strong className="text-slate-800">{partner.representative}</strong>
+              <strong className="text-on-surface">{partner.representative}</strong>
             </p>
           </div>
         </div>
         <div className="text-right">
-          <span className="block text-[10.5px] font-bold text-slate-600 uppercase">
+          <span className="block text-[10.5px] font-bold text-on-surface-variant uppercase">
             Hotline đối tác
           </span>
           <span className="block font-mono text-[12.5px] font-bold text-primary">
@@ -69,11 +69,14 @@ export default function PartnerChecklistCard({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 border-b border-slate-100 py-3 text-center">
+      <div className="grid grid-cols-3 gap-2 border-b border-surface-container py-3 text-center">
         {stats.map((stat) => (
-          <div key={stat.label} className="rounded-xl border border-slate-100 bg-slate-50 p-2">
+          <div
+            key={stat.label}
+            className="rounded-xl border border-surface-container bg-surface-container-low p-2"
+          >
             <div className={`truncate text-[15px] font-bold ${stat.className}`}>{stat.value}</div>
-            <div className="text-[10.5px] font-medium text-slate-600">{stat.label}</div>
+            <div className="text-[10.5px] font-medium text-on-surface-variant">{stat.label}</div>
           </div>
         ))}
       </div>
@@ -83,13 +86,13 @@ export default function PartnerChecklistCard({
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Icon name="fact_check" className="text-[19px] text-primary" />
-            <h4 className="text-[13px] font-bold text-slate-900">Checklist kiểm định chuẩn</h4>
+            <h4 className="text-[13px] font-bold text-on-surface">Checklist kiểm định chuẩn</h4>
           </div>
           <span
             className={`rounded-full border px-2.5 py-0.5 text-[11px] font-extrabold ${
               allPassed
-                ? 'border-teal-200 bg-teal-100 text-teal-900'
-                : 'border-amber-200 bg-amber-100 text-amber-900'
+                ? 'border-primary-fixed bg-primary-fixed/40 text-on-primary-fixed-variant'
+                : 'border-tertiary-fixed bg-tertiary-fixed/60 text-on-tertiary-fixed'
             }`}
           >
             {passedCount} / {checklist.length} Đạt chuẩn
@@ -105,16 +108,16 @@ export default function PartnerChecklistCard({
               title={editable ? 'Bấm để đánh dấu đạt / chưa đạt' : undefined}
               className={`flex items-center gap-2 rounded-xl border p-2.5 text-left transition-colors disabled:cursor-default ${
                 item.passed
-                  ? 'border-emerald-200/70 bg-emerald-50/70'
-                  : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                  ? 'border-secondary-fixed-dim/50 bg-secondary-container/30'
+                  : 'border-surface-container-high bg-surface-container-low hover:border-outline-variant'
               }`}
             >
               <Icon
                 name={item.passed ? 'check_circle' : 'radio_button_unchecked'}
                 filled={item.passed}
-                className={`shrink-0 text-[18px] ${item.passed ? 'text-emerald-600' : 'text-slate-400'}`}
+                className={`shrink-0 text-[18px] ${item.passed ? 'text-secondary' : 'text-outline'}`}
               />
-              <span className="truncate font-semibold text-slate-800">{item.label}</span>
+              <span className="truncate font-semibold text-on-surface">{item.label}</span>
             </button>
           ))}
         </div>

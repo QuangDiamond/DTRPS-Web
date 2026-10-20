@@ -137,7 +137,7 @@ export default function NotificationsPage() {
             </h1>
             <span className="flex items-center gap-1 rounded-full bg-primary-fixed px-space-sm py-0.5 font-label-sm text-label-sm font-bold text-on-primary-fixed">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-              Trực tiếp AI Ops
+              Giám sát AI trực tiếp
             </span>
           </div>
           <p className="mt-1 max-w-3xl font-body-md text-body-md text-on-surface-variant">

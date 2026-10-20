@@ -1,3 +1,4 @@
+import Button from '../../../components/common/Button';
 import Icon from '../../../components/common/Icon';
 import Modal from '../../../components/common/Modal';
 import { RESUBMISSION_CONFIG } from '../../../constants/listing';
@@ -61,13 +62,9 @@ export default function RejectionDetailModal({
       footer={
         <>
           {status === 'resubmitted' && (
-            <button
-              type="button"
-              onClick={() => onReReview(listing)}
-              className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
-            >
-              <Icon name="visibility" className="text-[18px]" /> Xem xét lại hồ sơ
-            </button>
+            <Button icon="visibility" onClick={() => onReReview(listing)}>
+              Xem xét lại hồ sơ
+            </Button>
           )}
           {(status === 'waiting' || status === 'overdue') && (
             <>
@@ -78,13 +75,9 @@ export default function RejectionDetailModal({
               >
                 <Icon name="lock" className="text-[18px] text-error" /> Đóng vĩnh viễn
               </button>
-              <button
-                type="button"
-                onClick={() => onRemind(listing)}
-                className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
-              >
-                <Icon name="forward_to_inbox" className="text-[18px]" /> Gửi nhắc nhở bổ sung
-              </button>
+              <Button icon="forward_to_inbox" onClick={() => onRemind(listing)}>
+                Gửi nhắc nhở bổ sung
+              </Button>
             </>
           )}
           {status === 'locked' && (

@@ -24,7 +24,7 @@ export default function ToggleSwitch({
         aria-label={label}
         onChange={(event) => onChange(event.target.checked)}
       />
-      <div className="peer h-6 w-11 rounded-full bg-outline-variant peer-checked:bg-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary/30 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:bg-surface-container-lowest after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white" />
+      <div className="peer h-6 w-11 rounded-full bg-outline-variant peer-checked:bg-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary/30 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:bg-surface-container-lowest after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest" />
     </label>
   );
 }

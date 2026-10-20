@@ -1,4 +1,10 @@
 import type { Poi, PoiFormValues, PoiPhoto } from '../../types/admin';
+import {
+  isValidEmail,
+  isValidPhone,
+  isValidUrl,
+  VALIDATION_MESSAGES,
+} from '../../utils/validation';
 
 export type PoiFieldChange = <K extends keyof PoiFormValues>(
   key: K,
@@ -8,7 +14,6 @@ export type PoiFieldChange = <K extends keyof PoiFormValues>(
 export type PoiFormErrors = Partial<Record<'name' | 'hotline' | 'website' | 'email', string>>;
 
 export function toPoiFormValues(poi: Poi): PoiFormValues {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { id, updatedAt, updatedBy, source, sourceLabel, rating, reviewCount, ...values } = poi;
   return values;
 }
@@ -17,21 +22,17 @@ export function isSamePoiValues(a: PoiFormValues, b: PoiFormValues): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const URL_PATTERN = /^https?:\/\/[^\s.]+\.[^\s]+$/i;
-const PHONE_PATTERN = /^[0-9+().\s-]{8,20}$/;
-
 export function validatePoi(values: PoiFormValues): PoiFormErrors {
   const errors: PoiFormErrors = {};
   if (!values.name.trim()) errors.name = 'Vui lòng nhập tên điểm đến POI';
-  if (values.hotline.trim() && !PHONE_PATTERN.test(values.hotline.trim())) {
-    errors.hotline = 'Số điện thoại không hợp lệ';
+  if (values.hotline.trim() && !isValidPhone(values.hotline)) {
+    errors.hotline = VALIDATION_MESSAGES.phone;
   }
-  if (values.website.trim() && !URL_PATTERN.test(values.website.trim())) {
-    errors.website = 'Website phải bắt đầu bằng http:// hoặc https://';
+  if (values.website.trim() && !isValidUrl(values.website)) {
+    errors.website = VALIDATION_MESSAGES.url;
   }
-  if (values.email.trim() && !EMAIL_PATTERN.test(values.email.trim())) {
-    errors.email = 'Email không đúng định dạng';
+  if (values.email.trim() && !isValidEmail(values.email)) {
+    errors.email = VALIDATION_MESSAGES.email;
   }
   return errors;
 }
@@ -73,10 +74,10 @@ export function openStreetMapEmbedUrl(latitude: number, longitude: number): stri
 
 export function priorityNote(score: number, city: string): string {
   const place = city ? ` khi đến ${city}` : '';
-  if (score >= 90) return `★ Địa điểm bắt buộc ghé thăm (Must-visit)${place}.`;
-  if (score >= 70) return `Địa điểm nên ghé thăm (Recommended)${place}.`;
-  if (score >= 40) return 'Điểm tham quan bổ sung khi lịch trình còn trống (Optional).';
-  return 'Ít được ưu tiên trong lộ trình gợi ý (Low priority).';
+  if (score >= 90) return `★ Địa điểm bắt buộc ghé thăm${place}.`;
+  if (score >= 70) return `Địa điểm nên ghé thăm${place}.`;
+  if (score >= 40) return 'Điểm tham quan bổ sung khi lịch trình còn trống.';
+  return 'Ít được ưu tiên trong lộ trình gợi ý.';
 }
 
 export function totalPhotos(values: Pick<PoiFormValues, 'cover' | 'gallery'>): number {

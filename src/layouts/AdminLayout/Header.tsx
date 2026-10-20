@@ -83,7 +83,7 @@ export default function Header() {
 
         <button
           type="button"
-          title="Hồ sơ Admin"
+          title="Hồ sơ quản trị viên"
           onClick={() => navigate(ROUTES.PROFILE)}
           className="flex items-center gap-3 rounded-full py-1 pr-2 pl-1 transition-colors hover:bg-surface-container-low"
         >

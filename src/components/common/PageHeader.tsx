@@ -26,17 +26,19 @@ export default function PageHeader({
   return (
     <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
       <div className="flex flex-col gap-1">
-        <nav className="mb-3 flex items-center space-x-2 text-xs font-medium text-slate-500">
+        <nav className="mb-3 flex items-center space-x-2 text-xs font-medium text-outline">
           {breadcrumbs.map((crumb, index) => {
             const isLast = index === breadcrumbs.length - 1;
             return (
               <Fragment key={crumb.label}>
-                {index > 0 && <span className="text-slate-300">/</span>}
-                {crumb.icon && <Icon name={crumb.icon} className="text-[16px] text-slate-400" />}
+                {index > 0 && <span className="text-outline-variant">/</span>}
+                {crumb.icon && <Icon name={crumb.icon} className="text-[16px] text-outline" />}
                 {isLast || !crumb.to ? (
-                  <span className={isLast ? 'font-semibold text-teal-900' : ''}>{crumb.label}</span>
+                  <span className={isLast ? 'font-semibold text-on-primary-fixed-variant' : ''}>
+                    {crumb.label}
+                  </span>
                 ) : (
-                  <Link to={crumb.to} className="hover:text-teal-700">
+                  <Link to={crumb.to} className="hover:text-primary">
                     {crumb.label}
                   </Link>
                 )}

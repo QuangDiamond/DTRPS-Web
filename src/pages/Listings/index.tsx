@@ -11,15 +11,17 @@ import {
   LISTING_STATUS_CONFIG,
   PARTNER_TIER_CONFIG,
 } from '../../constants/listing';
-import { MOCK_PARTNERS } from '../../constants/mockData';
 import { ADMIN_ROOT_CRUMB } from '../../constants/navigation';
 import { PROVINCE_NAMES } from '../../constants/partner';
 import { listingReviewPath, ROUTES } from '../../constants/routes';
 import { useListings } from '../../hooks/useListings';
+import { usePartners } from '../../hooks/usePartners';
+import { useTableSort } from '../../hooks/useTableSort';
 import { useToast } from '../../hooks/useToast';
 import type { Listing, ListingFilters } from '../../types/admin';
 import { downloadCsv } from '../../utils/exportCsv';
 import { formatDayTime, todayIsoDate } from '../../utils/format';
+import { sortItems } from '../../utils/sort';
 import ListingFilterBar from './components/ListingFilterBar';
 import ListingStatsCards from './components/ListingStatsCards';
 import ListingStatusTabs from './components/ListingStatusTabs';
@@ -30,7 +32,9 @@ import {
   filterListings,
   googleMapsUrl,
   isOverdue,
+  LISTING_SORT_ACCESSORS,
   parseListingTab,
+  type ListingSortKey,
   type ListingTab,
 } from './listingUtils';
 
@@ -41,6 +45,8 @@ export default function ListingsPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { listings, stats, approveListings } = useListings();
+  // Lấy tên đối tác từ store để đối tác vừa tạo / đổi tên trong phiên hiển thị đúng
+  const { partners } = usePartners();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Tab & đối tác lấy từ URL để link từ Bảng điều khiển / Quản lý đối tác mở đúng bộ lọc
@@ -55,9 +61,11 @@ export default function ListingsPage() {
   const [bulkConfirmIds, setBulkConfirmIds] = useState<string[] | null>(null);
   const [reasonListing, setReasonListing] = useState<Listing | null>(null);
 
+  const { sort, toggleSort } = useTableSort<ListingSortKey>();
   const filteredListings = useMemo(
-    () => filterListings(listings, tab, filters, partnerId),
-    [listings, tab, filters, partnerId],
+    () =>
+      sortItems(filterListings(listings, tab, filters, partnerId), sort, LISTING_SORT_ACCESSORS),
+    [listings, tab, filters, partnerId, sort],
   );
   const totalPages = Math.max(1, Math.ceil(filteredListings.length / pageSize));
   const currentPage = Math.min(page, totalPages);
@@ -65,7 +73,7 @@ export default function ListingsPage() {
   const overdueCount = listings.filter((listing) => isOverdue(listing)).length;
   const partnerName =
     partnerId &&
-    (MOCK_PARTNERS.find((partner) => partner.id === partnerId)?.name ??
+    (partners.find((partner) => partner.id === partnerId)?.name ??
       listings.find((listing) => listing.partnerId === partnerId)?.partnerName ??
       partnerId);
 
@@ -257,6 +265,11 @@ export default function ListingsPage() {
         onReview={openReview}
         onShowReason={setReasonListing}
         onOpenMap={openMap}
+        sort={sort}
+        onSort={(key) => {
+          toggleSort(key);
+          setPage(1);
+        }}
         footer={
           <Pagination
             page={currentPage}

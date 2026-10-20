@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
 import Icon from '../../../components/common/Icon';
+import SortableHeader from '../../../components/common/SortableHeader';
 import type { Poi } from '../../../types/admin';
+import type { SortState } from '../../../utils/sort';
+import type { PoiSortKey } from '../locationsUtils';
 import PoiTableRow from './PoiTableRow';
 
 interface PoiTableProps {
@@ -8,37 +11,58 @@ interface PoiTableProps {
   onEdit: (poi: Poi) => void;
   onView: (poi: Poi) => void;
   onResetFilters: () => void;
+  sort: SortState<PoiSortKey> | null;
+  onSort: (key: PoiSortKey) => void;
   /** Chân bảng (phân trang) */
   footer: ReactNode;
 }
 
-const COLUMNS: { label: string; className: string }[] = [
-  { label: 'Tên POI & Hình ảnh', className: 'px-space-lg' },
-  { label: 'Mã POI', className: 'px-space-md' },
+const COLUMNS: { label: string; className: string; sortKey?: PoiSortKey }[] = [
+  { label: 'Tên POI & Hình ảnh', className: 'px-space-lg', sortKey: 'name' },
+  { label: 'Mã POI', className: 'px-space-md', sortKey: 'id' },
   { label: 'Danh mục', className: 'px-space-md' },
-  { label: 'Vị trí / Tỉnh thành', className: 'px-space-md' },
+  { label: 'Vị trí / Tỉnh thành', className: 'px-space-md', sortKey: 'location' },
   { label: 'Mức giá dự kiến', className: 'px-space-md' },
   { label: 'Nguồn dữ liệu', className: 'px-space-md' },
-  { label: 'Đánh giá', className: 'px-space-md' },
-  { label: 'Trạng thái', className: 'px-space-md' },
+  { label: 'Đánh giá', className: 'px-space-md', sortKey: 'rating' },
+  { label: 'Trạng thái', className: 'px-space-md', sortKey: 'status' },
   { label: 'Hành động', className: 'px-space-lg text-right' },
 ];
 
-export default function PoiTable({ pois, onEdit, onView, onResetFilters, footer }: PoiTableProps) {
+export default function PoiTable({
+  pois,
+  onEdit,
+  onView,
+  onResetFilters,
+  sort,
+  onSort,
+  footer,
+}: PoiTableProps) {
   return (
     <div className="flex flex-col overflow-hidden rounded-xl bg-surface-container-lowest shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="bg-surface-container-low font-label-sm text-label-sm tracking-wider text-on-surface-variant uppercase">
-              {COLUMNS.map((column) => (
-                <th
-                  key={column.label}
-                  className={`py-space-md font-semibold whitespace-nowrap ${column.className}`}
-                >
-                  {column.label}
-                </th>
-              ))}
+              {COLUMNS.map((column) =>
+                column.sortKey ? (
+                  <SortableHeader
+                    key={column.label}
+                    label={column.label}
+                    sortKey={column.sortKey}
+                    sort={sort}
+                    onSort={onSort}
+                    className={`py-space-md font-semibold whitespace-nowrap ${column.className}`}
+                  />
+                ) : (
+                  <th
+                    key={column.label}
+                    className={`py-space-md font-semibold whitespace-nowrap ${column.className}`}
+                  >
+                    {column.label}
+                  </th>
+                ),
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-surface-container font-body-md text-body-md text-on-surface">

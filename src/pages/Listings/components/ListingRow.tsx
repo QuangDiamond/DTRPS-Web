@@ -152,7 +152,7 @@ export default function ListingRow({
               <button
                 type="button"
                 onClick={() => onReview(listing)}
-                className={`${ACTION_BUTTON_CLASS} bg-[#0d9488] text-white shadow-sm hover:bg-primary-container`}
+                className={`${ACTION_BUTTON_CLASS} bg-brand text-on-primary shadow-sm hover:bg-primary-container`}
                 title="Chuyển sang màn hình thẩm định chi tiết"
               >
                 <Icon name="rate_review" className="text-[16px]" />

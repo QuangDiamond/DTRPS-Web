@@ -15,12 +15,12 @@ export default function ListingSlaCard({ values, onChange }: ListingSlaCardProps
   return (
     <SettingsCard
       icon="assignment_turned_in"
-      title="Quy chuẩn Thẩm định Niêm yết (Listing SLA)"
+      title="Quy chuẩn Thẩm định Niêm yết (SLA)"
       description="Ràng buộc chất lượng dịch vụ du lịch và cơ chế xét duyệt hồ sơ đối tác"
       aside={
         <span className="shrink-0 rounded-full bg-tertiary-fixed px-space-xs py-0.5 font-label-sm text-label-sm font-bold text-on-tertiary-fixed">
           {values.listingSlaHours === STANDARD_SLA
-            ? 'SLA Strict'
+            ? 'SLA nghiêm ngặt'
             : `SLA ${values.listingSlaHours}h`}
         </span>
       }

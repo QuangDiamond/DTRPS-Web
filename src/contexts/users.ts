@@ -1,10 +1,13 @@
 import { createContext } from 'react';
 import type { AppUser, UserAuditEntry, UserFormValues, UserStats } from '../types/admin';
+import type { DataStatus } from '../types/api';
 
 export interface UsersContextValue {
   users: AppUser[];
   /** Số liệu toàn hệ thống, cập nhật theo thao tác trong phiên */
   stats: UserStats;
+  /** Trạng thái tải dữ liệu từ server */
+  dataStatus: DataStatus;
   createUser: (values: UserFormValues) => AppUser;
   updateUser: (id: string, values: UserFormValues) => void;
   /** Khóa một hoặc nhiều tài khoản đang hoạt động, trả về số tài khoản đã khóa */

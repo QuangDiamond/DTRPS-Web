@@ -130,7 +130,7 @@ export default function PoiMediaSection({
   return (
     <PoiSectionCard
       icon="photo_library"
-      title="2. Hình ảnh & Truyền thông (Media Upload)"
+      title="2. Hình ảnh & Truyền thông"
       description="Độ phân giải tối thiểu 1920x1080px, định dạng WebP hoặc JPG/PNG cao cấp"
       badge={
         <span className="rounded-full bg-surface-container-low px-space-sm py-0.5 font-label-sm text-label-sm font-semibold text-outline">
@@ -158,7 +158,7 @@ export default function PoiMediaSection({
       <div className="flex flex-col gap-space-xs">
         <div className="flex items-center justify-between">
           <span className="font-label-md text-label-md font-semibold text-on-surface">
-            Ảnh bìa đại diện (Cover Photo • Tỷ lệ 16:9)
+            Ảnh bìa đại diện (Tỷ lệ 16:9)
           </span>
           {cover ? (
             <span className="font-label-sm text-label-sm font-semibold text-secondary">
@@ -230,7 +230,7 @@ export default function PoiMediaSection({
       <div className="flex flex-col gap-space-xs">
         <div className="flex items-center justify-between">
           <span className="font-label-md text-label-md font-semibold text-on-surface">
-            Bộ sưu tập thư viện ảnh (Gallery Showcase)
+            Bộ sưu tập thư viện ảnh
           </span>
           <span className="font-label-sm text-label-sm text-outline">
             {photoCount}/{POI_MAX_PHOTOS} ảnh

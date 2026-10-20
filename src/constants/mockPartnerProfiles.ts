@@ -53,7 +53,7 @@ export const MOCK_PARTNER_PROFILES: Record<string, PartnerProfile> = {
     ],
     nextReviewDate: '2026-12-15',
     agreement: {
-      type: 'Hợp tác chiến lược Premium',
+      type: 'Hợp tác chiến lược cao cấp',
       commission: 8.5,
       activatedAt: '2024-03-15',
       renewAt: '2027-03-15',

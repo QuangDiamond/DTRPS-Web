@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
+import Button from '../../../components/common/Button';
 import Modal from '../../../components/common/Modal';
 import {
   LISTING_CATEGORY_CONFIG,
@@ -86,27 +86,18 @@ export default function ListingFormModal({ listing, onSubmit, onClose }: Listing
       description={
         isEdit
           ? `Cập nhật thông tin hiển thị của ${listing.id}`
-          : 'Địa điểm do Admin thêm sẽ được phê duyệt và hiển thị ngay'
+          : 'Địa điểm do quản trị viên thêm sẽ được phê duyệt và hiển thị ngay'
       }
       onClose={onClose}
       size="lg"
       footer={
         <>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full bg-surface-container-low px-4 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
-          >
+          <Button variant="neutral" onClick={onClose}>
             Hủy
-          </button>
-          <button
-            type="submit"
-            form={FORM_ID}
-            className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
-          >
-            <Icon name={isEdit ? 'save' : 'add_location_alt'} className="text-[18px]" />
+          </Button>
+          <Button icon={isEdit ? 'save' : 'add_location_alt'} type="submit" form={FORM_ID}>
             {isEdit ? 'Lưu thay đổi' : 'Thêm địa điểm'}
-          </button>
+          </Button>
         </>
       }
     >

@@ -1,11 +1,15 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import Icon from '../../components/common/Icon';
+import { useNavigate, useParams } from 'react-router-dom';
+import ErrorState from '../../components/common/ErrorState';
+import NotFoundState from '../../components/common/NotFoundState';
+import PageLoader from '../../components/common/PageLoader';
 import type { RejectionReason } from '../../constants/listing';
 import { listingReviewPath, ROUTES } from '../../constants/routes';
 import { useListings } from '../../hooks/useListings';
+import { useResource } from '../../hooks/useResource';
 import { useToast } from '../../hooks/useToast';
-import type { Listing, ListingDocument } from '../../types/admin';
+import { listingService } from '../../services/listingService';
+import type { Listing, ListingDetail, ListingDocument } from '../../types/admin';
 import ApproveListingModal from './components/ApproveListingModal';
 import BasicInfoSection from './components/BasicInfoSection';
 import BusinessInfoSection from './components/BusinessInfoSection';
@@ -18,7 +22,7 @@ import RejectListingModal from './components/RejectListingModal';
 import ReviewActionBar from './components/ReviewActionBar';
 import ReviewHeader from './components/ReviewHeader';
 import ReviewLogCard from './components/ReviewLogCard';
-import { buildReviewLogs, getListingDetail } from './reviewUtils';
+import { buildReviewLogs } from './reviewUtils';
 
 /** Màn Xem xét & Duyệt địa điểm: /admin/listings/:id */
 export default function ListingReviewPage() {
@@ -28,27 +32,44 @@ export default function ListingReviewPage() {
 
   if (!listing) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-2xl border border-slate-200/90 bg-white py-16 text-center shadow-sm">
-        <Icon name="search_off" className="text-[48px] text-slate-400" />
-        <h1 className="text-[20px] font-extrabold text-slate-900">Không tìm thấy hồ sơ {id}</h1>
-        <Link to={ROUTES.LISTINGS} className="text-[13px] font-bold text-primary hover:underline">
-          Quay lại danh sách niêm yết
-        </Link>
-      </div>
+      <NotFoundState
+        title={`Không tìm thấy hồ sơ ${id}`}
+        backTo={ROUTES.LISTINGS}
+        backLabel="Quay lại danh sách niêm yết"
+      />
     );
   }
 
   // key: reset checklist, tài liệu & ghi chú khi chuyển sang hồ sơ khác
-  return <ListingReviewContent key={listing.id} listing={listing} />;
+  return <ListingReviewLoader key={listing.id} listing={listing} />;
 }
 
-function ListingReviewContent({ listing }: { listing: Listing }) {
+/** Tải hồ sơ thẩm định chi tiết qua listingService (1 lần cho mỗi hồ sơ) */
+function ListingReviewLoader({ listing }: { listing: Listing }) {
+  const { listings } = useListings();
+  const detail = useResource(
+    () => listingService.getDetail(listing, listings),
+    () => listingService.peekDetail(listing, listings),
+  );
+
+  if (detail.status === 'error') {
+    return (
+      <ErrorState
+        title="Không tải được hồ sơ thẩm định"
+        message={detail.error}
+        onRetry={detail.reload}
+      />
+    );
+  }
+  if (!detail.data) return <PageLoader />;
+  return <ListingReviewContent listing={listing} detail={detail.data} />;
+}
+
+function ListingReviewContent({ listing, detail }: { listing: Listing; detail: ListingDetail }) {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { listings, approveListings, rejectListing } = useListings();
 
-  // Hồ sơ chi tiết chỉ tính 1 lần cho mỗi hồ sơ (key ở component cha)
-  const [detail] = useState(() => getListingDetail(listing, listings));
   const [checklist, setChecklist] = useState(detail.checklist);
   const [documents, setDocuments] = useState(detail.documents);
   const [note, setNote] = useState(detail.defaultNote);

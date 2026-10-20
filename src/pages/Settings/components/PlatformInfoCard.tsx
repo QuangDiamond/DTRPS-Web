@@ -63,14 +63,14 @@ export default function PlatformInfoCard({ values, nameError, onChange }: Platfo
 
         <div className="grid grid-cols-1 gap-space-md sm:grid-cols-2">
           <div>
-            <label className={LABEL_CLASS}>Mã phiên bản (Release Code)</label>
+            <label className={LABEL_CLASS}>Mã phiên bản phát hành</label>
             <div className="flex h-11 items-center justify-between rounded-xl bg-surface-container-low px-space-md font-body-md text-body-md text-on-surface">
               <span className="font-semibold text-primary">{PLATFORM_INFO.releaseCode}</span>
               <Icon name="verified_user" className="text-[18px] text-primary" />
             </div>
           </div>
           <div>
-            <label className={LABEL_CLASS}>Múi giờ vận hành (Timezone)</label>
+            <label className={LABEL_CLASS}>Múi giờ vận hành</label>
             <div className="relative">
               <select
                 value={values.timezone}
@@ -97,7 +97,7 @@ export default function PlatformInfoCard({ values, nameError, onChange }: Platfo
         </div>
 
         <div>
-          <label className={LABEL_CLASS}>Ngôn ngữ mặc định &amp; Fallback</label>
+          <label className={LABEL_CLASS}>Ngôn ngữ mặc định &amp; dự phòng</label>
           <div className="grid grid-cols-1 gap-space-sm sm:grid-cols-2">
             <div
               title="Ngôn ngữ chính của hệ thống, không thể tắt"

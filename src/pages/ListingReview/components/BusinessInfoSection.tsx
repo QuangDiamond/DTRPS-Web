@@ -3,8 +3,8 @@ import type { ListingDetail, ListingFact } from '../../../types/admin';
 import ReviewSection, { FieldLabel } from './ReviewSection';
 
 const FACT_TONE_CLASS: Record<ListingFact['tone'], string> = {
-  teal: 'border-teal-200 bg-teal-100/70 text-primary',
-  amber: 'border-amber-200 bg-amber-100/70 text-amber-900',
+  teal: 'border-primary-fixed bg-primary-fixed/40 text-primary',
+  amber: 'border-tertiary-fixed bg-tertiary-fixed/60 text-on-tertiary-fixed',
 };
 
 export default function BusinessInfoSection({ detail }: { detail: ListingDetail }) {
@@ -17,13 +17,13 @@ export default function BusinessInfoSection({ detail }: { detail: ListingDetail 
       title="Thông tin kinh doanh chuyên sâu"
       subtitle="Quy mô cơ sở lưu trú, tiện nghi và chính sách phòng"
       badge={
-        <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[11.5px] font-bold text-slate-800">
+        <span className="rounded-full border border-surface-container-high bg-surface-container px-3 py-1 text-[11.5px] font-bold text-on-surface">
           {business.scaleBadge}
         </span>
       }
     >
       {isEmpty ? (
-        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-slate-300 py-8 text-slate-500">
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-outline-variant py-8 text-outline">
           <Icon name="inventory_2" className="text-[30px]" />
           <span className="text-[12.5px] font-medium">
             Đối tác chưa khai báo thông tin kinh doanh chi tiết
@@ -34,7 +34,7 @@ export default function BusinessInfoSection({ detail }: { detail: ListingDetail 
           {business.facts.map((fact) => (
             <div
               key={fact.label}
-              className="flex items-center gap-3.5 rounded-xl border border-slate-200/80 bg-slate-50 p-3.5"
+              className="flex items-center gap-3.5 rounded-xl border border-surface-container-high/80 bg-surface-container-low p-3.5"
             >
               <div
                 className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${FACT_TONE_CLASS[fact.tone]}`}
@@ -42,11 +42,11 @@ export default function BusinessInfoSection({ detail }: { detail: ListingDetail 
                 <Icon name={fact.icon} className="text-[24px]" />
               </div>
               <div>
-                <div className="text-[10.5px] font-bold tracking-wider text-slate-600 uppercase">
+                <div className="text-[10.5px] font-bold tracking-wider text-on-surface-variant uppercase">
                   {fact.label}
                 </div>
-                <div className="text-[14px] font-extrabold text-slate-900">{fact.value}</div>
-                <div className="text-[11.5px] text-slate-600">{fact.note}</div>
+                <div className="text-[14px] font-extrabold text-on-surface">{fact.value}</div>
+                <div className="text-[11.5px] text-on-surface-variant">{fact.note}</div>
               </div>
             </div>
           ))}
@@ -58,7 +58,7 @@ export default function BusinessInfoSection({ detail }: { detail: ListingDetail 
                 {business.amenities.map((amenity) => (
                   <span
                     key={amenity.label}
-                    className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-[12.5px] font-semibold text-slate-800"
+                    className="flex items-center gap-2 rounded-xl border border-surface-container-high bg-surface-container-low px-3.5 py-2 text-[12.5px] font-semibold text-on-surface"
                   >
                     <Icon name={amenity.icon} className="text-[19px] text-primary" />
                     {amenity.label}
@@ -69,11 +69,11 @@ export default function BusinessInfoSection({ detail }: { detail: ListingDetail 
           )}
 
           {business.policyNote && (
-            <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-3.5 md:col-span-2">
-              <div className="mb-1 text-[12px] font-bold text-slate-900">
+            <div className="rounded-xl border border-surface-container-high/80 bg-surface-container-low p-3.5 md:col-span-2">
+              <div className="mb-1 text-[12px] font-bold text-on-surface">
                 {business.policyNote.title}
               </div>
-              <p className="text-[12px] leading-relaxed text-slate-700">
+              <p className="text-[12px] leading-relaxed text-on-surface-variant">
                 {business.policyNote.text}
               </p>
             </div>

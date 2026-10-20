@@ -1,6 +1,6 @@
 import Icon from '../../../components/common/Icon';
 import type { SettingsMeta } from '../../../types/admin';
-import { formatSettingsTimestamp } from '../settingsUtils';
+import { formatTimestamp } from '../../../utils/format';
 
 interface SettingsFooterProps {
   meta: SettingsMeta;
@@ -32,11 +32,11 @@ export default function SettingsFooter({
           <span className="truncate font-label-md text-label-md font-semibold text-on-surface">
             {dirtyCount > 0
               ? `Có thay đổi chưa lưu ở ${dirtyCount} nhóm cấu hình`
-              : `Lần cập nhật cấu hình gần nhất: ${formatSettingsTimestamp(meta.updatedAt)}`}
+              : `Lần cập nhật cấu hình gần nhất: ${formatTimestamp(meta.updatedAt)}`}
           </span>
           <span className="truncate font-body-sm text-body-sm text-on-surface-variant">
             {dirtyCount > 0
-              ? `Lần lưu gần nhất: ${formatSettingsTimestamp(meta.updatedAt)}`
+              ? `Lần lưu gần nhất: ${formatTimestamp(meta.updatedAt)}`
               : `Bởi: ${meta.updatedBy} (IP: ${meta.updatedIp})`}
           </span>
         </div>

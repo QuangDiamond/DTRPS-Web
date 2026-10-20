@@ -30,27 +30,27 @@ export default function PoiEditorHeader({
   return (
     <>
       {/* Breadcrumb */}
-      <div className="mb-2 flex items-center text-xs text-slate-500">
+      <div className="mb-2 flex items-center text-xs text-outline">
         <Link
           to={ROUTES.DASHBOARD}
-          className="flex items-center gap-1 text-slate-500 transition-colors hover:text-teal-700"
+          className="flex items-center gap-1 text-outline transition-colors hover:text-primary"
         >
-          <Icon name="home" className="text-[16px] text-slate-400" />
+          <Icon name="home" className="text-[16px] text-outline" />
           <span>Quản trị hệ thống</span>
         </Link>
-        <span className="mx-2 text-slate-300">/</span>
+        <span className="mx-2 text-outline-variant">/</span>
         <Link
           to={ROUTES.LOCATIONS}
-          className="flex items-center gap-1 text-slate-500 transition-colors hover:text-teal-700"
+          className="flex items-center gap-1 text-outline transition-colors hover:text-primary"
         >
           <Icon name="pin_drop" className="text-[16px]" />
           <span>Quản lý điểm đến POI</span>
         </Link>
-        <span className="mx-2 text-slate-300">/</span>
-        <div className="flex items-center gap-1 font-semibold text-slate-800">
+        <span className="mx-2 text-outline-variant">/</span>
+        <div className="flex items-center gap-1 font-semibold text-on-surface">
           <Icon
             name={poiId ? 'edit_location' : 'add_location_alt'}
-            className="text-[16px] text-teal-600"
+            className="text-[16px] text-primary"
           />
           <span>
             Thêm / Chỉnh sửa POI: {poiId ? poiName : 'POI mới'}{' '}
@@ -135,7 +135,7 @@ export default function PoiEditorHeader({
           <button
             type="button"
             onClick={onSave}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-md transition-all hover:bg-surface-tint"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-md transition-all hover:bg-primary-container"
           >
             <Icon name="save" className="text-[18px]" />
             <span>{poiId ? 'Lưu thay đổi POI' : 'Tạo POI mới'}</span>

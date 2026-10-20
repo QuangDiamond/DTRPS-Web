@@ -6,7 +6,7 @@ const STITCH_IMAGE_BASE = 'https://lh3.googleusercontent.com/aida-public/';
 export const MOCK_LISTING_DETAILS: Record<string, ListingDetail> = {
   'POI-94812': {
     categoryDetail: 'Khách sạn & Homestay (Lưu trú sinh thái)',
-    reviewLevel: 'Khắt khe (Tier 1)',
+    reviewLevel: 'Khắt khe (Cấp 1)',
     areaLabel: 'Hội An, Quảng Nam',
     completeness: 96,
     description:

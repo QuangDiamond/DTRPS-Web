@@ -1,5 +1,6 @@
 import { createContext } from 'react';
 import type { AdminNotification, NotificationRules, NotificationStats } from '../types/admin';
+import type { DataStatus } from '../types/api';
 
 export interface NotificationsContextValue {
   notifications: AdminNotification[];
@@ -7,6 +8,8 @@ export interface NotificationsContextValue {
   unreadCount: number;
   stats: NotificationStats;
   rules: NotificationRules;
+  /** Trạng thái tải dữ liệu từ server */
+  dataStatus: DataStatus;
   markAsRead: (id: string) => void;
   /** Trả về số thông báo vừa được đánh dấu */
   markAllAsRead: () => number;

@@ -141,7 +141,7 @@ export default function ActivityFeed({ activities, refreshing, onRefresh }: Acti
           </div>
           <div className="flex flex-col">
             <span className="font-label-md text-[13px] font-bold text-on-surface">
-              AI Assistant Engine
+              Trợ lý AI giám sát
             </span>
             <span className="font-body-sm text-[11px] text-on-surface-variant">
               Phản hồi 45ms • 99.98% SLA

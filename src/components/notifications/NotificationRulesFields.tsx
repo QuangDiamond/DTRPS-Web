@@ -6,6 +6,7 @@ import {
   NOTIFICATION_EVENT_CONFIG,
 } from '../../constants/notification';
 import type { NotificationChannel, NotificationEvent, NotificationRules } from '../../types/admin';
+import { countEnabledChannels } from '../../utils/notificationRules';
 
 interface NotificationRulesFieldsProps {
   rules: NotificationRules;
@@ -14,9 +15,6 @@ interface NotificationRulesFieldsProps {
 
 const SECTION_TITLE_CLASS =
   'font-label-sm text-label-sm font-bold tracking-wider text-outline uppercase';
-
-export const countEnabledChannels = (rules: NotificationRules): number =>
-  Object.values(rules.channels).filter(Boolean).length;
 
 /**
  * Các trường cấu hình quy tắc thông báo — dùng chung cho modal "Cài đặt quy tắc" (trang Thông báo)

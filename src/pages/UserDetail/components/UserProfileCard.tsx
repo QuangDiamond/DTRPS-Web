@@ -154,7 +154,7 @@ export default function UserProfileCard({ user, profile }: UserProfileCardProps)
           </span>
           <span className="inline-flex items-center gap-1 rounded-full bg-tertiary-fixed/80 px-2 py-0.5 text-[11px] font-bold text-tertiary">
             <Icon name="auto_awesome" filled className="text-[13px]" />
-            AI Verified
+            AI đã xác minh
           </span>
         </div>
         <div className="my-space-sm flex items-center gap-space-md">

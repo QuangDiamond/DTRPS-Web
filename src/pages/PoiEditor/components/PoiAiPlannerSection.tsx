@@ -51,7 +51,7 @@ export default function PoiAiPlannerSection({ values, onChange }: PoiAiPlannerSe
       }
       badge={
         <span className="rounded-full bg-secondary-container px-2 py-0.5 font-label-sm text-label-sm font-semibold text-on-secondary-container">
-          Engine v2.4
+          AI Engine v2.4
         </span>
       }
     >
@@ -75,7 +75,7 @@ export default function PoiAiPlannerSection({ values, onChange }: PoiAiPlannerSe
       <div className="flex flex-col gap-2 rounded-lg bg-surface-container-low p-space-md">
         <div className="flex items-center justify-between">
           <span className="font-label-md text-label-md font-semibold text-on-surface">
-            Độ ưu tiên thuật toán (Priority Score)
+            Độ ưu tiên thuật toán
           </span>
           <span className="font-headline-sm text-headline-sm font-bold text-primary">
             {values.priorityScore} / 100

@@ -144,14 +144,14 @@ export default function GrowthChart({ data, onViewReport }: GrowthChartProps) {
                   cx={point.x}
                   cy={point.usersY}
                   r="5"
-                  className="fill-primary stroke-white"
+                  className="fill-primary stroke-surface-container-lowest"
                   strokeWidth="2.5"
                 />
                 <circle
                   cx={point.x}
                   cy={point.tripsY}
                   r="4"
-                  className="fill-tertiary-container stroke-white"
+                  className="fill-tertiary-container stroke-surface-container-lowest"
                   strokeWidth="2"
                 />
               </g>
@@ -161,7 +161,7 @@ export default function GrowthChart({ data, onViewReport }: GrowthChartProps) {
                 cx={point.x}
                 cy={point.usersY}
                 r="4"
-                className="fill-white stroke-primary"
+                className="fill-surface-container-lowest stroke-primary"
                 strokeWidth="2.5"
               />
             ),

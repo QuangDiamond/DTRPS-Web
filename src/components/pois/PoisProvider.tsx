@@ -1,8 +1,10 @@
 import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
-import { MOCK_POIS, POI_BASE_STATS } from '../../constants/mockPois';
 import { POI_CATEGORY_CONFIG } from '../../constants/poi';
 import { PoisContext } from '../../contexts/pois';
 import { useAuth } from '../../hooks/useAuth';
+import { useInitialData } from '../../hooks/useInitialData';
+import { usePersist } from '../../hooks/usePersist';
+import { poiService, poisSource } from '../../services/poiService';
 import type { Poi, PoiCategoryTab, PoiFormValues, PoiKpiGroup, PoiStats } from '../../types/admin';
 
 function nextPoiId(pois: Poi[]): string {
@@ -31,10 +33,8 @@ function countPois(pois: Poi[]) {
     if (config.tab) byTab[config.tab] += 1;
     if (poi.status === 'active') available += 1;
   });
-  return { byGroup, byTab, available };
+  return { total: pois.length, byGroup, byTab, available };
 }
-
-const MOCK_COUNTS = countPois(MOCK_POIS);
 
 function withDelta<K extends string>(
   base: Record<K, number>,
@@ -48,11 +48,36 @@ function withDelta<K extends string>(
   return result;
 }
 
-/** Store điểm đến POI. Khi có backend: thay state bằng dữ liệu gọi API. */
+const EMPTY_STATS: PoiStats = {
+  total: 0,
+  newThisMonth: 0,
+  available: 0,
+  byGroup: { sights: 0, food: 0, stay: 0, tour: 0 },
+  byTab: { all: 0, heritage: 0, food: 0, stay: 0, nature: 0, craft: 0 },
+};
+
+/** Store điểm đến POI — dữ liệu tải qua poiService (mock hoặc API) */
 export default function PoisProvider({ children }: { children: ReactNode }) {
   const { admin } = useAuth();
-  const [pois, setPois] = useState<Poi[]>(MOCK_POIS);
+  const seed = poisSource.seed;
+  const [pois, setPois] = useState<Poi[]>(seed?.pois ?? []);
+  const [baseStats, setBaseStats] = useState<PoiStats>(seed?.stats ?? EMPTY_STATS);
+  // Số đếm của dữ liệu lúc tải — KPI = số gốc + chênh lệch so với lúc tải
+  const [loadedCounts, setLoadedCounts] = useState(() => countPois(seed?.pois ?? []));
   const [createdCount, setCreatedCount] = useState(0);
+
+  const dataStatus = useInitialData(
+    poisSource,
+    (snapshot) => {
+      setPois(snapshot.pois);
+      setBaseStats(snapshot.stats);
+      setLoadedCounts(countPois(snapshot.pois));
+      setCreatedCount(0);
+    },
+    Boolean(admin),
+  );
+  const persist = usePersist(dataStatus.reload);
+
   const poisRef = useRef(pois);
   poisRef.current = pois;
   const actor = admin?.role ?? 'Quản trị viên';
@@ -70,9 +95,10 @@ export default function PoisProvider({ children }: { children: ReactNode }) {
       };
       setPois((current) => [poi, ...current]);
       setCreatedCount((count) => count + 1);
+      persist(poiService.create(poi), 'Không lưu được điểm đến mới');
       return poi;
     },
-    [actor],
+    [actor, persist],
   );
 
   const updatePoi = useCallback(
@@ -86,26 +112,27 @@ export default function PoisProvider({ children }: { children: ReactNode }) {
         updatedBy: actor,
       };
       setPois((current) => current.map((poi) => (poi.id === id ? updated : poi)));
+      persist(poiService.update(id, values), 'Không lưu được thay đổi điểm đến');
       return updated;
     },
-    [actor],
+    [actor, persist],
   );
 
-  // KPI = số liệu toàn quốc của Stitch + chênh lệch giữa dữ liệu hiện tại và dữ liệu mẫu ban đầu
+  // KPI = số liệu toàn quốc + chênh lệch giữa dữ liệu hiện tại và dữ liệu lúc tải
   const stats = useMemo<PoiStats>(() => {
     const current = countPois(pois);
     return {
-      total: POI_BASE_STATS.total + pois.length - MOCK_POIS.length,
-      newThisMonth: POI_BASE_STATS.newThisMonth + createdCount,
-      available: Math.max(0, POI_BASE_STATS.available + current.available - MOCK_COUNTS.available),
-      byGroup: withDelta(POI_BASE_STATS.byGroup, current.byGroup, MOCK_COUNTS.byGroup),
-      byTab: withDelta(POI_BASE_STATS.byTab, current.byTab, MOCK_COUNTS.byTab),
+      total: Math.max(0, baseStats.total + current.total - loadedCounts.total),
+      newThisMonth: baseStats.newThisMonth + createdCount,
+      available: Math.max(0, baseStats.available + current.available - loadedCounts.available),
+      byGroup: withDelta(baseStats.byGroup, current.byGroup, loadedCounts.byGroup),
+      byTab: withDelta(baseStats.byTab, current.byTab, loadedCounts.byTab),
     };
-  }, [pois, createdCount]);
+  }, [pois, baseStats, loadedCounts, createdCount]);
 
   const value = useMemo(
-    () => ({ pois, stats, createPoi, updatePoi }),
-    [pois, stats, createPoi, updatePoi],
+    () => ({ pois, stats, dataStatus, createPoi, updatePoi }),
+    [pois, stats, dataStatus, createPoi, updatePoi],
   );
 
   return <PoisContext.Provider value={value}>{children}</PoisContext.Provider>;

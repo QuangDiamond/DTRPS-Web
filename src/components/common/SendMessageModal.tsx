@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Button from './Button';
 import Icon from './Icon';
 import Modal from './Modal';
 
@@ -64,21 +65,12 @@ export default function SendMessageModal({
       size="lg"
       footer={
         <>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full bg-surface-container-low px-4 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
-          >
+          <Button variant="neutral" onClick={onClose}>
             Hủy
-          </button>
-          <button
-            type="button"
-            disabled={!canSend}
-            onClick={handleSend}
-            className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Icon name="send" className="text-[18px]" /> Gửi
-          </button>
+          </Button>
+          <Button icon="send" disabled={!canSend} onClick={handleSend}>
+            Gửi
+          </Button>
         </>
       }
     >

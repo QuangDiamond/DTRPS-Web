@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
 import Icon from '../../../components/common/Icon';
+import SortableHeader from '../../../components/common/SortableHeader';
 import type { AppUser } from '../../../types/admin';
+import type { SortState } from '../../../utils/sort';
+import type { UserSortKey } from '../userUtils';
 import UserRow from './UserRow';
 
 interface UserTableProps {
@@ -14,16 +17,18 @@ interface UserTableProps {
   onViewDetail: (user: AppUser) => void;
   onLock: (user: AppUser) => void;
   onUnlock: (user: AppUser) => void;
+  sort: SortState<UserSortKey> | null;
+  onSort: (key: UserSortKey) => void;
   footer: ReactNode;
 }
 
-const COLUMNS = [
-  'Người dùng',
-  'Email',
-  'Số điện thoại',
-  'Ngày đăng ký',
-  'Chuyến đi đã lưu',
-  'Trạng thái tài khoản',
+const COLUMNS: { label: string; sortKey?: UserSortKey }[] = [
+  { label: 'Người dùng', sortKey: 'name' },
+  { label: 'Email', sortKey: 'email' },
+  { label: 'Số điện thoại' },
+  { label: 'Ngày đăng ký', sortKey: 'joinedAt' },
+  { label: 'Chuyến đi đã lưu', sortKey: 'tripCount' },
+  { label: 'Trạng thái tài khoản', sortKey: 'status' },
 ];
 
 const BULK_BUTTON_CLASS =
@@ -40,6 +45,8 @@ export default function UserTable({
   onViewDetail,
   onLock,
   onUnlock,
+  sort,
+  onSort,
   footer,
 }: UserTableProps) {
   const selectedOnPage = users.filter((user) => selectedIds.has(user.id)).length;
@@ -87,11 +94,22 @@ export default function UserTable({
                   className="h-4 w-4 cursor-pointer rounded accent-primary"
                 />
               </th>
-              {COLUMNS.map((column) => (
-                <th key={column} className="px-space-md py-3.5">
-                  {column}
-                </th>
-              ))}
+              {COLUMNS.map((column) =>
+                column.sortKey ? (
+                  <SortableHeader
+                    key={column.label}
+                    label={column.label}
+                    sortKey={column.sortKey}
+                    sort={sort}
+                    onSort={onSort}
+                    className="px-space-md py-3.5"
+                  />
+                ) : (
+                  <th key={column.label} className="px-space-md py-3.5">
+                    {column.label}
+                  </th>
+                ),
+              )}
               <th className="py-3.5 pr-space-lg pl-space-md text-right">Hành động</th>
             </tr>
           </thead>

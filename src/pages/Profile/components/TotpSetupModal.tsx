@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
 import OtpInput from '../../../components/auth/OtpInput';
+import Button from '../../../components/common/Button';
 import Icon from '../../../components/common/Icon';
 import Modal from '../../../components/common/Modal';
 import { MOCK_TOTP_CODE, MOCK_TOTP_SECRET } from '../../../constants/adminProfile';
 import { OTP_LENGTH } from '../../../constants/auth';
 import { useToast } from '../../../hooks/useToast';
+import { copyText } from '../../../utils/clipboard';
 
 const QR_SIZE = 21;
 
@@ -51,12 +53,11 @@ export default function TotpSetupModal({ accountEmail, onConfirm, onClose }: Tot
   const code = digits.join('');
 
   const copySecret = async () => {
-    try {
-      await navigator.clipboard.writeText(MOCK_TOTP_SECRET.replace(/\s/g, ''));
-      showToast('Đã sao chép khóa bí mật', 'info');
-    } catch {
-      showToast('Không sao chép được, hãy chọn và sao chép thủ công', 'error');
-    }
+    const copied = await copyText(MOCK_TOTP_SECRET.replace(/\s/g, ''));
+    showToast(
+      copied ? 'Đã sao chép khóa bí mật' : 'Không sao chép được, hãy chọn và sao chép thủ công',
+      copied ? 'info' : 'error',
+    );
   };
 
   const verify = () => {
@@ -78,20 +79,12 @@ export default function TotpSetupModal({ accountEmail, onConfirm, onClose }: Tot
       onClose={onClose}
       footer={
         <>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full bg-surface-container-low px-4 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
-          >
+          <Button variant="neutral" onClick={onClose}>
             Hủy
-          </button>
-          <button
-            type="button"
-            onClick={verify}
-            className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
-          >
-            <Icon name="verified" className="text-[18px]" /> Xác nhận liên kết
-          </button>
+          </Button>
+          <Button icon="verified" onClick={verify}>
+            Xác nhận liên kết
+          </Button>
         </>
       }
     >

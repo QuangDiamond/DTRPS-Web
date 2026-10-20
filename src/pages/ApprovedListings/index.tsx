@@ -188,10 +188,7 @@ export default function ApprovedListingsPage() {
             <span className="font-semibold text-primary">Địa điểm đã duyệt</span>
           </nav>
           <h1 className="font-display-sm text-display-sm tracking-tight text-on-surface">
-            Địa điểm đã phê duyệt{' '}
-            <span className="font-headline-sm text-headline-sm font-normal tracking-normal text-on-surface-variant">
-              (Approved Listings)
-            </span>
+            Địa điểm đã phê duyệt
           </h1>
           <p className="mt-1 max-w-3xl font-body-md text-body-md text-on-surface-variant">
             Danh mục các cơ sở lưu trú, ẩm thực, điểm tham quan đã vượt qua thẩm định và đang phát

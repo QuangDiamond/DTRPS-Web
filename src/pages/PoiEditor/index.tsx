@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useBlocker, useNavigate, useParams } from 'react-router-dom';
-import ConfirmModal from '../../components/common/ConfirmModal';
-import Icon from '../../components/common/Icon';
+import { useCallback, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import NotFoundState from '../../components/common/NotFoundState';
+import UnsavedChangesDialog from '../../components/common/UnsavedChangesDialog';
 import { EMPTY_POI_VALUES } from '../../constants/poi';
 import { poiEditPath, ROUTES } from '../../constants/routes';
 import { useAuth } from '../../hooks/useAuth';
 import { usePois } from '../../hooks/usePois';
+import { useUnsavedChangesGuard } from '../../hooks/useUnsavedChangesGuard';
 import { useToast } from '../../hooks/useToast';
 import type { Poi, PoiFormValues, PoiPhoto } from '../../types/admin';
 import { shortPoiName } from '../../utils/poi';
@@ -36,18 +37,12 @@ export default function PoiEditorPage() {
   const poi = pois.find((item) => item.id === id);
   if (!poi) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-2xl bg-surface-container-lowest py-16 text-center shadow-sm">
-        <Icon name="wrong_location" className="text-[48px] text-outline" />
-        <h1 className="font-headline-lg text-headline-lg text-on-surface">
-          Không tìm thấy điểm đến {id}
-        </h1>
-        <Link
-          to={ROUTES.LOCATIONS}
-          className="font-label-md text-label-md text-primary hover:underline"
-        >
-          Quay lại danh sách POI
-        </Link>
-      </div>
+      <NotFoundState
+        icon="wrong_location"
+        title={`Không tìm thấy điểm đến ${id}`}
+        backTo={ROUTES.LOCATIONS}
+        backLabel="Quay lại danh sách POI"
+      />
     );
   }
 
@@ -68,19 +63,7 @@ function PoiEditorForm({ poi }: { poi: Poi | null }) {
   const isDirty = !isSamePoiValues(values, savedValues);
   const uploader = admin?.role ?? 'Quản trị viên';
 
-  // Cho phép rời trang ngay sau khi lưu thành công (lúc đó isDirty chưa kịp cập nhật)
-  const allowLeaveRef = useRef(false);
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      isDirty && !allowLeaveRef.current && currentLocation.pathname !== nextLocation.pathname,
-  );
-
-  useEffect(() => {
-    if (!isDirty) return;
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => event.preventDefault();
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isDirty]);
+  const { blocker, allowNextNavigation } = useUnsavedChangesGuard(isDirty);
 
   const handleChange = useCallback<PoiFieldChange>((key, value) => {
     setValues((current) => ({ ...current, [key]: value }));
@@ -104,7 +87,8 @@ function PoiEditorForm({ poi }: { poi: Poi | null }) {
     const cleaned: PoiFormValues = { ...values, name: values.name.trim() };
     if (!poi) {
       const created = createPoi(cleaned);
-      allowLeaveRef.current = true;
+      // Vừa lưu xong — cho phép chuyển sang trang sửa của POI mới (isDirty chưa kịp cập nhật)
+      allowNextNavigation();
       showToast(`Đã tạo điểm đến "${shortPoiName(created.name)}" (${created.id})`, 'success');
       navigate(poiEditPath(created.id), { replace: true });
       return;
@@ -171,18 +155,10 @@ function PoiEditorForm({ poi }: { poi: Poi | null }) {
         <PoiPhotoViewerModal photo={viewingPhoto} onClose={() => setViewingPhoto(null)} />
       )}
 
-      {blocker.state === 'blocked' && (
-        <ConfirmModal
-          title="Rời trang khi chưa lưu?"
-          confirmLabel="Rời trang"
-          confirmIcon="logout"
-          onConfirm={() => blocker.proceed()}
-          onClose={() => blocker.reset()}
-        >
-          Các thay đổi trên POI {poi ? <strong>{poi.id}</strong> : 'mới'} chưa được lưu và sẽ bị hủy
-          nếu bạn rời khỏi trang này.
-        </ConfirmModal>
-      )}
+      <UnsavedChangesDialog blocker={blocker}>
+        Các thay đổi trên POI {poi ? <strong>{poi.id}</strong> : 'mới'} chưa được lưu và sẽ bị hủy
+        nếu bạn rời khỏi trang này.
+      </UnsavedChangesDialog>
     </div>
   );
 }

@@ -57,7 +57,7 @@ export default function ApprovedRow({
               listing={listing}
               className="h-full w-full transition-transform duration-300 group-hover:scale-105"
             />
-            <div className="absolute inset-x-0 bottom-0 h-4 bg-linear-to-t from-black/60 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-4 bg-linear-to-t from-inverse-surface/60 to-transparent" />
           </div>
           <div className="flex min-w-0 flex-col">
             <button

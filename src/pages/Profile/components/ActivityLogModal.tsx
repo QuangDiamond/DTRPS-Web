@@ -12,7 +12,7 @@ interface ActivityLogModalProps {
 export default function ActivityLogModal({ activities, onExport, onClose }: ActivityLogModalProps) {
   return (
     <Modal
-      title="Nhật ký hoạt động (Audit Logs)"
+      title="Nhật ký hoạt động"
       description="Các thao tác quản trị của tài khoản này, lưu trữ chống sửa đổi 365 ngày"
       size="lg"
       onClose={onClose}

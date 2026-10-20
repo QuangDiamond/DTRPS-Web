@@ -87,7 +87,7 @@ export default function UserMetricCards({ profile }: { profile: UserProfile }) {
         }
       />
       <MetricCard
-        label="Đánh giá & Review"
+        label="Đánh giá & Nhận xét"
         icon="reviews"
         iconClass="bg-tertiary-fixed/60 text-tertiary"
         value={formatNumber(profile.reviewCount)}

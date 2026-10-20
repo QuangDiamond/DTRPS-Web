@@ -27,11 +27,11 @@ export default function PhotoLightbox({ photos, index, onChange, onClose }: Phot
   if (!photo) return null;
 
   const navButtonClass =
-    'absolute top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-colors hover:bg-white/30';
+    'absolute top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-surface-container-lowest/15 text-on-primary backdrop-blur-md transition-colors hover:bg-surface-container-lowest/30';
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/90 p-6"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-inverse-surface/90 p-6"
       onClick={onClose}
     >
       <div
@@ -43,11 +43,11 @@ export default function PhotoLightbox({ photos, index, onChange, onClose }: Phot
           alt={photo.caption}
           className="max-h-[75vh] w-auto rounded-2xl object-contain shadow-2xl"
         />
-        <div className="text-center text-white">
+        <div className="text-center text-on-primary">
           <div className="text-[15px] font-bold">
             {index + 1}. {photo.caption}
           </div>
-          <div className="font-mono text-[12px] text-slate-300">
+          <div className="font-mono text-[12px] text-outline-variant">
             Ảnh {index + 1}/{photos.length}
             {photo.meta && ` • ${photo.meta}`}
           </div>
@@ -76,7 +76,7 @@ export default function PhotoLightbox({ photos, index, onChange, onClose }: Phot
       <button
         type="button"
         onClick={onClose}
-        className="absolute top-5 right-5 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white transition-colors hover:bg-white/30"
+        className="absolute top-5 right-5 flex h-10 w-10 items-center justify-center rounded-full bg-surface-container-lowest/15 text-on-primary transition-colors hover:bg-surface-container-lowest/30"
         title="Đóng (Esc)"
       >
         <Icon name="close" className="text-[22px]" />

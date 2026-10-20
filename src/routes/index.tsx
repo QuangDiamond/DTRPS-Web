@@ -1,27 +1,36 @@
+import { lazy, Suspense, type ReactNode } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { GuestOnly, RequireAuth } from '../components/auth/RouteGuards';
+import PageLoader from '../components/common/PageLoader';
 import { ROUTES } from '../constants/routes';
 import AdminLayout from '../layouts/AdminLayout';
-import ForgotPasswordPage from '../pages/Auth/ForgotPassword';
-import LoginPage from '../pages/Auth/Login';
-import ResetPasswordPage from '../pages/Auth/ResetPassword';
-import VerifyOtpPage from '../pages/Auth/VerifyOtp';
-import DashboardPage from '../pages/Dashboard';
-import ApprovedListingsPage from '../pages/ApprovedListings';
-import ListingReviewPage from '../pages/ListingReview';
-import ListingsPage from '../pages/Listings';
-import LocationsPage from '../pages/Locations';
-import NotFoundPage from '../pages/NotFound';
-import NotificationsPage from '../pages/Notifications';
-import PartnerDetailPage from '../pages/PartnerDetail';
-import PartnersPage from '../pages/Partners';
-import PoiEditorPage from '../pages/PoiEditor';
-import ProfilePage from '../pages/Profile';
-import RejectedListingsPage from '../pages/RejectedListings';
-import ReportsPage from '../pages/Reports';
-import SettingsPage from '../pages/Settings';
-import UserDetailPage from '../pages/UserDetail';
-import UsersPage from '../pages/Users';
+
+// Mỗi trang là một chunk riêng — chỉ tải khi người dùng mở trang đó
+const LoginPage = lazy(() => import('../pages/Auth/Login'));
+const ForgotPasswordPage = lazy(() => import('../pages/Auth/ForgotPassword'));
+const VerifyOtpPage = lazy(() => import('../pages/Auth/VerifyOtp'));
+const ResetPasswordPage = lazy(() => import('../pages/Auth/ResetPassword'));
+const DashboardPage = lazy(() => import('../pages/Dashboard'));
+const UsersPage = lazy(() => import('../pages/Users'));
+const UserDetailPage = lazy(() => import('../pages/UserDetail'));
+const PartnersPage = lazy(() => import('../pages/Partners'));
+const PartnerDetailPage = lazy(() => import('../pages/PartnerDetail'));
+const ListingsPage = lazy(() => import('../pages/Listings'));
+const ApprovedListingsPage = lazy(() => import('../pages/ApprovedListings'));
+const RejectedListingsPage = lazy(() => import('../pages/RejectedListings'));
+const ListingReviewPage = lazy(() => import('../pages/ListingReview'));
+const LocationsPage = lazy(() => import('../pages/Locations'));
+const PoiEditorPage = lazy(() => import('../pages/PoiEditor'));
+const ReportsPage = lazy(() => import('../pages/Reports'));
+const NotificationsPage = lazy(() => import('../pages/Notifications'));
+const SettingsPage = lazy(() => import('../pages/Settings'));
+const ProfilePage = lazy(() => import('../pages/Profile'));
+const NotFoundPage = lazy(() => import('../pages/NotFound'));
+
+/** Trang toàn màn hình (đăng nhập, 404) cần Suspense riêng vì không nằm trong AdminLayout */
+const fullScreen = (page: ReactNode) => (
+  <Suspense fallback={<PageLoader fullScreen />}>{page}</Suspense>
+);
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to={ROUTES.DASHBOARD} replace /> },
@@ -30,14 +39,14 @@ export const router = createBrowserRouter([
   {
     element: <GuestOnly />,
     children: [
-      { path: ROUTES.LOGIN, element: <LoginPage /> },
-      { path: ROUTES.FORGOT_PASSWORD, element: <ForgotPasswordPage /> },
-      { path: ROUTES.VERIFY_OTP, element: <VerifyOtpPage /> },
-      { path: ROUTES.RESET_PASSWORD, element: <ResetPasswordPage /> },
+      { path: ROUTES.LOGIN, element: fullScreen(<LoginPage />) },
+      { path: ROUTES.FORGOT_PASSWORD, element: fullScreen(<ForgotPasswordPage />) },
+      { path: ROUTES.VERIFY_OTP, element: fullScreen(<VerifyOtpPage />) },
+      { path: ROUTES.RESET_PASSWORD, element: fullScreen(<ResetPasswordPage />) },
     ],
   },
 
-  // Trang quản trị: bắt buộc đăng nhập
+  // Trang quản trị: bắt buộc đăng nhập (Suspense nằm trong AdminLayout để giữ Sidebar/Header)
   {
     element: <RequireAuth />,
     children: [
@@ -67,5 +76,5 @@ export const router = createBrowserRouter([
     ],
   },
 
-  { path: '*', element: <NotFoundPage /> },
+  { path: '*', element: fullScreen(<NotFoundPage />) },
 ]);

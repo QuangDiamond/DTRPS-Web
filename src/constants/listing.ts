@@ -145,12 +145,12 @@ export const PARTNER_TIER_BADGE: Record<
   { label: string; icon?: string; className?: string }
 > = {
   diamond: {
-    label: 'Diamond Partner',
+    label: 'Đối tác Diamond',
     icon: 'diamond',
     className: 'bg-primary-fixed text-on-primary-fixed-variant',
   },
   gold: {
-    label: 'Gold Partner',
+    label: 'Đối tác Gold',
     icon: 'hotel_class',
     className: 'bg-tertiary-fixed text-on-tertiary-fixed',
   },
@@ -222,19 +222,20 @@ export const REVIEW_STATUS_BANNER: Record<
   { label: string; badgeClass: string; dotClass: string }
 > = {
   pending: {
-    label: 'Chờ duyệt (Pending review)',
-    badgeClass: 'border-amber-200 bg-amber-100 text-amber-900',
-    dotClass: 'animate-pulse bg-amber-600',
+    label: 'Chờ duyệt',
+    badgeClass: 'border-tertiary-fixed bg-tertiary-fixed/60 text-on-tertiary-fixed',
+    dotClass: 'animate-pulse bg-tertiary-container',
   },
   approved: {
-    label: 'Đã phê duyệt (Approved)',
-    badgeClass: 'border-emerald-200 bg-emerald-100 text-emerald-900',
-    dotClass: 'bg-emerald-600',
+    label: 'Đã phê duyệt',
+    badgeClass:
+      'border-secondary-fixed-dim/50 bg-secondary-container/60 text-on-secondary-fixed-variant',
+    dotClass: 'bg-secondary',
   },
   rejected: {
-    label: 'Đã từ chối (Rejected)',
-    badgeClass: 'border-rose-200 bg-rose-100 text-rose-900',
-    dotClass: 'bg-rose-600',
+    label: 'Đã từ chối',
+    badgeClass: 'border-error-container bg-error-container/70 text-on-error-container',
+    dotClass: 'bg-error',
   },
 };
 

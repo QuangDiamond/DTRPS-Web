@@ -104,7 +104,7 @@ export default function ProfilePage() {
         <Icon name="chevron_right" className="text-[14px] text-outline" />
         <div className="flex items-center gap-1">
           <Icon name="account_circle" className="text-[16px]" />
-          <span>Hồ sơ Admin</span>
+          <span>Hồ sơ quản trị viên</span>
         </div>
         <Icon name="chevron_right" className="text-[14px] text-outline" />
         <span className="font-semibold text-on-surface">
@@ -136,12 +136,12 @@ export default function ProfilePage() {
             className={`${HEADER_BUTTON_CLASS} bg-surface-container-low text-primary hover:bg-surface-container-high`}
           >
             <Icon name="history" className="text-[18px]" />
-            Nhật ký hoạt động (Audit Logs)
+            Nhật ký hoạt động
           </button>
           <button
             type="button"
             onClick={() => setModal('securityCheck')}
-            className={`${HEADER_BUTTON_CLASS} bg-primary text-on-primary shadow-sm hover:bg-secondary`}
+            className={`${HEADER_BUTTON_CLASS} bg-primary text-on-primary shadow-sm hover:bg-primary-container`}
           >
             <Icon name="security" className="text-[18px]" />
             Kiểm tra bảo mật hệ thống

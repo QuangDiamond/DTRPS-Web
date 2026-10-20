@@ -137,7 +137,7 @@ export default function ChangePasswordCard() {
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-colors hover:bg-secondary disabled:cursor-wait disabled:opacity-70"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container disabled:cursor-wait disabled:opacity-70"
           >
             <Icon
               name={submitting ? 'progress_activity' : 'vpn_key'}

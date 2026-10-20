@@ -1,14 +1,20 @@
 import { createContext } from 'react';
-import type { Partner, PartnerAuditEntry, PartnerFormValues, PartnerStatus } from '../types/admin';
-
-/** Các giá trị hồ sơ admin chỉnh được ở màn Chi tiết đối tác */
-export interface PartnerProfileOverrides {
-  nextReviewDate?: string;
-  commission?: number;
-}
+import type {
+  Partner,
+  PartnerAuditEntry,
+  PartnerFormValues,
+  PartnerProfileOverrides,
+  PartnerStats,
+  PartnerStatus,
+} from '../types/admin';
+import type { DataStatus } from '../types/api';
 
 export interface PartnersContextValue {
   partners: Partner[];
+  /** Số liệu toàn hệ thống, cập nhật theo thao tác trong phiên */
+  stats: PartnerStats;
+  /** Trạng thái tải dữ liệu từ server */
+  dataStatus: DataStatus;
   createPartner: (values: PartnerFormValues) => Partner;
   updatePartner: (id: string, values: PartnerFormValues) => void;
   setPartnerStatus: (id: string, status: PartnerStatus, statusNote?: string) => void;

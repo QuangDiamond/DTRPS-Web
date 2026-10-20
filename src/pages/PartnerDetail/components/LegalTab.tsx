@@ -174,7 +174,7 @@ export default function LegalTab({
               </div>
             </div>
             <span className="rounded-full bg-primary-fixed px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-primary-fixed">
-              Admin chính
+              Quản trị chính
             </span>
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

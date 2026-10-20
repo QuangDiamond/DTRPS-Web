@@ -23,11 +23,12 @@ export function formatCountdown(totalSeconds: number): string {
   return `${minutes}:${seconds}`;
 }
 
-const pad = (value: number) => String(value).padStart(2, '0');
+/** 7 -> "07" */
+export const pad2 = (value: number): string => String(value).padStart(2, '0');
 
 /** Date -> "YYYY-MM-DD" theo giờ máy */
 export function toIsoDate(date: Date): string {
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
 }
 
 /** Ngày hôm nay theo giờ máy, dạng YYYY-MM-DD */
@@ -48,7 +49,7 @@ export function formatRelativeTime(isoDateTime: string, now: Date = new Date()):
 /** "Hôm nay 09:30", "Hôm qua 21:40", hoặc "12/10/2024 08:15" */
 export function formatDayTime(isoDateTime: string, now: Date = new Date()): string {
   const date = new Date(isoDateTime);
-  const time = `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  const time = `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);
 
@@ -64,6 +65,14 @@ export function formatDateWithPeriod(isoDateTime?: string): { date: string; time
   const hours = date.getHours();
   return {
     date: formatDate(toIsoDate(date)),
-    time: `${pad(hours)}:${pad(date.getMinutes())} ${hours < 12 ? 'SA' : 'CH'}`,
+    time: `${pad2(hours)}:${pad2(date.getMinutes())} ${hours < 12 ? 'SA' : 'CH'}`,
   };
+}
+
+/** "14:32:08 - 24/10/2024" (giờ:phút:giây - ngày/tháng/năm) */
+export function formatTimestamp(isoDateTime: string): string {
+  const date = new Date(isoDateTime);
+  return `${pad2(date.getHours())}:${pad2(date.getMinutes())}:${pad2(date.getSeconds())} - ${formatDate(
+    toIsoDate(date),
+  )}`;
 }

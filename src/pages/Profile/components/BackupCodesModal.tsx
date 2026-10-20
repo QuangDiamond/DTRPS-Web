@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import Icon from '../../../components/common/Icon';
+import Button from '../../../components/common/Button';
 import Modal from '../../../components/common/Modal';
 import { useToast } from '../../../hooks/useToast';
+import { copyText } from '../../../utils/clipboard';
+import { downloadTextFile } from '../../../utils/download';
 import { todayIsoDate } from '../../../utils/format';
-import { downloadTextFile } from '../profileUtils';
 
 interface BackupCodesModalProps {
   codes: string[];
@@ -11,9 +12,6 @@ interface BackupCodesModalProps {
   onRegenerate: () => void;
   onClose: () => void;
 }
-
-const BUTTON_CLASS =
-  'flex items-center gap-2 rounded-full px-4 py-2.5 font-label-md text-label-md font-semibold transition-all';
 
 export default function BackupCodesModal({
   codes,
@@ -34,12 +32,11 @@ export default function BackupCodesModal({
   ].join('\n');
 
   const copyCodes = async () => {
-    try {
-      await navigator.clipboard.writeText(codes.join('\n'));
-      showToast('Đã sao chép mã dự phòng', 'info');
-    } catch {
-      showToast('Không sao chép được, hãy tải file .txt', 'error');
-    }
+    const copied = await copyText(codes.join('\n'));
+    showToast(
+      copied ? 'Đã sao chép mã dự phòng' : 'Không sao chép được, hãy tải file .txt',
+      copied ? 'info' : 'error',
+    );
   };
 
   return (
@@ -53,50 +50,42 @@ export default function BackupCodesModal({
             <span className="mr-auto font-body-sm text-body-sm text-error">
               Toàn bộ mã cũ sẽ bị vô hiệu hóa.
             </span>
-            <button
-              type="button"
-              onClick={() => setConfirmRegenerate(false)}
-              className={`${BUTTON_CLASS} bg-surface-container-low text-on-surface hover:bg-surface-container-high`}
-            >
+            <Button variant="neutral" onClick={() => setConfirmRegenerate(false)}>
               Hủy
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="danger"
+              icon="autorenew"
               onClick={() => {
                 onRegenerate();
                 setConfirmRegenerate(false);
               }}
-              className={`${BUTTON_CLASS} bg-error text-on-error hover:opacity-90`}
             >
-              <Icon name="autorenew" className="text-[18px]" /> Xác nhận tạo mới
-            </button>
+              Xác nhận tạo mới
+            </Button>
           </>
         ) : (
           <>
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              icon="autorenew"
+              className="mr-auto text-error hover:bg-error-container/40 hover:text-error"
               onClick={() => setConfirmRegenerate(true)}
-              className={`${BUTTON_CLASS} mr-auto text-error hover:bg-error-container/40`}
             >
-              <Icon name="autorenew" className="text-[18px]" /> Tạo mã mới
-            </button>
-            <button
-              type="button"
-              onClick={copyCodes}
-              className={`${BUTTON_CLASS} bg-surface-container-low text-on-surface hover:bg-surface-container-high`}
-            >
-              <Icon name="content_copy" className="text-[18px]" /> Sao chép
-            </button>
-            <button
-              type="button"
+              Tạo mã mới
+            </Button>
+            <Button variant="neutral" icon="content_copy" onClick={copyCodes}>
+              Sao chép
+            </Button>
+            <Button
+              icon="download"
               onClick={() => {
                 downloadTextFile(`smarttravel-backup-codes-${todayIsoDate()}.txt`, content);
                 showToast('Đã tải xuống file mã dự phòng', 'info');
               }}
-              className={`${BUTTON_CLASS} bg-primary text-on-primary shadow-sm hover:bg-primary-container`}
             >
-              <Icon name="download" className="text-[18px]" /> Tải .txt
-            </button>
+              Tải .txt
+            </Button>
           </>
         )
       }

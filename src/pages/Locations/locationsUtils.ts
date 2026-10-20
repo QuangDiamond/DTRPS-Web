@@ -1,5 +1,7 @@
-import { POI_CATEGORY_CONFIG, POI_PROVINCE_LABELS } from '../../constants/poi';
+import { POI_CATEGORY_CONFIG, POI_PROVINCE_LABELS, POI_STATUS_CONFIG } from '../../constants/poi';
 import type { Poi, PoiCategoryTab, PoiFilters } from '../../types/admin';
+import { shortLocation, shortPoiName } from '../../utils/poi';
+import type { SortAccessors } from '../../utils/sort';
 import { normalizeText } from '../../utils/string';
 
 export function filterPois(pois: Poi[], tab: PoiCategoryTab, filters: PoiFilters): Poi[] {
@@ -31,3 +33,14 @@ export function hasActiveFilters(tab: PoiCategoryTab, filters: PoiFilters): bool
     filters.source !== 'all'
   );
 }
+
+export type PoiSortKey = 'name' | 'id' | 'location' | 'rating' | 'status';
+
+export const POI_SORT_ACCESSORS: SortAccessors<Poi, PoiSortKey> = {
+  name: (poi) => shortPoiName(poi.name),
+  id: (poi) => poi.id,
+  location: (poi) => shortLocation(poi.address),
+  // POI chưa có đánh giá xếp sau cùng khi sắp xếp giảm dần
+  rating: (poi) => (poi.reviewCount > 0 ? poi.rating : -1),
+  status: (poi) => POI_STATUS_CONFIG[poi.status].label,
+};

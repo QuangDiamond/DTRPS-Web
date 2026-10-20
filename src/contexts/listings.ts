@@ -6,23 +6,17 @@ import type {
   ListingFormValues,
   ListingStats,
   ListingVisibility,
-  RejectionReasonCode,
+  RejectOptions,
 } from '../types/admin';
-
-export interface RejectOptions {
-  /** Góp ý & hướng dẫn sửa đổi gửi cho đối tác */
-  feedback?: string;
-  /** Ghi chú kiểm duyệt nội bộ */
-  note?: string;
-  /** Nhóm lý do (phục vụ lọc ở màn Địa điểm bị từ chối) */
-  reasonCode?: RejectionReasonCode;
-}
+import type { DataStatus } from '../types/api';
 
 export interface ListingsContextValue {
   listings: Listing[];
   activities: ActivityItem[];
   /** Số liệu toàn hệ thống, cập nhật theo các thao tác trong phiên */
   stats: ListingStats;
+  /** Trạng thái tải dữ liệu từ server */
+  dataStatus: DataStatus;
   /** Duyệt một hoặc nhiều hồ sơ đang chờ, trả về số hồ sơ đã duyệt */
   approveListings: (ids: string[], note?: string) => number;
   rejectListing: (id: string, reason: string, options?: RejectOptions) => void;

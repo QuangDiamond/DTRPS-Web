@@ -1,23 +1,13 @@
 import type { AdminNotification, NotificationStats } from '../types/admin';
+import { daysAgoAt, minutesAgo } from '../utils/mockTime';
 import { listingReviewPath, partnerDetailPath, ROUTES, userDetailPath } from './routes';
-
-const minutesAgo = (minutes: number): string =>
-  new Date(Date.now() - minutes * 60_000).toISOString();
-
-/** Mốc thời gian cụ thể của N ngày trước, ví dụ "Hôm qua, 18:30" */
-const daysAgoAt = (days: number, hours: number, minutes: number): string => {
-  const date = new Date();
-  date.setDate(date.getDate() - days);
-  date.setHours(hours, minutes, 0, 0);
-  return date.toISOString();
-};
 
 /** Số liệu toàn hệ thống trên màn Stitch — store cộng thêm phần chênh lệch phát sinh trong phiên */
 export const NOTIFICATION_BASE_STATS: NotificationStats = {
   unread: 18,
   newLastHour: 6,
   systemAlerts: 2,
-  systemAlertNote: 'Sync GPS trễ 5p • CPU 78%',
+  systemAlertNote: 'Đồng bộ GPS trễ 5 phút • CPU 78%',
   resolvedRate: 94.6,
   avgResponseMinutes: 18,
   byTab: { all: 64, listings: 32, users: 18, system: 14 },
@@ -128,7 +118,7 @@ export const MOCK_NOTIFICATIONS: AdminNotification[] = [
     ],
     meta: [
       { text: 'Trạng thái: Chờ điều phối Thanh tra du lịch' },
-      { text: 'Độ tin cậy tài khoản: 98% (Verified Passport)' },
+      { text: 'Độ tin cậy tài khoản: 98% (đã xác minh hộ chiếu)' },
     ],
     action: {
       label: 'Xử lý khiếu nại',
@@ -180,7 +170,7 @@ export const MOCK_NOTIFICATIONS: AdminNotification[] = [
       { text: 'Checksum: SHA-256 Validated' },
       { text: 'Bộ dữ liệu: Tổng cục Du lịch Việt Nam VNTravel-v4' },
     ],
-    action: { label: 'Nhật ký Sync', variant: 'neutral', to: ROUTES.LOCATIONS },
+    action: { label: 'Nhật ký đồng bộ', variant: 'neutral', to: ROUTES.LOCATIONS },
     createdAt: daysAgoAt(1, 14, 0),
     read: true,
   },

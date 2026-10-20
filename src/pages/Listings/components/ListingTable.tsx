@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
 import Icon from '../../../components/common/Icon';
+import SortableHeader from '../../../components/common/SortableHeader';
 import type { Listing } from '../../../types/admin';
+import type { SortState } from '../../../utils/sort';
+import type { ListingSortKey } from '../listingUtils';
 import ListingRow from './ListingRow';
 
 interface ListingTableProps {
@@ -11,16 +14,18 @@ interface ListingTableProps {
   onReview: (listing: Listing) => void;
   onShowReason: (listing: Listing) => void;
   onOpenMap: (listing: Listing) => void;
+  sort: SortState<ListingSortKey> | null;
+  onSort: (key: ListingSortKey) => void;
   footer: ReactNode;
 }
 
-const COLUMNS = [
-  'Địa điểm & Mã POI',
-  'Đối tác gửi',
-  'Phân loại',
-  'Vị trí & Tỉnh thành',
-  'Thời gian chờ',
-  'Trạng thái',
+const COLUMNS: { label: string; sortKey: ListingSortKey }[] = [
+  { label: 'Địa điểm & Mã POI', sortKey: 'name' },
+  { label: 'Đối tác gửi', sortKey: 'partner' },
+  { label: 'Phân loại', sortKey: 'category' },
+  { label: 'Vị trí & Tỉnh thành', sortKey: 'province' },
+  { label: 'Thời gian chờ', sortKey: 'wait' },
+  { label: 'Trạng thái', sortKey: 'status' },
 ];
 
 export default function ListingTable({
@@ -31,6 +36,8 @@ export default function ListingTable({
   onReview,
   onShowReason,
   onOpenMap,
+  sort,
+  onSort,
   footer,
 }: ListingTableProps) {
   const allSelected =
@@ -52,9 +59,14 @@ export default function ListingTable({
                 />
               </th>
               {COLUMNS.map((column) => (
-                <th key={column} className="px-4 py-4 font-semibold">
-                  {column}
-                </th>
+                <SortableHeader
+                  key={column.sortKey}
+                  label={column.label}
+                  sortKey={column.sortKey}
+                  sort={sort}
+                  onSort={onSort}
+                  className="px-4 py-4 font-semibold"
+                />
               ))}
               <th className="px-5 py-4 text-center font-semibold">Thao tác</th>
             </tr>

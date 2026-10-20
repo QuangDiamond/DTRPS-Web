@@ -64,13 +64,13 @@ interface PartnerStatusConfig {
 export const PARTNER_STATUS_CONFIG: Record<PartnerStatus, PartnerStatusConfig> = {
   active: {
     label: 'Hoạt động',
-    filterLabel: 'Đang hoạt động (Active)',
+    filterLabel: 'Đang hoạt động',
     badgeClass: 'bg-secondary-fixed text-on-secondary-fixed-variant',
     dotClass: 'bg-primary',
   },
   pending: {
     label: 'Chờ xác minh',
-    filterLabel: 'Chờ xác minh (Pending)',
+    filterLabel: 'Chờ xác minh',
     badgeClass: 'bg-tertiary-fixed text-on-tertiary-fixed',
     dotClass: 'bg-tertiary',
   },

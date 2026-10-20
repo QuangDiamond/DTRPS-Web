@@ -37,13 +37,3 @@ export function getDirtyTabs(
   if (!isSame(draftRules, savedRules)) tabs.add('notifications');
   return tabs;
 }
-
-const pad = (value: number): string => String(value).padStart(2, '0');
-
-/** "14:32:08 - 24/10/2024" */
-export function formatSettingsTimestamp(isoDateTime: string): string {
-  const date = new Date(isoDateTime);
-  return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())} - ${pad(
-    date.getDate(),
-  )}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
-}

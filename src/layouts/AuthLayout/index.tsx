@@ -25,12 +25,12 @@ export default function AuthLayout({ brand, children }: AuthLayoutProps) {
             {/* Thanh trên của thẻ */}
             <div className="mb-space-md flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#0d9488] text-white shadow-sm">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand text-on-primary shadow-sm">
                   <Icon name="language" className="text-[24px]" />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-title-md text-title-md leading-none font-bold tracking-tight text-on-surface">
-                    Smart <span className="text-[#0d9488]">Travel</span>
+                    Smart <span className="text-brand">Travel</span>
                   </span>
                   <span className="mt-1 block font-label-sm text-label-sm font-semibold tracking-wider text-on-surface-variant uppercase">
                     VIETNAM AI ADMIN
@@ -40,7 +40,7 @@ export default function AuthLayout({ brand, children }: AuthLayoutProps) {
               <div className="inline-flex items-center gap-1.5 rounded-full bg-secondary-container/40 px-3 py-1 text-on-secondary-container">
                 <Icon name="shield_person" filled className="text-sm" />
                 <span className="font-label-sm text-label-sm font-semibold">
-                  Quản trị viên Hệ thống (System Admin)
+                  Quản trị viên hệ thống
                 </span>
               </div>
             </div>

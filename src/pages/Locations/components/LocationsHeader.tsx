@@ -41,13 +41,13 @@ export default function LocationsHeader({
         <div className="space-y-1">
           <div className="flex items-center gap-space-sm">
             <h1 className="font-display-sm text-display-sm font-bold tracking-tight text-on-surface">
-              Kho Dữ liệu Điểm đến Du lịch (POI Master Data)
+              Kho Dữ liệu Điểm đến Du lịch (POI)
             </h1>
             <span className="inline-flex items-center gap-1 rounded-full bg-secondary-container px-2.5 py-0.5 font-label-sm text-label-sm font-semibold whitespace-nowrap text-on-secondary-container">
               <span
                 className={`h-1.5 w-1.5 rounded-full bg-primary ${syncing ? 'animate-ping' : ''}`}
               />
-              {syncing ? 'Đang đồng bộ...' : 'AI Engine Sync'}
+              {syncing ? 'Đang đồng bộ...' : 'Đồng bộ AI Engine'}
             </span>
           </div>
           <p className="max-w-4xl font-body-md text-body-md text-on-surface-variant">

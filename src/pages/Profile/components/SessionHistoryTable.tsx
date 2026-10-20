@@ -60,7 +60,7 @@ export default function SessionHistoryTable({
                   <td
                     className={`px-space-md py-2.5 whitespace-nowrap ${isCurrent ? 'text-on-surface' : 'text-on-surface-variant'}`}
                   >
-                    {isCurrent ? 'Hiện tại (Active)' : formatDayTime(session.signedInAt)}
+                    {isCurrent ? 'Đang hoạt động' : formatDayTime(session.signedInAt)}
                   </td>
                   <td className="px-space-md py-2.5 text-right whitespace-nowrap">
                     {isCurrent ? (

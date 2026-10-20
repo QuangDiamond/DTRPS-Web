@@ -54,7 +54,7 @@ export default function PoiEditorFooter({
         <button
           type="button"
           onClick={onSave}
-          className="inline-flex items-center gap-2 rounded-full bg-primary px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-md transition-all hover:bg-surface-tint"
+          className="inline-flex items-center gap-2 rounded-full bg-primary px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-md transition-all hover:bg-primary-container"
         >
           <Icon name="save" className="text-[18px]" />
           <span>{isNew ? 'Tạo POI mới' : 'Lưu thay đổi POI'}</span>

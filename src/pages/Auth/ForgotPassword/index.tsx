@@ -13,6 +13,7 @@ import AuthLayout from '../../../layouts/AuthLayout';
 import { sendPasswordResetOtp } from '../../../services/authService';
 import { getErrorMessage } from '../../../utils/error';
 import { getStateString } from '../../../utils/routeState';
+import { isValidEmail } from '../../../utils/validation';
 import { AUTH_LINK_CLASS, otpSentMessage } from '../authMessages';
 
 /**
@@ -31,7 +32,7 @@ export default function ForgotPasswordPage() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const normalizedEmail = email.trim().toLowerCase();
-    if (!/^\S+@\S+\.\S+$/.test(normalizedEmail)) {
+    if (!isValidEmail(normalizedEmail)) {
       setError('Vui lòng nhập email hợp lệ');
       return;
     }

@@ -1,11 +1,22 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import ErrorState from '../../components/common/ErrorState';
+import NotFoundState from '../../components/common/NotFoundState';
+import PageLoader from '../../components/common/PageLoader';
 import Icon from '../../components/common/Icon';
 import SendMessageModal, { type MessageTemplate } from '../../components/common/SendMessageModal';
 import { ROUTES } from '../../constants/routes';
+import { useResource } from '../../hooks/useResource';
 import { useToast } from '../../hooks/useToast';
 import { useUsers } from '../../hooks/useUsers';
-import type { AppUser, UserFormValues, UserTrip } from '../../types/admin';
+import { userService } from '../../services/userService';
+import type {
+  AppUser,
+  UserAuditEntry,
+  UserFormValues,
+  UserProfile,
+  UserTrip,
+} from '../../types/admin';
 import { downloadCsv } from '../../utils/exportCsv';
 import { formatDate } from '../../utils/format';
 import UserFormModal from '../Users/components/UserFormModal';
@@ -16,12 +27,7 @@ import TripDetailModal from './components/TripDetailModal';
 import TripsTab from './components/TripsTab';
 import UserMetricCards from './components/UserMetricCards';
 import UserProfileCard from './components/UserProfileCard';
-import {
-  formatVnd,
-  getUserProfile,
-  getUserSessionLog,
-  TRIP_STATUS_CONFIG,
-} from './userProfileUtils';
+import { formatVnd, mergeSessionLog, TRIP_STATUS_CONFIG } from './userProfileUtils';
 
 type DetailTab = 'trips' | 'saved' | 'reviews' | 'audit';
 type ModalName = 'lock' | 'email' | 'edit' | null;
@@ -49,25 +55,54 @@ export default function UserDetailPage() {
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-2xl bg-surface-container-lowest py-16 text-center shadow-sm">
-        <Icon name="person_search" className="text-[48px] text-outline" />
-        <h1 className="font-headline-lg text-headline-lg text-on-surface">
-          Không tìm thấy người dùng {id}
-        </h1>
-        <Link
-          to={ROUTES.USERS}
-          className="font-label-md text-label-md text-primary hover:underline"
-        >
-          Quay lại danh sách người dùng
-        </Link>
-      </div>
+      <NotFoundState
+        icon="person_search"
+        title={`Không tìm thấy người dùng ${id}`}
+        backTo={ROUTES.USERS}
+        backLabel="Quay lại danh sách người dùng"
+      />
     );
   }
 
-  return <UserDetailContent key={user.id} user={user} />;
+  return <UserDetailLoader key={user.id} user={user} />;
 }
 
-function UserDetailContent({ user }: { user: AppUser }) {
+/** Tải hồ sơ chi tiết & lịch sử phiên của người dùng qua userService */
+function UserDetailLoader({ user }: { user: AppUser }) {
+  const profile = useResource(
+    () => userService.getProfile(user),
+    () => userService.peekProfile(user),
+  );
+  const history = useResource(
+    () => userService.getSessionHistory(user),
+    () => userService.peekSessionHistory(user),
+  );
+
+  if (profile.status === 'error' || history.status === 'error') {
+    return (
+      <ErrorState
+        title="Không tải được hồ sơ người dùng"
+        message={profile.error ?? history.error}
+        onRetry={() => {
+          if (profile.status === 'error') profile.reload();
+          if (history.status === 'error') history.reload();
+        }}
+      />
+    );
+  }
+  if (!profile.data || !history.data) return <PageLoader />;
+  return (
+    <UserDetailContent user={user} loadedProfile={profile.data} sessionHistory={history.data} />
+  );
+}
+
+interface UserDetailContentProps {
+  user: AppUser;
+  loadedProfile: UserProfile;
+  sessionHistory: UserAuditEntry[];
+}
+
+function UserDetailContent({ user, loadedProfile, sessionHistory }: UserDetailContentProps) {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { updateUser, lockUsers, unlockUsers, auditLogs, logAudit } = useUsers();
@@ -76,8 +111,12 @@ function UserDetailContent({ user }: { user: AppUser }) {
   const [modal, setModal] = useState<ModalName>(null);
   const [viewingTrip, setViewingTrip] = useState<UserTrip | null>(null);
 
-  const profile = getUserProfile(user);
-  const sessionLog = useMemo(() => getUserSessionLog(user, auditLogs[user.id]), [user, auditLogs]);
+  // Chế độ mock: dựng lại hồ sơ theo trạng thái người dùng mới nhất (khóa/mở khóa cập nhật ngay)
+  const profile = userService.peekProfile(user) ?? loadedProfile;
+  const sessionLog = useMemo(
+    () => mergeSessionLog(sessionHistory, auditLogs[user.id]),
+    [sessionHistory, auditLogs, user.id],
+  );
   const suspended = user.status === 'suspended';
   const device = profile.lastLogin.device.match(/\(([^)]+)\)/)?.[1] ?? profile.lastLogin.device;
   const closeModal = () => setModal(null);
@@ -295,13 +334,12 @@ function UserDetailContent({ user }: { user: AppUser }) {
             </span>
             <span className="font-body-sm text-body-sm text-on-surface-variant">
               Mọi thao tác Khóa, Thay đổi quyền hạn hoặc Đặt lại mật khẩu của người dùng đều được
-              ghi nhận trực tiếp vào Hệ thống Nhật ký Kiểm toán Quản trị viên Cấp cao (Super Admin
-              Audit Trail).
+              ghi nhận trực tiếp vào Hệ thống Nhật ký Kiểm toán Quản trị viên Cấp cao.
             </span>
           </div>
         </div>
         <span className="shrink-0 self-end font-label-sm text-label-sm text-outline md:self-auto">
-          Quyền hạn: <strong className="text-primary">Super Admin Root</strong>
+          Quyền hạn: <strong className="text-primary">Super Admin (toàn quyền)</strong>
         </span>
       </div>
 

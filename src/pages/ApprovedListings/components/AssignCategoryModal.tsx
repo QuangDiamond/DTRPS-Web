@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Button from '../../../components/common/Button';
 import Icon from '../../../components/common/Icon';
 import Modal from '../../../components/common/Modal';
 import { LISTING_CATEGORY_CONFIG } from '../../../constants/listing';
@@ -26,21 +27,16 @@ export default function AssignCategoryModal({
       onClose={onClose}
       footer={
         <>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full bg-surface-container-low px-4 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
-          >
+          <Button variant="neutral" onClick={onClose}>
             Hủy
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            icon="category"
             disabled={!category}
             onClick={() => category && onConfirm(category)}
-            className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Icon name="category" className="text-[18px]" /> Gán danh mục
-          </button>
+            Gán danh mục
+          </Button>
         </>
       }
     >

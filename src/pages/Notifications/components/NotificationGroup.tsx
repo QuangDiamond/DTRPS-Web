@@ -8,7 +8,7 @@ interface NotificationGroupProps {
   onMarkRead: (notification: AdminNotification) => void;
 }
 
-/** Nhóm thông báo theo ngày: "Hôm nay (Today)" / "Trước đó (Earlier)" */
+/** Nhóm thông báo theo ngày: "Hôm nay" / "Trước đó" */
 export default function NotificationGroup({
   variant,
   notifications,
@@ -25,7 +25,7 @@ export default function NotificationGroup({
           <>
             <div className="flex items-center gap-space-xs">
               <span className="font-label-sm text-label-sm font-bold tracking-wider text-primary uppercase">
-                Hôm nay (Today)
+                Hôm nay
               </span>
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
               <span className="font-body-sm text-body-sm text-on-surface-variant">
@@ -40,7 +40,7 @@ export default function NotificationGroup({
           <>
             <div className="flex items-center gap-space-xs">
               <span className="font-label-sm text-label-sm font-bold tracking-wider text-outline uppercase">
-                Trước đó (Earlier)
+                Trước đó
               </span>
               <span className="font-body-sm text-body-sm text-outline">Đã lưu trữ tự động</span>
             </div>

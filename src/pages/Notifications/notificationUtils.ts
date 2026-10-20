@@ -1,5 +1,5 @@
 import type { AdminNotification, NotificationPriority, NotificationTab } from '../../types/admin';
-import { toIsoDate } from '../../utils/format';
+import { pad2, toIsoDate } from '../../utils/format';
 import { normalizeText } from '../../utils/string';
 
 export function filterNotifications(
@@ -29,8 +29,6 @@ export function isToday(isoDateTime: string, now: Date = new Date()): boolean {
   return toIsoDate(new Date(isoDateTime)) === toIsoDate(now);
 }
 
-const pad = (value: number): string => String(value).padStart(2, '0');
-
 /** "10 phút trước", "2 giờ trước", "Hôm qua, 18:30", "2 ngày trước" */
 export function formatNotificationTime(isoDateTime: string, now: Date = new Date()): string {
   const date = new Date(isoDateTime);
@@ -42,7 +40,7 @@ export function formatNotificationTime(isoDateTime: string, now: Date = new Date
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);
   if (toIsoDate(date) === toIsoDate(yesterday)) {
-    return `Hôm qua, ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    return `Hôm qua, ${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
   }
   return `${Math.max(2, Math.round(diffMinutes / 60 / 24))} ngày trước`;
 }

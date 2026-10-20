@@ -7,15 +7,13 @@ import AuthNotice from '../../../components/auth/AuthNotice';
 import AuthSubmitButton from '../../../components/auth/AuthSubmitButton';
 import PasswordInput from '../../../components/auth/PasswordInput';
 import { LOGIN_BRAND_CONTENT } from '../../../constants/auth';
-import { MOCK_ADMIN_ACCOUNTS } from '../../../constants/mockData';
 import { ROUTES } from '../../../constants/routes';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../hooks/useToast';
+import { DEMO_ACCOUNT } from '../../../services/authService';
 import AuthLayout from '../../../layouts/AuthLayout';
 import { getErrorMessage } from '../../../utils/error';
 import { getStateString } from '../../../utils/routeState';
-
-const DEMO_ACCOUNT = MOCK_ADMIN_ACCOUNTS[0];
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -24,7 +22,7 @@ export default function LoginPage() {
   const { showToast } = useToast();
 
   const [email, setEmail] = useState(
-    getStateString(location.state, 'email') ?? DEMO_ACCOUNT.profile.email,
+    getStateString(location.state, 'email') ?? DEMO_ACCOUNT?.profile.email ?? '',
   );
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(true);
@@ -112,7 +110,7 @@ export default function LoginPage() {
         toàn dữ liệu quốc gia.
       </AuthNotice>
 
-      {import.meta.env.DEV && (
+      {DEMO_ACCOUNT && (
         <p className="text-center font-body-sm text-body-sm text-outline">
           Tài khoản demo: {DEMO_ACCOUNT.profile.email} / {DEMO_ACCOUNT.password}
         </p>

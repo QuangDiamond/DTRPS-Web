@@ -1,8 +1,14 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
+import Button from '../../../components/common/Button';
 import Modal from '../../../components/common/Modal';
 import { PARTNER_TYPE_OPTIONS, PROVINCE_OPTIONS } from '../../../constants/partner';
 import type { Partner, PartnerFormValues } from '../../../types/admin';
+import {
+  isValidEmail,
+  isValidPhone,
+  isValidTaxCode,
+  VALIDATION_MESSAGES,
+} from '../../../utils/validation';
 
 interface PartnerFormModalProps {
   /** null = thêm mới, có giá trị = chỉnh sửa */
@@ -42,10 +48,9 @@ function validate(values: PartnerFormValues): FormErrors {
   if (!values.businessName.trim()) errors.businessName = 'Vui lòng nhập tên cơ sở';
   if (!values.address.trim()) errors.address = 'Vui lòng nhập địa chỉ';
   if (!values.representative.trim()) errors.representative = 'Vui lòng nhập người đại diện';
-  if (!/^\S+@\S+\.\S+$/.test(values.email.trim())) errors.email = 'Email không hợp lệ';
-  if (!/^[0-9\s]{9,15}$/.test(values.phone.trim())) errors.phone = 'Số điện thoại không hợp lệ';
-  if (!/^\d{10}(\d{3})?$/.test(values.taxCode.trim()))
-    errors.taxCode = 'Mã số thuế gồm 10 hoặc 13 số';
+  if (!isValidEmail(values.email)) errors.email = VALIDATION_MESSAGES.email;
+  if (!isValidPhone(values.phone)) errors.phone = VALIDATION_MESSAGES.phone;
+  if (!isValidTaxCode(values.taxCode)) errors.taxCode = VALIDATION_MESSAGES.taxCode;
   return errors;
 }
 
@@ -93,21 +98,12 @@ export default function PartnerFormModal({ partner, onClose, onSubmit }: Partner
       size="lg"
       footer={
         <>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full bg-surface-container-low px-4 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
-          >
+          <Button variant="neutral" onClick={onClose}>
             Hủy
-          </button>
-          <button
-            type="submit"
-            form={FORM_ID}
-            className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
-          >
-            <Icon name={isEdit ? 'save' : 'add_business'} className="text-[18px]" />
+          </Button>
+          <Button icon={isEdit ? 'save' : 'add_business'} type="submit" form={FORM_ID}>
             {isEdit ? 'Lưu thay đổi' : 'Thêm đối tác'}
-          </button>
+          </Button>
         </>
       }
     >

@@ -1,8 +1,8 @@
-import { MOCK_OTP_CODE } from '../../constants/mockData';
+import { DEMO_OTP_CODE } from '../../services/authService';
 
-/** Toast sau khi gửi OTP — khi chạy dev hiện kèm mã demo để test */
+/** Toast sau khi gửi OTP — khi chạy dữ liệu mẫu hiện kèm mã demo để test */
 export function otpSentMessage(email: string): string {
-  const demoHint = import.meta.env.DEV ? ` (mã demo: ${MOCK_OTP_CODE})` : '';
+  const demoHint = DEMO_OTP_CODE ? ` (mã demo: ${DEMO_OTP_CODE})` : '';
   return `Đã gửi mã OTP tới ${email}${demoHint}`;
 }
 

@@ -4,7 +4,6 @@ import Icon from '../../components/common/Icon';
 import PageHeader from '../../components/common/PageHeader';
 import Pagination from '../../components/common/Pagination';
 import LockPartnerModal from '../../components/partners/LockPartnerModal';
-import { PARTNER_STATS } from '../../constants/mockData';
 import { ADMIN_ROOT_CRUMB } from '../../constants/navigation';
 import {
   DEFAULT_PARTNER_FILTERS,
@@ -34,7 +33,7 @@ interface FormModalState {
 export default function PartnersPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { partners, createPartner, updatePartner } = usePartners();
+  const { partners, stats, createPartner, updatePartner } = usePartners();
   const { lockPartner, unlockPartner, countVisibleListings } = usePartnerActions();
 
   // draftFilters: giá trị đang nhập; appliedFilters: áp dụng khi bấm "Lọc kết quả" / Enter
@@ -137,7 +136,7 @@ export default function PartnersPage() {
       <PageHeader
         breadcrumbs={[ADMIN_ROOT_CRUMB, { label: 'Quản lý đối tác', icon: 'business_center' }]}
         eyebrow="Hệ sinh thái thông minh"
-        eyebrowNote="B2B Network Hub"
+        eyebrowNote="Mạng lưới đối tác B2B"
         title="Quản trị Đối tác Doanh nghiệp"
         description="Giám sát, thẩm định và kết nối các đơn vị cung cấp dịch vụ du lịch trên toàn lãnh thổ Việt Nam."
         actions={
@@ -162,7 +161,7 @@ export default function PartnersPage() {
         }
       />
 
-      <PartnerStatsCards stats={PARTNER_STATS} />
+      <PartnerStatsCards stats={stats} />
 
       <PartnerFilterBar
         filters={draftFilters}

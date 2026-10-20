@@ -1,3 +1,4 @@
+import Button from '../../../components/common/Button';
 import Icon from '../../../components/common/Icon';
 import Modal from '../../../components/common/Modal';
 import type { Listing } from '../../../types/admin';
@@ -20,13 +21,9 @@ export default function RejectReasonModal({
       description={`${listing.name} • ${listing.id}`}
       onClose={onClose}
       footer={
-        <button
-          type="button"
-          onClick={() => onOpenDetail(listing)}
-          className="flex items-center gap-2 rounded-full bg-surface-container-high px-4 py-2.5 font-label-md text-label-md font-semibold text-primary transition-all hover:bg-surface-container-highest"
-        >
-          <Icon name="info" className="text-[18px]" /> Xem toàn bộ hồ sơ
-        </button>
+        <Button variant="secondary" icon="info" onClick={() => onOpenDetail(listing)}>
+          Xem toàn bộ hồ sơ
+        </Button>
       }
     >
       <div className="flex flex-col gap-3">

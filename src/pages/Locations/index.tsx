@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Icon from '../../components/common/Icon';
+import Button from '../../components/common/Button';
 import {
   DEFAULT_POI_FILTERS,
   POI_CATEGORY_CONFIG,
@@ -11,11 +11,13 @@ import {
 } from '../../constants/poi';
 import { poiEditPath, ROUTES } from '../../constants/routes';
 import { usePois } from '../../hooks/usePois';
+import { useTableSort } from '../../hooks/useTableSort';
 import { useToast } from '../../hooks/useToast';
 import type { Poi, PoiCategoryTab, PoiFilters } from '../../types/admin';
 import { downloadCsv } from '../../utils/exportCsv';
 import { formatNumber, todayIsoDate } from '../../utils/format';
 import { priceSummary, shortPoiName } from '../../utils/poi';
+import { sortItems } from '../../utils/sort';
 import PoiMobilePreviewModal from '../PoiEditor/components/PoiMobilePreviewModal';
 import LocationsHeader from './components/LocationsHeader';
 import PoiCategoryTabs from './components/PoiCategoryTabs';
@@ -23,7 +25,12 @@ import PoiFilterBar from './components/PoiFilterBar';
 import PoiStatsCards from './components/PoiStatsCards';
 import PoiTable from './components/PoiTable';
 import PoiTablePagination from './components/PoiTablePagination';
-import { filterPois, hasActiveFilters } from './locationsUtils';
+import {
+  filterPois,
+  hasActiveFilters,
+  POI_SORT_ACCESSORS,
+  type PoiSortKey,
+} from './locationsUtils';
 
 const SYNC_DURATION_MS = 1500;
 
@@ -42,7 +49,11 @@ export default function LocationsPage() {
   const [viewingPoi, setViewingPoi] = useState<Poi | null>(null);
   const [syncing, setSyncing] = useState(false);
 
-  const filtered = useMemo(() => filterPois(pois, tab, filters), [pois, tab, filters]);
+  const { sort, toggleSort } = useTableSort<PoiSortKey>();
+  const filtered = useMemo(
+    () => sortItems(filterPois(pois, tab, filters), sort, POI_SORT_ACCESSORS),
+    [pois, tab, filters, sort],
+  );
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const pagePois = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -94,7 +105,7 @@ export default function LocationsPage() {
         'Nguồn dữ liệu',
         'Đánh giá',
         'Lượt đánh giá',
-        'Priority Score',
+        'Điểm ưu tiên AI',
         'Trạng thái',
       ],
       filtered.map((poi) => [
@@ -141,6 +152,11 @@ export default function LocationsPage() {
         pois={pagePois}
         onEdit={openEditor}
         onView={setViewingPoi}
+        sort={sort}
+        onSort={(key) => {
+          toggleSort(key);
+          setPage(1);
+        }}
         onResetFilters={resetFilters}
         footer={
           <PoiTablePagination
@@ -166,20 +182,12 @@ export default function LocationsPage() {
           onClose={() => setViewingPoi(null)}
           footer={
             <>
-              <button
-                type="button"
-                onClick={() => setViewingPoi(null)}
-                className="rounded-full bg-surface-container-low px-4 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
-              >
+              <Button variant="neutral" onClick={() => setViewingPoi(null)}>
                 Đóng
-              </button>
-              <button
-                type="button"
-                onClick={() => openEditor(viewingPoi)}
-                className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
-              >
-                <Icon name="edit" className="text-[18px]" /> Chỉnh sửa POI
-              </button>
+              </Button>
+              <Button icon="edit" onClick={() => openEditor(viewingPoi)}>
+                Chỉnh sửa POI
+              </Button>
             </>
           }
         />

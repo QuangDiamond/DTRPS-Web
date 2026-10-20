@@ -34,10 +34,10 @@ export default function ReviewActionBar({
   const docsComplete = verifiedDocs === totalDocs;
 
   return (
-    <div className="fixed right-0 bottom-0 left-72 z-50 border-t border-slate-200 bg-white/95 px-8 py-3.5 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] backdrop-blur-xl">
+    <div className="fixed right-0 bottom-0 left-72 z-50 border-t border-surface-container-high bg-surface-container-lowest/95 px-8 py-3.5 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] backdrop-blur-xl">
       <div className="mx-auto flex max-w-[1600px] flex-col items-center justify-between gap-4 md:flex-row">
         <div className="flex w-full flex-1 items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-600">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-surface-container-high bg-surface-container text-on-surface-variant">
             <Icon name="edit_note" className="text-[20px]" />
           </div>
           <input
@@ -48,13 +48,13 @@ export default function ReviewActionBar({
             placeholder={
               isPending ? 'Nhập ghi chú kiểm duyệt nội bộ...' : 'Không có ghi chú kiểm duyệt'
             }
-            className="h-10 w-full flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 text-[13px] font-medium text-slate-900 shadow-inner transition-all placeholder:text-slate-500 hover:border-slate-300 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70"
+            className="h-10 w-full flex-1 rounded-xl border border-surface-container-high bg-surface-container-low px-4 text-[13px] font-medium text-on-surface shadow-inner transition-all placeholder:text-outline hover:border-outline-variant focus:border-primary focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70"
           />
           <div
             className={`hidden shrink-0 items-center gap-1.5 rounded-xl border px-3 py-2 text-[12px] font-bold xl:flex ${
               docsComplete
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                : 'border-amber-200 bg-amber-50 text-amber-800'
+                ? 'border-secondary-fixed-dim/50 bg-secondary-container/30 text-on-secondary-fixed-variant'
+                : 'border-tertiary-fixed bg-tertiary-fixed/30 text-on-tertiary-fixed-variant'
             }`}
           >
             <Icon name={docsComplete ? 'verified' : 'pending_actions'} className="text-[17px]" />
@@ -70,7 +70,7 @@ export default function ReviewActionBar({
               <button
                 type="button"
                 onClick={onReject}
-                className="flex h-11 items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-5 text-[13px] font-bold text-rose-800 shadow-2xs transition-all hover:bg-rose-100 active:scale-95"
+                className="flex h-11 items-center gap-2 rounded-xl border border-error-container bg-error-container/40 px-5 text-[13px] font-bold text-on-error-container shadow-2xs transition-all hover:bg-error-container/70 active:scale-95"
               >
                 <Icon name="cancel" className="text-[19px]" />
                 <span>TỪ CHỐI ĐỊA ĐIỂM</span>
@@ -80,7 +80,7 @@ export default function ReviewActionBar({
                 onClick={onApprove}
                 disabled={!canApprove}
                 title={canApprove ? undefined : approveBlockedReason}
-                className="flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-[13px] font-extrabold tracking-wide text-white shadow-[0_4px_14px_rgba(0,104,95,0.35)] transition-all hover:bg-[#00574f] hover:shadow-[0_6px_20px_rgba(0,104,95,0.45)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
+                className="flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-[13px] font-extrabold tracking-wide text-on-primary shadow-[0_4px_14px_rgba(0,104,95,0.35)] transition-all hover:bg-on-primary-fixed-variant hover:shadow-[0_6px_20px_rgba(0,104,95,0.45)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
               >
                 <Icon name="verified" filled className="text-[20px]" />
                 <span>PHÊ DUYỆT ĐỊA ĐIỂM</span>
@@ -91,8 +91,8 @@ export default function ReviewActionBar({
               <span
                 className={`flex h-11 items-center gap-2 rounded-xl px-5 text-[13px] font-extrabold ${
                   listing.status === 'approved'
-                    ? 'bg-emerald-50 text-emerald-800'
-                    : 'bg-rose-50 text-rose-800'
+                    ? 'bg-secondary-container/30 text-on-secondary-fixed-variant'
+                    : 'bg-error-container/40 text-on-error-container'
                 }`}
               >
                 <Icon
@@ -105,7 +105,7 @@ export default function ReviewActionBar({
                 <button
                   type="button"
                   onClick={onNext}
-                  className="flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-[13px] font-bold text-white shadow-sm transition-all hover:bg-[#00574f]"
+                  className="flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-[13px] font-bold text-on-primary shadow-sm transition-all hover:bg-on-primary-fixed-variant"
                 >
                   <span>Hồ sơ chờ tiếp theo</span>
                   <Icon name="arrow_forward" className="text-[19px]" />

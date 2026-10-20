@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import ErrorState from '../../components/common/ErrorState';
+import NotFoundState from '../../components/common/NotFoundState';
+import PageLoader from '../../components/common/PageLoader';
 import Icon from '../../components/common/Icon';
 import SendMessageModal, {
   type MessageChannel,
@@ -9,8 +12,15 @@ import LockPartnerModal from '../../components/partners/LockPartnerModal';
 import { ROUTES } from '../../constants/routes';
 import { usePartnerActions } from '../../hooks/usePartnerActions';
 import { usePartners } from '../../hooks/usePartners';
+import { useResource } from '../../hooks/useResource';
 import { useToast } from '../../hooks/useToast';
-import type { Partner, PartnerFormValues } from '../../types/admin';
+import { partnerService } from '../../services/partnerService';
+import type {
+  Partner,
+  PartnerAuditEntry,
+  PartnerFormValues,
+  PartnerProfile,
+} from '../../types/admin';
 import { formatDate } from '../../utils/format';
 import PartnerFormModal from '../Partners/components/PartnerFormModal';
 import AuditLogTab from './components/AuditLogTab';
@@ -19,7 +29,7 @@ import LegalTab from './components/LegalTab';
 import PartnerProfileCard from './components/PartnerProfileCard';
 import ScheduleReviewModal from './components/ScheduleReviewModal';
 import TabPlaceholder from './components/TabPlaceholder';
-import { getPartnerAuditLog, getPartnerProfile } from './partnerProfileUtils';
+import { applyProfileOverrides, mergeAuditLog } from './partnerProfileUtils';
 
 const PARTNER_MESSAGE_CHANNELS: MessageChannel[] = [
   { id: 'email', label: 'Email', icon: 'mail' },
@@ -64,25 +74,57 @@ export default function PartnerDetailPage() {
 
   if (!partner) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-2xl bg-surface-container-lowest py-16 text-center shadow-sm">
-        <Icon name="search_off" className="text-[48px] text-outline" />
-        <h1 className="font-headline-lg text-headline-lg text-on-surface">
-          Không tìm thấy đối tác {id}
-        </h1>
-        <Link
-          to={ROUTES.PARTNERS}
-          className="font-label-md text-label-md text-primary hover:underline"
-        >
-          Quay lại danh sách đối tác
-        </Link>
-      </div>
+      <NotFoundState
+        title={`Không tìm thấy đối tác ${id}`}
+        backTo={ROUTES.PARTNERS}
+        backLabel="Quay lại danh sách đối tác"
+      />
     );
   }
 
-  return <PartnerDetailContent key={partner.id} partner={partner} />;
+  return <PartnerDetailLoader key={partner.id} partner={partner} />;
 }
 
-function PartnerDetailContent({ partner }: { partner: Partner }) {
+/** Tải hồ sơ pháp lý & lịch sử kiểm toán của đối tác qua partnerService */
+function PartnerDetailLoader({ partner }: { partner: Partner }) {
+  const profile = useResource(
+    () => partnerService.getProfile(partner),
+    () => partnerService.peekProfile(partner),
+  );
+  const history = useResource(
+    () => partnerService.getAuditHistory(partner),
+    () => partnerService.peekAuditHistory(partner),
+  );
+
+  if (profile.status === 'error' || history.status === 'error') {
+    return (
+      <ErrorState
+        title="Không tải được hồ sơ đối tác"
+        message={profile.error ?? history.error}
+        onRetry={() => {
+          if (profile.status === 'error') profile.reload();
+          if (history.status === 'error') history.reload();
+        }}
+      />
+    );
+  }
+  if (!profile.data || !history.data) return <PageLoader />;
+  return (
+    <PartnerDetailContent
+      partner={partner}
+      loadedProfile={profile.data}
+      auditHistory={history.data}
+    />
+  );
+}
+
+interface PartnerDetailContentProps {
+  partner: Partner;
+  loadedProfile: PartnerProfile;
+  auditHistory: PartnerAuditEntry[];
+}
+
+function PartnerDetailContent({ partner, loadedProfile, auditHistory }: PartnerDetailContentProps) {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { updatePartner, profileOverrides, updateProfile, auditLogs, logAudit } = usePartners();
@@ -92,10 +134,12 @@ function PartnerDetailContent({ partner }: { partner: Partner }) {
   const [tab, setTab] = useState<DetailTab>('legal');
   const [modal, setModal] = useState<ModalName>(null);
 
-  const profile = getPartnerProfile(partner, profileOverrides[partner.id]);
+  // Chế độ mock: dựng lại hồ sơ theo trạng thái đối tác mới nhất (duyệt/khóa đổi nhãn ngay)
+  const baseProfile = partnerService.peekProfile(partner) ?? loadedProfile;
+  const profile = applyProfileOverrides(baseProfile, profileOverrides[partner.id]);
   const auditEntries = useMemo(
-    () => getPartnerAuditLog(partner, auditLogs[partner.id]),
-    [partner, auditLogs],
+    () => mergeAuditLog(auditHistory, auditLogs[partner.id]),
+    [auditHistory, auditLogs, partner.id],
   );
   const sessionCode = `SEC-${partner.id}-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}`;
   const closeModal = () => setModal(null);

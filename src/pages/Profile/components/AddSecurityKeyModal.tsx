@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Button from '../../../components/common/Button';
 import Icon from '../../../components/common/Icon';
 import Modal from '../../../components/common/Modal';
 import { MAX_SECURITY_KEYS } from '../../../constants/adminProfile';
@@ -37,21 +38,12 @@ export default function AddSecurityKeyModal({
       onClose={onClose}
       footer={
         <>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full bg-surface-container-low px-4 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
-          >
+          <Button variant="neutral" onClick={onClose}>
             Hủy
-          </button>
-          <button
-            type="button"
-            disabled={waiting || isFull}
-            onClick={() => setWaiting(true)}
-            className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <Icon name="usb" className="text-[18px]" /> Bắt đầu liên kết
-          </button>
+          </Button>
+          <Button icon="usb" disabled={waiting || isFull} onClick={() => setWaiting(true)}>
+            Bắt đầu liên kết
+          </Button>
         </>
       }
     >

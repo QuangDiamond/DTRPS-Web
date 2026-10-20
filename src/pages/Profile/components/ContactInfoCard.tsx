@@ -3,19 +3,17 @@ import Icon from '../../../components/common/Icon';
 import { useAdminProfile } from '../../../hooks/useAdminProfile';
 import { useToast } from '../../../hooks/useToast';
 import type { AdminContactInfo } from '../../../types/admin';
+import { isValidEmail, isValidPhone, VALIDATION_MESSAGES } from '../../../utils/validation';
 import ProfileCardHeader, { PROFILE_CARD_CLASS } from './ProfileCardHeader';
 import ProfileInput from './ProfileInput';
 
 type ContactErrors = Partial<Record<keyof AdminContactInfo, string>>;
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_PATTERN = /^[0-9+().\s-]{9,15}$/;
-
 function validate(values: AdminContactInfo): ContactErrors {
   const errors: ContactErrors = {};
   if (!values.fullName.trim()) errors.fullName = 'Vui lòng nhập họ và tên';
-  if (!EMAIL_PATTERN.test(values.socAlertEmail.trim())) errors.socAlertEmail = 'Email không hợp lệ';
-  if (!PHONE_PATTERN.test(values.hotline.trim())) errors.hotline = 'Số điện thoại không hợp lệ';
+  if (!isValidEmail(values.socAlertEmail)) errors.socAlertEmail = VALIDATION_MESSAGES.email;
+  if (!isValidPhone(values.hotline)) errors.hotline = VALIDATION_MESSAGES.phone;
   return errors;
 }
 
@@ -115,7 +113,7 @@ export default function ContactInfoCard({ roleTitle }: { roleTitle: string }) {
           </button>
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-colors hover:bg-secondary"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container"
           >
             <Icon name="check_circle" className="text-[18px]" />
             Cập nhật thông tin

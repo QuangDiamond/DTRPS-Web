@@ -12,7 +12,7 @@ export default function AuthBrandPanel({ content }: { content: AuthBrandContent 
       {/* Logo + tiêu đề */}
       <div className="relative z-10 flex flex-col gap-space-lg">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-container-lowest text-[#0d9488] shadow-sm">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-container-lowest text-brand shadow-sm">
             <Icon name="language" className="text-[24px]" />
           </div>
           <div className="flex flex-col">

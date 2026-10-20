@@ -14,7 +14,7 @@ export const SETTINGS_TABS: { id: SettingsTab; label: string; icon: string }[] =
   { id: 'general', label: 'Cài đặt chung', icon: 'tune' },
   { id: 'listing', label: 'Quy tắc niêm yết & Thẩm định', icon: 'verified' },
   { id: 'ai', label: 'Cấu hình AI Planner & POI', icon: 'psychology' },
-  { id: 'security', label: 'Bảo mật & Phân quyền Admin', icon: 'security' },
+  { id: 'security', label: 'Bảo mật & Phân quyền quản trị', icon: 'security' },
   { id: 'notifications', label: 'Thông báo & Email cảnh báo', icon: 'notifications_active' },
 ];
 
@@ -26,7 +26,7 @@ export const TIMEZONE_OPTIONS: SelectOption<SystemTimezone>[] = [
 
 export const MAP_SYNC_OPTIONS: SelectOption<MapSyncFrequency>[] = [
   { value: '1h', label: 'Mỗi 1 tiếng (Tần suất cao - Phí API cao)' },
-  { value: '6h', label: 'Mỗi 6 tiếng (Khuyến nghị cho Production)' },
+  { value: '6h', label: 'Mỗi 6 tiếng (Khuyến nghị khi vận hành chính thức)' },
   { value: '12h', label: 'Mỗi 12 tiếng' },
   { value: '24h', label: 'Mỗi 24 tiếng (Hằng đêm lúc 02:00 AM)' },
 ];
@@ -64,7 +64,7 @@ export const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
 /** Thông số hạ tầng hiển thị (chỉ đọc) */
 export const PLATFORM_INFO = {
   releaseCode: 'v3.8.4 Enterprise LTS',
-  productionBadge: 'Production v3.8.4',
+  productionBadge: 'Bản vận hành v3.8.4',
   dataCenter: 'Ho Chi Minh City Data Center (Zone VN-South-1)',
   networkStatus: 'Hệ thống phân tán hoạt động bình thường • Trễ mạng POI API: 24ms • Uptime 99.98%',
   storageUsedGb: 682,

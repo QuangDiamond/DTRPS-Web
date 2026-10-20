@@ -11,13 +11,13 @@ export const USER_STATUS_CONFIG: Record<
   { label: string; filterLabel: string; badgeClass: string; dotClass: string }
 > = {
   active: {
-    label: 'Hoạt động (Active)',
+    label: 'Hoạt động',
     filterLabel: 'Đang hoạt động',
     badgeClass: 'bg-secondary-container text-on-secondary-container',
     dotClass: 'bg-primary',
   },
   suspended: {
-    label: 'Tạm khóa (Suspended)',
+    label: 'Tạm khóa',
     filterLabel: 'Đang khóa / Tạm đình chỉ',
     badgeClass: 'bg-error-container text-on-error-container',
     dotClass: 'bg-error',
@@ -26,7 +26,7 @@ export const USER_STATUS_CONFIG: Record<
 
 export const USER_ACCOUNT_TYPE_LABELS: Record<UserAccountType, string> = {
   standard: 'Thành viên Tiêu chuẩn',
-  vip: 'VIP Travel Member',
+  vip: 'Thành viên VIP',
   partner: 'Đối tác liên kết',
 };
 

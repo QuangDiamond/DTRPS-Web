@@ -1,4 +1,6 @@
+import { USER_STATUS_CONFIG } from '../../constants/user';
 import type { AppUser, UserFilters, UserJoinedRange } from '../../types/admin';
+import type { SortAccessors } from '../../utils/sort';
 import { toIsoDate } from '../../utils/format';
 import { normalizeText } from '../../utils/string';
 
@@ -36,3 +38,13 @@ export function filterUsers(users: AppUser[], filters: UserFilters): AppUser[] {
     return [user.name, user.email, user.id].some((field) => normalizeText(field).includes(keyword));
   });
 }
+
+export type UserSortKey = 'name' | 'email' | 'joinedAt' | 'tripCount' | 'status';
+
+export const USER_SORT_ACCESSORS: SortAccessors<AppUser, UserSortKey> = {
+  name: (user) => user.name,
+  email: (user) => user.email,
+  joinedAt: (user) => user.joinedAt,
+  tripCount: (user) => user.tripCount,
+  status: (user) => USER_STATUS_CONFIG[user.status].label,
+};

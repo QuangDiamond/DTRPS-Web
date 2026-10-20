@@ -141,25 +141,25 @@ export const POI_STATUS_CONFIG: Record<
 > = {
   active: {
     label: 'Công khai',
-    longLabel: 'Đang công khai trên hệ thống (Active)',
+    longLabel: 'Đang công khai trên hệ thống',
     badgeClass: 'bg-secondary-container text-on-secondary-container',
     dotClass: 'bg-primary',
   },
   maintenance: {
     label: 'Đang bảo trì',
-    longLabel: 'Đang bảo trì, tạm ngưng đón khách (Maintenance)',
+    longLabel: 'Đang bảo trì, tạm ngưng đón khách',
     badgeClass: 'bg-surface-container-high text-on-surface-variant',
     dotClass: 'bg-outline',
   },
   paused: {
     label: 'Tạm dừng',
-    longLabel: 'Tạm dừng hiển thị trên ứng dụng (Paused)',
+    longLabel: 'Tạm dừng hiển thị trên ứng dụng',
     badgeClass: 'bg-tertiary-fixed/60 text-on-tertiary-fixed-variant',
     dotClass: 'bg-tertiary',
   },
   draft: {
     label: 'Bản nháp',
-    longLabel: 'Bản nháp, chưa công khai (Draft)',
+    longLabel: 'Bản nháp, chưa công khai',
     badgeClass: 'bg-surface-container text-outline',
     dotClass: 'bg-outline-variant',
   },
@@ -184,7 +184,7 @@ export const POI_SOURCE_CONFIG: Record<
     iconClass: '',
   },
   ai: {
-    label: 'AI Verified',
+    label: 'AI đã xác minh',
     filterLabel: 'Thu thập dữ liệu AI',
     icon: 'auto_awesome',
     textClass: 'font-semibold text-secondary',

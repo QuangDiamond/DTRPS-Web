@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Button from '../../../components/common/Button';
 import Icon from '../../../components/common/Icon';
 import Modal from '../../../components/common/Modal';
 import { HIDE_REASONS } from '../../../constants/listing';
@@ -27,13 +28,9 @@ export default function HideListingModal({ targets, onConfirm, onClose }: HideLi
       onClose={onClose}
       footer={
         <>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full bg-surface-container-low px-4 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
-          >
+          <Button variant="neutral" onClick={onClose}>
             Hủy
-          </button>
+          </Button>
           <button
             type="button"
             disabled={!trimmed}

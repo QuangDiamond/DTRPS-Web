@@ -1,4 +1,7 @@
 import { LISTING_OVERDUE_HOURS } from '../../constants/listing';
+import { LISTING_STATUS_CONFIG } from '../../constants/listing';
+import { PROVINCE_NAMES } from '../../constants/partner';
+import type { SortAccessors } from '../../utils/sort';
 import type { Listing, ListingFilters, ListingStatus } from '../../types/admin';
 import { formatDayTime, formatRelativeTime, toIsoDate } from '../../utils/format';
 import { normalizeText } from '../../utils/string';
@@ -80,3 +83,15 @@ export function googleMapsUrl(listing: Listing): string {
     `${listing.name}, ${listing.address}`,
   )}`;
 }
+
+export type ListingSortKey = 'name' | 'partner' | 'category' | 'province' | 'wait' | 'status';
+
+export const LISTING_SORT_ACCESSORS: SortAccessors<Listing, ListingSortKey> = {
+  name: (listing) => listing.name,
+  partner: (listing) => listing.partnerName,
+  category: (listing) => listing.categoryLabel,
+  province: (listing) => PROVINCE_NAMES[listing.province],
+  // Thời gian chờ tăng dần = hồ sơ gửi gần nhất trước
+  wait: (listing) => -new Date(listing.submittedAt).getTime(),
+  status: (listing) => LISTING_STATUS_CONFIG[listing.status].label,
+};

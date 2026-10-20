@@ -11,17 +11,19 @@ import {
   USER_ACCOUNT_TYPE_LABELS,
   USER_STATUS_CONFIG,
 } from '../../constants/user';
+import { useTableSort } from '../../hooks/useTableSort';
 import { useToast } from '../../hooks/useToast';
 import { useUsers } from '../../hooks/useUsers';
 import type { AppUser, UserFilters, UserFormValues } from '../../types/admin';
 import { downloadCsv } from '../../utils/exportCsv';
 import { formatDate, todayIsoDate } from '../../utils/format';
+import { sortItems } from '../../utils/sort';
 import LockUserModal from './components/LockUserModal';
 import UserFilterBar from './components/UserFilterBar';
 import UserFormModal from './components/UserFormModal';
 import UserStatsCards from './components/UserStatsCards';
 import UserTable from './components/UserTable';
-import { filterUsers } from './userUtils';
+import { filterUsers, USER_SORT_ACCESSORS, type UserSortKey } from './userUtils';
 
 type FormState = { mode: 'add' } | { mode: 'edit'; user: AppUser } | null;
 
@@ -40,7 +42,11 @@ export default function UsersPage() {
   const [lockTargets, setLockTargets] = useState<AppUser[] | null>(null);
   const [form, setForm] = useState<FormState>(null);
 
-  const filtered = useMemo(() => filterUsers(users, appliedFilters), [users, appliedFilters]);
+  const { sort, toggleSort } = useTableSort<UserSortKey>();
+  const filtered = useMemo(
+    () => sortItems(filterUsers(users, appliedFilters), sort, USER_SORT_ACCESSORS),
+    [users, appliedFilters, sort],
+  );
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const pageUsers = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -160,7 +166,7 @@ export default function UsersPage() {
         title="Quản lý Khách du lịch"
         titleBadge={
           <span className="rounded-full bg-secondary-container px-2.5 py-0.5 font-label-sm text-label-sm font-semibold text-on-secondary-container">
-            Live Database
+            Dữ liệu trực tiếp
           </span>
         }
         description="Giám sát, phân quyền và hỗ trợ tài khoản thành viên trên toàn bộ nền tảng Smart Travel."
@@ -206,6 +212,11 @@ export default function UsersPage() {
         onViewDetail={(user) => navigate(userDetailPath(user.id))}
         onLock={(user) => openLock([user])}
         onUnlock={(user) => unlock([user])}
+        sort={sort}
+        onSort={(key) => {
+          toggleSort(key);
+          setPage(1);
+        }}
         footer={
           <Pagination
             page={currentPage}

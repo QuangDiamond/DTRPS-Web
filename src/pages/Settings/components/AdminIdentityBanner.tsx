@@ -20,7 +20,7 @@ export default function AdminIdentityBanner({ onOpenMatrix }: { onOpenMatrix: ()
               {admin?.role ?? 'Super Admin'} Quyền Lực Cao Nhất
             </span>
             <span className="rounded-full bg-primary/10 px-space-xs py-0.5 font-label-sm text-label-sm font-bold text-primary">
-              Root Role
+              Vai trò gốc
             </span>
           </div>
           <span className="font-body-sm text-body-sm text-on-surface-variant">

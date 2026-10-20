@@ -4,7 +4,7 @@ import type { AdminNotification, NotificationAction } from '../../../types/admin
 import { formatNotificationTime } from '../notificationUtils';
 
 const ACTION_VARIANT_CLASS: Record<NotificationAction['variant'], string> = {
-  primary: 'bg-primary text-on-primary shadow-sm hover:bg-secondary',
+  primary: 'bg-primary text-on-primary shadow-sm hover:bg-primary-container',
   tertiary: 'bg-tertiary text-on-tertiary shadow-sm hover:opacity-90',
   neutral: 'bg-surface-container-low text-on-surface hover:bg-surface-container-high',
 };

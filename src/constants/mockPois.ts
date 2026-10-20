@@ -1,9 +1,7 @@
 import type { Poi, PoiStats } from '../types/admin';
+import { minutesAgo } from '../utils/mockTime';
 
 const STITCH_IMAGE_BASE = 'https://lh3.googleusercontent.com/aida-public/';
-
-const minutesAgo = (minutes: number): string =>
-  new Date(Date.now() - minutes * 60_000).toISOString();
 
 /** Số liệu toàn quốc trên màn Stitch — store cộng thêm phần chênh lệch phát sinh trong phiên */
 export const POI_BASE_STATS: PoiStats = {
@@ -88,7 +86,7 @@ export const MOCK_POIS: Poi[] = [
     name: 'Bãi biển Mỹ Khê (My Khe Beach)',
     category: 'nature',
     subCategory: 'Bãi biển & Thiên nhiên',
-    highlight: 'Top 6 bãi biển đẹp nhất hành tinh',
+    highlight: 'Một trong 6 bãi biển đẹp nhất hành tinh',
     highlightIcon: 'waves',
     highlightIconClass: 'text-primary',
     tags: 'Biển, Tắm biển, Bình minh, Thể thao nước',

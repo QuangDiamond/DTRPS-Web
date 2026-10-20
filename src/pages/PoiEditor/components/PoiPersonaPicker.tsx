@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import Icon from '../../../components/common/Icon';
 import { POI_PERSONA_SUGGESTIONS } from '../../../constants/poi';
+import { useDismiss } from '../../../hooks/useDismiss';
 import { normalizeText } from '../../../utils/string';
 
 interface PoiPersonaPickerProps {
@@ -14,14 +15,7 @@ export default function PoiPersonaPicker({ personas, onChange }: PoiPersonaPicke
   const [draft, setDraft] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!open) return;
-    const handleClick = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [open]);
+  useDismiss(containerRef, open, () => setOpen(false));
 
   const selected = new Set(personas.map(normalizeText));
   const suggestions = POI_PERSONA_SUGGESTIONS.filter(
@@ -40,7 +34,7 @@ export default function PoiPersonaPicker({ personas, onChange }: PoiPersonaPicke
   return (
     <div className="flex flex-col gap-1.5">
       <span className="font-label-sm text-label-sm font-semibold text-outline">
-        Phù hợp nhất với đối tượng (Personas)
+        Phù hợp nhất với đối tượng
       </span>
       <div ref={containerRef} className="relative flex flex-wrap gap-1.5">
         {personas.map((persona) => (

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Icon from '../../../components/common/Icon';
+import Button from '../../../components/common/Button';
 import Modal from '../../../components/common/Modal';
 
 interface CommissionModalProps {
@@ -28,21 +28,12 @@ export default function CommissionModal({ current, onConfirm, onClose }: Commiss
       onClose={onClose}
       footer={
         <>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full bg-surface-container-low px-4 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
-          >
+          <Button variant="neutral" onClick={onClose}>
             Hủy
-          </button>
-          <button
-            type="button"
-            disabled={!changed}
-            onClick={() => onConfirm(parsed)}
-            className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Icon name="save" className="text-[18px]" /> Lưu mức mới
-          </button>
+          </Button>
+          <Button icon="save" disabled={!changed} onClick={() => onConfirm(parsed)}>
+            Lưu mức mới
+          </Button>
         </>
       }
     >

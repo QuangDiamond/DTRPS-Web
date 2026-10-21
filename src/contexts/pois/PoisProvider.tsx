@@ -88,6 +88,7 @@ export default function PoisProvider({ children }: { children: ReactNode }) {
         ...values,
         id: nextPoiId(poisRef.current),
         source: 'system',
+        vectorEmbedded: values.status !== 'draft',
         rating: 0,
         reviewCount: 0,
         updatedAt: new Date().toISOString(),
@@ -96,6 +97,9 @@ export default function PoisProvider({ children }: { children: ReactNode }) {
       setPois((current) => [poi, ...current]);
       setCreatedCount((count) => count + 1);
       persist(poiService.create(poi), i18n.t('stores.pois.couldNotSaveNew'));
+      if (poi.vectorEmbedded) {
+        persist(searchService.reindex('pois', [poi.id]), i18n.t('stores.pois.couldNotReindex'));
+      }
       return poi;
     },
     [actor, persist],
@@ -108,30 +112,19 @@ export default function PoisProvider({ children }: { children: ReactNode }) {
       const updated: Poi = {
         ...existing,
         ...values,
+        vectorEmbedded: values.status !== 'draft',
         updatedAt: new Date().toISOString(),
         updatedBy: actor,
       };
       setPois((current) => current.map((poi) => (poi.id === id ? updated : poi)));
       persist(poiService.update(id, values), i18n.t('stores.pois.couldNotSaveDestination'));
+      // Nội dung tìm kiếm thay đổi hoặc vừa công khai → server tự cập nhật dữ liệu tìm kiếm
+      if (updated.vectorEmbedded && !values.vectorEmbedded) {
+        persist(searchService.reindex('pois', [id]), i18n.t('stores.pois.couldNotReindex'));
+      }
       return updated;
     },
     [actor, persist],
-  );
-
-  const reindexPois = useCallback(
-    (ids?: string[]) => {
-      const targets = poisRef.current.filter((poi) =>
-        ids ? ids.includes(poi.id) : !poi.vectorEmbedded,
-      );
-      if (targets.length === 0) return 0;
-      const targetIds = new Set(targets.map((poi) => poi.id));
-      setPois((current) =>
-        current.map((poi) => (targetIds.has(poi.id) ? { ...poi, vectorEmbedded: true } : poi)),
-      );
-      persist(searchService.reindex('pois', [...targetIds]), i18n.t('stores.pois.couldNotReindex'));
-      return targets.length;
-    },
-    [persist],
   );
 
   // KPI = số liệu toàn quốc + chênh lệch giữa dữ liệu hiện tại và dữ liệu lúc tải
@@ -147,8 +140,8 @@ export default function PoisProvider({ children }: { children: ReactNode }) {
   }, [pois, baseStats, loadedCounts, createdCount]);
 
   const value = useMemo(
-    () => ({ pois, stats, dataStatus, createPoi, updatePoi, reindexPois }),
-    [pois, stats, dataStatus, createPoi, updatePoi, reindexPois],
+    () => ({ pois, stats, dataStatus, createPoi, updatePoi }),
+    [pois, stats, dataStatus, createPoi, updatePoi],
   );
 
   return <PoisContext.Provider value={value}>{children}</PoisContext.Provider>;

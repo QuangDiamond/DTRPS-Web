@@ -6,7 +6,7 @@ import { settingsService, settingsSource } from '@/services/settingsService';
 import type { SettingsMeta, SystemSettings } from '@/types';
 import { SettingsContext } from './settingsContext';
 
-const EMPTY_META: SettingsMeta = { updatedAt: '', updatedBy: '', updatedIp: '', syncedAt: '' };
+const EMPTY_META: SettingsMeta = { updatedAt: '', updatedBy: '' };
 
 /** Store cấu hình hệ thống — đọc/ghi qua settingsService (GET/PUT /settings) */
 export default function SettingsProvider({ children }: { children: ReactNode }) {
@@ -32,7 +32,7 @@ export default function SettingsProvider({ children }: { children: ReactNode }) 
     (next: SystemSettings) => {
       const now = new Date().toISOString();
       setSettings(next);
-      setMeta((current) => ({ ...current, updatedAt: now, updatedBy: actor, syncedAt: now }));
+      setMeta((current) => ({ ...current, updatedAt: now, updatedBy: actor }));
       persist(settingsService.save(next), i18n.t('stores.settings.couldNotSaveSystem'));
     },
     [actor, persist],

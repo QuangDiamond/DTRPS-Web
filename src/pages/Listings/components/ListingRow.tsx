@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { AiMatchBadge, Icon, VectorIndexBadge } from '@/components/common';
+import { Icon, VectorIndexBadge } from '@/components/common';
 import ListingStatusBadge from '@/components/listings/ListingStatusBadge';
 import ListingThumb from '@/components/listings/ListingThumb';
 import { LISTING_CATEGORY_CONFIG, PARTNER_TIER_CONFIG } from '@/constants/listing';
@@ -14,7 +14,6 @@ interface ListingRowProps {
   onShowReason: (listing: Listing) => void;
   onOpenMap: (listing: Listing) => void;
   /** Độ tương đồng AI (%) khi đang dùng tìm kiếm AI */
-  matchScore?: number;
 }
 
 const HIGHLIGHT_TONE_CLASS: Record<ListingHighlight['tone'], string> = {
@@ -30,7 +29,6 @@ const ICON_BUTTON_CLASS =
 
 export default function ListingRow({
   listing,
-  matchScore,
   selected,
   onToggleSelect,
   onReview,
@@ -71,7 +69,6 @@ export default function ListingRow({
               >
                 {listing.name}
               </button>
-              {matchScore !== undefined && <AiMatchBadge score={matchScore} />}
               <VectorIndexBadge indexed={listing.vectorEmbedded} />
               {overdue && (
                 <span className="shrink-0 rounded bg-error-container px-2 py-0.5 font-label-sm text-label-sm font-bold text-on-error-container">

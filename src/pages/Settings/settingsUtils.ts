@@ -14,12 +14,8 @@ const FIELD_TABS: Record<keyof SystemSettings, Exclude<SettingsTab, 'notificatio
   requireLegalDocs: 'listing',
   gpsDuplicateCheck: 'listing',
   autoEmailPartnerResult: 'listing',
-  minSimilarity: 'ai',
-  mapSyncFrequency: 'ai',
-  searchTopK: 'ai',
   twoFactorRequired: 'security',
   sessionTimeoutMinutes: 'security',
-  ipWhitelist: 'security',
 };
 
 const isSame = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.stringify(b);

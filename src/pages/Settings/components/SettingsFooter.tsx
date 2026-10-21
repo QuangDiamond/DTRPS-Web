@@ -43,10 +43,7 @@ export default function SettingsFooter({
               ? t('settings.settingsFooter.lastSaved', {
                   updatedAt: formatTimestamp(meta.updatedAt),
                 })
-              : t('settings.settingsFooter.byIp', {
-                  updatedBy: meta.updatedBy,
-                  updatedIp: meta.updatedIp,
-                })}
+              : t('settings.settingsFooter.updatedBy', { updatedBy: meta.updatedBy })}
           </span>
         </div>
       </div>

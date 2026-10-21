@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AiSemanticSearchBar, Button } from '@/components/common';
+import { Button } from '@/components/common';
 import {
   DEFAULT_POI_FILTERS,
   POI_CATEGORY_CONFIG,
@@ -11,7 +11,7 @@ import {
   POI_STATUS_CONFIG,
 } from '@/constants/poi';
 import { poiEditPath, ROUTES } from '@/constants/routes';
-import { usePois, useSemanticSearch, useTableSort, useToast } from '@/hooks';
+import { usePois, useTableSort, useToast } from '@/hooks';
 import PoiMobilePreviewModal from '@/pages/PoiEditor/components/PoiMobilePreviewModal';
 import type { Poi, PoiCategoryTab, PoiFilters } from '@/types';
 import { downloadCsv } from '@/utils/exportCsv';
@@ -26,15 +26,13 @@ import PoiTable from './components/PoiTable';
 import PoiTablePagination from './components/PoiTablePagination';
 import { filterPois, hasActiveFilters, POI_SORT_ACCESSORS, type PoiSortKey } from './poiListUtils';
 
-const SYNC_DURATION_MS = 1500;
-
 /** Màn Kho dữ liệu điểm đến (POI Master Data): /admin/locations */
 export default function PoisPage() {
   // Theo dõi ngôn ngữ để nhãn trạng thái/danh mục trong trang đổi ngay khi chuyển VI / EN
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { pois, stats, reindexPois } = usePois();
+  const { pois, stats } = usePois();
 
   const [tab, setTab] = useState<PoiCategoryTab>('all');
   // Bộ lọc đang soạn (draft) và bộ lọc đã áp dụng cho bảng
@@ -43,64 +41,16 @@ export default function PoisPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(POI_PAGE_SIZE_OPTIONS[0]);
   const [viewingPoi, setViewingPoi] = useState<Poi | null>(null);
-  const [syncing, setSyncing] = useState(false);
 
   const { sort, toggleSort } = useTableSort<PoiSortKey>();
-  // Tìm kiếm ngữ nghĩa AI: tài liệu gồm tên, danh mục, tag, mô tả, địa chỉ, đối tượng phù hợp
-  const buildCorpus = useCallback(
-    () =>
-      pois.map((poi) => ({
-        id: poi.id,
-        title: poi.name,
-        text: [
-          poi.name,
-          poi.subCategory,
-          POI_CATEGORY_CONFIG[poi.category].label,
-          poi.tags,
-          poi.highlight,
-          poi.translations?.en?.subCategory,
-          poi.translations?.en?.highlight,
-          poi.description,
-          poi.address,
-          poi.personas.join(' '),
-          poi.price,
-        ]
-          .filter(Boolean)
-          .join(' '),
-        indexed: poi.vectorEmbedded,
-      })),
-    [pois],
+  const filtered = useMemo(
+    () => sortItems(filterPois(pois, tab, filters), sort, POI_SORT_ACCESSORS),
+    [pois, tab, filters, sort],
   );
-  const semantic = useSemanticSearch('pois', buildCorpus);
-  const filtered = useMemo(() => {
-    const base = filterPois(pois, tab, filters);
-    if (!semantic.scores) return sortItems(base, sort, POI_SORT_ACCESSORS);
-    const scores = semantic.scores;
-    const matched = base.filter((poi) => scores.has(poi.id));
-    // Kết quả AI xếp theo độ tương đồng, trừ khi admin bấm sắp xếp theo cột
-    return sort
-      ? sortItems(matched, sort, POI_SORT_ACCESSORS)
-      : matched.sort((a, b) => (scores.get(b.id) ?? 0) - (scores.get(a.id) ?? 0));
-  }, [pois, tab, filters, sort, semantic.scores]);
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const pagePois = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const isFiltered = hasActiveFilters(tab, filters);
-  // Index vector (pgvector) cho các POI chưa index — mô phỏng thời gian xử lý của server
-  useEffect(() => {
-    if (!syncing) return;
-    const timer = window.setTimeout(() => {
-      setSyncing(false);
-      const indexed = reindexPois();
-      showToast(
-        indexed > 0
-          ? t('pois.page.indexedPois', { count: indexed })
-          : t('pois.page.allPoisIndexed'),
-      );
-    }, SYNC_DURATION_MS);
-    return () => window.clearTimeout(timer);
-  }, [syncing, reindexPois, showToast, t]);
-
   const changeTab = (next: PoiCategoryTab) => {
     setTab(next);
     setPage(1);
@@ -162,12 +112,7 @@ export default function PoisPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-space-lg">
-      <PoiListHeader
-        syncing={syncing}
-        onSync={() => setSyncing(true)}
-        onExport={handleExport}
-        onAdd={() => navigate(ROUTES.POI_NEW)}
-      />
+      <PoiListHeader onExport={handleExport} onAdd={() => navigate(ROUTES.POI_NEW)} />
 
       <PoiStatsCards stats={stats} />
 
@@ -180,15 +125,8 @@ export default function PoisPage() {
         onReset={resetFilters}
       />
 
-      <AiSemanticSearchBar
-        state={semantic}
-        placeholder={t('search.semantic.poiPlaceholder')}
-        resultCount={filtered.length}
-      />
-
       <PoiTable
         pois={pagePois}
-        matchScores={semantic.scores}
         onEdit={openEditor}
         onView={setViewingPoi}
         sort={sort}

@@ -24,8 +24,6 @@ import {
   validatePoi,
 } from './poiFormUtils';
 
-const REINDEX_DELAY_MS = 900;
-
 /** Các trường dùng để sinh embedding tìm kiếm ngữ nghĩa */
 const SEMANTIC_FIELDS = new Set<keyof PoiFormValues>([
   'name',
@@ -68,7 +66,7 @@ function PoiEditorForm({ poi }: { poi: Poi | null }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { admin } = useAuth();
-  const { createPoi, updatePoi, reindexPois } = usePois();
+  const { createPoi, updatePoi } = usePois();
   const { showToast } = useToast();
 
   const savedValues = poi ? toPoiFormValues(poi) : EMPTY_POI_VALUES;
@@ -80,8 +78,6 @@ function PoiEditorForm({ poi }: { poi: Poi | null }) {
   const uploader = admin?.role ?? t('common.administrator');
 
   const { blocker, allowNextNavigation } = useUnsavedChangesGuard(isDirty);
-
-  const [reindexing, setReindexing] = useState(false);
 
   const handleChange = useCallback<PoiFieldChange>((key, value) => {
     // Nội dung ngữ nghĩa thay đổi → embedding cũ không còn đúng, cần index lại
@@ -97,18 +93,6 @@ function PoiEditorForm({ poi }: { poi: Poi | null }) {
       return next;
     });
   }, []);
-
-  const handleReindex = () => {
-    setReindexing(true);
-    window.setTimeout(() => {
-      setValues((current) => ({ ...current, vectorEmbedded: true }));
-      if (poi && isSamePoiValues({ ...values, vectorEmbedded: poi.vectorEmbedded }, savedValues)) {
-        reindexPois([poi.id]);
-      }
-      setReindexing(false);
-      showToast(t('poiEditor.aiSearchSection.reindexed'));
-    }, REINDEX_DELAY_MS);
-  };
 
   const handleSave = () => {
     const nextErrors = validatePoi(values);
@@ -139,7 +123,9 @@ function PoiEditorForm({ poi }: { poi: Poi | null }) {
       showToast(t('poiEditor.page.thereNoChangesSave'), 'info');
       return;
     }
-    updatePoi(poi.id, cleaned);
+    const updated = updatePoi(poi.id, cleaned);
+    // Đồng bộ trạng thái tìm kiếm do hệ thống cập nhật khi lưu
+    if (updated) setValues(toPoiFormValues(updated));
     showToast(t('poiEditor.page.savedChangesPoi', { id: poi.id }), 'success');
   };
 
@@ -176,12 +162,7 @@ function PoiEditorForm({ poi }: { poi: Poi | null }) {
             values={values}
             onChange={handleChange}
           />
-          <PoiAiSearchSection
-            values={values}
-            onChange={handleChange}
-            onReindex={handleReindex}
-            reindexing={reindexing}
-          />
+          <PoiAiSearchSection values={values} onChange={handleChange} />
         </div>
       </div>
 

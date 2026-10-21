@@ -1,13 +1,7 @@
 import { Trans, useTranslation } from 'react-i18next';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import {
-  AiSemanticSearchBar,
-  ConfirmModal,
-  Icon,
-  PageHeader,
-  Pagination,
-} from '@/components/common';
+import { ConfirmModal, Icon, PageHeader, Pagination } from '@/components/common';
 import {
   DEFAULT_LISTING_FILTERS,
   LISTING_CATEGORY_CONFIG,
@@ -18,7 +12,7 @@ import {
 import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
 import { PROVINCE_NAMES } from '@/constants/partner';
 import { listingReviewPath, ROUTES } from '@/constants/routes';
-import { useListings, usePartners, useSemanticSearch, useTableSort, useToast } from '@/hooks';
+import { useListings, usePartners, useTableSort, useToast } from '@/hooks';
 import type { Listing, ListingFilters } from '@/types';
 import { downloadCsv } from '@/utils/exportCsv';
 import { formatDayTime, todayIsoDate } from '@/utils/format';
@@ -64,36 +58,11 @@ export default function ListingsPage() {
   const [reasonListing, setReasonListing] = useState<Listing | null>(null);
 
   const { sort, toggleSort } = useTableSort<ListingSortKey>();
-  // Tìm kiếm ngữ nghĩa AI trên các niêm yết đã index vector
-  const buildCorpus = useCallback(
+  const filteredListings = useMemo(
     () =>
-      listings.map((listing) => ({
-        id: listing.id,
-        title: listing.name,
-        text: [
-          listing.name,
-          listing.categoryLabel,
-          listing.address,
-          listing.partnerName,
-          PROVINCE_NAMES[listing.province],
-          LISTING_CATEGORY_CONFIG[listing.category].filterLabel,
-        ]
-          .filter(Boolean)
-          .join(' '),
-        indexed: listing.vectorEmbedded,
-      })),
-    [listings],
+      sortItems(filterListings(listings, tab, filters, partnerId), sort, LISTING_SORT_ACCESSORS),
+    [listings, tab, filters, partnerId, sort],
   );
-  const semantic = useSemanticSearch('listings', buildCorpus);
-  const filteredListings = useMemo(() => {
-    const base = filterListings(listings, tab, filters, partnerId);
-    if (!semantic.scores) return sortItems(base, sort, LISTING_SORT_ACCESSORS);
-    const scores = semantic.scores;
-    const matched = base.filter((listing) => scores.has(listing.id));
-    return sort
-      ? sortItems(matched, sort, LISTING_SORT_ACCESSORS)
-      : matched.sort((a, b) => (scores.get(b.id) ?? 0) - (scores.get(a.id) ?? 0));
-  }, [listings, tab, filters, partnerId, sort, semantic.scores]);
   const totalPages = Math.max(1, Math.ceil(filteredListings.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const pageListings = filteredListings.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -284,15 +253,8 @@ export default function ListingsPage() {
         </div>
       )}
 
-      <AiSemanticSearchBar
-        state={semantic}
-        placeholder={t('search.semantic.listingPlaceholder')}
-        resultCount={filteredListings.length}
-      />
-
       <ListingTable
         listings={pageListings}
-        matchScores={semantic.scores}
         selectedIds={selectedIds}
         onToggleSelect={toggleSelect}
         onToggleSelectAll={toggleSelectAll}

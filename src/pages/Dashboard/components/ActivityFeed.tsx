@@ -138,24 +138,6 @@ export default function ActivityFeed({ activities, refreshing, onRefresh }: Acti
           })}
         </div>
       </div>
-
-      {/* Trạng thái AI */}
-      <div className="mt-6 flex items-center justify-between rounded-xl border border-surface-container/60 bg-surface-container-low/80 p-3.5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Icon name="smart_toy" className="text-[20px]" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-label-md text-[13px] font-bold text-on-surface">
-              {t('dashboard.activity.aiTitle')}
-            </span>
-            <span className="font-body-sm text-[11px] text-on-surface-variant">
-              {t('dashboard.activity.aiStatus')}
-            </span>
-          </div>
-        </div>
-        <span className="h-2.5 w-2.5 rounded-full bg-primary ring-4 ring-secondary-container/50" />
-      </div>
     </div>
   );
 }

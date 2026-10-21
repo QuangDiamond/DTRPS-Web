@@ -4,23 +4,15 @@ import { Icon } from '@/components/common';
 import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
 
 interface ReportsHeaderProps {
-  refreshing: boolean;
-  onRefresh: () => void;
   onExportPdf: () => void;
   onExportCsv: () => void;
   onOpenAi: () => void;
 }
 
 const TOOL_BUTTON_CLASS =
-  'flex h-10 items-center gap-2 rounded-xl border border-surface-container bg-surface-container-lowest px-3.5 shadow-xs transition-all hover:border-primary/40 hover:text-primary disabled:opacity-60';
+  'flex h-10 items-center gap-2 rounded-xl border border-surface-container bg-surface-container-lowest px-3.5 shadow-xs transition-all hover:border-primary/40 hover:text-primary';
 
-export default function ReportsHeader({
-  refreshing,
-  onRefresh,
-  onExportPdf,
-  onExportCsv,
-  onOpenAi,
-}: ReportsHeaderProps) {
+export default function ReportsHeader({ onExportPdf, onExportCsv, onOpenAi }: ReportsHeaderProps) {
   const { t } = useTranslation();
 
   return (
@@ -51,24 +43,6 @@ export default function ReportsHeader({
       </div>
 
       <div className="flex flex-wrap items-center gap-2.5 lg:shrink-0 lg:flex-nowrap print:hidden">
-        <button
-          type="button"
-          onClick={onRefresh}
-          disabled={refreshing}
-          className={`group ${TOOL_BUTTON_CLASS} text-on-surface-variant`}
-        >
-          <Icon
-            name="refresh"
-            className={`text-[19px] transition-transform duration-500 group-hover:rotate-180 ${
-              refreshing ? 'animate-spin' : ''
-            }`}
-          />
-          <span className="font-label-md text-[13px] font-medium">
-            {refreshing
-              ? t('reports.reportsHeader.reloading')
-              : t('reports.reportsHeader.reloadData')}
-          </span>
-        </button>
         <button
           type="button"
           onClick={onExportPdf}

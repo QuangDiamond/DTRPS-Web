@@ -8,9 +8,6 @@ import PoiSectionCard from './PoiSectionCard';
 interface PoiAiSearchSectionProps {
   values: PoiFormValues;
   onChange: PoiFieldChange;
-  /** Sinh embedding & index lại vào pgvector */
-  onReindex: () => void;
-  reindexing: boolean;
 }
 
 interface InlineFieldProps {
@@ -42,12 +39,7 @@ function InlineField({ label, icon, iconClass, value, placeholder, onChange }: I
 }
 
 /** Mục 5: Tìm kiếm ngữ nghĩa AI — trạng thái index vector và ngữ cảnh dùng để sinh embedding */
-export default function PoiAiSearchSection({
-  values,
-  onChange,
-  onReindex,
-  reindexing,
-}: PoiAiSearchSectionProps) {
+export default function PoiAiSearchSection({ values, onChange }: PoiAiSearchSectionProps) {
   const { t } = useTranslation();
   return (
     <PoiSectionCard
@@ -58,11 +50,6 @@ export default function PoiAiSearchSection({
       description={t('poiEditor.aiSearchSection.description')}
       decoration={
         <div className="pointer-events-none absolute -top-12 -right-12 h-36 w-36 rounded-full bg-primary-fixed/20 blur-2xl" />
-      }
-      badge={
-        <span className="rounded-full bg-secondary-container px-2 py-0.5 font-label-sm text-label-sm font-semibold text-on-secondary-container">
-          pgvector
-        </span>
       }
     >
       <div className="flex flex-col gap-2 rounded-lg bg-surface-container-low p-space-md">
@@ -89,17 +76,6 @@ export default function PoiAiSearchSection({
             ? t('poiEditor.aiSearchSection.indexedHint')
             : t('poiEditor.aiSearchSection.notIndexedHint')}
         </span>
-        <button
-          type="button"
-          onClick={onReindex}
-          disabled={reindexing}
-          className="mt-1 flex items-center justify-center gap-2 rounded-lg bg-surface-container-lowest py-2 font-label-md text-label-md font-semibold text-primary transition-colors hover:bg-surface-container disabled:opacity-60"
-        >
-          <Icon name="sync" className={`text-[18px] ${reindexing ? 'animate-spin' : ''}`} />
-          {reindexing
-            ? t('poiEditor.aiSearchSection.reindexing')
-            : t('poiEditor.aiSearchSection.reindex')}
-        </button>
       </div>
 
       <InlineField

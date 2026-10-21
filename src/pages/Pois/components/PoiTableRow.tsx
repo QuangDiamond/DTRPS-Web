@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import { AiMatchBadge, Icon, VectorIndexBadge } from '@/components/common';
+import { Icon, VectorIndexBadge } from '@/components/common';
 import { POI_CATEGORY_CONFIG, POI_SOURCE_CONFIG, POI_STATUS_CONFIG } from '@/constants/poi';
 import type { Poi } from '@/types';
 import { formatNumber } from '@/utils/format';
@@ -17,13 +17,12 @@ interface PoiTableRowProps {
   onEdit: (poi: Poi) => void;
   onView: (poi: Poi) => void;
   /** Độ tương đồng AI (%) khi đang dùng tìm kiếm AI */
-  matchScore?: number;
 }
 
 const ACTION_BUTTON_CLASS =
   'rounded-lg p-1.5 text-on-surface-variant transition-all hover:bg-surface-container hover:text-primary';
 
-export default function PoiTableRow({ poi, matchScore, onEdit, onView }: PoiTableRowProps) {
+export default function PoiTableRow({ poi, onEdit, onView }: PoiTableRowProps) {
   const { t } = useTranslation();
   const [imageFailed, setImageFailed] = useState(false);
   const category = POI_CATEGORY_CONFIG[poi.category];
@@ -60,7 +59,6 @@ export default function PoiTableRow({ poi, matchScore, onEdit, onView }: PoiTabl
               >
                 {shortPoiName(poi.name)}
               </button>
-              {matchScore !== undefined && <AiMatchBadge score={matchScore} />}
             </div>
             <span className="mt-0.5 flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant">
               <Icon

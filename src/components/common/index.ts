@@ -1,9 +1,5 @@
 /** UI dùng chung — import qua `@/components/common` */
-export {
-  AiMatchBadge,
-  default as AiSemanticSearchBar,
-  VectorIndexBadge,
-} from './AiSemanticSearchBar';
+export { AiMatchBadge, VectorIndexBadge } from './AiSearchBadges';
 export { default as Button } from './Button';
 export type { ButtonVariant, ButtonSize } from './Button';
 export { default as ConfirmModal } from './ConfirmModal';

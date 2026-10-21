@@ -444,9 +444,7 @@
       "businessAccount": "Business account",
       "published": "Published",
       "inQueue": "In queue",
-      "reason": "Reason: {{reason}}",
-      "aiTitle": "AI monitoring assistant",
-      "aiStatus": "45ms response • 99.98% SLA"
+      "reason": "Reason: {{reason}}"
     }
   },
   "users": {
@@ -721,7 +719,6 @@
     },
     "partnerRow": {
       "viewPartnerDetails": "View partner details",
-      "verifyPartnerProfile": "Verify partner profile",
       "unlockAccount": "Unlock account",
       "representative": "Representative: {{representative}}",
       "placeList": "Place list",
@@ -1680,10 +1677,7 @@
       "systemAdministration": "System administration",
       "poiDestinations": "POI destinations",
       "travelDestinationDataHub": "Travel Destination Data Hub (POI)",
-      "syncing": "Updating...",
-      "aiEngineSync": "AI search",
       "nationwideDatabaseLandmarksHeritage": "Nationwide database of landmarks, heritage sites, food, accommodation and attractions that travelers can find by describing what they want.",
-      "syncPoiData": "Update AI search",
       "exportPoiCatalog": "Export POI catalog",
       "addNewPoi": "Add new POI"
     },
@@ -1730,10 +1724,7 @@
       "destinationsNationwide": "destinations nationwide",
       "shownMobileApp": "{{id}} • Shown on the Mobile App",
       "editPoi": "Edit POI",
-      "vectorIndexed": "AI search",
-      "indexedPois_one": "Added {{count}} POI to AI search",
-      "indexedPois_other": "Added {{count}} POIs to AI search",
-      "allPoisIndexed": "All POIs are already in AI search"
+      "vectorIndexed": "AI search"
     },
     "constants": {
       "all": "All",
@@ -1767,7 +1758,7 @@
       "indexed": "In AI search",
       "notIndexed": "Not in AI search yet",
       "indexedTooltip": "Travelers can find this place by describing it in the AI search box.",
-      "notIndexedTooltip": "Travelers cannot find this place with AI search yet. It is added automatically once approved, or click \"Update AI search\" after editing its content."
+      "notIndexedTooltip": "Travelers cannot find this place with AI search yet. It updates automatically when the place is saved or approved; drafts are not shown in search."
     }
   },
   "poiEditor": {
@@ -1945,10 +1936,7 @@
       "description": "What AI relies on so travelers can find this place when they describe it in their own words",
       "indexStatus": "AI search status",
       "indexedHint": "Up to date — travelers can find this place with AI search.",
-      "notIndexedHint": "The content changed or has not been updated — travelers cannot find this place with AI search yet.",
-      "reindex": "Update AI search",
-      "reindexing": "Updating...",
-      "reindexed": "AI search updated for this destination"
+      "notIndexedHint": "This updates automatically when you save the destination. Drafts are not shown in traveler search."
     }
   },
   "reports": {
@@ -1998,8 +1986,6 @@
       "serviceType": "Service type"
     },
     "reportsHeader": {
-      "reloading": "Reloading...",
-      "reloadData": "Reload data",
       "exportPdf": "Export PDF",
       "exportCsvExcel": "Export CSV/Excel",
       "aiAnalysis": "AI analysis"
@@ -2038,7 +2024,6 @@
       "vnd": "{{avgSpendVnd}} VND"
     },
     "page": {
-      "reportDataUpdated": "Report data updated",
       "reportExportedCsvFile": "Report exported to a CSV file (opens in Excel)",
       "chooseSaveAsPdf": "Choose \"Save as PDF\" in the print dialog to export the report",
       "couldNotLoadReport": "Could not load the report"
@@ -2231,19 +2216,6 @@
     "aiPlannerCard": {
       "nationalMapDataSync": "National map data sync frequency (OSM & Google Maps)"
     },
-    "ipWhitelistField": {
-      "theIpRangeMust": "The IP range must use CIDR notation, e.g. 118.70.192.0/24",
-      "thisIpRangeAlready": "This IP range is already in the list",
-      "newOffice": "New office",
-      "addedIpRangeNot": "Added IP range {{value}} (not saved)",
-      "removedIpRangeNot": "Removed IP range {{cidr}} (not saved)",
-      "restrictAccessOperationsOffice": "Restrict access to operations office IP ranges",
-      "addCidrIp": "+ Add CIDR IP",
-      "removeIpRange": "Remove IP range",
-      "noIpRestrictionAny": "No IP restriction — any address can reach the admin portal",
-      "noteOfficeBranch": "Note (office, branch...)",
-      "add": "Add"
-    },
     "listingSlaCard": {
       "listingReviewStandardsSla": "Listing Review Standards (SLA)",
       "tourismServiceQualityRequirements": "Tourism service quality requirements and the partner review process",
@@ -2287,19 +2259,16 @@
       "twoFactorAuthentication2fa": "Two-factor authentication 2FA (TOTP Authenticator)",
       "requiredAllSuperAdmins": "Required for all Super Admins, Moderators & Support staff",
       "autoSignOutAfter": "Auto sign-out after inactivity",
-      "minutes": "{{minutes}} minutes",
-      "securityAuditLog": "Security audit log",
-      "distributedTamperProofAutomatic": "Distributed, tamper-proof automatic storage",
-      "daysEnabled": "{{auditLogRetentionDays}} days (enabled)"
+      "minutes": "{{minutes}} minutes"
     },
     "settingsFooter": {
       "unsavedChangesSettingsGroups_one": "Unsaved changes in {{count}} settings group",
       "unsavedChangesSettingsGroups_other": "Unsaved changes in {{count}} settings groups",
       "lastConfigurationUpdate": "Last configuration update: {{updatedAt}}",
       "lastSaved": "Last saved: {{updatedAt}}",
-      "byIp": "By: {{updatedBy}} (IP: {{updatedIp}})",
       "cancel": "Cancel",
-      "saveConfigurationChanges": "Save configuration changes"
+      "saveConfigurationChanges": "Save configuration changes",
+      "updatedBy": "By: {{updatedBy}}"
     },
     "settingToggleRow": {
       "enabled": "Enabled",
@@ -2321,9 +2290,7 @@
       "restoreDefaults": "Restore defaults",
       "saveConfigurationChanges": "Save configuration changes",
       "unsavedChanges": "Unsaved changes",
-      "operationsServerCluster": "Operations server cluster: {{dataCenter}}",
-      "lastSynced": "Last synced: <c0>{{syncedAt}}</c0>",
-      "allParametersIncludingIp": "All parameters (including the IP list and notification rules) will return to their recommended values. Changes only take effect after you click <c0>Save configuration changes</c0>.",
+      "allParametersIncludingIp": "All parameters (including notification rules) will return to their recommended values. Changes only take effect after you click <c0>Save configuration changes</c0>.",
       "restoreDefaultConfiguration": "Restore default configuration?",
       "restore": "Restore",
       "adminAccountsWillProtected": "Admin accounts will be protected by passwords only, increasing the risk of account takeover. SOC2 Type II requires 2FA for all administrators.",
@@ -2336,20 +2303,11 @@
     "constants": {
       "generalSettings": "General settings",
       "listingReviewRules": "Listing & Review rules",
-      "aiPlannerPoiConfiguration": "AI Search (pgvector) & POI",
       "securityAdminPermissions": "Security & Admin permissions",
       "notificationsAlertEmails": "Notifications & Alert emails",
       "gmt700Hanoi": "GMT+7:00 (Hanoi, Bangkok, Jakarta)",
       "gmt800Singapore": "GMT+8:00 (Singapore, Beijing)",
-      "everyHourHighFrequency": "Every hour (High frequency - High API cost)",
-      "every6HoursRecommended": "Every 6 hours (Recommended for production)",
-      "every12Hours": "Every 12 hours",
-      "every24HoursNightly": "Every 24 hours (Nightly at 02:00 AM)",
-      "n50Lenient": "50% (Broad)",
-      "n85Recommended": "85% (Strict)",
-      "n95Strict": "95% (Very strict)",
       "productionBuildV38": "Production build v3.8.4",
-      "distributedSystemOperatingNormally": "Distributed system operating normally • POI API latency: 24ms • Uptime 99.98%",
       "fullAccess": "Full access",
       "viewProcess": "View & process",
       "viewOnly": "View only",
@@ -2363,20 +2321,7 @@
       "poiDestinations": "POI destinations",
       "reportsAnalytics": "Reports & Analytics",
       "notifications": "Notifications",
-      "systemSettings": "System settings",
-      "n75Standard": "75% (Standard)"
-    },
-    "aiSearchCard": {
-      "title": "AI Semantic Search (pgvector)",
-      "description": "Analyzes natural-language queries and ranks POIs / listings by vector similarity",
-      "minSimilarity": "Minimum AI match score",
-      "topK": "Maximum results per query (top-K)",
-      "topKHint": "Balance recall and speed",
-      "topKSelected": "{{count}} results",
-      "embeddingModel": "Embedding model",
-      "dimensions": "{{count}} dimensions",
-      "recall": "Retrieval accuracy (recall@10)",
-      "indexType": "HNSW index • cosine"
+      "systemSettings": "System settings"
     }
   },
   "profile": {
@@ -2564,10 +2509,6 @@
       "backupRecoveryCodesAvailable": "Backup recovery codes available",
       "unusedCodes_one": "{{count}} unused code",
       "unusedCodes_other": "{{count}} unused codes",
-      "adminPortalIpRange": "Admin portal IP range restriction",
-      "allowedIpRanges_one": "{{count}} allowed IP range",
-      "allowedIpRanges_other": "{{count}} allowed IP ranges",
-      "noIpRestrictionAny": "No IP restriction — any address can access it",
       "autoSignOutAfter": "Auto sign-out after ≤ 30 minutes of inactivity",
       "currentlyMinutes": "Currently {{sessionTimeoutMinutes}} minutes",
       "enterpriseGradeSecurityLevel": "Enterprise-grade security (level 4)",
@@ -2728,15 +2669,6 @@
   },
   "search": {
     "semantic": {
-      "label": "AI Semantic Search",
-      "submit": "Search with AI",
-      "searching": "Analyzing...",
-      "poiPlaceholder": "Describe the destination in plain language, e.g. \"quiet beach for families in Da Nang\"",
-      "listingPlaceholder": "Describe what you need, e.g. \"homestay near Hoi An ancient town with a garden\"",
-      "results_one": "{{count}} match for \"{{query}}\"",
-      "results_other": "{{count}} matches for \"{{query}}\"",
-      "sortedBySimilarity": "Sorted by AI match score",
-      "clear": "Clear AI search",
       "match": "{{score}}% AI match",
       "matchTitle": "AI Match Score (cosine similarity, pgvector)"
     }

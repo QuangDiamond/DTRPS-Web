@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorState, PageLoader } from '@/components/common';
 import { useListings, usePartners, usePois, useResource, useToast, useUsers } from '@/hooks';
 import { reportService } from '@/services/reportService';
@@ -24,7 +24,8 @@ import {
   scaleTotals,
 } from './reportUtils';
 
-const REFRESH_DELAY_MS = 700;
+/** Chu kỳ tự làm mới số liệu báo cáo */
+const AUTO_REFRESH_MS = 60_000;
 
 /** Màn Báo cáo & Thống kê: /admin/reports — dữ liệu tổng hợp theo bộ lọc qua reportService */
 export default function ReportsPage() {
@@ -53,7 +54,6 @@ function ReportView({ filters, onFiltersChange }: ReportViewProps) {
     () => reportService.getOverview(filters),
     () => reportService.peekOverview(filters),
   );
-  const [refreshing, setRefreshing] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
 
   const data = report.data;
@@ -84,14 +84,17 @@ function ReportView({ filters, onFiltersChange }: ReportViewProps) {
     REPORT_SERVICE_OPTIONS.find((option) => option.value === filters.service)?.label.toLowerCase(),
   ].join(' • ');
 
-  const handleRefresh = () => {
-    setRefreshing(true);
-    window.setTimeout(() => {
-      report.reload();
-      setRefreshing(false);
-      showToast(t('reports.page.reportDataUpdated'));
-    }, REFRESH_DELAY_MS);
-  };
+  // "Cập nhật thời gian thực": tự tải lại số liệu định kỳ khi admin đang xem trang
+  const reloadRef = useRef(report.reload);
+  useEffect(() => {
+    reloadRef.current = report.reload;
+  });
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') reloadRef.current();
+    }, AUTO_REFRESH_MS);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const handleExportCsv = () => {
     if (!data) return;
@@ -109,8 +112,6 @@ function ReportView({ filters, onFiltersChange }: ReportViewProps) {
     <div className="flex w-full flex-col space-y-7">
       <div className="flex flex-col gap-4">
         <ReportsHeader
-          refreshing={refreshing || (report.status === 'loading' && Boolean(data))}
-          onRefresh={handleRefresh}
           onExportPdf={handleExportPdf}
           onExportCsv={handleExportCsv}
           onOpenAi={() => data && setAiOpen(true)}

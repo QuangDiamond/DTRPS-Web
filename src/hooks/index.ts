@@ -12,7 +12,6 @@ export * from './usePartners';
 export * from './usePersist';
 export * from './usePois';
 export * from './useResource';
-export * from './useSemanticSearch';
 export * from './useSettings';
 export * from './useTableSort';
 export * from './useToast';

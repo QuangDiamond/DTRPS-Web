@@ -4,9 +4,6 @@ import type { SettingsSnapshot, SystemSettings } from '@/types';
 import { ENDPOINTS } from './endpoints';
 import { createSource, writeRequest } from './request';
 
-/** IP giả lập của máy quản trị — khi có backend server tự ghi nhận */
-export const MOCK_ADMIN_IP = '118.70.192.14';
-
 const MOCK_SNAPSHOT: SettingsSnapshot = {
   settings: DEFAULT_SYSTEM_SETTINGS,
   meta: {
@@ -14,8 +11,6 @@ const MOCK_SNAPSHOT: SettingsSnapshot = {
     get updatedBy() {
       return i18n.t('services.settingsService.superAdminAdministrator');
     },
-    updatedIp: MOCK_ADMIN_IP,
-    syncedAt: new Date(Date.now() - 4 * 60_000).toISOString(),
   },
 };
 

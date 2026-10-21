@@ -16,22 +16,18 @@ interface PartnerRowProps {
   onOpenMenu: (partner: Partner, event: MouseEvent<HTMLButtonElement>) => void;
 }
 
-/** Nút đầu tiên của cột Thao tác thay đổi theo trạng thái hồ sơ */
+const VIEW_DETAIL_ACTION = {
+  icon: 'visibility',
+  get title() {
+    return i18n.t('partners.partnerRow.viewPartnerDetails');
+  },
+  iconClass: '',
+};
+
+/** Nút đầu tiên của cột Thao tác: xem chi tiết (xác minh cũng làm trong trang chi tiết), riêng tài khoản bị khóa là mở khóa */
 const PRIMARY_ACTION: Record<PartnerStatus, { icon: string; title: string; iconClass: string }> = {
-  active: {
-    icon: 'visibility',
-    get title() {
-      return i18n.t('partners.partnerRow.viewPartnerDetails');
-    },
-    iconClass: '',
-  },
-  pending: {
-    icon: 'rule',
-    get title() {
-      return i18n.t('partners.partnerRow.verifyPartnerProfile');
-    },
-    iconClass: 'text-tertiary',
-  },
+  active: VIEW_DETAIL_ACTION,
+  pending: VIEW_DETAIL_ACTION,
   suspended: {
     icon: 'lock_open',
     get title() {

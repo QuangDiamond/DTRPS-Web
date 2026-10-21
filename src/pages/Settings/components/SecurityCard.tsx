@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/common';
-import { PLATFORM_INFO, SESSION_TIMEOUT_OPTIONS } from '@/constants/settings';
+import { SESSION_TIMEOUT_OPTIONS } from '@/constants/settings';
 import type { SettingsFieldChange } from '@/pages/Settings/settingsUtils';
 import type { SystemSettings } from '@/types';
-import IpWhitelistField from './IpWhitelistField';
 import SettingsCard from './SettingsCard';
 import SettingToggleRow from './SettingToggleRow';
 
@@ -65,31 +64,6 @@ export default function SecurityCard({ values, onChange, onRequestDisable2fa }: 
               );
             })}
           </div>
-        </div>
-
-        <IpWhitelistField
-          entries={values.ipWhitelist}
-          onChange={(entries) => onChange('ipWhitelist', entries)}
-        />
-
-        <div className="flex items-center justify-between gap-space-sm rounded-xl bg-surface-container-low p-space-md">
-          <div className="flex items-center gap-space-sm">
-            <Icon name="history_toggle_off" className="text-[20px] text-primary" />
-            <div className="flex flex-col">
-              <span className="font-label-md text-label-md font-semibold text-on-surface">
-                {t('settings.securityCard.securityAuditLog')}
-              </span>
-              <span className="font-body-sm text-body-sm text-on-surface-variant">
-                {t('settings.securityCard.distributedTamperProofAutomatic')}
-              </span>
-            </div>
-          </div>
-          <span className="flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-space-sm py-1 font-label-sm text-label-sm font-bold text-primary">
-            <Icon name="check" className="text-[14px]" />
-            {t('settings.securityCard.daysEnabled', {
-              auditLogRetentionDays: PLATFORM_INFO.auditLogRetentionDays,
-            })}
-          </span>
         </div>
       </div>
     </SettingsCard>

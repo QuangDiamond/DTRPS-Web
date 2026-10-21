@@ -8,8 +8,6 @@ export interface PoisContextValue {
   dataStatus: DataStatus;
   createPoi: (values: PoiFormValues) => Poi;
   updatePoi: (id: string, values: PoiFormValues) => Poi | null;
-  /** Sinh embedding & index vào pgvector; bỏ trống = toàn bộ POI chưa index. Trả về số POI đã index */
-  reindexPois: (ids?: string[]) => number;
 }
 
 export const PoisContext = createContext<PoisContextValue | null>(null);

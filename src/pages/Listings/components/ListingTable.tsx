@@ -15,7 +15,6 @@ interface ListingTableProps {
   onShowReason: (listing: Listing) => void;
   onOpenMap: (listing: Listing) => void;
   /** Độ tương đồng AI (%) theo id khi đang dùng tìm kiếm AI */
-  matchScores?: Map<string, number> | null;
   sort: SortState<ListingSortKey> | null;
   onSort: (key: ListingSortKey) => void;
   footer: ReactNode;
@@ -32,7 +31,6 @@ const COLUMNS: { labelKey: TranslationKey; sortKey: ListingSortKey }[] = [
 
 export default function ListingTable({
   listings,
-  matchScores,
   selectedIds,
   onToggleSelect,
   onToggleSelectAll,
@@ -100,7 +98,6 @@ export default function ListingTable({
                   onReview={onReview}
                   onShowReason={onShowReason}
                   onOpenMap={onOpenMap}
-                  matchScore={matchScores?.get(listing.id)}
                 />
               ))
             )}

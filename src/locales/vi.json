@@ -441,9 +441,7 @@
       "businessAccount": "Tài khoản Doanh nghiệp",
       "published": "Đã xuất bản",
       "inQueue": "Đang trong hàng chờ",
-      "reason": "Lý do: {{reason}}",
-      "aiTitle": "Trợ lý AI giám sát",
-      "aiStatus": "Phản hồi 45ms • 99.98% SLA"
+      "reason": "Lý do: {{reason}}"
     }
   },
   "users": {
@@ -705,7 +703,6 @@
     },
     "partnerRow": {
       "viewPartnerDetails": "Xem chi tiết đối tác",
-      "verifyPartnerProfile": "Xác minh hồ sơ đối tác",
       "unlockAccount": "Mở khóa tài khoản",
       "representative": "Đại diện: {{representative}}",
       "placeList": "Danh sách địa điểm",
@@ -1633,10 +1630,7 @@
       "systemAdministration": "Quản trị hệ thống",
       "poiDestinations": "Quản lý điểm đến POI",
       "travelDestinationDataHub": "Kho Dữ liệu Điểm đến Du lịch (POI)",
-      "syncing": "Đang cập nhật...",
-      "aiEngineSync": "Tìm kiếm AI",
       "nationwideDatabaseLandmarksHeritage": "Cơ sở dữ liệu các danh lam thắng cảnh, di sản, ẩm thực, lưu trú và điểm tham quan toàn quốc, giúp du khách tìm điểm đến bằng câu mô tả tự nhiên.",
-      "syncPoiData": "Cập nhật tìm kiếm AI",
       "exportPoiCatalog": "Xuất danh mục POI",
       "addNewPoi": "Thêm POI mới"
     },
@@ -1681,9 +1675,7 @@
       "destinationsNationwide": "điểm đến toàn quốc",
       "shownMobileApp": "{{id}} • Hiển thị trên App Mobile",
       "editPoi": "Chỉnh sửa POI",
-      "vectorIndexed": "Tìm kiếm AI",
-      "indexedPois_other": "Đã đưa {{count}} POI vào tìm kiếm AI",
-      "allPoisIndexed": "Tất cả POI đã có trong tìm kiếm AI"
+      "vectorIndexed": "Tìm kiếm AI"
     },
     "constants": {
       "all": "Tất cả",
@@ -1717,7 +1709,7 @@
       "indexed": "Có trong tìm kiếm AI",
       "notIndexed": "Chưa có trong tìm kiếm AI",
       "indexedTooltip": "Du khách tìm thấy địa điểm này khi mô tả bằng câu tự nhiên trong ô tìm kiếm AI.",
-      "notIndexedTooltip": "Du khách chưa tìm thấy địa điểm này bằng tìm kiếm AI. Địa điểm sẽ tự được thêm khi được duyệt, hoặc bấm \"Cập nhật tìm kiếm AI\" sau khi sửa nội dung."
+      "notIndexedTooltip": "Du khách chưa tìm thấy địa điểm này bằng tìm kiếm AI. Hệ thống tự cập nhật khi địa điểm được lưu hoặc được duyệt; bản nháp không xuất hiện trong tìm kiếm."
     }
   },
   "poiEditor": {
@@ -1892,10 +1884,7 @@
       "description": "Nội dung AI dựa vào để du khách tìm thấy điểm đến khi họ mô tả bằng câu tự nhiên",
       "indexStatus": "Trạng thái tìm kiếm AI",
       "indexedHint": "Đã cập nhật — du khách có thể tìm thấy điểm đến này bằng tìm kiếm AI.",
-      "notIndexedHint": "Nội dung vừa thay đổi hoặc chưa được cập nhật — du khách chưa tìm thấy điểm đến này bằng tìm kiếm AI.",
-      "reindex": "Cập nhật tìm kiếm AI",
-      "reindexing": "Đang cập nhật...",
-      "reindexed": "Đã cập nhật tìm kiếm AI cho điểm đến"
+      "notIndexedHint": "Hệ thống tự cập nhật khi bạn lưu điểm đến. Bản nháp sẽ không xuất hiện trong tìm kiếm của du khách."
     }
   },
   "reports": {
@@ -1945,8 +1934,6 @@
       "serviceType": "Loại dịch vụ"
     },
     "reportsHeader": {
-      "reloading": "Đang tải lại...",
-      "reloadData": "Tải lại dữ liệu",
       "exportPdf": "Xuất PDF",
       "exportCsvExcel": "Xuất CSV/Excel",
       "aiAnalysis": "Phân tích AI"
@@ -1985,7 +1972,6 @@
       "vnd": "{{avgSpendVnd}} VNĐ"
     },
     "page": {
-      "reportDataUpdated": "Đã cập nhật dữ liệu báo cáo mới nhất",
       "reportExportedCsvFile": "Đã xuất báo cáo ra file CSV (mở được bằng Excel)",
       "chooseSaveAsPdf": "Chọn \"Lưu dưới dạng PDF\" trong hộp thoại in để xuất báo cáo",
       "couldNotLoadReport": "Không tải được báo cáo"
@@ -2170,19 +2156,6 @@
     "aiPlannerCard": {
       "nationalMapDataSync": "Tần suất đồng bộ dữ liệu bản đồ quốc gia (OSM & Google Maps)"
     },
-    "ipWhitelistField": {
-      "theIpRangeMust": "Dải IP phải đúng định dạng CIDR, ví dụ 118.70.192.0/24",
-      "thisIpRangeAlready": "Dải IP này đã có trong danh sách",
-      "newOffice": "Văn phòng mới",
-      "addedIpRangeNot": "Đã thêm dải IP {{value}} (chưa lưu)",
-      "removedIpRangeNot": "Đã gỡ dải IP {{cidr}} (chưa lưu)",
-      "restrictAccessOperationsOffice": "Giới hạn dải IP truy cập văn phòng điều hành",
-      "addCidrIp": "+ Thêm IP CIDR",
-      "removeIpRange": "Gỡ dải IP",
-      "noIpRestrictionAny": "Chưa giới hạn IP — mọi địa chỉ đều truy cập được cổng quản trị",
-      "noteOfficeBranch": "Ghi chú (văn phòng, chi nhánh...)",
-      "add": "Thêm"
-    },
     "listingSlaCard": {
       "listingReviewStandardsSla": "Quy chuẩn Thẩm định Niêm yết (SLA)",
       "tourismServiceQualityRequirements": "Ràng buộc chất lượng dịch vụ du lịch và cơ chế xét duyệt hồ sơ đối tác",
@@ -2226,18 +2199,15 @@
       "twoFactorAuthentication2fa": "Xác thực 2 bước 2FA (TOTP Authenticator)",
       "requiredAllSuperAdmins": "Bắt buộc cho toàn bộ Quản trị viên Super Admin, Kiểm duyệt viên & Hỗ trợ",
       "autoSignOutAfter": "Thời gian tự động đăng xuất khi không thao tác",
-      "minutes": "{{minutes}} Phút",
-      "securityAuditLog": "Nhật ký kiểm toán bảo mật",
-      "distributedTamperProofAutomatic": "Lưu trữ tự động phân tán, chống sửa đổi",
-      "daysEnabled": "{{auditLogRetentionDays}} ngày (đang bật)"
+      "minutes": "{{minutes}} Phút"
     },
     "settingsFooter": {
       "unsavedChangesSettingsGroups_other": "Có thay đổi chưa lưu ở {{count}} nhóm cấu hình",
       "lastConfigurationUpdate": "Lần cập nhật cấu hình gần nhất: {{updatedAt}}",
       "lastSaved": "Lần lưu gần nhất: {{updatedAt}}",
-      "byIp": "Bởi: {{updatedBy}} (IP: {{updatedIp}})",
       "cancel": "Hủy bỏ",
-      "saveConfigurationChanges": "Lưu thay đổi cấu hình"
+      "saveConfigurationChanges": "Lưu thay đổi cấu hình",
+      "updatedBy": "Bởi: {{updatedBy}}"
     },
     "settingToggleRow": {
       "enabled": "Đã kích hoạt",
@@ -2259,9 +2229,7 @@
       "restoreDefaults": "Khôi phục mặc định",
       "saveConfigurationChanges": "Lưu thay đổi cấu hình",
       "unsavedChanges": "Có thay đổi chưa lưu",
-      "operationsServerCluster": "Cụm máy chủ điều hành: {{dataCenter}}",
-      "lastSynced": "Cập nhật đồng bộ: <c0>{{syncedAt}}</c0>",
-      "allParametersIncludingIp": "Toàn bộ thông số (kể cả danh sách IP và quy tắc thông báo) sẽ trở về giá trị khuyến nghị. Thay đổi chỉ được áp dụng sau khi bạn bấm <c0>Lưu thay đổi cấu hình</c0>.",
+      "allParametersIncludingIp": "Toàn bộ thông số (kể cả quy tắc thông báo) sẽ trở về giá trị khuyến nghị. Thay đổi chỉ được áp dụng sau khi bạn bấm <c0>Lưu thay đổi cấu hình</c0>.",
       "restoreDefaultConfiguration": "Khôi phục cấu hình mặc định?",
       "restore": "Khôi phục",
       "adminAccountsWillProtected": "Tài khoản quản trị sẽ chỉ được bảo vệ bằng mật khẩu, làm tăng rủi ro chiếm quyền truy cập. Chuẩn SOC2 Type II yêu cầu bật 2FA cho toàn bộ quản trị viên.",
@@ -2273,20 +2241,11 @@
     "constants": {
       "generalSettings": "Cài đặt chung",
       "listingReviewRules": "Quy tắc niêm yết & Thẩm định",
-      "aiPlannerPoiConfiguration": "Tìm kiếm AI (pgvector) & POI",
       "securityAdminPermissions": "Bảo mật & Phân quyền quản trị",
       "notificationsAlertEmails": "Thông báo & Email cảnh báo",
       "gmt700Hanoi": "GMT+7:00 (Hà Nội, Băng Cốc, Jakarta)",
       "gmt800Singapore": "GMT+8:00 (Singapore, Bắc Kinh)",
-      "everyHourHighFrequency": "Mỗi 1 tiếng (Tần suất cao - Phí API cao)",
-      "every6HoursRecommended": "Mỗi 6 tiếng (Khuyến nghị khi vận hành chính thức)",
-      "every12Hours": "Mỗi 12 tiếng",
-      "every24HoursNightly": "Mỗi 24 tiếng (Hằng đêm lúc 02:00 AM)",
-      "n50Lenient": "50% (Rộng)",
-      "n85Recommended": "85% (Chặt)",
-      "n95Strict": "95% (Rất chặt)",
       "productionBuildV38": "Bản vận hành v3.8.4",
-      "distributedSystemOperatingNormally": "Hệ thống phân tán hoạt động bình thường • Trễ mạng POI API: 24ms • Uptime 99.98%",
       "fullAccess": "Toàn quyền",
       "viewProcess": "Xem & xử lý",
       "viewOnly": "Chỉ xem",
@@ -2300,20 +2259,7 @@
       "poiDestinations": "Điểm đến POI",
       "reportsAnalytics": "Báo cáo & Thống kê",
       "notifications": "Thông báo",
-      "systemSettings": "Cài đặt hệ thống",
-      "n75Standard": "75% (Chuẩn)"
-    },
-    "aiSearchCard": {
-      "title": "Tìm kiếm ngữ nghĩa AI (pgvector)",
-      "description": "Phân tích câu truy vấn tự nhiên và xếp hạng POI / niêm yết theo độ tương đồng vector",
-      "minSimilarity": "Ngưỡng độ tương đồng AI tối thiểu",
-      "topK": "Số kết quả tối đa mỗi truy vấn (top-K)",
-      "topKHint": "Cân bằng độ phủ và tốc độ",
-      "topKSelected": "{{count}} KQ",
-      "embeddingModel": "Model embedding",
-      "dimensions": "{{count}} chiều",
-      "recall": "Độ chính xác truy hồi (recall@10)",
-      "indexType": "Chỉ mục HNSW • cosine"
+      "systemSettings": "Cài đặt hệ thống"
     }
   },
   "profile": {
@@ -2492,9 +2438,6 @@
       "lastChangedDaysAgo_other": "Lần đổi gần nhất cách đây {{count}} ngày",
       "backupRecoveryCodesAvailable": "Còn mã khôi phục dự phòng",
       "unusedCodes_other": "{{count}} mã chưa sử dụng",
-      "adminPortalIpRange": "Giới hạn dải IP truy cập cổng quản trị",
-      "allowedIpRanges_other": "{{count}} dải IP được phép",
-      "noIpRestrictionAny": "Chưa giới hạn IP — mọi địa chỉ đều truy cập được",
       "autoSignOutAfter": "Tự động đăng xuất khi không thao tác ≤ 30 phút",
       "currentlyMinutes": "Đang đặt {{sessionTimeoutMinutes}} phút",
       "enterpriseGradeSecurityLevel": "Bảo mật cấp độ doanh nghiệp (cấp 4)",
@@ -2654,14 +2597,6 @@
   },
   "search": {
     "semantic": {
-      "label": "Tìm kiếm thông minh (pgvector)",
-      "submit": "Tìm bằng AI",
-      "searching": "Đang phân tích...",
-      "poiPlaceholder": "Mô tả điểm đến bằng câu tự nhiên, ví dụ: \"bãi biển yên tĩnh cho gia đình ở Đà Nẵng\"",
-      "listingPlaceholder": "Mô tả địa điểm cần tìm, ví dụ: \"homestay gần phố cổ Hội An có sân vườn\"",
-      "results_other": "{{count}} kết quả phù hợp cho \"{{query}}\"",
-      "sortedBySimilarity": "Sắp xếp theo độ tương đồng AI",
-      "clear": "Bỏ tìm kiếm AI",
       "match": "{{score}}% khớp AI",
       "matchTitle": "Độ tương đồng AI (cosine similarity, pgvector)"
     }

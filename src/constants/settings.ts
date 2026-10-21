@@ -1,7 +1,6 @@
 import i18n from 'i18next';
 import type {
   ListingSlaHours,
-  MapSyncFrequency,
   PermissionLevel,
   PermissionRow,
   SelectOption,
@@ -25,13 +24,6 @@ export const SETTINGS_TABS: { id: SettingsTab; label: string; icon: string }[] =
       return i18n.t('settings.constants.listingReviewRules');
     },
     icon: 'verified',
-  },
-  {
-    id: 'ai',
-    get label() {
-      return i18n.t('settings.constants.aiPlannerPoiConfiguration');
-    },
-    icon: 'psychology',
   },
   {
     id: 'security',
@@ -65,70 +57,8 @@ export const TIMEZONE_OPTIONS: SelectOption<SystemTimezone>[] = [
   { value: 'utc', label: 'GMT+0:00 (UTC)' },
 ];
 
-export const MAP_SYNC_OPTIONS: SelectOption<MapSyncFrequency>[] = [
-  {
-    value: '1h',
-    get label() {
-      return i18n.t('settings.constants.everyHourHighFrequency');
-    },
-  },
-  {
-    value: '6h',
-    get label() {
-      return i18n.t('settings.constants.every6HoursRecommended');
-    },
-  },
-  {
-    value: '12h',
-    get label() {
-      return i18n.t('settings.constants.every12Hours');
-    },
-  },
-  {
-    value: '24h',
-    get label() {
-      return i18n.t('settings.constants.every24HoursNightly');
-    },
-  },
-];
-
 export const LISTING_SLA_OPTIONS: ListingSlaHours[] = [24, 48, 72];
 export const SESSION_TIMEOUT_OPTIONS: SessionTimeoutMinutes[] = [15, 30, 60];
-/** Số kết quả tối đa mỗi truy vấn tìm kiếm AI */
-export const SEARCH_TOP_K_OPTIONS = [5, 10, 20, 30, 50];
-/** Ngưỡng độ tương đồng tối thiểu (%) */
-export const SIMILARITY_RANGE = { min: 50, max: 95 };
-export const SIMILARITY_SCALE: { value: number; label: string }[] = [
-  {
-    value: 50,
-    get label() {
-      return i18n.t('settings.constants.n50Lenient');
-    },
-  },
-  {
-    value: 75,
-    get label() {
-      return i18n.t('settings.constants.n75Standard');
-    },
-  },
-  {
-    value: 85,
-    get label() {
-      return i18n.t('settings.constants.n85Recommended');
-    },
-  },
-  {
-    value: 95,
-    get label() {
-      return i18n.t('settings.constants.n95Strict');
-    },
-  },
-];
-
-/** Ví dụ hợp lệ: 118.70.192.0/24 */
-export const CIDR_PATTERN =
-  /^((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\/(3[0-2]|[12]?\d)$/;
-
 /** Giá trị khuyến nghị — dùng cho nút "Khôi phục mặc định" */
 export const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
   platformName: 'Smart Travel Vietnam Core',
@@ -140,13 +70,6 @@ export const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
   autoEmailPartnerResult: true,
   twoFactorRequired: true,
   sessionTimeoutMinutes: 15,
-  ipWhitelist: [
-    { id: 'ip-hq', cidr: '118.70.192.0/24', label: 'HQ Hà Nội - Tầng 12 Keangnam' },
-    { id: 'ip-dn', cidr: '14.238.45.12/28', label: 'Chi nhánh TP. Đà Nẵng' },
-  ],
-  minSimilarity: 75,
-  mapSyncFrequency: '6h',
-  searchTopK: 10,
 };
 
 /** Thông số hạ tầng hiển thị (chỉ đọc) */
@@ -156,15 +79,8 @@ export const PLATFORM_INFO = {
     return i18n.t('settings.constants.productionBuildV38');
   },
   dataCenter: 'Ho Chi Minh City Data Center (Zone VN-South-1)',
-  get networkStatus() {
-    return i18n.t('settings.constants.distributedSystemOperatingNormally');
-  },
   storageUsedGb: 682,
   storageTotalGb: 1024,
-  auditLogRetentionDays: 365,
-  aiAccuracy: 96.4,
-  embeddingModel: 'text-embedding-3-small',
-  embeddingDimensions: 1536,
   hardwareKey: 'YubiKey',
 };
 

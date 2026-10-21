@@ -11,7 +11,6 @@ interface PoiTableProps {
   onEdit: (poi: Poi) => void;
   onView: (poi: Poi) => void;
   /** Độ tương đồng AI (%) theo id khi đang dùng tìm kiếm AI */
-  matchScores?: Map<string, number> | null;
   onResetFilters: () => void;
   sort: SortState<PoiSortKey> | null;
   onSort: (key: PoiSortKey) => void;
@@ -34,7 +33,6 @@ const COLUMNS: { labelKey: TranslationKey; className: string; sortKey?: PoiSortK
 
 export default function PoiTable({
   pois,
-  matchScores,
   onEdit,
   onView,
   onResetFilters,
@@ -72,13 +70,7 @@ export default function PoiTable({
           </thead>
           <tbody className="divide-y divide-surface-container font-body-md text-body-md text-on-surface">
             {pois.map((poi) => (
-              <PoiTableRow
-                key={poi.id}
-                poi={poi}
-                matchScore={matchScores?.get(poi.id)}
-                onEdit={onEdit}
-                onView={onView}
-              />
+              <PoiTableRow key={poi.id} poi={poi} onEdit={onEdit} onView={onView} />
             ))}
             {pois.length === 0 && (
               <tr>

@@ -7,10 +7,8 @@ import { ROUTES } from '@/constants/routes';
 import { DEFAULT_SYSTEM_SETTINGS, PLATFORM_INFO, SETTINGS_TABS } from '@/constants/settings';
 import { useNotifications, useSettings, useToast, useUnsavedChangesGuard } from '@/hooks';
 import type { NotificationRules, SettingsTab, SystemSettings } from '@/types';
-import { formatRelativeTime } from '@/utils/format';
 import { countEnabledChannels } from '@/utils/notificationRules';
 import AdminIdentityBanner from './components/AdminIdentityBanner';
-import AiSearchCard from './components/AiSearchCard';
 import ListingSlaCard from './components/ListingSlaCard';
 import NotificationSettingsCard from './components/NotificationSettingsCard';
 import PermissionMatrixModal from './components/PermissionMatrixModal';
@@ -105,7 +103,6 @@ export default function SettingsPage() {
       onRequestDisable2fa={() => setConfirm('disable2fa')}
     />
   );
-  const aiCard = <AiSearchCard values={draft} onChange={handleChange} />;
   const identityBanner = <AdminIdentityBanner onOpenMatrix={() => setMatrixOpen(true)} />;
 
   return (
@@ -197,30 +194,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Trạng thái cụm máy chủ */}
-      <div className="flex flex-col items-start justify-between gap-space-md rounded-2xl bg-secondary-fixed/30 p-space-md md:flex-row md:items-center">
-        <div className="flex min-w-0 items-center gap-space-sm">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-on-primary shadow-sm">
-            <Icon name="cloud_done" className="text-[22px]" />
-          </div>
-          <div className="flex min-w-0 flex-col">
-            <span className="truncate font-title-md text-title-md font-semibold text-on-surface">
-              {t('settings.page.operationsServerCluster', { dataCenter: PLATFORM_INFO.dataCenter })}
-            </span>
-            <span className="font-body-sm text-body-sm text-on-surface-variant">
-              {PLATFORM_INFO.networkStatus}
-            </span>
-          </div>
-        </div>
-        <span className="shrink-0 rounded-lg bg-surface-container-lowest px-space-sm py-1 font-label-sm text-label-sm text-on-surface-variant shadow-sm">
-          <Trans
-            i18nKey="settings.page.lastSynced"
-            values={{ syncedAt: formatRelativeTime(meta.syncedAt) }}
-            components={{ c0: <strong /> }}
-          />
-        </span>
-      </div>
-
       {/* Nội dung theo tab */}
       {tab === 'general' && (
         <>
@@ -229,16 +202,12 @@ export default function SettingsPage() {
               {platformCard}
               {listingCard}
             </div>
-            <div className="flex flex-col gap-space-lg">
-              {securityCard}
-              {aiCard}
-            </div>
+            <div className="flex flex-col gap-space-lg">{securityCard}</div>
           </div>
           {identityBanner}
         </>
       )}
       {tab === 'listing' && listingCard}
-      {tab === 'ai' && aiCard}
       {tab === 'security' && (
         <>
           {securityCard}

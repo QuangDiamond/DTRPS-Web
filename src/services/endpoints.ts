@@ -18,7 +18,6 @@ export const ENDPOINTS = {
     changePassword: '/auth/password/change',
   },
   search: {
-    semantic: '/search/semantic',
     reindex: '/search/index',
   },
   reports: {

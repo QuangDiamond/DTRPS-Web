@@ -92,15 +92,6 @@ export function runSecurityChecks(
       passed: details.backupCodes.length >= 3,
     },
     {
-      id: 'ip',
-      label: i18n.t('profile.utils.adminPortalIpRange'),
-      detail:
-        settings.ipWhitelist.length > 0
-          ? i18n.t('profile.utils.allowedIpRanges', { count: settings.ipWhitelist.length })
-          : i18n.t('profile.utils.noIpRestrictionAny'),
-      passed: settings.ipWhitelist.length > 0,
-    },
-    {
       id: 'timeout',
       label: i18n.t('profile.utils.autoSignOutAfter'),
       detail: i18n.t('profile.utils.currentlyMinutes', {

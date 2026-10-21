@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
 import Button from './Button';
 import Modal from './Modal';
@@ -20,6 +21,7 @@ export default function ConfirmModal({
   onConfirm,
   onClose,
 }: ConfirmModalProps) {
+  const { t } = useTranslation();
   return (
     <Modal
       title={title}
@@ -27,7 +29,7 @@ export default function ConfirmModal({
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
-            Hủy
+            {t('actions.cancel')}
           </Button>
           <Button icon={confirmIcon} onClick={onConfirm}>
             {confirmLabel}

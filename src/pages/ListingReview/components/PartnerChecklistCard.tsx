@@ -1,5 +1,6 @@
-import Icon from '../../../components/common/Icon';
-import type { Listing, ListingChecklistItem, ListingDetail } from '../../../types/admin';
+import { Trans, useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import type { Listing, ListingChecklistItem, ListingDetail } from '@/types';
 import { REVIEW_CARD_CLASS } from './ReviewSection';
 
 interface PartnerChecklistCardProps {
@@ -17,29 +18,42 @@ export default function PartnerChecklistCard({
   editable,
   onToggleCheck,
 }: PartnerChecklistCardProps) {
+  const { t } = useTranslation();
   const { partner } = detail;
   const passedCount = checklist.filter((item) => item.passed).length;
   const allPassed = passedCount === checklist.length;
 
   const stats = [
-    { value: partner.yearsActive, label: 'Hoạt động', className: 'text-on-surface' },
-    { value: `${partner.approvedCount} POI`, label: 'Đã duyệt', className: 'text-primary' },
-    { value: partner.responseRate, label: 'Phản hồi', className: 'text-secondary' },
+    {
+      value: partner.yearsActive,
+      label: t('listingReview.partnerChecklistCard.active'),
+      className: 'text-on-surface',
+    },
+    {
+      value: `${partner.approvedCount} POI`,
+      label: t('listingReview.partnerChecklistCard.approved'),
+      className: 'text-primary',
+    },
+    {
+      value: partner.responseRate,
+      label: t('listingReview.partnerChecklistCard.response'),
+      className: 'text-secondary',
+    },
   ];
 
   return (
     <div className={REVIEW_CARD_CLASS}>
       <div className="mb-3.5 flex items-center justify-between">
         <span className="text-[11px] font-extrabold tracking-wider text-on-surface-variant uppercase">
-          Đơn vị gửi hồ sơ
+          {t('listingReview.partnerChecklistCard.submittingOrganization')}
         </span>
         {partner.verified ? (
           <span className="rounded-full border border-secondary-fixed-dim/50 bg-secondary-container/30 px-2.5 py-0.5 text-[11px] font-bold text-on-secondary-fixed-variant">
-            Đối tác đã xác thực
+            {t('listingReview.partnerChecklistCard.verifiedPartner')}
           </span>
         ) : (
           <span className="rounded-full border border-tertiary-fixed bg-tertiary-fixed/30 px-2.5 py-0.5 text-[11px] font-bold text-on-tertiary-fixed-variant">
-            Đối tác mới
+            {t('listingReview.partnerChecklistCard.newPartner')}
           </span>
         )}
       </div>
@@ -54,14 +68,17 @@ export default function PartnerChecklistCard({
               {listing.partnerName}
             </h3>
             <p className="text-[12px] font-medium text-on-surface-variant">
-              {partner.code} • Đại diện:{' '}
-              <strong className="text-on-surface">{partner.representative}</strong>
+              <Trans
+                i18nKey="listingReview.partnerChecklistCard.representative"
+                values={{ code: partner.code, representative: partner.representative }}
+                components={{ c0: <strong className="text-on-surface" /> }}
+              />
             </p>
           </div>
         </div>
         <div className="text-right">
           <span className="block text-[10.5px] font-bold text-on-surface-variant uppercase">
-            Hotline đối tác
+            {t('listingReview.partnerChecklistCard.partnerHotline')}
           </span>
           <span className="block font-mono text-[12.5px] font-bold text-primary">
             {partner.hotline}
@@ -86,7 +103,9 @@ export default function PartnerChecklistCard({
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Icon name="fact_check" className="text-[19px] text-primary" />
-            <h4 className="text-[13px] font-bold text-on-surface">Checklist kiểm định chuẩn</h4>
+            <h4 className="text-[13px] font-bold text-on-surface">
+              {t('listingReview.partnerChecklistCard.standardInspectionChecklist')}
+            </h4>
           </div>
           <span
             className={`rounded-full border px-2.5 py-0.5 text-[11px] font-extrabold ${
@@ -95,7 +114,10 @@ export default function PartnerChecklistCard({
                 : 'border-tertiary-fixed bg-tertiary-fixed/60 text-on-tertiary-fixed'
             }`}
           >
-            {passedCount} / {checklist.length} Đạt chuẩn
+            {t('listingReview.partnerChecklistCard.passed', {
+              passedCount,
+              length: checklist.length,
+            })}
           </span>
         </div>
         <div className="grid grid-cols-2 gap-2 text-[12px]">
@@ -105,7 +127,9 @@ export default function PartnerChecklistCard({
               type="button"
               disabled={!editable}
               onClick={() => onToggleCheck(item.id)}
-              title={editable ? 'Bấm để đánh dấu đạt / chưa đạt' : undefined}
+              title={
+                editable ? t('listingReview.partnerChecklistCard.clickMarkAsPassed') : undefined
+              }
               className={`flex items-center gap-2 rounded-xl border p-2.5 text-left transition-colors disabled:cursor-default ${
                 item.passed
                   ? 'border-secondary-fixed-dim/50 bg-secondary-container/30'

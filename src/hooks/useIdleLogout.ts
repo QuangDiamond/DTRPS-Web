@@ -1,3 +1,4 @@
+import i18n from 'i18next';
 import { useEffect } from 'react';
 import { useAuth } from './useAuth';
 import { useSettings } from './useSettings';
@@ -25,7 +26,7 @@ export function useIdleLogout(): void {
       window.clearTimeout(timer);
       timer = window.setTimeout(() => {
         logout();
-        showToast(`Phiên đăng nhập đã kết thúc sau ${timeoutMinutes} phút không thao tác`, 'info');
+        showToast(i18n.t('session.idleLogout', { minutes: timeoutMinutes }), 'info');
       }, timeoutMinutes * 60_000);
     };
 

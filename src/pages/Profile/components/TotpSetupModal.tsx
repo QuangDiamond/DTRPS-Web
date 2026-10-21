@@ -1,12 +1,12 @@
+import { Trans, useTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
-import OtpInput from '../../../components/auth/OtpInput';
-import Button from '../../../components/common/Button';
-import Icon from '../../../components/common/Icon';
-import Modal from '../../../components/common/Modal';
-import { MOCK_TOTP_CODE, MOCK_TOTP_SECRET } from '../../../constants/adminProfile';
-import { OTP_LENGTH } from '../../../constants/auth';
-import { useToast } from '../../../hooks/useToast';
-import { copyText } from '../../../utils/clipboard';
+import OtpInput from '@/components/auth/OtpInput';
+import { Button, Icon, Modal } from '@/components/common';
+import { OTP_LENGTH } from '@/constants/auth';
+import { useResource, useToast } from '@/hooks';
+import { DEMO_TOTP_CODE, profileService } from '@/services/profileService';
+import { copyText } from '@/utils/clipboard';
+import { getErrorMessage } from '@/utils/error';
 
 const QR_SIZE = 21;
 
@@ -44,46 +44,61 @@ interface TotpSetupModalProps {
 }
 
 export default function TotpSetupModal({ accountEmail, onConfirm, onClose }: TotpSetupModalProps) {
+  const { t } = useTranslation();
   const { showToast } = useToast();
   const [digits, setDigits] = useState<string[]>(() =>
     Array.from({ length: OTP_LENGTH }, () => ''),
   );
   const [error, setError] = useState('');
-  const cells = useMemo(() => buildQrCells(MOCK_TOTP_SECRET + accountEmail), [accountEmail]);
+  const [verifying, setVerifying] = useState(false);
+  const setup = useResource(profileService.startTotpSetup, profileService.peekTotpSetup);
+  const secret = setup.data?.secret ?? '';
+  const cells = useMemo(() => buildQrCells(secret + accountEmail), [secret, accountEmail]);
   const code = digits.join('');
 
   const copySecret = async () => {
-    const copied = await copyText(MOCK_TOTP_SECRET.replace(/\s/g, ''));
+    if (!secret) return;
+    const copied = await copyText(secret.replace(/\s/g, ''));
     showToast(
-      copied ? 'Đã sao chép khóa bí mật' : 'Không sao chép được, hãy chọn và sao chép thủ công',
+      copied
+        ? t('profile.totpSetupModal.secretKeyCopied')
+        : t('profile.totpSetupModal.couldNotCopyPlease'),
       copied ? 'info' : 'error',
     );
   };
 
-  const verify = () => {
+  const verify = async () => {
     if (code.length < OTP_LENGTH) {
-      setError(`Vui lòng nhập đủ ${OTP_LENGTH} chữ số`);
+      setError(t('profile.totpSetupModal.pleaseEnterAllDigits', { OTP_LENGTH }));
       return;
     }
-    if (code !== MOCK_TOTP_CODE) {
-      setError('Mã xác thực không đúng hoặc đã hết hạn, vui lòng thử mã mới');
-      return;
+    setVerifying(true);
+    try {
+      const { valid } = await profileService.verifyTotp(code);
+      if (valid) {
+        onConfirm();
+        return;
+      }
+      setError(t('profile.totpSetupModal.theCodeIncorrectOr'));
+    } catch (verifyError) {
+      setError(getErrorMessage(verifyError));
+    } finally {
+      setVerifying(false);
     }
-    onConfirm();
   };
 
   return (
     <Modal
-      title="Cấu hình lại Google Authenticator"
-      description="Quét mã QR bằng ứng dụng xác thực, sau đó nhập mã 6 số để xác nhận"
+      title={t('profile.totpSetupModal.reconfigureGoogleAuthenticator')}
+      description={t('profile.totpSetupModal.scanQrCodeWith')}
       onClose={onClose}
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
-            Hủy
+            {t('actions.cancel')}
           </Button>
-          <Button icon="verified" onClick={verify}>
-            Xác nhận liên kết
+          <Button icon="verified" loading={verifying} disabled={!secret} onClick={verify}>
+            {t('profile.totpSetupModal.confirmLink')}
           </Button>
         </>
       }
@@ -93,7 +108,7 @@ export default function TotpSetupModal({ accountEmail, onConfirm, onClose }: Tot
           viewBox={`0 0 ${QR_SIZE} ${QR_SIZE}`}
           className="h-40 w-40 rounded-xl bg-surface-container-lowest p-2 shadow-sm ring-1 ring-surface-container-high"
           role="img"
-          aria-label="Mã QR liên kết ứng dụng xác thực"
+          aria-label={t('profile.totpSetupModal.qrCodeLinkAuthenticator')}
           shapeRendering="crispEdges"
         >
           {cells.map((on, index) =>
@@ -112,15 +127,18 @@ export default function TotpSetupModal({ accountEmail, onConfirm, onClose }: Tot
         <div className="flex w-full items-center justify-between gap-space-sm rounded-xl bg-surface-container-low px-space-md py-2">
           <div className="flex min-w-0 flex-col">
             <span className="font-label-sm text-label-sm text-on-surface-variant">
-              Hoặc nhập khóa bí mật thủ công
+              {t('profile.totpSetupModal.orEnterSecretKey')}
             </span>
             <span className="truncate font-mono text-body-sm font-semibold text-on-surface">
-              {MOCK_TOTP_SECRET}
+              {secret ||
+                (setup.status === 'error'
+                  ? t('profile.totpSetupModal.couldNotCreateKey')
+                  : t('profile.totpSetupModal.creatingKey'))}
             </span>
           </div>
           <button
             type="button"
-            title="Sao chép khóa"
+            title={t('profile.totpSetupModal.copyKey')}
             onClick={copySecret}
             className="shrink-0 rounded-lg p-1.5 text-primary hover:bg-surface-container-high"
           >
@@ -139,11 +157,15 @@ export default function TotpSetupModal({ accountEmail, onConfirm, onClose }: Tot
             <span className="flex items-center gap-1 font-label-sm text-label-sm text-error">
               <Icon name="error" className="text-[14px]" /> {error}
             </span>
-          ) : (
+          ) : DEMO_TOTP_CODE ? (
             <span className="font-body-sm text-body-sm text-outline">
-              Mã demo: <strong>{MOCK_TOTP_CODE}</strong>
+              <Trans
+                i18nKey="profile.totpSetupModal.demoCode"
+                values={{ DEMO_TOTP_CODE }}
+                components={{ c0: <strong /> }}
+              />
             </span>
-          )}
+          ) : null}
         </div>
       </div>
     </Modal>

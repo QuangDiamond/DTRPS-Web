@@ -1,8 +1,9 @@
-import type { ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { ActivityItem, ActivityKind } from '../../../types/admin';
-import { formatRelativeTime } from '../../../utils/format';
-import { DASHBOARD_CARD_CLASS } from '../dashboardUtils';
+import type { ReactElement } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { DASHBOARD_CARD_CLASS } from '@/pages/Dashboard/dashboardUtils';
+import type { ActivityItem, ActivityKind } from '@/types';
+import { formatRelativeTime } from '@/utils/format';
 
 interface ActivityFeedProps {
   activities: ActivityItem[];
@@ -13,64 +14,65 @@ interface ActivityFeedProps {
 interface ActivityConfig {
   markerClass: string;
   dotClass: string;
-  renderMessage: (subject: string) => ReactNode;
-  meta?: ReactNode;
+  /** Kiểu nhấn mạnh tên đối tượng trong câu (thẻ <bold> / <highlight> trong bản dịch) */
+  emphasis: Record<string, ReactElement>;
+  meta?: 'businessAccount' | 'published' | 'inQueue';
 }
+
+const BOLD = { bold: <span className="font-semibold" /> };
+const STRONG = { bold: <strong className="font-semibold" /> };
 
 const ACTIVITY_CONFIG: Record<ActivityKind, ActivityConfig> = {
   partner_registered: {
     markerClass: 'bg-secondary-container',
     dotClass: 'bg-primary',
-    renderMessage: (subject) => (
-      <>
-        Đối tác mới <strong className="font-semibold text-primary">{subject}</strong> đã hoàn tất
-        đăng ký tài khoản.
-      </>
-    ),
-    meta: (
-      <span className="font-label-sm text-[11px] text-on-surface-variant">
-        Tài khoản Doanh nghiệp
-      </span>
-    ),
+    emphasis: { highlight: <strong className="font-semibold text-primary" /> },
+    meta: 'businessAccount',
   },
   listing_approved: {
     markerClass: 'bg-secondary-container',
     dotClass: 'bg-secondary',
-    renderMessage: (subject) => (
-      <>
-        Admin đã phê duyệt niêm yết <span className="font-semibold">{subject}</span>.
-      </>
-    ),
-    meta: (
-      <span className="inline-flex items-center gap-0.5 font-label-sm text-[11px] font-bold text-primary">
-        <Icon name="check" className="text-[14px]" /> Đã xuất bản
-      </span>
-    ),
+    emphasis: BOLD,
+    meta: 'published',
   },
   listing_rejected: {
     markerClass: 'bg-error-container',
     dotClass: 'bg-error',
-    renderMessage: (subject) => (
-      <>
-        Admin đã từ chối niêm yết <span className="font-semibold">{subject}</span>.
-      </>
-    ),
+    emphasis: BOLD,
   },
   listing_submitted: {
     markerClass: 'bg-tertiary-fixed',
     dotClass: 'bg-tertiary',
-    renderMessage: (subject) => (
-      <>
-        Yêu cầu niêm yết mới gửi lên từ <strong className="font-semibold">{subject}</strong>.
-      </>
-    ),
-    meta: (
-      <span className="font-label-sm text-[11px] font-bold text-tertiary">Đang trong hàng chờ</span>
-    ),
+    emphasis: STRONG,
+    meta: 'inQueue',
   },
 };
 
+function ActivityMeta({ kind }: { kind: NonNullable<ActivityConfig['meta']> }) {
+  const { t } = useTranslation();
+  if (kind === 'published') {
+    return (
+      <span className="inline-flex items-center gap-0.5 font-label-sm text-[11px] font-bold text-primary">
+        <Icon name="check" className="text-[14px]" /> {t('dashboard.activity.published')}
+      </span>
+    );
+  }
+  if (kind === 'inQueue') {
+    return (
+      <span className="font-label-sm text-[11px] font-bold text-tertiary">
+        {t('dashboard.activity.inQueue')}
+      </span>
+    );
+  }
+  return (
+    <span className="font-label-sm text-[11px] text-on-surface-variant">
+      {t('dashboard.activity.businessAccount')}
+    </span>
+  );
+}
+
 export default function ActivityFeed({ activities, refreshing, onRefresh }: ActivityFeedProps) {
+  const { t } = useTranslation();
   return (
     <div className={`${DASHBOARD_CARD_CLASS} flex flex-col justify-between xl:col-span-4`}>
       <div>
@@ -78,7 +80,7 @@ export default function ActivityFeed({ activities, refreshing, onRefresh }: Acti
           <div className="flex items-center gap-2.5">
             <Icon name="history" className="text-[22px] text-primary" />
             <h2 className="font-headline-sm text-[18px] font-bold text-on-surface">
-              Hoạt động gần đây
+              {t('dashboard.activity.title')}
             </h2>
           </div>
           <button
@@ -86,7 +88,7 @@ export default function ActivityFeed({ activities, refreshing, onRefresh }: Acti
             onClick={onRefresh}
             disabled={refreshing}
             className="flex items-center justify-center rounded-lg p-1.5 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
-            title="Làm mới"
+            title={t('dashboard.activity.refresh')}
           >
             <Icon name="refresh" className={`text-[19px] ${refreshing ? 'animate-spin' : ''}`} />
           </button>
@@ -110,18 +112,22 @@ export default function ActivityFeed({ activities, refreshing, onRefresh }: Acti
                 </div>
                 <div className="flex flex-col">
                   <p className="font-body-md text-[13px] leading-snug text-on-surface">
-                    {config.renderMessage(activity.subject)}
+                    <Trans
+                      i18nKey={`dashboard.activity.${activity.kind}`}
+                      values={{ subject: activity.subject }}
+                      components={config.emphasis}
+                    />
                   </p>
                   {activity.reason && (
                     <p className="mt-1 rounded-lg bg-error-container/40 p-2 font-body-sm text-[12px] leading-relaxed text-error">
-                      Lý do: {activity.reason}
+                      {t('dashboard.activity.reason', { reason: activity.reason })}
                     </p>
                   )}
                   {config.meta ? (
                     <div className="mt-1 flex items-center gap-2">
                       {time}
                       <span className="text-[11px] text-outline">•</span>
-                      {config.meta}
+                      <ActivityMeta kind={config.meta} />
                     </div>
                   ) : (
                     <div className="mt-1">{time}</div>
@@ -141,10 +147,10 @@ export default function ActivityFeed({ activities, refreshing, onRefresh }: Acti
           </div>
           <div className="flex flex-col">
             <span className="font-label-md text-[13px] font-bold text-on-surface">
-              Trợ lý AI giám sát
+              {t('dashboard.activity.aiTitle')}
             </span>
             <span className="font-body-sm text-[11px] text-on-surface-variant">
-              Phản hồi 45ms • 99.98% SLA
+              {t('dashboard.activity.aiStatus')}
             </span>
           </div>
         </div>

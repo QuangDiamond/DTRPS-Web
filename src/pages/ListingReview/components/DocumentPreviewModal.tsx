@@ -1,6 +1,6 @@
-import Icon from '../../../components/common/Icon';
-import Modal from '../../../components/common/Modal';
-import type { ListingDocument } from '../../../types/admin';
+import { useTranslation } from 'react-i18next';
+import { Icon, Modal } from '@/components/common';
+import type { ListingDocument } from '@/types';
 
 interface DocumentPreviewModalProps {
   document: ListingDocument;
@@ -9,6 +9,7 @@ interface DocumentPreviewModalProps {
 
 /** Xem trước tài liệu — prototype chưa có file thật nên hiển thị thông tin văn bản */
 export default function DocumentPreviewModal({ document, onClose }: DocumentPreviewModalProps) {
+  const { t } = useTranslation();
   return (
     <Modal title={document.title} description={document.meta} onClose={onClose} size="lg">
       <div className="flex h-72 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-outline-variant bg-surface-container-low text-outline">
@@ -17,8 +18,9 @@ export default function DocumentPreviewModal({ document, onClose }: DocumentPrev
           className="text-[48px]"
         />
         <span className="text-[13px] font-semibold">
-          Bản xem trước {document.fileType === 'pdf' ? 'PDF' : 'ảnh'} sẽ hiển thị khi kết nối máy
-          chủ lưu trữ tài liệu
+          {document.fileType === 'pdf'
+            ? t('listingReview.documentPreviewModal.thePdfPreviewWill')
+            : t('listingReview.documentPreviewModal.theImagePreviewWill')}
         </span>
         <span
           className={`rounded-full px-3 py-1 text-[11px] font-bold ${
@@ -27,7 +29,9 @@ export default function DocumentPreviewModal({ document, onClose }: DocumentPrev
               : 'bg-tertiary-fixed/60 text-on-tertiary-fixed-variant'
           }`}
         >
-          {document.verified ? 'Đã đối chiếu với CSDL quốc gia' : 'Chưa đối chiếu'}
+          {document.verified
+            ? t('listingReview.documentPreviewModal.verifiedAgainstNationalDatabase')
+            : t('listingReview.documentPreviewModal.notVerified')}
         </span>
       </div>
     </Modal>

@@ -1,14 +1,16 @@
-import Icon from '../../../components/common/Icon';
-import { ADMIN_PERMISSION_SUMMARY } from '../../../constants/adminProfile';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { ADMIN_PERMISSION_SUMMARY } from '@/constants/adminProfile';
 
 export default function PermissionSummaryCard({ onOpenMatrix }: { onOpenMatrix: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-space-md rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Icon name="policy" className="text-[20px] text-primary" />
           <h2 className="font-title-md text-title-md text-on-surface">
-            Quyền hạn hệ thống cấp cao
+            {t('profile.permissionSummaryCard.seniorSystemPermissions')}
           </h2>
         </div>
         <span className="rounded-full bg-secondary-fixed px-2.5 py-0.5 font-label-sm text-label-sm font-bold text-on-secondary-fixed">
@@ -48,7 +50,7 @@ export default function PermissionSummaryCard({ onOpenMatrix }: { onOpenMatrix: 
         onClick={onOpenMatrix}
         className="self-start font-label-sm text-label-sm font-semibold text-primary hover:underline"
       >
-        Xem ma trận phân quyền đầy đủ →
+        {t('profile.permissionSummaryCard.viewFullPermissionMatrix')}
       </button>
     </div>
   );

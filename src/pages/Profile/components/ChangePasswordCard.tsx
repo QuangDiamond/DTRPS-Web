@@ -1,10 +1,10 @@
-import { useState, type FormEvent } from 'react';
-import Icon from '../../../components/common/Icon';
-import { PASSWORD_ROTATION_DAYS } from '../../../constants/adminProfile';
-import { useAdminProfile } from '../../../hooks/useAdminProfile';
-import { useToast } from '../../../hooks/useToast';
-import { getErrorMessage } from '../../../utils/error';
-import { daysSince, getPasswordStrength } from '../profileUtils';
+import { useTranslation } from 'react-i18next';
+import { type FormEvent, useState } from 'react';
+import { Icon } from '@/components/common';
+import { PASSWORD_ROTATION_DAYS } from '@/constants/adminProfile';
+import { useAdminProfile, useToast } from '@/hooks';
+import { daysSince, getPasswordStrength } from '@/pages/Profile/profileUtils';
+import { getErrorMessage } from '@/utils/error';
 import ProfileCardHeader, { PROFILE_CARD_CLASS } from './ProfileCardHeader';
 import ProfileInput from './ProfileInput';
 
@@ -18,6 +18,7 @@ const EMPTY_FORM: PasswordForm = { current: '', next: '', confirm: '' };
 const STRENGTH_SEGMENTS = 4;
 
 export default function ChangePasswordCard() {
+  const { t } = useTranslation();
   const { details, changePassword } = useAdminProfile();
   const { showToast } = useToast();
   const [form, setForm] = useState<PasswordForm>(EMPTY_FORM);
@@ -35,14 +36,14 @@ export default function ChangePasswordCard() {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const nextErrors: Partial<PasswordForm> = {};
-    if (!form.current) nextErrors.current = 'Vui lòng nhập mật khẩu hiện tại';
+    if (!form.current) nextErrors.current = t('profile.changePasswordCard.pleaseEnterYourCurrent');
     if (strength.score < STRENGTH_SEGMENTS) {
-      nextErrors.next = 'Mật khẩu mới cần đủ 8 ký tự, chữ hoa, chữ số và ký tự đặc biệt';
+      nextErrors.next = t('profile.changePasswordCard.theNewPasswordNeeds');
     } else if (form.next === form.current) {
-      nextErrors.next = 'Mật khẩu mới phải khác mật khẩu hiện tại';
+      nextErrors.next = t('profile.changePasswordCard.theNewPasswordMust');
     }
     if (!form.confirm || form.confirm !== form.next)
-      nextErrors.confirm = 'Mật khẩu xác nhận không khớp';
+      nextErrors.confirm = t('profile.changePasswordCard.theConfirmationPasswordDoes');
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
@@ -51,7 +52,7 @@ export default function ChangePasswordCard() {
       await changePassword(form.current, form.next);
       setForm(EMPTY_FORM);
       setShowCurrent(false);
-      showToast('Mật khẩu quản trị viên đã được đổi thành công!');
+      showToast(t('profile.changePasswordCard.administratorPasswordChangedSuccessfully'));
     } catch (error) {
       setErrors({ current: getErrorMessage(error) });
     } finally {
@@ -63,12 +64,14 @@ export default function ChangePasswordCard() {
     <div className={PROFILE_CARD_CLASS}>
       <ProfileCardHeader
         icon="password"
-        title="Đổi mật khẩu tài khoản"
-        description={`Khuyến nghị thay đổi mật khẩu định kỳ ${PASSWORD_ROTATION_DAYS} ngày theo tiêu chuẩn ISO 27001`}
+        title={t('profile.changePasswordCard.changeAccountPassword')}
+        description={t('profile.changePasswordCard.weRecommendChangingYour', {
+          PASSWORD_ROTATION_DAYS,
+        })}
       />
       <form className="flex flex-col gap-space-md" onSubmit={handleSubmit}>
         <ProfileInput
-          label="Mật khẩu hiện tại"
+          label={t('profile.changePasswordCard.currentPassword')}
           icon="key"
           type={showCurrent ? 'text' : 'password'}
           autoComplete="current-password"
@@ -78,7 +81,11 @@ export default function ChangePasswordCard() {
           trailing={
             <button
               type="button"
-              title={showCurrent ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+              title={
+                showCurrent
+                  ? t('profile.changePasswordCard.hidePassword')
+                  : t('profile.changePasswordCard.showPassword')
+              }
               onClick={() => setShowCurrent((value) => !value)}
               className="text-outline transition-colors hover:text-on-surface"
             >
@@ -88,7 +95,7 @@ export default function ChangePasswordCard() {
         />
         <div className="grid grid-cols-1 gap-space-md sm:grid-cols-2">
           <ProfileInput
-            label="Mật khẩu mới"
+            label={t('profile.changePasswordCard.newPassword')}
             icon="lock_reset"
             type="password"
             autoComplete="new-password"
@@ -97,7 +104,7 @@ export default function ChangePasswordCard() {
             onChange={(value) => change('next', value)}
           />
           <ProfileInput
-            label="Xác nhận mật khẩu mới"
+            label={t('profile.changePasswordCard.confirmNewPassword')}
             icon="check"
             type="password"
             autoComplete="new-password"
@@ -109,7 +116,9 @@ export default function ChangePasswordCard() {
 
         <div className="flex flex-col gap-1.5 rounded-xl bg-surface-container-low p-space-sm">
           <div className="flex items-center justify-between font-label-sm text-label-sm">
-            <span className="text-on-surface-variant">Độ mạnh mật khẩu:</span>
+            <span className="text-on-surface-variant">
+              {t('profile.changePasswordCard.passwordStrength')}
+            </span>
             <span className={`flex items-center gap-1 font-bold ${strength.textClass}`}>
               {strength.score >= STRENGTH_SEGMENTS && (
                 <Icon name="check_circle" className="text-[16px]" />
@@ -128,8 +137,11 @@ export default function ChangePasswordCard() {
             ))}
           </div>
           <span className="font-body-sm text-body-sm text-on-surface-variant">
-            Bao gồm chữ hoa, chữ thường, chữ số và ký tự đặc biệt (@, #, !, $). Lần đổi gần nhất:{' '}
-            {passwordAge === 0 ? 'hôm nay' : `${passwordAge} ngày trước`}.
+            {t('profile.changePasswordCard.includeUppercaseLowercaseNumbers')}{' '}
+            {passwordAge === 0
+              ? t('profile.changePasswordCard.today')
+              : t('profile.changePasswordCard.daysAgo', { count: passwordAge })}
+            .
           </span>
         </div>
 
@@ -143,7 +155,9 @@ export default function ChangePasswordCard() {
               name={submitting ? 'progress_activity' : 'vpn_key'}
               className={`text-[18px] ${submitting ? 'animate-spin' : ''}`}
             />
-            {submitting ? 'Đang xác thực...' : 'Đổi mật khẩu'}
+            {submitting
+              ? t('profile.changePasswordCard.verifying')
+              : t('profile.changePasswordCard.changePassword')}
           </button>
         </div>
       </form>

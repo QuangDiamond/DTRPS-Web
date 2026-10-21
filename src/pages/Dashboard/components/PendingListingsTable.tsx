@@ -1,15 +1,13 @@
+import { Trans, useTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
-import Icon from '../../../components/common/Icon';
-import ListingThumb from '../../../components/listings/ListingThumb';
-import {
-  LISTING_CATEGORY_CONFIG,
-  LISTING_CATEGORY_FILTER_OPTIONS,
-} from '../../../constants/listing';
-import { PROVINCE_NAMES } from '../../../constants/partner';
-import type { Listing, ListingCategory } from '../../../types/admin';
-import { formatDayTime } from '../../../utils/format';
-import { normalizeText } from '../../../utils/string';
-import { DASHBOARD_CARD_CLASS } from '../dashboardUtils';
+import { Icon } from '@/components/common';
+import ListingThumb from '@/components/listings/ListingThumb';
+import { LISTING_CATEGORY_CONFIG, LISTING_CATEGORY_FILTER_OPTIONS } from '@/constants/listing';
+import { PROVINCE_NAMES } from '@/constants/partner';
+import { DASHBOARD_CARD_CLASS } from '@/pages/Dashboard/dashboardUtils';
+import type { Listing, ListingCategory, TranslationKey } from '@/types';
+import { formatDayTime } from '@/utils/format';
+import { normalizeText } from '@/utils/string';
 
 interface PendingListingsTableProps {
   listings: Listing[];
@@ -21,14 +19,14 @@ interface PendingListingsTableProps {
   onViewAll: () => void;
 }
 
-const COLUMNS = [
-  { label: 'Tên địa điểm / Cơ sở', className: 'rounded-l-xl px-4' },
-  { label: 'Đối tác gửi', className: 'px-3' },
-  { label: 'Danh mục', className: 'px-3' },
-  { label: 'Tỉnh / Thành', className: 'px-3' },
-  { label: 'Thời gian', className: 'px-3' },
-  { label: 'Trạng thái', className: 'px-3 text-center' },
-  { label: 'Thao tác', className: 'rounded-r-xl px-4 text-right' },
+const COLUMNS: { labelKey: TranslationKey; className: string }[] = [
+  { labelKey: 'table.dashboardPending.place', className: 'rounded-l-xl px-4' },
+  { labelKey: 'table.dashboardPending.partner', className: 'px-3' },
+  { labelKey: 'table.dashboardPending.category', className: 'px-3' },
+  { labelKey: 'table.dashboardPending.province', className: 'px-3' },
+  { labelKey: 'table.dashboardPending.time', className: 'px-3' },
+  { labelKey: 'table.dashboardPending.status', className: 'px-3 text-center' },
+  { labelKey: 'table.dashboardPending.actions', className: 'rounded-r-xl px-4 text-right' },
 ];
 
 export default function PendingListingsTable({
@@ -39,6 +37,7 @@ export default function PendingListingsTable({
   onView,
   onViewAll,
 }: PendingListingsTableProps) {
+  const { t } = useTranslation();
   const [keyword, setKeyword] = useState('');
   const [category, setCategory] = useState<ListingCategory | 'all'>('all');
   const [filterOpen, setFilterOpen] = useState(false);
@@ -67,14 +66,14 @@ export default function PendingListingsTable({
           <div>
             <div className="flex items-center gap-2.5">
               <h2 className="font-headline-sm text-[18px] font-bold text-on-surface">
-                Yêu cầu Niêm yết Chờ Phê Duyệt
+                {t('dashboard.pending.title')}
               </h2>
               <span className="rounded-full bg-tertiary px-2.5 py-0.5 font-label-sm text-[11px] font-bold text-on-tertiary">
-                {totalPending} mới
+                {t('dashboard.pending.newCount', { count: totalPending })}
               </span>
             </div>
             <p className="font-body-sm text-[12px] text-on-surface-variant">
-              Cần xác minh giấy phép kinh doanh &amp; tiêu chuẩn chất lượng
+              {t('dashboard.pending.subtitle')}
             </p>
           </div>
         </div>
@@ -90,7 +89,7 @@ export default function PendingListingsTable({
               type="text"
               value={keyword}
               onChange={(event) => setKeyword(event.target.value)}
-              placeholder="Tìm theo tên hoặc đối tác..."
+              placeholder={t('dashboard.pending.searchPlaceholder')}
               className="w-44 rounded-lg border border-transparent bg-surface-container-low py-1.5 pr-3 pl-9 text-[12px] text-on-surface transition-all focus:border-surface-container focus:bg-surface-container-lowest focus:outline-none sm:w-56"
             />
           </div>
@@ -103,7 +102,7 @@ export default function PendingListingsTable({
                   ? 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container'
                   : 'bg-primary text-on-primary'
               }`}
-              title="Lọc dữ liệu"
+              title={t('dashboard.pending.filter')}
             >
               <Icon name="filter_list" className="text-[18px]" />
             </button>
@@ -134,13 +133,13 @@ export default function PendingListingsTable({
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto">
+      <div className="w-full table-scroll overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="bg-surface-container-low/70 font-label-sm text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">
               {COLUMNS.map((column) => (
-                <th key={column.label} className={`py-3 ${column.className}`}>
-                  {column.label}
+                <th key={column.labelKey} className={`py-3 ${column.className}`}>
+                  {t(column.labelKey)}
                 </th>
               ))}
             </tr>
@@ -153,8 +152,8 @@ export default function PendingListingsTable({
                     <Icon name="task_alt" className="text-[36px] text-primary" />
                     <span className="font-label-md text-label-md">
                       {listings.length === 0
-                        ? 'Đã xử lý hết danh sách xem nhanh'
-                        : 'Không có yêu cầu phù hợp bộ lọc'}
+                        ? t('dashboard.pending.emptyAll')
+                        : t('dashboard.pending.emptyFiltered')}
                     </span>
                   </div>
                 </td>
@@ -183,7 +182,7 @@ export default function PendingListingsTable({
                             {listing.name}
                           </button>
                           <span className="font-label-sm text-[11px] text-on-surface-variant">
-                            Mã: {listing.id}
+                            {t('dashboard.pending.code', { id: listing.id })}
                           </span>
                         </div>
                       </div>
@@ -213,7 +212,7 @@ export default function PendingListingsTable({
                     </td>
                     <td className="px-3 py-3.5 text-center">
                       <span className="inline-flex items-center rounded-full bg-tertiary-fixed px-2 py-0.5 font-label-sm text-[11px] font-bold text-on-tertiary-fixed">
-                        Chờ duyệt
+                        {t('status.listing.pending')}
                       </span>
                     </td>
                     <td className="px-4 py-3.5 text-right whitespace-nowrap">
@@ -223,13 +222,13 @@ export default function PendingListingsTable({
                           onClick={() => onApprove(listing)}
                           className="rounded-lg bg-primary px-3 py-1.5 font-label-sm text-[12px] font-semibold text-on-primary transition-colors hover:bg-primary-container"
                         >
-                          Duyệt
+                          {t('actions.approve')}
                         </button>
                         <button
                           type="button"
                           onClick={() => onView(listing)}
                           className="flex items-center justify-center rounded-lg p-1.5 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
-                          title="Chi tiết hồ sơ"
+                          title={t('actions.listingDetail')}
                         >
                           <Icon name="visibility" className="text-[18px]" />
                         </button>
@@ -245,17 +244,18 @@ export default function PendingListingsTable({
 
       <div className="mt-2 flex flex-col justify-between gap-3 border-t border-surface-container/60 pt-5 sm:flex-row sm:items-center">
         <span className="font-body-sm text-[12px] text-on-surface-variant">
-          Hiển thị{' '}
-          <strong className="font-semibold text-on-surface">{visibleListings.length}</strong> trong
-          tổng số <strong className="font-semibold text-on-surface">{totalPending}</strong> yêu cầu
-          niêm yết đang chờ thẩm định
+          <Trans
+            i18nKey="dashboard.pending.summary"
+            values={{ shown: visibleListings.length, total: totalPending }}
+            components={{ bold: <strong className="font-semibold text-on-surface" /> }}
+          />
         </span>
         <button
           type="button"
           onClick={onViewAll}
           className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-surface-container-low px-4 py-2 font-label-md text-[13px] font-semibold text-primary transition-colors hover:bg-surface-container"
         >
-          <span>Xem tất cả {totalPending} yêu cầu</span>
+          <span>{t('dashboard.pending.viewAll', { count: totalPending })}</span>
           <Icon name="arrow_forward" className="text-[18px]" />
         </button>
       </div>

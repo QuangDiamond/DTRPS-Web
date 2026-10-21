@@ -1,6 +1,7 @@
-import type { AdminNotification, NotificationPriority, NotificationTab } from '../../types/admin';
-import { pad2, toIsoDate } from '../../utils/format';
-import { normalizeText } from '../../utils/string';
+import i18n from 'i18next';
+import type { AdminNotification, NotificationPriority, NotificationTab } from '@/types';
+import { pad2, toIsoDate } from '@/utils/format';
+import { normalizeText } from '@/utils/string';
 
 export function filterNotifications(
   notifications: AdminNotification[],
@@ -33,14 +34,20 @@ export function isToday(isoDateTime: string, now: Date = new Date()): boolean {
 export function formatNotificationTime(isoDateTime: string, now: Date = new Date()): string {
   const date = new Date(isoDateTime);
   const diffMinutes = Math.floor((now.getTime() - date.getTime()) / 60_000);
-  if (diffMinutes < 1) return 'Vừa xong';
-  if (diffMinutes < 60) return `${diffMinutes} phút trước`;
-  if (isToday(isoDateTime, now)) return `${Math.floor(diffMinutes / 60)} giờ trước`;
+  if (diffMinutes < 1) return i18n.t('notifications.utils.justNow');
+  if (diffMinutes < 60) return i18n.t('notifications.utils.minutesAgo', { count: diffMinutes });
+  if (isToday(isoDateTime, now))
+    return i18n.t('notifications.utils.hoursAgo', { count: Math.floor(diffMinutes / 60) });
 
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);
   if (toIsoDate(date) === toIsoDate(yesterday)) {
-    return `Hôm qua, ${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+    return i18n.t('notifications.utils.yesterday', {
+      value: pad2(date.getHours()),
+      value2: pad2(date.getMinutes()),
+    });
   }
-  return `${Math.max(2, Math.round(diffMinutes / 60 / 24))} ngày trước`;
+  return i18n.t('notifications.utils.daysAgo', {
+    count: Math.max(2, Math.round(diffMinutes / 60 / 24)),
+  });
 }

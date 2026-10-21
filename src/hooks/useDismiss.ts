@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from 'react';
+import { type RefObject, useEffect, useRef } from 'react';
 
 /** Gọi onDismiss khi bấm ra ngoài phần tử hoặc nhấn Esc — dùng cho menu thả xuống / popover */
 export function useDismiss(

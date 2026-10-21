@@ -17,6 +17,13 @@ export const ENDPOINTS = {
     resetPassword: '/auth/password/reset',
     changePassword: '/auth/password/change',
   },
+  search: {
+    semantic: '/search/semantic',
+    reindex: '/search/index',
+  },
+  reports: {
+    overview: '/reports/overview',
+  },
   dashboard: {
     overview: '/dashboard/overview',
   },
@@ -67,6 +74,8 @@ export const ENDPOINTS = {
     snapshot: '/me/profile',
     contact: '/me/contact',
     totp: '/me/2fa/totp',
+    totpSetup: '/me/2fa/totp/setup',
+    totpVerify: '/me/2fa/totp/verify',
     backupCodes: '/me/2fa/backup-codes',
     securityKeys: '/me/security-keys',
     revokeSessions: '/me/sessions/revoke-others',

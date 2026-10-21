@@ -1,15 +1,18 @@
-import { MOCK_PARTNERS, PARTNER_STATS } from '../constants/mockData';
+import {
+  buildMockPartnerAuditHistory,
+  buildMockPartnerProfile,
+} from '@/mocks/builders/partnerProfileMock';
+import { MOCK_PARTNERS, PARTNER_STATS } from '@/mocks/data/mockData';
 import type {
   Partner,
   PartnerAuditEntry,
   PartnerFormValues,
   PartnerProfile,
   PartnerProfileOverrides,
+  PartnersSnapshot,
   PartnerStatus,
-} from '../types/admin';
-import type { PartnersSnapshot } from '../types/api';
+} from '@/types';
 import { ENDPOINTS } from './endpoints';
-import { buildMockPartnerAuditHistory, buildMockPartnerProfile } from './mock/partnerProfileMock';
 import { createSource, peek, readRequest, writeRequest } from './request';
 
 const MOCK_SNAPSHOT: PartnersSnapshot = { partners: MOCK_PARTNERS, stats: PARTNER_STATS };

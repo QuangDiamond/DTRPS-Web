@@ -1,4 +1,5 @@
-import { useEffect, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { type ReactNode, useEffect } from 'react';
 import Icon from './Icon';
 
 interface ModalProps {
@@ -19,6 +20,7 @@ export default function Modal({
   footer,
   size = 'md',
 }: ModalProps) {
+  const { t } = useTranslation();
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
@@ -49,7 +51,7 @@ export default function Modal({
             type="button"
             onClick={onClose}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-on-surface-variant transition-all hover:bg-surface-container hover:text-on-surface"
-            title="Đóng"
+            title={t('common.close')}
           >
             <Icon name="close" className="text-[20px]" />
           </button>

@@ -1,6 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { ListingPhoto } from '../../../types/admin';
+import { Icon } from '@/components/common';
+import type { ListingPhoto } from '@/types';
 
 interface PhotoLightboxProps {
   photos: ListingPhoto[];
@@ -11,6 +12,7 @@ interface PhotoLightboxProps {
 
 /** Xem ảnh phóng to, chuyển ảnh bằng nút hoặc phím ← → */
 export default function PhotoLightbox({ photos, index, onChange, onClose }: PhotoLightboxProps) {
+  const { t } = useTranslation();
   const photo = photos[index];
   const goTo = (next: number) => onChange((next + photos.length) % photos.length);
 
@@ -48,7 +50,7 @@ export default function PhotoLightbox({ photos, index, onChange, onClose }: Phot
             {index + 1}. {photo.caption}
           </div>
           <div className="font-mono text-[12px] text-outline-variant">
-            Ảnh {index + 1}/{photos.length}
+            {t('listingReview.photoLightbox.photo', { value: index + 1, length: photos.length })}
             {photo.meta && ` • ${photo.meta}`}
           </div>
         </div>
@@ -58,7 +60,7 @@ export default function PhotoLightbox({ photos, index, onChange, onClose }: Phot
               type="button"
               onClick={() => goTo(index - 1)}
               className={`${navButtonClass} left-0`}
-              title="Ảnh trước"
+              title={t('listingReview.photoLightbox.previousPhoto')}
             >
               <Icon name="chevron_left" className="text-[26px]" />
             </button>
@@ -66,7 +68,7 @@ export default function PhotoLightbox({ photos, index, onChange, onClose }: Phot
               type="button"
               onClick={() => goTo(index + 1)}
               className={`${navButtonClass} right-0`}
-              title="Ảnh sau"
+              title={t('listingReview.photoLightbox.nextPhoto')}
             >
               <Icon name="chevron_right" className="text-[26px]" />
             </button>
@@ -77,7 +79,7 @@ export default function PhotoLightbox({ photos, index, onChange, onClose }: Phot
         type="button"
         onClick={onClose}
         className="absolute top-5 right-5 flex h-10 w-10 items-center justify-center rounded-full bg-surface-container-lowest/15 text-on-primary transition-colors hover:bg-surface-container-lowest/30"
-        title="Đóng (Esc)"
+        title={t('listingReview.photoLightbox.closeEsc')}
       >
         <Icon name="close" className="text-[22px]" />
       </button>

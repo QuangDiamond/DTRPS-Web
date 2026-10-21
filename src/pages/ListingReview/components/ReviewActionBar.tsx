@@ -1,5 +1,6 @@
-import Icon from '../../../components/common/Icon';
-import type { Listing } from '../../../types/admin';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import type { Listing } from '@/types';
 
 interface ReviewActionBarProps {
   listing: Listing;
@@ -30,6 +31,7 @@ export default function ReviewActionBar({
   onReject,
   onNext,
 }: ReviewActionBarProps) {
+  const { t } = useTranslation();
   const isPending = listing.status === 'pending';
   const docsComplete = verifiedDocs === totalDocs;
 
@@ -46,7 +48,9 @@ export default function ReviewActionBar({
             onChange={(event) => onNoteChange(event.target.value)}
             disabled={!isPending}
             placeholder={
-              isPending ? 'Nhập ghi chú kiểm duyệt nội bộ...' : 'Không có ghi chú kiểm duyệt'
+              isPending
+                ? t('listingReview.reviewActionBar.enterInternalModerationNote')
+                : t('listingReview.reviewActionBar.noModerationNote')
             }
             className="h-10 w-full flex-1 rounded-xl border border-surface-container-high bg-surface-container-low px-4 text-[13px] font-medium text-on-surface shadow-inner transition-all placeholder:text-outline hover:border-outline-variant focus:border-primary focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70"
           />
@@ -59,7 +63,10 @@ export default function ReviewActionBar({
           >
             <Icon name={docsComplete ? 'verified' : 'pending_actions'} className="text-[17px]" />
             <span>
-              Đã đối chiếu {verifiedDocs}/{totalDocs} tài liệu hợp lệ
+              {t('listingReview.reviewActionBar.verifiedValidDocuments', {
+                verifiedDocs,
+                totalDocs,
+              })}
             </span>
           </div>
         </div>
@@ -73,7 +80,7 @@ export default function ReviewActionBar({
                 className="flex h-11 items-center gap-2 rounded-xl border border-error-container bg-error-container/40 px-5 text-[13px] font-bold text-on-error-container shadow-2xs transition-all hover:bg-error-container/70 active:scale-95"
               >
                 <Icon name="cancel" className="text-[19px]" />
-                <span>TỪ CHỐI ĐỊA ĐIỂM</span>
+                <span>{t('listingReview.reviewActionBar.rejectPlace')}</span>
               </button>
               <button
                 type="button"
@@ -83,7 +90,7 @@ export default function ReviewActionBar({
                 className="flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-[13px] font-extrabold tracking-wide text-on-primary shadow-[0_4px_14px_rgba(0,104,95,0.35)] transition-all hover:bg-on-primary-fixed-variant hover:shadow-[0_6px_20px_rgba(0,104,95,0.45)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
               >
                 <Icon name="verified" filled className="text-[20px]" />
-                <span>PHÊ DUYỆT ĐỊA ĐIỂM</span>
+                <span>{t('listingReview.reviewActionBar.approvePlace')}</span>
               </button>
             </>
           ) : (
@@ -99,7 +106,9 @@ export default function ReviewActionBar({
                   name={listing.status === 'approved' ? 'done_all' : 'block'}
                   className="text-[20px]"
                 />
-                {listing.status === 'approved' ? 'ĐÃ PHÊ DUYỆT THÀNH CÔNG' : 'ĐÃ TỪ CHỐI HỒ SƠ'}
+                {listing.status === 'approved'
+                  ? t('listingReview.reviewActionBar.approvedSuccessfully')
+                  : t('listingReview.reviewActionBar.submissionRejected')}
               </span>
               {hasNextPending && (
                 <button
@@ -107,7 +116,7 @@ export default function ReviewActionBar({
                   onClick={onNext}
                   className="flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-[13px] font-bold text-on-primary shadow-sm transition-all hover:bg-on-primary-fixed-variant"
                 >
-                  <span>Hồ sơ chờ tiếp theo</span>
+                  <span>{t('listingReview.reviewActionBar.nextPendingSubmission')}</span>
                   <Icon name="arrow_forward" className="text-[19px]" />
                 </button>
               )}

@@ -1,8 +1,9 @@
+import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import Icon from '../../../components/common/Icon';
-import { POI_STATUS_CONFIG, POI_STATUS_OPTIONS } from '../../../constants/poi';
-import { ROUTES } from '../../../constants/routes';
-import type { PoiStatus } from '../../../types/admin';
+import { Icon } from '@/components/common';
+import { POI_STATUS_CONFIG, POI_STATUS_OPTIONS } from '@/constants/poi';
+import { ROUTES } from '@/constants/routes';
+import type { PoiStatus } from '@/types';
 
 interface PoiEditorHeaderProps {
   /** null khi đang thêm POI mới */
@@ -25,6 +26,7 @@ export default function PoiEditorHeader({
   onPreview,
   onSave,
 }: PoiEditorHeaderProps) {
+  const { t } = useTranslation();
   const statusConfig = POI_STATUS_CONFIG[status];
 
   return (
@@ -36,15 +38,15 @@ export default function PoiEditorHeader({
           className="flex items-center gap-1 text-outline transition-colors hover:text-primary"
         >
           <Icon name="home" className="text-[16px] text-outline" />
-          <span>Quản trị hệ thống</span>
+          <span>{t('poiEditor.poiEditorHeader.systemAdministration')}</span>
         </Link>
         <span className="mx-2 text-outline-variant">/</span>
         <Link
-          to={ROUTES.LOCATIONS}
+          to={ROUTES.POIS}
           className="flex items-center gap-1 text-outline transition-colors hover:text-primary"
         >
           <Icon name="pin_drop" className="text-[16px]" />
-          <span>Quản lý điểm đến POI</span>
+          <span>{t('poiEditor.poiEditorHeader.poiDestinations')}</span>
         </Link>
         <span className="mx-2 text-outline-variant">/</span>
         <div className="flex items-center gap-1 font-semibold text-on-surface">
@@ -53,8 +55,13 @@ export default function PoiEditorHeader({
             className="text-[16px] text-primary"
           />
           <span>
-            Thêm / Chỉnh sửa POI: {poiId ? poiName : 'POI mới'}{' '}
-            {poiId && <span className="text-label-sm font-medium text-outline">(Mã: {poiId})</span>}
+            {t('poiEditor.poiEditorHeader.addEditPoi')}{' '}
+            {poiId ? poiName : t('poiEditor.poiEditorHeader.newPoi')}{' '}
+            {poiId && (
+              <span className="text-label-sm font-medium text-outline">
+                {t('poiEditor.poiEditorHeader.code', { poiId })}
+              </span>
+            )}
           </span>
         </div>
       </div>
@@ -63,31 +70,36 @@ export default function PoiEditorHeader({
       <div className="flex flex-col justify-between gap-space-md rounded-xl bg-surface-container-lowest p-space-lg shadow-sm xl:flex-row xl:items-center">
         <div className="flex flex-col gap-space-xs">
           <Link
-            to={ROUTES.LOCATIONS}
+            to={ROUTES.POIS}
             className="group inline-flex w-fit items-center gap-space-xs font-label-md text-label-md text-primary transition-colors hover:text-surface-tint"
           >
             <Icon
               name="arrow_back"
               className="text-[18px] transition-transform group-hover:-translate-x-0.5"
             />
-            <span>Quay lại danh sách POI</span>
+            <span>{t('poiEditor.poiEditorHeader.backPoiList')}</span>
           </Link>
           <div className="mt-1 flex flex-wrap items-center gap-space-sm">
             <h1 className="font-headline-lg text-headline-lg font-bold tracking-tight text-on-surface">
               {poiId ? (
                 <>
-                  Chỉnh sửa thông tin POI: {poiName}{' '}
-                  <span className="text-title-md font-medium tracking-normal text-outline">
-                    (Mã: {poiId})
-                  </span>
+                  <Trans
+                    i18nKey="poiEditor.poiEditorHeader.editPoiCode"
+                    values={{ poiName, poiId }}
+                    components={{
+                      c0: (
+                        <span className="text-title-md font-medium tracking-normal text-outline" />
+                      ),
+                    }}
+                  />
                 </>
               ) : (
-                'Thêm điểm đến POI mới'
+                t('poiEditor.poiEditorHeader.addNewPoiDestination')
               )}
             </h1>
             {/* Badge trạng thái — bấm để đổi trạng thái hiển thị */}
             <label
-              title="Đổi trạng thái hiển thị"
+              title={t('poiEditor.poiEditorHeader.changeVisibilityStatus')}
               className={`relative inline-flex cursor-pointer items-center gap-1.5 rounded-full px-space-sm py-1 font-label-sm text-label-sm font-semibold shadow-xs ${statusConfig.badgeClass}`}
             >
               <span
@@ -96,7 +108,7 @@ export default function PoiEditorHeader({
               {statusConfig.longLabel}
               <Icon name="expand_more" className="text-[14px]" />
               <select
-                aria-label="Trạng thái POI"
+                aria-label={t('poiEditor.poiEditorHeader.poiStatus')}
                 value={status}
                 onChange={(event) => {
                   const next = POI_STATUS_OPTIONS.find(
@@ -122,7 +134,7 @@ export default function PoiEditorHeader({
             onClick={onCancel}
             className="rounded-full bg-surface-container-low px-space-md py-2.5 font-label-md text-label-md text-on-surface-variant shadow-xs transition-all hover:bg-surface-container hover:text-on-surface"
           >
-            Hủy bỏ
+            {t('poiEditor.poiEditorHeader.cancel')}
           </button>
           <button
             type="button"
@@ -130,7 +142,7 @@ export default function PoiEditorHeader({
             className="inline-flex items-center gap-2 rounded-full bg-secondary-container/40 px-space-md py-2.5 font-label-md text-label-md font-semibold text-secondary shadow-xs transition-all hover:bg-secondary-container"
           >
             <Icon name="smartphone" className="text-[18px]" />
-            <span>Xem thử hiển thị App Mobile</span>
+            <span>{t('poiEditor.poiEditorHeader.previewMobileApp')}</span>
           </button>
           <button
             type="button"
@@ -138,7 +150,11 @@ export default function PoiEditorHeader({
             className="inline-flex items-center gap-2 rounded-full bg-primary px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-md transition-all hover:bg-primary-container"
           >
             <Icon name="save" className="text-[18px]" />
-            <span>{poiId ? 'Lưu thay đổi POI' : 'Tạo POI mới'}</span>
+            <span>
+              {poiId
+                ? t('poiEditor.poiEditorHeader.savePoiChanges')
+                : t('poiEditor.poiEditorHeader.createNewPoi')}
+            </span>
           </button>
         </div>
       </div>

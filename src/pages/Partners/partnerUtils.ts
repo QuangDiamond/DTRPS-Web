@@ -1,6 +1,7 @@
-import { PARTNER_TYPE_CONFIG, SUSPENDED_AVATAR_CLASS } from '../../constants/partner';
-import type { Partner, PartnerFilters, PartnerListingSummary } from '../../types/admin';
-import { normalizeText } from '../../utils/string';
+import i18n from 'i18next';
+import { PARTNER_TYPE_CONFIG, SUSPENDED_AVATAR_CLASS } from '@/constants/partner';
+import type { Partner, PartnerFilters, PartnerListingSummary } from '@/types';
+import { normalizeText } from '@/utils/string';
 
 export function filterAndSortPartners(partners: Partner[], filters: PartnerFilters): Partner[] {
   const keyword = normalizeText(filters.keyword);
@@ -33,11 +34,21 @@ export function getListingSummary(listings: PartnerListingSummary): {
   label: string;
   className: string;
 } {
-  if (listings.paused > 0) return { label: `${listings.paused} tạm dừng`, className: 'text-error' };
+  if (listings.paused > 0)
+    return {
+      label: i18n.t('partners.utils.paused', { paused: listings.paused }),
+      className: 'text-error',
+    };
   if (listings.pending > 0) {
-    return { label: `${listings.pending} chờ duyệt`, className: 'text-tertiary' };
+    return {
+      label: i18n.t('partners.utils.pending', { pending: listings.pending }),
+      className: 'text-tertiary',
+    };
   }
-  return { label: `${listings.approved} đã duyệt`, className: 'text-primary' };
+  return {
+    label: i18n.t('partners.utils.approved', { approved: listings.approved }),
+    className: 'text-primary',
+  };
 }
 
 export function getPartnerAvatarClass(partner: Partner): string {

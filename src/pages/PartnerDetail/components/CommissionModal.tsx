@@ -1,6 +1,6 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import Button from '../../../components/common/Button';
-import Modal from '../../../components/common/Modal';
+import { Button, Modal } from '@/components/common';
 
 interface CommissionModalProps {
   current: number;
@@ -12,6 +12,7 @@ const MIN_COMMISSION = 0;
 const MAX_COMMISSION = 30;
 
 export default function CommissionModal({ current, onConfirm, onClose }: CommissionModalProps) {
+  const { t } = useTranslation();
   const [value, setValue] = useState(String(current));
   const parsed = Number(value);
   const isValid =
@@ -23,23 +24,23 @@ export default function CommissionModal({ current, onConfirm, onClose }: Commiss
 
   return (
     <Modal
-      title="Điều chỉnh mức hoa hồng"
-      description={`Mức hiện tại: ${current}% — áp dụng cho các giao dịch phát sinh sau khi lưu`}
+      title={t('partnerDetail.commissionModal.adjustCommissionRate')}
+      description={t('partnerDetail.commissionModal.currentRateAppliesTransactions', { current })}
       onClose={onClose}
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
-            Hủy
+            {t('actions.cancel')}
           </Button>
           <Button icon="save" disabled={!changed} onClick={() => onConfirm(parsed)}>
-            Lưu mức mới
+            {t('partnerDetail.commissionModal.saveNewRate')}
           </Button>
         </>
       }
     >
       <label className="flex flex-col gap-1.5">
         <span className="font-label-sm text-label-sm font-semibold text-on-surface-variant">
-          Mức hoa hồng hệ thống (%)
+          {t('partnerDetail.commissionModal.platformCommissionRate')}
         </span>
         <input
           type="number"
@@ -52,7 +53,10 @@ export default function CommissionModal({ current, onConfirm, onClose }: Commiss
         />
         {!isValid && (
           <span className="font-body-sm text-body-sm text-error">
-            Mức hoa hồng phải trong khoảng {MIN_COMMISSION}–{MAX_COMMISSION}%
+            {t('partnerDetail.commissionModal.theCommissionRateMust', {
+              MIN_COMMISSION,
+              MAX_COMMISSION,
+            })}
           </span>
         )}
       </label>

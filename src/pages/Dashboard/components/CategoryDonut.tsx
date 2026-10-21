@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { CategoryShare, ListingCategory } from '../../../types/admin';
-import { formatNumber } from '../../../utils/format';
-import { DASHBOARD_CARD_CLASS } from '../dashboardUtils';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { DASHBOARD_CARD_CLASS } from '@/pages/Dashboard/dashboardUtils';
+import type { CategoryShare, ListingCategory } from '@/types';
+import { formatNumber } from '@/utils/format';
 
 const RADIUS = 38;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
@@ -16,6 +17,7 @@ const CATEGORY_COLORS: Record<ListingCategory, { stroke: string; dot: string }> 
 };
 
 export default function CategoryDonut({ data }: { data: CategoryShare[] }) {
+  const { t } = useTranslation();
   const [hovered, setHovered] = useState<ListingCategory | null>(null);
 
   const total = data.reduce((sum, item) => sum + item.count, 0);
@@ -38,12 +40,12 @@ export default function CategoryDonut({ data }: { data: CategoryShare[] }) {
       <div>
         <div className="mb-1 flex items-center justify-between">
           <h2 className="font-headline-sm text-[18px] font-bold text-on-surface">
-            Phân loại địa điểm
+            {t('dashboard.categories.title')}
           </h2>
           <Icon name="pie_chart" className="text-[22px] text-on-surface-variant" />
         </div>
         <p className="mb-4 font-body-sm text-[13px] text-on-surface-variant">
-          Theo danh mục kinh doanh du lịch
+          {t('dashboard.categories.subtitle')}
         </p>
 
         <div className="relative my-3 flex items-center justify-center">
@@ -77,7 +79,11 @@ export default function CategoryDonut({ data }: { data: CategoryShare[] }) {
               {formatNumber(hoveredItem ? hoveredItem.count : total)}
             </span>
             <span className="font-label-sm text-[11px] font-semibold tracking-wider text-on-surface-variant uppercase">
-              {hoveredItem ? `${percentOf(hoveredItem.count)}% tổng POI` : 'Tổng POI'}
+              {hoveredItem
+                ? t('dashboard.categories.percentOfTotal', {
+                    percent: percentOf(hoveredItem.count),
+                  })
+                : t('dashboard.categories.total')}
             </span>
           </div>
         </div>
@@ -97,7 +103,9 @@ export default function CategoryDonut({ data }: { data: CategoryShare[] }) {
               <span
                 className={`h-3 w-3 shrink-0 rounded-full ${CATEGORY_COLORS[item.category].dot}`}
               />
-              <span className="truncate text-on-surface">{item.label}</span>
+              <span className="truncate text-on-surface">
+                {t(`dashboard.categories.${item.category}`)}
+              </span>
             </div>
             <span className="ml-2 font-bold text-on-surface">
               {percentOf(item.count)}% ({formatNumber(item.count)})

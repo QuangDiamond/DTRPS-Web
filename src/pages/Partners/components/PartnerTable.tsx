@@ -1,6 +1,7 @@
-import { useEffect, useState, type MouseEvent, type ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { Partner } from '../../../types/admin';
+import { useTranslation } from 'react-i18next';
+import { type MouseEvent, type ReactNode, useEffect, useState } from 'react';
+import { Icon } from '@/components/common';
+import type { Partner, TranslationKey } from '@/types';
 import PartnerRow from './PartnerRow';
 
 interface PartnerTableProps {
@@ -20,14 +21,14 @@ interface MenuState {
   right: number;
 }
 
-const COLUMNS = [
-  { label: 'Đối tác & Cơ sở đại diện', className: 'px-6' },
-  { label: 'Loại hình', className: 'px-5' },
-  { label: 'Thông tin liên hệ', className: 'px-5' },
-  { label: 'Niêm yết', className: 'px-5 text-center' },
-  { label: 'Ngày tham gia', className: 'px-5' },
-  { label: 'Trạng thái', className: 'px-5 text-center' },
-  { label: 'Thao tác', className: 'px-6 text-right' },
+const COLUMNS: { labelKey: TranslationKey; className: string }[] = [
+  { labelKey: 'table.partners.partner', className: 'px-6' },
+  { labelKey: 'table.partners.type', className: 'px-5' },
+  { labelKey: 'table.partners.contact', className: 'px-5' },
+  { labelKey: 'table.partners.listings', className: 'px-5 text-center' },
+  { labelKey: 'table.partners.joinedAt', className: 'px-5' },
+  { labelKey: 'table.partners.status', className: 'px-5 text-center' },
+  { labelKey: 'table.partners.actions', className: 'px-6 text-right' },
 ];
 
 const MENU_ITEM_CLASS =
@@ -42,6 +43,7 @@ export default function PartnerTable({
   onUnlock,
   onViewListings,
 }: PartnerTableProps) {
+  const { t } = useTranslation();
   const [menu, setMenu] = useState<MenuState | null>(null);
 
   // Menu dùng position: fixed nên đóng lại khi cuộn / đổi kích thước cửa sổ
@@ -69,13 +71,13 @@ export default function PartnerTable({
 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm">
-      <div className="w-full overflow-x-auto">
+      <div className="w-full table-scroll overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="bg-surface-container-low/70 font-label-sm text-label-sm tracking-wider text-on-surface-variant uppercase">
               {COLUMNS.map((column) => (
-                <th key={column.label} className={`py-4 font-semibold ${column.className}`}>
-                  {column.label}
+                <th key={column.labelKey} className={`py-4 font-semibold ${column.className}`}>
+                  {t(column.labelKey)}
                 </th>
               ))}
             </tr>
@@ -87,10 +89,10 @@ export default function PartnerTable({
                   <div className="flex flex-col items-center gap-2 text-on-surface-variant">
                     <Icon name="search_off" className="text-[40px] text-outline" />
                     <span className="font-title-md text-title-md">
-                      Không tìm thấy đối tác phù hợp
+                      {t('partners.partnerTable.noMatchingPartnersFound')}
                     </span>
                     <span className="font-body-sm text-body-sm">
-                      Thử thay đổi từ khóa hoặc bộ lọc.
+                      {t('partners.partnerTable.tryChangingKeywordOr')}
                     </span>
                   </div>
                 </td>
@@ -125,14 +127,14 @@ export default function PartnerTable({
               onClick={() => runMenuAction(onViewDetail)}
               className={`${MENU_ITEM_CLASS} text-on-surface hover:bg-surface-container-low`}
             >
-              <Icon name="visibility" className="text-[18px]" /> Xem chi tiết
+              <Icon name="visibility" className="text-[18px]" /> {t('actions.viewDetail')}
             </button>
             <button
               type="button"
               onClick={() => runMenuAction(onEdit)}
               className={`${MENU_ITEM_CLASS} text-on-surface hover:bg-surface-container-low`}
             >
-              <Icon name="edit" className="text-[18px]" /> Chỉnh sửa thông tin
+              <Icon name="edit" className="text-[18px]" /> {t('partners.partnerTable.editDetails')}
             </button>
             {menu.partner.status === 'suspended' ? (
               <button
@@ -140,7 +142,8 @@ export default function PartnerTable({
                 onClick={() => runMenuAction(onUnlock)}
                 className={`${MENU_ITEM_CLASS} text-primary hover:bg-surface-container-low`}
               >
-                <Icon name="lock_open" className="text-[18px]" /> Mở khóa tài khoản
+                <Icon name="lock_open" className="text-[18px]" />{' '}
+                {t('partners.partnerTable.unlockAccount')}
               </button>
             ) : (
               <button
@@ -148,7 +151,8 @@ export default function PartnerTable({
                 onClick={() => runMenuAction(onLock)}
                 className={`${MENU_ITEM_CLASS} text-error hover:bg-error-container/40`}
               >
-                <Icon name="lock" className="text-[18px]" /> Khóa tài khoản
+                <Icon name="lock" className="text-[18px]" />{' '}
+                {t('partners.partnerTable.lockAccount')}
               </button>
             )}
           </div>

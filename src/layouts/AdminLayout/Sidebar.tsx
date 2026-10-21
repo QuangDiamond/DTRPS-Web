@@ -1,11 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import Icon from '../../components/common/Icon';
-import { useAuth } from '../../hooks/useAuth';
-import { useNotifications } from '../../hooks/useNotifications';
-import { ADMIN_NAV_ITEMS } from '../../constants/navigation';
-import { ROUTES } from '../../constants/routes';
-import { useToast } from '../../hooks/useToast';
-import type { BadgeTone } from '../../types/navigation';
+import { Icon } from '@/components/common';
+import { ADMIN_NAV_ITEMS } from '@/constants/navigation';
+import { ROUTES } from '@/constants/routes';
+import { useAuth, useListings, useNotifications, useToast } from '@/hooks';
+import type { BadgeTone, NavBadgeSource } from '@/types';
 
 const BADGE_TONE_CLASSES: Record<BadgeTone, string> = {
   tertiary: 'bg-tertiary-fixed text-on-tertiary-fixed',
@@ -14,19 +13,25 @@ const BADGE_TONE_CLASSES: Record<BadgeTone, string> = {
 
 export default function Sidebar() {
   const { unreadCount } = useNotifications();
+  const { stats: listingStats } = useListings();
+  const badgeCounts: Record<NavBadgeSource, number> = {
+    pendingListings: listingStats.pending,
+    unreadNotifications: unreadCount,
+  };
   const isProfileActive = useLocation().pathname === ROUTES.PROFILE;
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { admin, logout } = useAuth();
   const { showToast } = useToast();
 
   const handleLogout = () => {
     logout();
-    showToast('Đã đăng xuất khỏi hệ thống', 'info');
+    showToast(t('nav.loggedOut'), 'info');
     navigate(ROUTES.LOGIN, { replace: true });
   };
 
   return (
-    <aside className="fixed top-0 bottom-0 left-0 z-50 flex w-72 flex-col justify-between bg-surface-container-lowest shadow-[0_1px_12px_rgba(0,0,0,0.05)]">
+    <aside className="print:hidden fixed top-0 bottom-0 left-0 z-50 flex w-72 flex-col justify-between bg-surface-container-lowest shadow-[0_1px_12px_rgba(0,0,0,0.05)]">
       <div className="flex flex-1 flex-col overflow-y-auto">
         {/* Logo */}
         <div className="flex h-[68px] items-center gap-3 bg-surface-container-lowest px-space-lg">
@@ -45,15 +50,14 @@ export default function Sidebar() {
 
         <div className="px-space-md py-space-sm">
           <div className="px-space-sm py-space-xs font-label-sm text-label-sm font-semibold tracking-wider text-outline uppercase">
-            Quản trị hệ thống
+            {t('nav.section')}
           </div>
         </div>
 
         {/* Menu */}
         <nav className="flex-1 space-y-1 px-space-md">
           {ADMIN_NAV_ITEMS.map((item) => {
-            // Badge Thông báo lấy số chưa đọc thực tế từ store
-            const badgeCount = item.path === ROUTES.NOTIFICATIONS ? unreadCount : item.badge?.count;
+            const badgeCount = item.badge ? badgeCounts[item.badge.source] : 0;
             return (
               <NavLink
                 key={item.path}
@@ -95,7 +99,7 @@ export default function Sidebar() {
         >
           <NavLink
             to={ROUTES.PROFILE}
-            title="Hồ sơ quản trị viên"
+            title={t('nav.profile')}
             className="flex min-w-0 flex-1 items-center gap-3"
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary">
@@ -126,7 +130,7 @@ export default function Sidebar() {
             className={`shrink-0 rounded-lg p-1.5 transition-colors hover:bg-error-container/40 hover:text-error ${
               isProfileActive ? 'text-on-primary-container' : 'text-on-surface-variant'
             }`}
-            title="Đăng xuất"
+            title={t('nav.logout')}
           >
             <Icon name="logout" className="text-[20px]" />
           </button>

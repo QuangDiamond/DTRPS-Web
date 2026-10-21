@@ -1,18 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import type { MessageChannel, MessageTemplate } from '@/types';
 import Button from './Button';
 import Icon from './Icon';
 import Modal from './Modal';
-
-export interface MessageTemplate {
-  title: string;
-  body: string;
-}
-
-export interface MessageChannel {
-  id: string;
-  label: string;
-  icon: string;
-}
 
 interface SendMessageModalProps {
   title: string;
@@ -39,6 +30,7 @@ export default function SendMessageModal({
   onSend,
   onClose,
 }: SendMessageModalProps) {
+  const { t } = useTranslation();
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
   const [selected, setSelected] = useState<string[]>(defaultChannelIds);
@@ -66,10 +58,10 @@ export default function SendMessageModal({
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
-            Hủy
+            {t('actions.cancel')}
           </Button>
           <Button icon="send" disabled={!canSend} onClick={handleSend}>
-            Gửi
+            {t('components.sendMessageModal.send')}
           </Button>
         </>
       }
@@ -92,31 +84,31 @@ export default function SendMessageModal({
         </div>
         <label className="flex flex-col gap-1.5">
           <span className="font-label-sm text-label-sm font-semibold text-on-surface-variant">
-            Tiêu đề *
+            {t('components.sendMessageModal.subject')}
           </span>
           <input
             value={subject}
             onChange={(event) => setSubject(event.target.value)}
-            placeholder="Nhập tiêu đề..."
+            placeholder={t('components.sendMessageModal.enterSubject')}
             className={`h-10 ${INPUT_CLASS}`}
           />
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="font-label-sm text-label-sm font-semibold text-on-surface-variant">
-            Nội dung *
+            {t('components.sendMessageModal.message')}
           </span>
           <textarea
             rows={4}
             value={body}
             onChange={(event) => setBody(event.target.value)}
-            placeholder="Nhập nội dung..."
+            placeholder={t('components.sendMessageModal.enterYourMessage')}
             className={`resize-none py-2 ${INPUT_CLASS}`}
           />
         </label>
         {channels && (
           <div className="flex flex-col gap-1.5">
             <span className="font-label-sm text-label-sm font-semibold text-on-surface-variant">
-              Kênh gửi *
+              {t('components.sendMessageModal.deliveryChannels')}
             </span>
             <div className="flex flex-wrap gap-2">
               {channels.map((channel) => {

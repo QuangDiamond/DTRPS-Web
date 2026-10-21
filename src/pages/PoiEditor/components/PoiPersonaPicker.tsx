@@ -1,8 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import { useRef, useState } from 'react';
-import Icon from '../../../components/common/Icon';
-import { POI_PERSONA_SUGGESTIONS } from '../../../constants/poi';
-import { useDismiss } from '../../../hooks/useDismiss';
-import { normalizeText } from '../../../utils/string';
+import { Icon } from '@/components/common';
+import { POI_PERSONA_SUGGESTIONS } from '@/constants/poi';
+import { useDismiss } from '@/hooks';
+import { normalizeText } from '@/utils/string';
 
 interface PoiPersonaPickerProps {
   personas: string[];
@@ -11,6 +12,7 @@ interface PoiPersonaPickerProps {
 
 /** Danh sách chip đối tượng phù hợp + nút "Thêm" mở gợi ý / nhập tự do */
 export default function PoiPersonaPicker({ personas, onChange }: PoiPersonaPickerProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,14 +36,14 @@ export default function PoiPersonaPicker({ personas, onChange }: PoiPersonaPicke
   return (
     <div className="flex flex-col gap-1.5">
       <span className="font-label-sm text-label-sm font-semibold text-outline">
-        Phù hợp nhất với đối tượng
+        {t('poiEditor.poiPersonaPicker.bestSuited')}
       </span>
       <div ref={containerRef} className="relative flex flex-wrap gap-1.5">
         {personas.map((persona) => (
           <button
             key={persona}
             type="button"
-            title="Bấm để bỏ đối tượng này"
+            title={t('poiEditor.poiPersonaPicker.clickRemoveThisAudience')}
             onClick={() => onChange(personas.filter((item) => item !== persona))}
             className="group flex items-center gap-0.5 rounded-full bg-secondary-container/40 px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-secondary-container transition-colors hover:bg-error-container/60 hover:text-on-error-container"
           >
@@ -55,7 +57,7 @@ export default function PoiPersonaPicker({ personas, onChange }: PoiPersonaPicke
           className="flex items-center gap-0.5 rounded-full bg-surface-container px-2 py-0.5 font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-container-highest"
         >
           <Icon name="add" className="text-[14px]" />
-          Thêm
+          {t('poiEditor.poiPersonaPicker.add')}
         </button>
 
         {open && (
@@ -64,7 +66,7 @@ export default function PoiPersonaPicker({ personas, onChange }: PoiPersonaPicke
               autoFocus
               type="text"
               value={draft}
-              placeholder="Nhập đối tượng mới rồi Enter..."
+              placeholder={t('poiEditor.poiPersonaPicker.typeNewAudiencePress')}
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
@@ -89,7 +91,7 @@ export default function PoiPersonaPicker({ personas, onChange }: PoiPersonaPicke
               ))}
               {suggestions.length === 0 && !draft.trim() && (
                 <span className="font-body-sm text-body-sm text-outline">
-                  Đã chọn hết gợi ý có sẵn.
+                  {t('poiEditor.poiPersonaPicker.allAvailableSuggestionsHave')}
                 </span>
               )}
               {draft.trim() && !selected.has(normalizeText(draft)) && (
@@ -99,7 +101,7 @@ export default function PoiPersonaPicker({ personas, onChange }: PoiPersonaPicke
                   className="flex items-center gap-0.5 rounded-full bg-primary px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-primary"
                 >
                   <Icon name="add" className="text-[14px]" />
-                  Thêm "{draft.trim()}"
+                  {t('poiEditor.poiPersonaPicker.add2', { trim: draft.trim() })}
                 </button>
               )}
             </div>

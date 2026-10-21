@@ -1,4 +1,4 @@
-import type { AdminProfile } from './admin';
+import type { AdminProfile } from './common';
 
 export interface AdminAccount {
   profile: AdminProfile;

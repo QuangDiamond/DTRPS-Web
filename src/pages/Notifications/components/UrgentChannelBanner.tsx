@@ -1,5 +1,5 @@
-import Icon from '../../../components/common/Icon';
-import ToggleSwitch from '../../../components/common/ToggleSwitch';
+import { useTranslation } from 'react-i18next';
+import { Icon, ToggleSwitch } from '@/components/common';
 
 interface UrgentChannelBannerProps {
   enabled: boolean;
@@ -13,6 +13,7 @@ export default function UrgentChannelBanner({
   aiLoadThreshold,
   onToggle,
 }: UrgentChannelBannerProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col justify-between gap-space-md rounded-2xl bg-primary-fixed/30 p-space-md sm:flex-row sm:items-center lg:col-span-2">
       <div className="flex items-center gap-space-sm">
@@ -24,11 +25,10 @@ export default function UrgentChannelBanner({
         </div>
         <div className="flex flex-col">
           <span className="font-title-md text-title-md font-semibold text-on-surface">
-            Kênh tiếp nhận cảnh báo khẩn (Telegram &amp; SMS)
+            {t('notifications.urgentChannelBanner.urgentAlertChannelsTelegram')}
           </span>
           <span className="font-body-sm text-body-sm text-on-surface-variant">
-            Tự động báo tin khi AI tải trên {aiLoadThreshold}% hoặc có báo cáo sai lệch giá nghiêm
-            trọng
+            {t('notifications.urgentChannelBanner.automaticallyAlertsWhenAi', { aiLoadThreshold })}
           </span>
         </div>
       </div>
@@ -36,9 +36,15 @@ export default function UrgentChannelBanner({
         <span
           className={`font-label-sm text-label-sm font-semibold ${enabled ? 'text-primary' : 'text-outline'}`}
         >
-          {enabled ? 'Đang kích hoạt' : 'Đã tạm tắt'}
+          {enabled
+            ? t('notifications.urgentChannelBanner.enabled')
+            : t('notifications.urgentChannelBanner.paused')}
         </span>
-        <ToggleSwitch checked={enabled} onChange={onToggle} label="Kênh tiếp nhận cảnh báo khẩn" />
+        <ToggleSwitch
+          checked={enabled}
+          onChange={onToggle}
+          label={t('notifications.urgentChannelBanner.urgentAlertChannels')}
+        />
       </div>
     </div>
   );

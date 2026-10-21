@@ -1,7 +1,8 @@
-import Icon from '../../../components/common/Icon';
-import { USER_STATUS_CONFIG } from '../../../constants/user';
-import type { AppUser } from '../../../types/admin';
-import { formatDate } from '../../../utils/format';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { USER_STATUS_CONFIG } from '@/constants/user';
+import type { AppUser } from '@/types';
+import { formatDate } from '@/utils/format';
 
 interface UserRowProps {
   user: AppUser;
@@ -20,6 +21,7 @@ export default function UserRow({
   onLock,
   onUnlock,
 }: UserRowProps) {
+  const { t } = useTranslation();
   const suspended = user.status === 'suspended';
   const vip = user.accountType === 'vip';
   const status = USER_STATUS_CONFIG[user.status];
@@ -43,7 +45,7 @@ export default function UserRow({
           type="checkbox"
           checked={selected}
           onChange={() => onToggleSelect(user.id)}
-          aria-label={`Chọn ${user.name}`}
+          aria-label={t('users.userRow.select', { name: user.name })}
           className="h-4 w-4 cursor-pointer rounded accent-primary"
         />
       </td>
@@ -78,7 +80,7 @@ export default function UserRow({
               )}
               {user.accountType === 'partner' && (
                 <span className="rounded bg-primary-fixed px-1.5 font-label-sm text-label-sm font-bold text-on-primary-fixed-variant">
-                  Đối tác
+                  {t('users.userRow.partner')}
                 </span>
               )}
             </div>
@@ -113,22 +115,24 @@ export default function UserRow({
           <span
             className={`text-body-sm font-semibold ${suspended ? 'text-outline' : 'text-on-surface'}`}
           >
-            {user.tripCount} chuyến đi
+            {t('users.userRow.trips', { count: user.tripCount })}
           </span>
           {suspended ? (
             <span className="font-label-sm text-label-sm text-error">{user.suspendReason}</span>
           ) : (
             <span
               className={`flex items-center gap-1 font-label-sm text-label-sm ${
-                vip
-                  ? 'font-semibold text-tertiary'
-                  : user.tripNoteIcon
-                    ? 'text-primary'
-                    : 'text-outline'
+                user.aiSearchCount > 0
+                  ? vip
+                    ? 'font-semibold text-tertiary'
+                    : 'text-primary'
+                  : 'text-outline'
               }`}
             >
-              {user.tripNoteIcon && <Icon name={user.tripNoteIcon} className="text-[13px]" />}
-              {user.tripNote}
+              <Icon name="manage_search" className="text-[13px]" />
+              {user.aiSearchCount > 0
+                ? t('users.userRow.aiSearches', { count: user.aiSearchCount })
+                : t('users.userRow.noAiSearches')}
             </span>
           )}
         </div>
@@ -150,7 +154,7 @@ export default function UserRow({
             onClick={() => onViewDetail(user)}
             className="rounded-lg bg-surface-container-low px-2.5 py-1 font-label-sm text-label-sm font-semibold text-primary transition-colors hover:bg-surface-container"
           >
-            Chi tiết
+            {t('users.userRow.details')}
           </button>
           {suspended ? (
             <button
@@ -159,13 +163,13 @@ export default function UserRow({
               className="flex items-center gap-1 rounded-lg bg-primary-container px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-primary-container transition-colors hover:opacity-90"
             >
               <Icon name="lock_open" className="text-[15px]" />
-              Mở khóa
+              {t('users.userRow.unlock')}
             </button>
           ) : (
             <button
               type="button"
               onClick={() => onLock(user)}
-              title="Khóa tài khoản"
+              title={t('users.userRow.lockAccount')}
               className="rounded-lg p-1.5 text-outline transition-colors hover:bg-error-container/40 hover:text-error"
             >
               <Icon name="lock" className="text-[18px]" />

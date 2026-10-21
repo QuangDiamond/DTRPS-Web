@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { DataSource, DataStatus, LoadStatus } from '../types/api';
-import { getErrorMessage } from '../utils/error';
+import type { DataSource, DataStatus, LoadStatus } from '@/types';
+import { getErrorMessage } from '@/utils/error';
 
 /**
  * Tải dữ liệu khởi tạo cho một store.

@@ -1,9 +1,10 @@
+import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import Icon from '../../../components/common/Icon';
-import { REVIEW_STATUS_BANNER } from '../../../constants/listing';
-import { ROUTES } from '../../../constants/routes';
-import type { Listing, ListingDetail } from '../../../types/admin';
-import { formatSubmittedAt, formatWaitDuration } from '../reviewUtils';
+import { Icon } from '@/components/common';
+import { REVIEW_STATUS_BANNER } from '@/constants/listing';
+import { ROUTES } from '@/constants/routes';
+import { formatSubmittedAt, formatWaitDuration } from '@/pages/ListingReview/reviewUtils';
+import type { Listing, ListingDetail } from '@/types';
 
 interface ReviewHeaderProps {
   listing: Listing;
@@ -11,6 +12,7 @@ interface ReviewHeaderProps {
 }
 
 export default function ReviewHeader({ listing, detail }: ReviewHeaderProps) {
+  const { t } = useTranslation();
   const status = REVIEW_STATUS_BANNER[listing.status];
 
   return (
@@ -23,7 +25,7 @@ export default function ReviewHeader({ listing, detail }: ReviewHeaderProps) {
             className="flex items-center gap-1.5 transition-colors hover:text-primary"
           >
             <Icon name="home" className="text-[18px]" />
-            <span>Quản trị hệ thống</span>
+            <span>{t('listingReview.reviewHeader.systemAdministration')}</span>
           </Link>
           <Icon name="chevron_right" className="text-[16px]" />
           <Link
@@ -31,7 +33,7 @@ export default function ReviewHeader({ listing, detail }: ReviewHeaderProps) {
             className="flex items-center gap-1.5 transition-colors hover:text-primary"
           >
             <Icon name="store_mall_directory" className="text-[18px]" />
-            <span>Quản lý niêm yết</span>
+            <span>{t('listingReview.reviewHeader.listingManagement')}</span>
           </Link>
           <Icon name="chevron_right" className="text-[16px]" />
           <span className="flex items-center gap-1.5 font-bold text-primary">
@@ -46,7 +48,7 @@ export default function ReviewHeader({ listing, detail }: ReviewHeaderProps) {
           className="inline-flex items-center gap-1.5 rounded-full border border-surface-container-high bg-surface-container-lowest px-3.5 py-1.5 text-[12.5px] font-bold text-on-surface-variant shadow-xs transition-all hover:bg-surface-container-low hover:text-on-surface"
         >
           <Icon name="arrow_back" className="text-[17px]" />
-          <span>Quay lại danh sách niêm yết</span>
+          <span>{t('listingReview.reviewHeader.backListings')}</span>
         </Link>
       </div>
 
@@ -71,21 +73,29 @@ export default function ReviewHeader({ listing, detail }: ReviewHeaderProps) {
             <div className="mt-1 flex flex-wrap items-center gap-3 text-[12.5px] font-medium text-on-surface-variant">
               <span className="flex items-center gap-1">
                 <Icon name="schedule" className="text-[16px] text-primary" />
-                Nộp hồ sơ:{' '}
-                <strong className="ml-1 text-on-surface">
-                  {formatSubmittedAt(listing.submittedAt)}
-                </strong>
+                <Trans
+                  i18nKey="listingReview.reviewHeader.submitted"
+                  values={{ submittedAt: formatSubmittedAt(listing.submittedAt) }}
+                  components={{ c0: <strong className="ml-1 text-on-surface" /> }}
+                />
               </span>
               <span className="text-outline-variant">•</span>
               <span className="flex items-center gap-1">
                 <Icon name="verified_user" className="text-[16px] text-primary" />
-                Cấp độ kiểm duyệt:{' '}
-                <strong className="ml-1 text-on-surface">{detail.reviewLevel}</strong>
+                <Trans
+                  i18nKey="listingReview.reviewHeader.reviewLevel"
+                  values={{ reviewLevel: detail.reviewLevel }}
+                  components={{ c0: <strong className="ml-1 text-on-surface" /> }}
+                />
               </span>
               <span className="text-outline-variant">•</span>
               <span className="flex items-center gap-1">
                 <Icon name="pin_drop" className="text-[16px] text-primary" />
-                Địa bàn: <strong className="ml-1 text-on-surface">{detail.areaLabel}</strong>
+                <Trans
+                  i18nKey="listingReview.reviewHeader.area"
+                  values={{ areaLabel: detail.areaLabel }}
+                  components={{ c0: <strong className="ml-1 text-on-surface" /> }}
+                />
               </span>
             </div>
           </div>
@@ -94,7 +104,7 @@ export default function ReviewHeader({ listing, detail }: ReviewHeaderProps) {
         <div className="flex items-center gap-3">
           <div className="rounded-xl border border-surface-container-high bg-surface-container-low px-4 py-2 text-right">
             <div className="text-[11px] font-semibold text-on-surface-variant uppercase">
-              Độ hoàn thiện hồ sơ
+              {t('listingReview.reviewHeader.submissionCompleteness')}
             </div>
             <div className="mt-0.5 text-[20px] leading-none font-extrabold tracking-tight text-primary">
               {detail.completeness}%
@@ -102,7 +112,9 @@ export default function ReviewHeader({ listing, detail }: ReviewHeaderProps) {
           </div>
           <div className="rounded-xl border border-surface-container-high bg-surface-container-low px-4 py-2 text-right">
             <div className="text-[11px] font-semibold text-on-surface-variant uppercase">
-              {listing.status === 'pending' ? 'Thời gian chờ' : 'Thời gian xử lý'}
+              {listing.status === 'pending'
+                ? t('listingReview.reviewHeader.waitingTime')
+                : t('listingReview.reviewHeader.processingTime')}
             </div>
             <div className="mt-0.5 text-[20px] leading-none font-extrabold tracking-tight text-on-tertiary-fixed-variant">
               {formatWaitDuration(listing.submittedAt, listing.reviewedAt)}

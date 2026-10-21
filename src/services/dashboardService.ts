@@ -1,5 +1,5 @@
-import { CATEGORY_SHARES, DASHBOARD_STATS, GROWTH_SERIES } from '../constants/mockData';
-import type { DashboardOverview } from '../types/api';
+import { CATEGORY_SHARES, DASHBOARD_STATS, GROWTH_SERIES } from '@/mocks/data/mockData';
+import type { DashboardOverview } from '@/types';
 import { ENDPOINTS } from './endpoints';
 import { peek, readRequest } from './request';
 

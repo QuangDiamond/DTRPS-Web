@@ -1,10 +1,11 @@
-import Icon from '../../../components/common/Icon';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
 import {
   USER_ACCOUNT_TYPE_OPTIONS,
   USER_JOINED_OPTIONS,
   USER_STATUS_OPTIONS,
-} from '../../../constants/user';
-import type { SelectOption, UserFilters } from '../../../types/admin';
+} from '@/constants/user';
+import type { SelectOption, UserFilters } from '@/types';
 
 interface UserFilterBarProps {
   filters: UserFilters;
@@ -47,6 +48,7 @@ function FilterSelect<T extends string>({ value, options, onChange, ariaLabel }:
 }
 
 export default function UserFilterBar({ filters, onChange, onApply, onReset }: UserFilterBarProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-space-md rounded-2xl bg-surface-container-lowest p-space-md shadow-sm">
       <div className="grid grid-cols-1 items-center gap-space-sm lg:grid-cols-12">
@@ -59,24 +61,24 @@ export default function UserFilterBar({ filters, onChange, onApply, onReset }: U
             onKeyDown={(event) => {
               if (event.key === 'Enter') onApply();
             }}
-            placeholder="Tìm theo tên du khách, email, số điện thoại, mã định danh UID..."
+            placeholder={t('users.userFilterBar.searchByTravelerName')}
             className="w-full border-0 bg-transparent font-body-sm text-body-sm text-on-surface outline-none placeholder:text-outline"
           />
         </div>
         <FilterSelect
-          ariaLabel="Trạng thái"
+          ariaLabel={t('users.userFilterBar.status')}
           value={filters.status}
           options={USER_STATUS_OPTIONS}
           onChange={(status) => onChange({ status })}
         />
         <FilterSelect
-          ariaLabel="Loại tài khoản"
+          ariaLabel={t('users.userFilterBar.accountType')}
           value={filters.accountType}
           options={USER_ACCOUNT_TYPE_OPTIONS}
           onChange={(accountType) => onChange({ accountType })}
         />
         <FilterSelect
-          ariaLabel="Ngày đăng ký"
+          ariaLabel={t('users.userFilterBar.signUpDate')}
           value={filters.joined}
           options={USER_JOINED_OPTIONS}
           onChange={(joined) => onChange({ joined })}
@@ -85,7 +87,7 @@ export default function UserFilterBar({ filters, onChange, onApply, onReset }: U
           <button
             type="button"
             onClick={onApply}
-            title="Áp dụng bộ lọc"
+            title={t('users.userFilterBar.applyFilters')}
             className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-on-primary shadow-sm transition-all hover:opacity-90"
           >
             <Icon name="tune" className="text-[19px]" />
@@ -93,7 +95,7 @@ export default function UserFilterBar({ filters, onChange, onApply, onReset }: U
           <button
             type="button"
             onClick={onReset}
-            title="Đặt lại bộ lọc"
+            title={t('users.userFilterBar.resetFilters')}
             className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant transition-colors hover:bg-surface-container-high"
           >
             <Icon name="restart_alt" className="text-[19px]" />

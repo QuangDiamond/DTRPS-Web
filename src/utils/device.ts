@@ -1,3 +1,4 @@
+import i18n from 'i18next';
 /** Mô tả trình duyệt + hệ điều hành hiện tại, ví dụ "Chrome trên macOS" */
 export function describeCurrentDevice(): { label: string; icon: string } {
   const userAgent = typeof navigator === 'undefined' ? '' : navigator.userAgent;
@@ -12,7 +13,7 @@ export function describeCurrentDevice(): { label: string; icon: string } {
           ? 'Chrome'
           : /Safari\//.test(userAgent)
             ? 'Safari'
-            : 'Trình duyệt';
+            : i18n.t('utils.device.browser');
 
   const os = /iPhone|iPad/.test(userAgent)
     ? 'iOS'
@@ -24,7 +25,7 @@ export function describeCurrentDevice(): { label: string; icon: string } {
           ? 'macOS'
           : /Linux/.test(userAgent)
             ? 'Linux'
-            : 'thiết bị không xác định';
+            : i18n.t('utils.device.unknownDevice');
 
   const icon =
     os === 'iOS' || os === 'Android'
@@ -33,5 +34,5 @@ export function describeCurrentDevice(): { label: string; icon: string } {
         ? 'laptop_mac'
         : 'desktop_windows';
 
-  return { label: `${browser} trên ${os}`, icon };
+  return { label: i18n.t('utils.device.on', { browser, os }), icon };
 }

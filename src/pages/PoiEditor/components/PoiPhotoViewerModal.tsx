@@ -1,5 +1,5 @@
-import Modal from '../../../components/common/Modal';
-import type { PoiPhoto } from '../../../types/admin';
+import { Modal } from '@/components/common';
+import type { PoiPhoto } from '@/types';
 
 interface PoiPhotoViewerModalProps {
   photo: PoiPhoto;

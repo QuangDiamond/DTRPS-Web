@@ -1,21 +1,21 @@
+import { buildMockListingDetail } from '@/mocks/builders/listingDetailMock';
 import {
   APPROVED_LISTING_STATS,
   DASHBOARD_STATS,
   MOCK_ACTIVITIES,
   MOCK_LISTINGS,
   REJECTED_LISTING_STATS,
-} from '../constants/mockData';
+} from '@/mocks/data/mockData';
 import type {
   Listing,
   ListingCategory,
   ListingDetail,
   ListingFormValues,
+  ListingsSnapshot,
   ListingVisibility,
   RejectOptions,
-} from '../types/admin';
-import type { ListingsSnapshot } from '../types/api';
+} from '@/types';
 import { ENDPOINTS } from './endpoints';
-import { buildMockListingDetail } from './mock/listingDetailMock';
 import { createSource, peek, readRequest, writeRequest } from './request';
 
 const MOCK_SNAPSHOT: ListingsSnapshot = {

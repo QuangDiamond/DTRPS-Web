@@ -1,7 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import { Fragment } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { AdminNotification, NotificationAction } from '../../../types/admin';
-import { formatNotificationTime } from '../notificationUtils';
+import { Icon } from '@/components/common';
+import { formatNotificationTime } from '@/pages/Notifications/notificationUtils';
+import type { AdminNotification, NotificationAction } from '@/types';
 
 const ACTION_VARIANT_CLASS: Record<NotificationAction['variant'], string> = {
   primary: 'bg-primary text-on-primary shadow-sm hover:bg-primary-container',
@@ -20,6 +21,7 @@ export default function NotificationItem({
   onAction,
   onMarkRead,
 }: NotificationItemProps) {
+  const { t } = useTranslation();
   const { read, action, tag } = notification;
 
   return (
@@ -99,7 +101,7 @@ export default function NotificationItem({
         {!read && (
           <button
             type="button"
-            title="Đánh dấu đã đọc"
+            title={t('notifications.notificationItem.markAsRead')}
             onClick={() => onMarkRead(notification)}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-primary"
           >

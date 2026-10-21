@@ -1,12 +1,12 @@
-import FilterSelect from '../../../components/common/FilterSelect';
-import Icon from '../../../components/common/Icon';
+import { useTranslation } from 'react-i18next';
+import { FilterSelect, Icon } from '@/components/common';
 import {
   PARTNER_SORT_OPTIONS,
   PARTNER_STATUS_FILTER_OPTIONS,
   PARTNER_TYPE_FILTER_OPTIONS,
   PROVINCE_FILTER_OPTIONS,
-} from '../../../constants/partner';
-import type { PartnerFilters } from '../../../types/admin';
+} from '@/constants/partner';
+import type { PartnerFilters } from '@/types';
 
 interface PartnerFilterBarProps {
   filters: PartnerFilters;
@@ -21,6 +21,7 @@ export default function PartnerFilterBar({
   onApply,
   onReset,
 }: PartnerFilterBarProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4 rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
       {/* Ô tìm kiếm */}
@@ -37,7 +38,7 @@ export default function PartnerFilterBar({
             onKeyDown={(event) => {
               if (event.key === 'Enter') onApply();
             }}
-            placeholder="Tìm theo tên đối tác, tên cơ sở, mã số thuế hoặc email..."
+            placeholder={t('partners.partnerFilterBar.searchByPartnerName')}
             className="h-11 w-full rounded-xl bg-surface-container-low pr-4 pl-11 font-body-sm text-body-sm text-on-surface shadow-inner transition-all placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none"
           />
         </div>
@@ -48,13 +49,13 @@ export default function PartnerFilterBar({
             className="flex h-11 items-center gap-2 rounded-xl bg-primary px-4 font-label-md text-label-md font-semibold text-on-primary transition-all hover:bg-primary-container"
           >
             <Icon name="filter_list" className="text-[18px]" />
-            <span>Lọc kết quả</span>
+            <span>{t('actions.applyFilter')}</span>
           </button>
           <button
             type="button"
             onClick={onReset}
             className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant transition-all hover:bg-surface-container hover:text-on-surface"
-            title="Xóa bộ lọc"
+            title={t('partners.partnerFilterBar.clearFilters')}
           >
             <Icon name="restart_alt" className="text-[20px]" />
           </button>
@@ -64,28 +65,28 @@ export default function PartnerFilterBar({
       {/* Bộ lọc chi tiết */}
       <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-2 xl:grid-cols-4">
         <FilterSelect
-          label="Loại hình kinh doanh"
+          label={t('partners.partnerFilterBar.businessType')}
           icon="category"
           value={filters.type}
           options={PARTNER_TYPE_FILTER_OPTIONS}
           onChange={(type) => onChange({ type })}
         />
         <FilterSelect
-          label="Trạng thái hồ sơ"
+          label={t('partners.partnerFilterBar.profileStatus')}
           icon="verified_user"
           value={filters.status}
           options={PARTNER_STATUS_FILTER_OPTIONS}
           onChange={(status) => onChange({ status })}
         />
         <FilterSelect
-          label="Khu vực / Tỉnh thành"
+          label={t('partners.partnerFilterBar.regionProvince')}
           icon="location_on"
           value={filters.province}
           options={PROVINCE_FILTER_OPTIONS}
           onChange={(province) => onChange({ province })}
         />
         <FilterSelect
-          label="Sắp xếp hiển thị"
+          label={t('partners.partnerFilterBar.sortBy')}
           icon="sort"
           value={filters.sort}
           options={PARTNER_SORT_OPTIONS}

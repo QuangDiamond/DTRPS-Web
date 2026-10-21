@@ -1,8 +1,9 @@
-import Icon from '../../../components/common/Icon';
-import { USER_ACCOUNT_TYPE_LABELS, USER_STATUS_CONFIG } from '../../../constants/user';
-import type { AppUser, UserProfile } from '../../../types/admin';
-import { formatDate, formatDayTime } from '../../../utils/format';
-import { formatMembership } from '../userProfileUtils';
+import { Trans, useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { USER_ACCOUNT_TYPE_LABELS, USER_STATUS_CONFIG } from '@/constants/user';
+import { formatMembership } from '@/pages/UserDetail/userProfileUtils';
+import type { AppUser, UserProfile } from '@/types';
+import { formatDate, formatDayTime } from '@/utils/format';
 
 interface UserProfileCardProps {
   user: AppUser;
@@ -48,6 +49,7 @@ function VerifiedChip({ icon, label }: { icon: string; label: string }) {
 }
 
 export default function UserProfileCard({ user, profile }: UserProfileCardProps) {
+  const { t } = useTranslation();
   const status = USER_STATUS_CONFIG[user.status];
   const suspended = user.status === 'suspended';
   const danger = profile.trustScore < 50;
@@ -95,20 +97,24 @@ export default function UserProfileCard({ user, profile }: UserProfileCardProps)
           </div>
 
           <div className="flex flex-wrap items-center gap-space-sm font-label-md text-label-md text-on-surface-variant">
-            <span>Mã định danh:</span>
+            <span>{t('userDetail.userProfileCard.id')}</span>
             <span className="rounded bg-surface-container px-2 py-0.5 font-mono font-semibold text-primary">
               {user.id}
             </span>
             <span className="text-outline-variant">•</span>
             <span>
-              Hạng mức: <strong className="text-on-surface">{profile.tierLabel}</strong>
+              <Trans
+                i18nKey="userDetail.userProfileCard.tier"
+                values={{ tierLabel: profile.tierLabel }}
+                components={{ c0: <strong className="text-on-surface" /> }}
+              />
             </span>
           </div>
 
           {suspended && user.suspendReason && (
             <div className="flex items-center gap-2 rounded-xl bg-error-container/40 px-3 py-2 font-body-sm text-body-sm text-error">
               <Icon name="report" className="text-[18px]" />
-              Lý do khóa: {user.suspendReason}
+              {t('userDetail.userProfileCard.lockReason', { suspendReason: user.suspendReason })}
             </div>
           )}
 
@@ -137,9 +143,14 @@ export default function UserProfileCard({ user, profile }: UserProfileCardProps)
             <div className="flex items-center gap-2 md:col-span-2">
               <Icon name="devices" className="shrink-0 text-[18px] text-outline" />
               <span>
-                Lần đăng nhập cuối:{' '}
-                <strong className="text-on-surface">{formatDayTime(profile.lastLogin.time)}</strong>{' '}
-                trên {profile.lastLogin.device}
+                <Trans
+                  i18nKey="userDetail.userProfileCard.lastSign"
+                  values={{
+                    time: formatDayTime(profile.lastLogin.time),
+                    device: profile.lastLogin.device,
+                  }}
+                  components={{ c0: <strong className="text-on-surface" /> }}
+                />
               </span>
             </div>
           </div>
@@ -150,11 +161,11 @@ export default function UserProfileCard({ user, profile }: UserProfileCardProps)
       <div className="relative flex w-full shrink-0 flex-col justify-between rounded-2xl bg-surface-container-low p-space-lg shadow-sm xl:w-80">
         <div className="flex items-center justify-between">
           <span className="font-label-sm text-label-sm font-semibold tracking-wider text-outline uppercase">
-            Chỉ số tín nhiệm AI
+            {t('userDetail.userProfileCard.aiTrustScore')}
           </span>
           <span className="inline-flex items-center gap-1 rounded-full bg-tertiary-fixed/80 px-2 py-0.5 text-[11px] font-bold text-tertiary">
             <Icon name="auto_awesome" filled className="text-[13px]" />
-            AI đã xác minh
+            {t('userDetail.userProfileCard.verifiedByAi')}
           </span>
         </div>
         <div className="my-space-sm flex items-center gap-space-md">
@@ -173,7 +184,7 @@ export default function UserProfileCard({ user, profile }: UserProfileCardProps)
         <div className="flex items-center justify-between rounded-xl bg-surface-container-lowest px-space-md py-2 pt-space-xs font-label-sm text-label-sm text-on-surface-variant">
           <span className="flex items-center gap-1 font-medium">
             <Icon name="military_tech" className="text-[16px] text-tertiary" />
-            Huy hiệu hành khách:
+            {t('userDetail.userProfileCard.travelerBadges')}
           </span>
           <span className="font-bold text-primary">{profile.badge}</span>
         </div>

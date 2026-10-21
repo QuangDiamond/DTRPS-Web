@@ -1,9 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import Button from '../../../components/common/Button';
-import Icon from '../../../components/common/Icon';
-import Modal from '../../../components/common/Modal';
-import { LISTING_CATEGORY_CONFIG } from '../../../constants/listing';
-import type { ListingCategory } from '../../../types/admin';
+import { Button, Icon, Modal } from '@/components/common';
+import { LISTING_CATEGORY_CONFIG } from '@/constants/listing';
+import type { ListingCategory } from '@/types';
 
 interface AssignCategoryModalProps {
   count: number;
@@ -18,24 +17,25 @@ export default function AssignCategoryModal({
   onConfirm,
   onClose,
 }: AssignCategoryModalProps) {
+  const { t } = useTranslation();
   const [category, setCategory] = useState<ListingCategory | null>(null);
 
   return (
     <Modal
-      title="Gán danh mục"
-      description={`Áp dụng danh mục mới cho ${count} địa điểm đã chọn`}
+      title={t('approvedListings.assignCategoryModal.assignCategory')}
+      description={t('approvedListings.assignCategoryModal.applyNewCategorySelected', { count })}
       onClose={onClose}
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
-            Hủy
+            {t('actions.cancel')}
           </Button>
           <Button
             icon="category"
             disabled={!category}
             onClick={() => category && onConfirm(category)}
           >
-            Gán danh mục
+            {t('approvedListings.assignCategoryModal.assignCategory')}
           </Button>
         </>
       }

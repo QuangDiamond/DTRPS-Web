@@ -1,7 +1,9 @@
-import Icon from '../../../components/common/Icon';
-import type { Partner, PartnerCertification, PartnerProfile } from '../../../types/admin';
-import { formatDate } from '../../../utils/format';
-import { formatCurrencyVnd } from '../partnerProfileUtils';
+import { Trans, useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { formatCurrencyVnd } from '@/pages/PartnerDetail/partnerProfileUtils';
+import type { Partner, PartnerCertification, PartnerProfile } from '@/types';
+import { formatDate } from '@/utils/format';
+import { getInitials } from '@/utils/string';
 import DetailCard, { CARD_LINK_BUTTON_CLASS, FieldLabel } from './DetailCard';
 
 interface LegalTabProps {
@@ -32,14 +34,9 @@ export default function LegalTab({
   onScheduleReview,
   onAdjustCommission,
 }: LegalTabProps) {
+  const { t } = useTranslation();
   const { legal, contact, agreement } = profile;
-  const initials = contact.name
-    .split(' ')
-    .filter(Boolean)
-    .slice(-2)
-    .map((word) => word[0])
-    .join('')
-    .toUpperCase();
+  const initials = getInitials(contact.name);
   const isActive = partner.status === 'active';
 
   return (
@@ -48,17 +45,17 @@ export default function LegalTab({
       <DetailCard
         icon="domain"
         iconBoxClass="bg-primary-container/10 text-primary"
-        title="Thông tin pháp lý & ĐKKD"
-        subtitle="Hồ sơ pháp nhân doanh nghiệp đã được công chứng"
+        title={t('partnerDetail.legalTab.legalBusinessRegistration')}
+        subtitle={t('partnerDetail.legalTab.notarizedCorporateLegalDocuments')}
         badge={
           partner.status === 'pending' ? (
             <span className="rounded-full bg-tertiary-fixed px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-tertiary-fixed">
-              Chờ xác minh
+              {t('partnerDetail.legalTab.pendingVerification')}
             </span>
           ) : (
             <span className={VERIFIED_BADGE_CLASS}>
               <Icon name="verified" className="text-[14px]" />
-              Đã xác thực
+              {t('partnerDetail.legalTab.verified')}
             </span>
           )
         }
@@ -72,55 +69,55 @@ export default function LegalTab({
             </div>
             <button type="button" onClick={onViewLicense} className={CARD_LINK_BUTTON_CLASS}>
               <Icon name="visibility" className="text-[16px]" />
-              <span>Xem tệp gốc</span>
+              <span>{t('partnerDetail.legalTab.viewOriginalFile')}</span>
             </button>
           </>
         }
       >
         <div className="grid grid-cols-1 gap-x-4 gap-y-3.5 font-body-sm text-body-sm md:grid-cols-2">
           <div className="md:col-span-2">
-            <FieldLabel>Tên đầy đủ công ty</FieldLabel>
+            <FieldLabel>{t('partnerDetail.legalTab.fullCompanyName')}</FieldLabel>
             <span className="font-title-md text-title-md font-semibold text-on-surface">
               {legal.fullName}
             </span>
           </div>
           <div>
-            <FieldLabel>Mã số thuế / Số GPKD</FieldLabel>
+            <FieldLabel>{t('partnerDetail.legalTab.taxCodeBusinessLicense')}</FieldLabel>
             <span className="font-body-md text-body-md font-semibold text-on-surface">
               {partner.taxCode}
             </span>
           </div>
           <div>
-            <FieldLabel>Ngày thành lập</FieldLabel>
+            <FieldLabel>{t('partnerDetail.legalTab.founded')}</FieldLabel>
             <span className="font-body-md text-body-md text-on-surface">
               {formatDate(legal.foundedAt)}
             </span>
           </div>
           <div>
-            <FieldLabel>Cơ quan cấp phép</FieldLabel>
+            <FieldLabel>{t('partnerDetail.legalTab.issuingAuthority')}</FieldLabel>
             <span className="font-body-md text-body-md text-on-surface">{legal.issuer}</span>
           </div>
           <div>
-            <FieldLabel>Vốn điều lệ đăng ký</FieldLabel>
+            <FieldLabel>{t('partnerDetail.legalTab.registeredCharterCapital')}</FieldLabel>
             <span className="font-body-md text-body-md font-semibold text-secondary">
               {formatCurrencyVnd(legal.charterCapital)}
             </span>
           </div>
           <div className="md:col-span-2">
-            <FieldLabel>Địa chỉ trụ sở chính</FieldLabel>
+            <FieldLabel>{t('partnerDetail.legalTab.headOfficeAddress')}</FieldLabel>
             <div className="flex items-center gap-1.5 text-on-surface">
               <Icon name="location_on" className="shrink-0 text-[16px] text-primary" />
               <span>{legal.headOffice}</span>
             </div>
           </div>
           <div>
-            <FieldLabel>Người đại diện pháp luật</FieldLabel>
+            <FieldLabel>{t('partnerDetail.legalTab.legalRepresentative')}</FieldLabel>
             <span className="font-body-md text-body-md font-semibold text-on-surface">
               {legal.legalRepresentative}
             </span>
           </div>
           <div>
-            <FieldLabel>Số CCCD / CMND đại diện</FieldLabel>
+            <FieldLabel>{t('partnerDetail.legalTab.representativeSIdNumber')}</FieldLabel>
             <span className="font-body-md text-body-md text-on-surface">
               {legal.idNumberMasked}
             </span>
@@ -132,11 +129,12 @@ export default function LegalTab({
       <DetailCard
         icon="manage_accounts"
         iconBoxClass="bg-secondary-container/40 text-secondary"
-        title="Liên hệ & Quản trị đại diện"
-        subtitle="Đầu mối tiếp nhận hỗ trợ và xác thực giao dịch"
+        title={t('partnerDetail.legalTab.contactRepresentativeAdmin')}
+        subtitle={t('partnerDetail.legalTab.pointContactSupportTransaction')}
         badge={
           <span className="rounded-full bg-surface-container px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-surface-variant">
-            Khóa 2FA: {contact.twoFactor ? 'Bật' : 'Tắt'}
+            {t('partnerDetail.legalTab.n2fa')}{' '}
+            {contact.twoFactor ? t('partnerDetail.legalTab.on') : t('partnerDetail.legalTab.off')}
           </span>
         }
         footer={
@@ -146,14 +144,14 @@ export default function LegalTab({
               onClick={onGrantPermissions}
               className="rounded-full bg-surface-container px-3.5 py-1.5 font-label-sm text-label-sm font-semibold text-on-surface transition-all hover:bg-surface-container-high"
             >
-              Phân quyền bổ sung
+              {t('partnerDetail.legalTab.grantExtraPermissions')}
             </button>
             <button
               type="button"
               onClick={onResendActivation}
               className="rounded-full bg-primary px-3.5 py-1.5 font-label-sm text-label-sm font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
             >
-              Gửi mã kích hoạt lại
+              {t('partnerDetail.legalTab.resendActivationCode')}
             </button>
           </div>
         }
@@ -169,18 +167,18 @@ export default function LegalTab({
                   {contact.name}
                 </div>
                 <div className="font-label-sm text-label-sm text-outline">
-                  Chức vụ: {contact.position}
+                  {t('partnerDetail.legalTab.position', { position: contact.position })}
                 </div>
               </div>
             </div>
             <span className="rounded-full bg-primary-fixed px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-primary-fixed">
-              Quản trị chính
+              {t('partnerDetail.legalTab.primaryAdmin')}
             </span>
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div className="rounded-xl bg-surface-container-low p-3">
               <span className="mb-1 block font-label-sm text-label-sm tracking-wider text-outline uppercase">
-                Email tiếp nhận thông báo
+                {t('partnerDetail.legalTab.notificationEmail')}
               </span>
               <div className="flex items-center gap-1.5">
                 <Icon name="mail" className="text-[16px] text-primary" />
@@ -194,7 +192,7 @@ export default function LegalTab({
             </div>
             <div className="rounded-xl bg-surface-container-low p-3">
               <span className="mb-1 block font-label-sm text-label-sm tracking-wider text-outline uppercase">
-                Số điện thoại nhận OTP
+                {t('partnerDetail.legalTab.otpPhoneNumber')}
               </span>
               <div className="flex items-center gap-1.5">
                 <Icon name="phone_android" className="text-[16px] text-primary" />
@@ -206,7 +204,7 @@ export default function LegalTab({
           </div>
           <div className="rounded-xl bg-surface-container-low p-3.5">
             <span className="mb-2 block font-label-sm text-label-sm tracking-wider text-outline uppercase">
-              Cổng thanh toán & Tài khoản doanh nghiệp
+              {t('partnerDetail.legalTab.paymentGatewayBusinessAccount')}
             </span>
             {contact.bank ? (
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -224,13 +222,13 @@ export default function LegalTab({
                 </div>
                 {contact.escrow && (
                   <span className="rounded-full bg-secondary-container px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-secondary-container">
-                    Ký quỹ AI Escrow
+                    {t('partnerDetail.legalTab.aiEscrowDeposit')}
                   </span>
                 )}
               </div>
             ) : (
               <span className="font-body-sm text-body-sm text-on-surface-variant">
-                Đối tác chưa liên kết tài khoản thanh toán
+                {t('partnerDetail.legalTab.thisPartnerHasNot')}
               </span>
             )}
           </div>
@@ -241,8 +239,8 @@ export default function LegalTab({
       <DetailCard
         icon="workspace_premium"
         iconBoxClass="bg-tertiary-fixed/40 text-tertiary"
-        title="Thẩm định & Chứng nhận ngành"
-        subtitle="Kiểm định chất lượng dịch vụ du lịch & lưu trú định kỳ"
+        title={t('partnerDetail.legalTab.assessmentsIndustryCertifications')}
+        subtitle={t('partnerDetail.legalTab.periodicQualityInspectionTourism')}
         badge={
           <span className="flex items-center gap-1 rounded-full bg-tertiary-fixed px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-tertiary-fixed">
             <Icon name="hotel_class" className="text-[14px]" />
@@ -252,12 +250,15 @@ export default function LegalTab({
         footer={
           <>
             <span className="font-label-sm text-label-sm text-outline">
-              Hạn kỳ thẩm định tiếp theo:{' '}
-              <strong className="text-on-surface">{formatDate(profile.nextReviewDate)}</strong>
+              <Trans
+                i18nKey="partnerDetail.legalTab.nextAssessmentDue"
+                values={{ nextReviewDate: formatDate(profile.nextReviewDate) }}
+                components={{ c0: <strong className="text-on-surface" /> }}
+              />
             </span>
             <button type="button" onClick={onScheduleReview} className={CARD_LINK_BUTTON_CLASS}>
               <Icon name="schedule" className="text-[16px]" />
-              <span>Lên lịch tái thẩm định</span>
+              <span>{t('partnerDetail.legalTab.scheduleReAssessment')}</span>
             </button>
           </>
         }
@@ -291,8 +292,8 @@ export default function LegalTab({
       <DetailCard
         icon="handshake"
         iconBoxClass="bg-primary-container/10 text-primary"
-        title="Thỏa thuận hợp tác & Chiết khấu"
-        subtitle="Quy chế hoa hồng và điều khoản phát hành phòng/vé"
+        title={t('partnerDetail.legalTab.partnershipAgreementCommission')}
+        subtitle={t('partnerDetail.legalTab.commissionPolicyRoomTicket')}
         badge={
           <span
             className={`flex items-center gap-1 rounded-full px-2.5 py-1 font-label-sm text-label-sm font-semibold ${
@@ -304,17 +305,21 @@ export default function LegalTab({
             <span
               className={`h-1.5 w-1.5 rounded-full ${isActive ? 'bg-primary' : 'bg-outline'}`}
             />
-            {isActive ? 'Đang hoạt động' : 'Tạm ngưng'}
+            {isActive ? t('partnerDetail.legalTab.active') : t('partnerDetail.legalTab.suspended')}
           </span>
         }
         footer={
           <>
             <span className="font-label-sm text-label-sm text-outline">
-              Hợp đồng: <strong className="text-on-surface">{agreement.contractCode}</strong>
+              <Trans
+                i18nKey="partnerDetail.legalTab.contract"
+                values={{ contractCode: agreement.contractCode }}
+                components={{ c0: <strong className="text-on-surface" /> }}
+              />
             </span>
             <button type="button" onClick={onAdjustCommission} className={CARD_LINK_BUTTON_CLASS}>
               <Icon name="edit_document" className="text-[16px]" />
-              <span>Điều chỉnh chiết khấu</span>
+              <span>{t('partnerDetail.legalTab.adjustCommission')}</span>
             </button>
           </>
         }
@@ -322,14 +327,14 @@ export default function LegalTab({
         <div className="space-y-3 font-body-sm text-body-sm">
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-surface-container-low p-3">
-              <FieldLabel>Loại hợp đồng</FieldLabel>
+              <FieldLabel>{t('partnerDetail.legalTab.contractType')}</FieldLabel>
               <span className="font-body-md text-body-md font-semibold text-on-surface">
                 {agreement.type}
               </span>
             </div>
             <div className="rounded-xl bg-secondary-container/30 p-3">
               <span className="mb-1 block font-label-sm text-label-sm font-semibold tracking-wider text-secondary uppercase">
-                Mức hoa hồng hệ thống
+                {t('partnerDetail.legalTab.platformCommissionRate')}
               </span>
               <span className="font-headline-sm text-headline-sm font-bold text-secondary">
                 {agreement.commission} %
@@ -338,13 +343,13 @@ export default function LegalTab({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-surface-container-low p-3">
-              <FieldLabel>Ngày kích hoạt</FieldLabel>
+              <FieldLabel>{t('partnerDetail.legalTab.activated')}</FieldLabel>
               <span className="font-body-md text-body-md text-on-surface">
                 {formatDate(agreement.activatedAt)}
               </span>
             </div>
             <div className="rounded-xl bg-surface-container-low p-3">
-              <FieldLabel>Ngày gia hạn kế tiếp</FieldLabel>
+              <FieldLabel>{t('partnerDetail.legalTab.nextRenewalDate')}</FieldLabel>
               <span className="font-body-md text-body-md font-semibold text-primary">
                 {formatDate(agreement.renewAt)}
               </span>
@@ -355,7 +360,7 @@ export default function LegalTab({
               <Icon name="payments" className="text-[18px] text-outline" />
               <div>
                 <div className="font-body-md text-body-md font-medium text-on-surface">
-                  Chu kỳ thanh toán đối soát OTA
+                  {t('partnerDetail.legalTab.otaSettlementCycle')}
                 </div>
                 <div className="font-label-sm text-label-sm text-outline">
                   {agreement.paymentCycle}

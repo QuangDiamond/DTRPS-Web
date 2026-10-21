@@ -1,6 +1,7 @@
-import Icon from '../../../components/common/Icon';
-import type { AdminAccountDetails, AdminProfile, AdminSession } from '../../../types/admin';
-import { formatDayTime } from '../../../utils/format';
+import { Trans, useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import type { AdminAccountDetails, AdminProfile, AdminSession } from '@/types';
+import { formatDayTime } from '@/utils/format';
 
 interface ProfileIdentityCardProps {
   admin: AdminProfile;
@@ -13,10 +14,15 @@ export default function ProfileIdentityCard({
   details,
   currentSession,
 }: ProfileIdentityCardProps) {
+  const { t } = useTranslation();
   const contactRows = [
-    { icon: 'mail', label: 'Email cơ quan', value: admin.email },
-    { icon: 'call', label: 'Hotline trực tiếp', value: details.hotline },
-    { icon: 'corporate_fare', label: 'Đơn vị công tác', value: details.department },
+    { icon: 'mail', label: t('profile.profileIdentityCard.workEmail'), value: admin.email },
+    { icon: 'call', label: t('profile.profileIdentityCard.directHotline'), value: details.hotline },
+    {
+      icon: 'corporate_fare',
+      label: t('profile.profileIdentityCard.department'),
+      value: details.department,
+    },
   ];
 
   return (
@@ -66,12 +72,18 @@ export default function ProfileIdentityCard({
           <Icon name="devices" className="mt-0.5 shrink-0 text-[18px] text-primary" />
           <div className="flex flex-col">
             <span className="font-label-sm text-label-sm font-semibold text-on-surface">
-              Lần đăng nhập cuối:
+              {t('profile.profileIdentityCard.lastSign')}
             </span>
             <span className="font-body-sm text-body-sm text-on-surface-variant">
-              {formatDayTime(currentSession.signedInAt)} từ IP{' '}
-              <span className="font-semibold text-on-surface">{currentSession.ip}</span> (
-              {currentSession.device})
+              <Trans
+                i18nKey="profile.profileIdentityCard.fromIp"
+                values={{
+                  signedInAt: formatDayTime(currentSession.signedInAt),
+                  ip: currentSession.ip,
+                  device: currentSession.device,
+                }}
+                components={{ c0: <span className="font-semibold text-on-surface" /> }}
+              />
             </span>
           </div>
         </div>

@@ -1,11 +1,12 @@
-import Icon from '../../../components/common/Icon';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
 import {
   LISTING_CATEGORY_SELECT_OPTIONS,
   LISTING_PRIORITY_OPTIONS,
   LISTING_PROVINCE_OPTIONS,
   PARTNER_TIER_OPTIONS,
-} from '../../../constants/listing';
-import type { ListingFilters, SelectOption } from '../../../types/admin';
+} from '@/constants/listing';
+import type { ListingFilters, SelectOption } from '@/types';
 
 interface ListingFilterBarProps {
   filters: ListingFilters;
@@ -52,6 +53,7 @@ function InlineSelect<T extends string>({
 const DEFAULT_SELECT_CLASS = 'bg-surface-container-low font-body-sm text-body-sm text-on-surface';
 
 export default function ListingFilterBar({ filters, onChange }: ListingFilterBarProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4 rounded-2xl bg-surface-container-lowest p-5 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
       <div className="grid grid-cols-1 items-center gap-3.5 md:grid-cols-2 lg:grid-cols-12">
@@ -64,13 +66,13 @@ export default function ListingFilterBar({ filters, onChange }: ListingFilterBar
             type="text"
             value={filters.keyword}
             onChange={(event) => onChange({ keyword: event.target.value })}
-            placeholder="Tìm theo tên địa điểm, mã POI, tên đối tác..."
+            placeholder={t('listings.listingFilterBar.searchByPlaceName')}
             className="h-11 w-full rounded-xl bg-surface-container-low pr-4 pl-11 font-body-sm text-body-sm text-on-surface transition-all placeholder:text-outline focus:ring-2 focus:ring-primary/20 focus:outline-none"
           />
         </div>
         <div className="lg:col-span-2">
           <InlineSelect
-            ariaLabel="Danh mục"
+            ariaLabel={t('listings.listingFilterBar.category')}
             value={filters.category}
             options={LISTING_CATEGORY_SELECT_OPTIONS}
             onChange={(category) => onChange({ category })}
@@ -79,7 +81,7 @@ export default function ListingFilterBar({ filters, onChange }: ListingFilterBar
         </div>
         <div className="lg:col-span-2">
           <InlineSelect
-            ariaLabel="Tỉnh thành"
+            ariaLabel={t('listings.listingFilterBar.province')}
             value={filters.province}
             options={LISTING_PROVINCE_OPTIONS}
             onChange={(province) => onChange({ province })}
@@ -88,7 +90,7 @@ export default function ListingFilterBar({ filters, onChange }: ListingFilterBar
         </div>
         <div className="lg:col-span-2">
           <InlineSelect
-            ariaLabel="Hạng đối tác"
+            ariaLabel={t('listings.listingFilterBar.partnerTier')}
             value={filters.tier}
             options={PARTNER_TIER_OPTIONS}
             onChange={(tier) => onChange({ tier })}
@@ -97,7 +99,7 @@ export default function ListingFilterBar({ filters, onChange }: ListingFilterBar
         </div>
         <div className="lg:col-span-2">
           <InlineSelect
-            ariaLabel="Mức độ ưu tiên"
+            ariaLabel={t('listings.listingFilterBar.priority')}
             value={filters.priority}
             options={LISTING_PRIORITY_OPTIONS}
             onChange={(priority) => onChange({ priority })}

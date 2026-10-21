@@ -1,7 +1,8 @@
+import { Trans, useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import Icon from '../../../components/common/Icon';
-import { USER_LOCK_REASONS } from '../../../constants/user';
-import type { AppUser } from '../../../types/admin';
+import { Icon } from '@/components/common';
+import { USER_LOCK_REASONS } from '@/constants/user';
+import type { AppUser } from '@/types';
 
 interface LockAccountDialogProps {
   user: AppUser;
@@ -18,6 +19,7 @@ export default function LockAccountDialog({
   onConfirm,
   onClose,
 }: LockAccountDialogProps) {
+  const { t } = useTranslation();
   const [reason, setReason] = useState('');
   const trimmed = reason.trim();
 
@@ -37,7 +39,7 @@ export default function LockAccountDialog({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Xác nhận khóa tài khoản người dùng"
+        aria-label={t('userDetail.lockAccountDialog.confirmUserAccountLock')}
         onClick={(event) => event.stopPropagation()}
         className="relative mx-space-md flex w-full max-w-lg flex-col gap-space-lg rounded-3xl bg-surface-container-lowest p-space-xl shadow-2xl"
       >
@@ -47,14 +49,14 @@ export default function LockAccountDialog({
           </div>
           <div className="flex flex-col">
             <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface">
-              Xác nhận khóa tài khoản người dùng
+              {t('userDetail.lockAccountDialog.confirmUserAccountLock')}
             </h3>
             <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
-              Bạn đang thực hiện thao tác tạm ngừng quyền truy cập đối với du khách{' '}
-              <strong className="text-on-surface">
-                {user.name} ({user.id})
-              </strong>
-              .
+              <Trans
+                i18nKey="userDetail.lockAccountDialog.youAboutSuspendAccess"
+                values={{ name: user.name, id: user.id }}
+                components={{ c0: <strong className="text-on-surface" /> }}
+              />
             </p>
           </div>
         </div>
@@ -64,7 +66,10 @@ export default function LockAccountDialog({
             htmlFor="lock-user-reason"
             className="font-label-md text-label-md font-semibold text-on-surface"
           >
-            Lý do khóa tài khoản <span className="text-error">*</span>
+            <Trans
+              i18nKey="userDetail.lockAccountDialog.reasonLockingAccount"
+              components={{ c0: <span className="text-error" /> }}
+            />
           </label>
           <textarea
             id="lock-user-reason"
@@ -72,7 +77,7 @@ export default function LockAccountDialog({
             autoFocus
             value={reason}
             onChange={(event) => setReason(event.target.value)}
-            placeholder="Nhập lý do chi tiết để gửi thông báo cho người dùng và lưu vết hành động của Super Admin..."
+            placeholder={t('userDetail.lockAccountDialog.enterDetailedReasonNotify')}
             className="w-full rounded-xl bg-surface-container-low p-space-md font-body-sm text-body-sm text-on-surface outline-none placeholder:text-outline focus:ring-2 focus:ring-error/20"
           />
           <div className="flex flex-wrap gap-1.5">
@@ -80,10 +85,10 @@ export default function LockAccountDialog({
               <button
                 key={item}
                 type="button"
-                onClick={() => setReason(item)}
+                onClick={() => setReason(t(item))}
                 className="rounded-full bg-surface-container px-2.5 py-1 font-label-sm text-label-sm text-on-surface-variant transition-colors hover:bg-error-container/40 hover:text-error"
               >
-                {item}
+                {t(item)}
               </button>
             ))}
           </div>
@@ -91,9 +96,7 @@ export default function LockAccountDialog({
 
         <div className="flex items-center gap-2 rounded-xl bg-surface-container-low p-space-md font-label-sm text-label-sm text-on-surface-variant">
           <Icon name="info" className="text-[18px] text-error" />
-          <span>
-            Hành động này sẽ hủy hiệu lực phiên đăng nhập trên thiết bị {device} ngay tức thì.
-          </span>
+          <span>{t('userDetail.lockAccountDialog.thisWillImmediatelyInvalidate', { device })}</span>
         </div>
 
         <div className="flex items-center justify-end gap-space-sm pt-space-xs">
@@ -102,7 +105,7 @@ export default function LockAccountDialog({
             onClick={onClose}
             className="rounded-full bg-surface-container px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-colors hover:bg-surface-container-high"
           >
-            Hủy bỏ
+            {t('userDetail.lockAccountDialog.cancel')}
           </button>
           <button
             type="button"
@@ -110,7 +113,7 @@ export default function LockAccountDialog({
             onClick={() => onConfirm(trimmed)}
             className="rounded-full bg-error px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-error shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Xác nhận khóa ngay
+            {t('userDetail.lockAccountDialog.lockNow')}
           </button>
         </div>
       </div>

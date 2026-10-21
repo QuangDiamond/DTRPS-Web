@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from 'react';
-import Icon from '../../../components/common/Icon';
-import { useAdminProfile } from '../../../hooks/useAdminProfile';
-import { useToast } from '../../../hooks/useToast';
-import type { AdminContactInfo } from '../../../types/admin';
-import { isValidEmail, isValidPhone, VALIDATION_MESSAGES } from '../../../utils/validation';
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
+import { type FormEvent, useState } from 'react';
+import { Icon } from '@/components/common';
+import { useAdminProfile, useToast } from '@/hooks';
+import type { AdminContactInfo } from '@/types';
+import { isValidEmail, isValidPhone, VALIDATION_MESSAGES } from '@/utils/validation';
 import ProfileCardHeader, { PROFILE_CARD_CLASS } from './ProfileCardHeader';
 import ProfileInput from './ProfileInput';
 
@@ -11,13 +12,15 @@ type ContactErrors = Partial<Record<keyof AdminContactInfo, string>>;
 
 function validate(values: AdminContactInfo): ContactErrors {
   const errors: ContactErrors = {};
-  if (!values.fullName.trim()) errors.fullName = 'Vui lòng nhập họ và tên';
+  if (!values.fullName.trim())
+    errors.fullName = i18n.t('profile.contactInfoCard.pleaseEnterYourFull');
   if (!isValidEmail(values.socAlertEmail)) errors.socAlertEmail = VALIDATION_MESSAGES.email;
   if (!isValidPhone(values.hotline)) errors.hotline = VALIDATION_MESSAGES.phone;
   return errors;
 }
 
 export default function ContactInfoCard({ roleTitle }: { roleTitle: string }) {
+  const { t } = useTranslation();
   const { details, updateContact } = useAdminProfile();
   const { showToast } = useToast();
   const saved: AdminContactInfo = {
@@ -39,11 +42,11 @@ export default function ContactInfoCard({ roleTitle }: { roleTitle: string }) {
     const nextErrors = validate(values);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
-      showToast('Vui lòng kiểm tra lại thông tin liên hệ', 'error');
+      showToast(t('profile.contactInfoCard.pleaseCheckContactInformation'), 'error');
       return;
     }
     if (!isDirty) {
-      showToast('Không có thay đổi nào cần lưu', 'info');
+      showToast(t('profile.contactInfoCard.thereNoChangesSave'), 'info');
       return;
     }
     const cleaned = {
@@ -53,7 +56,7 @@ export default function ContactInfoCard({ roleTitle }: { roleTitle: string }) {
     };
     updateContact(cleaned);
     setValues(cleaned);
-    showToast('Thông tin liên hệ đã được lưu thành công');
+    showToast(t('profile.contactInfoCard.contactInformationSavedSuccessfully'));
   };
 
   const handleReset = () => {
@@ -65,13 +68,13 @@ export default function ContactInfoCard({ roleTitle }: { roleTitle: string }) {
     <div className={PROFILE_CARD_CLASS}>
       <ProfileCardHeader
         icon="badge"
-        title="Chỉnh sửa thông tin liên hệ"
-        description="Cập nhật định danh hiển thị trên biên bản vận hành và hồ sơ quản trị"
+        title={t('profile.contactInfoCard.editContactInformation')}
+        description={t('profile.contactInfoCard.updateIdentityShownOperational')}
       />
       <form className="flex flex-col gap-space-md" onSubmit={handleSubmit} onReset={handleReset}>
         <div className="grid grid-cols-1 gap-space-md sm:grid-cols-2">
           <ProfileInput
-            label="Họ và tên Quản trị viên"
+            label={t('profile.contactInfoCard.administratorFullName')}
             icon="person"
             value={values.fullName}
             autoComplete="name"
@@ -79,7 +82,7 @@ export default function ContactInfoCard({ roleTitle }: { roleTitle: string }) {
             onChange={(value) => change('fullName', value)}
           />
           <ProfileInput
-            label="Chức danh định danh"
+            label={t('profile.contactInfoCard.jobTitle')}
             icon="military_tech"
             value={roleTitle}
             readOnly
@@ -87,7 +90,7 @@ export default function ContactInfoCard({ roleTitle }: { roleTitle: string }) {
         </div>
         <div className="grid grid-cols-1 gap-space-md sm:grid-cols-2">
           <ProfileInput
-            label="Email thông báo khẩn cấp (SOC Alert)"
+            label={t('profile.contactInfoCard.emergencyNotificationEmailSoc')}
             icon="alternate_email"
             type="email"
             value={values.socAlertEmail}
@@ -95,7 +98,7 @@ export default function ContactInfoCard({ roleTitle }: { roleTitle: string }) {
             onChange={(value) => change('socAlertEmail', value)}
           />
           <ProfileInput
-            label="Số điện thoại trực hotline điều hành"
+            label={t('profile.contactInfoCard.operationsHotlinePhoneNumber')}
             icon="phone_in_talk"
             type="tel"
             value={values.hotline}
@@ -109,14 +112,14 @@ export default function ContactInfoCard({ roleTitle }: { roleTitle: string }) {
             disabled={!isDirty}
             className="rounded-full px-space-md py-2.5 font-label-md text-label-md font-semibold text-on-surface-variant transition-colors hover:bg-surface-container-low disabled:opacity-40 disabled:hover:bg-transparent"
           >
-            Hủy thay đổi
+            {t('profile.contactInfoCard.discardChanges')}
           </button>
           <button
             type="submit"
             className="inline-flex items-center gap-2 rounded-full bg-primary px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-container"
           >
             <Icon name="check_circle" className="text-[18px]" />
-            Cập nhật thông tin
+            {t('profile.contactInfoCard.updateInformation')}
           </button>
         </div>
       </form>

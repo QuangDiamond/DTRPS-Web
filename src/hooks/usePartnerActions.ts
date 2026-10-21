@@ -1,5 +1,6 @@
-import { PARTNER_LOCK_HIDDEN_REASON } from '../constants/partner';
-import type { Partner } from '../types/admin';
+import i18n from 'i18next';
+import { PARTNER_LOCK_HIDDEN_REASON } from '@/constants/partner';
+import type { Partner } from '@/types';
 import { useListings } from './useListings';
 import { usePartners } from './usePartners';
 
@@ -24,7 +25,12 @@ export function usePartnerActions() {
   /** Trả về số địa điểm bị tạm ẩn theo */
   const lockPartner = (partner: Partner, reason: string, note?: string) => {
     setPartnerStatus(partner.id, 'suspended', reason);
-    if (note) logAudit(partner.id, 'sticky_note_2', `Ghi chú khóa tài khoản: ${note}`);
+    if (note)
+      logAudit(
+        partner.id,
+        'sticky_note_2',
+        i18n.t('hooks.usePartnerActions.accountLockNote', { note }),
+      );
     const ids = partnerListingIds(partner, (hiddenReason) => hiddenReason === undefined);
     return setListingsVisibility(ids, 'hidden', PARTNER_LOCK_HIDDEN_REASON);
   };
@@ -42,7 +48,7 @@ export function usePartnerActions() {
   const approvePartner = (partner: Partner) => setPartnerStatus(partner.id, 'active');
 
   const rejectPartner = (partner: Partner) =>
-    setPartnerStatus(partner.id, 'suspended', 'Hồ sơ bị từ chối');
+    setPartnerStatus(partner.id, 'suspended', i18n.t('hooks.usePartnerActions.profileRejected'));
 
   /** Số địa điểm đang hiển thị sẽ bị ảnh hưởng nếu khóa đối tác */
   const countVisibleListings = (partner: Partner) =>

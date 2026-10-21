@@ -1,7 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { AdminAccountDetails, AdminSession, SecurityKey } from '../../../types/admin';
-import { formatDate, toIsoDate } from '../../../utils/format';
+import { Icon } from '@/components/common';
+import type { AdminAccountDetails, AdminSession, SecurityKey } from '@/types';
+import { formatDate, toIsoDate } from '@/utils/format';
 import ProfileCardHeader, { PROFILE_CARD_CLASS } from './ProfileCardHeader';
 import SessionHistoryTable from './SessionHistoryTable';
 
@@ -62,24 +63,25 @@ export default function TwoFactorCard({
   onAddKey,
   onRevokeOthers,
 }: TwoFactorCardProps) {
+  const { t } = useTranslation();
   const primaryKey = securityKeys[0];
 
   return (
     <div className={PROFILE_CARD_CLASS}>
       <ProfileCardHeader
         icon="security_update_good"
-        title="Bảo mật 2 lớp & Khóa xác thực"
-        description="Các phương thức xác thực đa yếu tố bắt buộc đối với tài khoản quản trị cấp cao nhất"
+        title={t('profile.twoFactorCard.twoFactorSecurityAuthentication')}
+        description={t('profile.twoFactorCard.multiFactorAuthenticationMethods')}
       />
       <div className="grid grid-cols-1 gap-space-md md:grid-cols-2">
         <MethodBox
           icon="phone_android"
           title="Google Authenticator / 2FA"
-          subtitle="Mã xác thực TOTP"
-          status="Đang bật"
-          description={`Ứng dụng xác minh sinh mã mỗi 30 giây được kích hoạt từ ngày ${formatDate(
-            toIsoDate(new Date(details.totpEnabledAt)),
-          )}.`}
+          subtitle={t('profile.twoFactorCard.totpAuthenticationCode')}
+          status={t('profile.twoFactorCard.on')}
+          description={t('profile.twoFactorCard.theAuthenticatorAppGenerating', {
+            value: formatDate(toIsoDate(new Date(details.totpEnabledAt))),
+          })}
           actions={
             <>
               <button
@@ -87,31 +89,32 @@ export default function TwoFactorCard({
                 onClick={onReconfigureTotp}
                 className={`${SMALL_BUTTON_CLASS} bg-surface-container-lowest text-primary`}
               >
-                Cấu hình lại
+                {t('profile.twoFactorCard.reconfigure')}
               </button>
               <button
                 type="button"
                 onClick={onShowBackupCodes}
                 className={`${SMALL_BUTTON_CLASS} text-on-surface-variant`}
               >
-                Mã dự phòng ({details.backupCodes.length})
+                {t('profile.twoFactorCard.backupCodes', { length: details.backupCodes.length })}
               </button>
             </>
           }
         />
         <MethodBox
           icon="usb"
-          title="Khóa phần cứng FIDO2"
-          subtitle={primaryKey?.name ?? 'Chưa liên kết'}
-          status={`${securityKeys.length} Đã liên kết`}
+          title={t('profile.twoFactorCard.fido2HardwareKey')}
+          subtitle={primaryKey?.name ?? t('profile.twoFactorCard.notLinked')}
+          status={t('profile.twoFactorCard.linked', { length: securityKeys.length })}
           description={
             primaryKey
-              ? `Serial ${primaryKey.serial}. Khóa cắm trực tiếp qua cổng USB-C trước khi phê duyệt giao dịch nhạy cảm.${
-                  securityKeys.length > 1
-                    ? ` Có thêm ${securityKeys.length - 1} khóa dự phòng.`
-                    : ''
-                }`
-              : 'Liên kết khóa FIDO2 để phê duyệt giao dịch nhạy cảm.'
+              ? securityKeys.length > 1
+                ? t('profile.twoFactorCard.serialPlugKeyInto', {
+                    serial: primaryKey.serial,
+                    count: securityKeys.length - 1,
+                  })
+                : t('profile.twoFactorCard.serialPlugKeyInto2', { serial: primaryKey.serial })
+              : t('profile.twoFactorCard.linkFido2KeyApprove')
           }
           actions={
             <button
@@ -119,7 +122,7 @@ export default function TwoFactorCard({
               onClick={onAddKey}
               className={`${SMALL_BUTTON_CLASS} bg-surface-container-lowest text-primary`}
             >
-              Thêm khóa dự phòng
+              {t('profile.twoFactorCard.addBackupKey')}
             </button>
           }
         />

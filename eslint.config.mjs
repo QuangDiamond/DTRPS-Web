@@ -17,9 +17,29 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      // Quy ước import: dùng alias @/ thay cho ../ ; UI không đọc dữ liệu mock trực tiếp
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { group: ['../*'], message: 'Dùng alias @/ thay cho đường dẫn ../' },
+            { group: ['@/mocks/*'], message: 'Chỉ lớp services/ được đọc dữ liệu mock' },
+          ],
+        },
+      ],
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
+    },
+  },
+  // Lớp service và chính thư mục mocks được phép đọc dữ liệu mẫu
+  {
+    files: ['src/services/**', 'src/mocks/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        { patterns: [{ group: ['../*'], message: 'Dùng alias @/ thay cho đường dẫn ../' }] },
       ],
     },
   },

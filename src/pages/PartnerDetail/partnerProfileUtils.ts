@@ -1,4 +1,5 @@
-import type { PartnerAuditEntry, PartnerProfile, PartnerProfileOverrides } from '../../types/admin';
+import i18n from 'i18next';
+import type { PartnerAuditEntry, PartnerProfile, PartnerProfileOverrides } from '@/types';
 
 /** Áp các giá trị admin vừa chỉnh trong phiên (kỳ tái thẩm định, hoa hồng) lên hồ sơ từ server */
 export function applyProfileOverrides(
@@ -28,11 +29,19 @@ export function formatPartnershipDuration(joinedAt: string, now: Date = new Date
   const joined = new Date(joinedAt);
   const months =
     (now.getFullYear() - joined.getFullYear()) * 12 + (now.getMonth() - joined.getMonth());
-  if (months < 1) return 'Mới gia nhập';
-  if (months < 12) return `${months} tháng đồng hành`;
-  return `${Math.floor(months / 12)} năm đồng hành`;
+  if (months < 1) return i18n.t('partnerDetail.utils.newlyJoined');
+  if (months < 12) return i18n.t('partnerDetail.utils.monthsWithUs', { count: months });
+  return i18n.t('partnerDetail.utils.yearsWithUs', { count: Math.floor(months / 12) });
 }
 
 export function formatCurrencyVnd(value: number): string {
-  return `${value.toLocaleString('en-US')} đ`;
+  return i18n.t('partnerDetail.utils.vnd', { toLocaleString: value.toLocaleString('en-US') });
+}
+
+/** Mức tín nhiệm theo điểm AI (0 - 100) — nhãn hiển thị theo ngôn ngữ đang chọn */
+export function getTrustLevelKey(score: number) {
+  if (score >= 90) return 'partnerDetail.trustLevel.verySafe' as const;
+  if (score >= 75) return 'partnerDetail.trustLevel.safe' as const;
+  if (score >= 50) return 'partnerDetail.trustLevel.watch' as const;
+  return 'partnerDetail.trustLevel.highRisk' as const;
 }

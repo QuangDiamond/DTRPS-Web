@@ -1,10 +1,10 @@
-import { LISTING_OVERDUE_HOURS } from '../../constants/listing';
-import { LISTING_STATUS_CONFIG } from '../../constants/listing';
-import { PROVINCE_NAMES } from '../../constants/partner';
-import type { SortAccessors } from '../../utils/sort';
-import type { Listing, ListingFilters, ListingStatus } from '../../types/admin';
-import { formatDayTime, formatRelativeTime, toIsoDate } from '../../utils/format';
-import { normalizeText } from '../../utils/string';
+import i18n from 'i18next';
+import { LISTING_OVERDUE_HOURS, LISTING_STATUS_CONFIG } from '@/constants/listing';
+import { PROVINCE_NAMES } from '@/constants/partner';
+import type { Listing, ListingFilters, ListingStatus } from '@/types';
+import { formatDayTime, formatRelativeTime, toIsoDate } from '@/utils/format';
+import type { SortAccessors } from '@/utils/sort';
+import { normalizeText } from '@/utils/string';
 
 export type ListingTab = ListingStatus | 'all';
 
@@ -66,7 +66,11 @@ export function getWaitDisplay(listing: Listing): {
   const secondary = formatDayTime(listing.submittedAt);
 
   if (isOverdue(listing)) {
-    return { primary: `Quá hạn (${hours}h)`, primaryClass: 'font-bold text-error', secondary };
+    return {
+      primary: i18n.t('listings.utils.overdueH', { hours }),
+      primaryClass: 'font-bold text-error',
+      secondary,
+    };
   }
   return {
     primary: formatRelativeTime(listing.submittedAt),

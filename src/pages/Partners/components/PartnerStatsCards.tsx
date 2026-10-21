@@ -1,26 +1,28 @@
-import Icon from '../../../components/common/Icon';
-import StatCard from '../../../components/common/StatCard';
-import type { PartnerStats } from '../../../types/admin';
-import { formatNumber, formatPercent } from '../../../utils/format';
+import { useTranslation } from 'react-i18next';
+import { Icon, StatCard } from '@/components/common';
+import type { PartnerStats } from '@/types';
+import { formatNumber, formatPercent } from '@/utils/format';
 
 interface PartnerStatsCardsProps {
   stats: PartnerStats;
 }
 
 function ShareFooter({ value, className }: { value: string; className: string }) {
+  const { t } = useTranslation();
   return (
     <div className="mt-4 flex items-center justify-between text-body-sm text-on-surface-variant">
-      <span>Tỷ trọng hệ sinh thái</span>
+      <span>{t('partners.partnerStatsCards.ecosystemShare')}</span>
       <span className={`font-label-sm text-label-sm font-bold ${className}`}>{value}</span>
     </div>
   );
 }
 
 export default function PartnerStatsCards({ stats }: PartnerStatsCardsProps) {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <StatCard
-        label="Tổng số đối tác"
+        label={t('partners.partnerStatsCards.totalPartners')}
         value={formatNumber(stats.total)}
         icon="corporate_fare"
         iconClassName="bg-secondary-container text-on-secondary-container"
@@ -31,13 +33,13 @@ export default function PartnerStatsCards({ stats }: PartnerStatsCardsProps) {
               {formatNumber(stats.newThisMonth)}
             </span>
             <span className="font-body-sm text-body-sm text-on-surface-variant">
-              gia nhập tháng này
+              {t('partners.partnerStatsCards.joinedThisMonth')}
             </span>
           </div>
         }
       />
       <StatCard
-        label="Lưu trú & Khách sạn"
+        label={t('partners.partnerStatsCards.accommodationHotels')}
         value={formatNumber(stats.lodging)}
         icon="hotel"
         iconClassName="bg-surface-container-high text-primary"
@@ -46,7 +48,7 @@ export default function PartnerStatsCards({ stats }: PartnerStatsCardsProps) {
         }
       />
       <StatCard
-        label="Nhà hàng & Ẩm thực"
+        label={t('partners.partnerStatsCards.restaurantsDining')}
         value={formatNumber(stats.culinary)}
         icon="restaurant"
         iconClassName="bg-tertiary-fixed text-on-tertiary-fixed"
@@ -58,7 +60,7 @@ export default function PartnerStatsCards({ stats }: PartnerStatsCardsProps) {
         }
       />
       <StatCard
-        label="Điểm tham quan & Tour"
+        label={t('partners.partnerStatsCards.attractionsTours')}
         value={formatNumber(stats.experiences)}
         icon="tour"
         iconClassName="bg-surface-container-highest text-on-surface"

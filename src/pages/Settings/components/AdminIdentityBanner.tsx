@@ -1,9 +1,11 @@
-import Icon from '../../../components/common/Icon';
-import { PLATFORM_INFO } from '../../../constants/settings';
-import { useAuth } from '../../../hooks/useAuth';
+import { Trans, useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { PLATFORM_INFO } from '@/constants/settings';
+import { useAuth } from '@/hooks';
 import { SETTINGS_CARD_SHADOW } from './SettingsCard';
 
 export default function AdminIdentityBanner({ onOpenMatrix }: { onOpenMatrix: () => void }) {
+  const { t } = useTranslation();
   const { admin } = useAuth();
 
   return (
@@ -17,15 +19,21 @@ export default function AdminIdentityBanner({ onOpenMatrix }: { onOpenMatrix: ()
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <span className="font-title-md text-title-md font-bold text-on-surface">
-              {admin?.role ?? 'Super Admin'} Quyền Lực Cao Nhất
+              {admin?.role ?? 'Super Admin'} {t('settings.adminIdentityBanner.highestAuthority')}
             </span>
             <span className="rounded-full bg-primary/10 px-space-xs py-0.5 font-label-sm text-label-sm font-bold text-primary">
-              Vai trò gốc
+              {t('settings.adminIdentityBanner.rootRole')}
             </span>
           </div>
           <span className="font-body-sm text-body-sm text-on-surface-variant">
-            Tài khoản: <strong>{admin?.email ?? 'admin@smarttravel.vn'}</strong> • Khóa bảo mật phần
-            cứng {PLATFORM_INFO.hardwareKey}: <strong>Đã gắn kết</strong>
+            <Trans
+              i18nKey="settings.adminIdentityBanner.accountHardwareSecurityKey"
+              values={{
+                value: admin?.email ?? 'admin@smarttravel.vn',
+                hardwareKey: PLATFORM_INFO.hardwareKey,
+              }}
+              components={{ c0: <strong />, c1: <strong /> }}
+            />
           </span>
         </div>
       </div>
@@ -35,7 +43,7 @@ export default function AdminIdentityBanner({ onOpenMatrix }: { onOpenMatrix: ()
         className="flex items-center gap-1.5 rounded-xl bg-surface-container-low px-space-md py-2 font-label-md text-label-md text-on-surface transition-colors hover:bg-surface-container-high"
       >
         <Icon name="manage_accounts" className="text-[18px]" />
-        <span>Xem ma trận phân quyền</span>
+        <span>{t('settings.adminIdentityBanner.viewPermissionMatrix')}</span>
       </button>
     </div>
   );

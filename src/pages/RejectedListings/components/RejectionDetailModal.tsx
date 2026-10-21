@@ -1,15 +1,14 @@
-import Button from '../../../components/common/Button';
-import Icon from '../../../components/common/Icon';
-import Modal from '../../../components/common/Modal';
-import { RESUBMISSION_CONFIG } from '../../../constants/listing';
-import type { Listing } from '../../../types/admin';
-import { formatDate, formatDayTime, toIsoDate } from '../../../utils/format';
+import { useTranslation } from 'react-i18next';
+import { Button, Icon, Modal } from '@/components/common';
+import { RESUBMISSION_CONFIG } from '@/constants/listing';
 import {
   getRejectionReason,
   getResubmissionLabel,
   getResubmissionStatus,
   getResubmitDeadline,
-} from '../rejectedUtils';
+} from '@/pages/RejectedListings/rejectedUtils';
+import type { Listing } from '@/types';
+import { formatDate, formatDayTime, toIsoDate } from '@/utils/format';
 
 interface RejectionDetailModalProps {
   listing: Listing;
@@ -29,6 +28,7 @@ export default function RejectionDetailModal({
   onRemind,
   onLock,
 }: RejectionDetailModalProps) {
+  const { t } = useTranslation();
   const status = getResubmissionStatus(listing);
   const statusConfig = RESUBMISSION_CONFIG[status];
   const reason = getRejectionReason(listing);
@@ -37,25 +37,29 @@ export default function RejectionDetailModal({
   const facts = [
     {
       icon: 'business_center',
-      label: 'Đối tác gửi',
+      label: t('rejectedListings.rejectionDetailModal.submittedBy'),
       value: `${listing.partnerName} (${listing.partnerId ?? '—'})`,
     },
     {
       icon: 'event_busy',
-      label: 'Ngày từ chối',
+      label: t('rejectedListings.rejectionDetailModal.rejected'),
       value: listing.reviewedAt ? formatDayTime(listing.reviewedAt) : '—',
     },
     {
       icon: 'event',
-      label: 'Hạn gửi lại',
+      label: t('rejectedListings.rejectionDetailModal.resubmissionDeadline'),
       value: deadline ? formatDate(toIsoDate(deadline)) : '—',
     },
-    { icon: 'location_on', label: 'Địa chỉ', value: listing.address },
+    {
+      icon: 'location_on',
+      label: t('rejectedListings.rejectionDetailModal.address'),
+      value: listing.address,
+    },
   ];
 
   return (
     <Modal
-      title="Chi tiết lý do từ chối"
+      title={t('rejectedListings.rejectionDetailModal.rejectionReasonDetails')}
       description={`${listing.name} • ${listing.id}`}
       onClose={onClose}
       size="lg"
@@ -63,7 +67,7 @@ export default function RejectionDetailModal({
         <>
           {status === 'resubmitted' && (
             <Button icon="visibility" onClick={() => onReReview(listing)}>
-              Xem xét lại hồ sơ
+              {t('rejectedListings.rejectionDetailModal.reReviewSubmission')}
             </Button>
           )}
           {(status === 'waiting' || status === 'overdue') && (
@@ -73,16 +77,17 @@ export default function RejectionDetailModal({
                 onClick={() => onLock(listing)}
                 className={SECONDARY_BUTTON_CLASS}
               >
-                <Icon name="lock" className="text-[18px] text-error" /> Đóng vĩnh viễn
+                <Icon name="lock" className="text-[18px] text-error" />{' '}
+                {t('rejectedListings.rejectionDetailModal.permanentlyClosed')}
               </button>
               <Button icon="forward_to_inbox" onClick={() => onRemind(listing)}>
-                Gửi nhắc nhở bổ sung
+                {t('rejectedListings.rejectionDetailModal.sendUpdateReminder')}
               </Button>
             </>
           )}
           {status === 'locked' && (
             <button type="button" onClick={onClose} className={SECONDARY_BUTTON_CLASS}>
-              Đóng
+              {t('common.close')}
             </button>
           )}
         </>
@@ -107,7 +112,7 @@ export default function RejectionDetailModal({
         {listing.partnerFeedback && (
           <div className="flex flex-col gap-1 rounded-xl bg-surface-container-low p-4">
             <span className="font-label-sm text-label-sm font-semibold text-on-surface-variant uppercase">
-              Góp ý đã gửi cho đối tác
+              {t('rejectedListings.rejectionDetailModal.feedbackSentPartner')}
             </span>
             <p className="font-body-sm text-body-sm leading-relaxed text-on-surface">
               {listing.partnerFeedback}
@@ -136,7 +141,7 @@ export default function RejectionDetailModal({
 
         <div className="flex items-center gap-2">
           <span className="font-label-sm text-label-sm text-on-surface-variant">
-            Trạng thái gửi lại:
+            {t('rejectedListings.rejectionDetailModal.resubmissionStatus')}
           </span>
           <span
             className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-label-sm text-label-sm ${statusConfig.badgeClass}`}

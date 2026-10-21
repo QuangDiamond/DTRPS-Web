@@ -1,6 +1,7 @@
-import { useEffect, type ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { Listing } from '../../../types/admin';
+import { Trans, useTranslation } from 'react-i18next';
+import { type ReactNode, useEffect } from 'react';
+import { Icon } from '@/components/common';
+import type { Listing } from '@/types';
 
 interface DecisionModalShellProps {
   listing: Listing;
@@ -46,6 +47,7 @@ export default function DecisionModalShell({
   onConfirm,
   onClose,
 }: DecisionModalShellProps) {
+  const { t } = useTranslation();
   const style = TONE_STYLE[tone];
 
   useEffect(() => {
@@ -86,7 +88,7 @@ export default function DecisionModalShell({
           <button
             type="button"
             onClick={onClose}
-            title="Đóng cửa sổ"
+            title={t('listingReview.decisionModalShell.closeWindow')}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-container-highest/60 text-on-surface-variant transition-all hover:bg-surface-container-highest hover:text-on-surface"
           >
             <Icon name="close" className="text-[20px]" />
@@ -105,8 +107,11 @@ export default function DecisionModalShell({
                   {listing.name}
                 </p>
                 <p className="truncate font-body-sm text-body-sm text-on-surface-variant">
-                  Mã: <span className="font-mono font-semibold text-primary">{listing.id}</span> •
-                  Đối tác: {listing.partnerName}
+                  <Trans
+                    i18nKey="listingReview.decisionModalShell.codePartner"
+                    values={{ id: listing.id, partnerName: listing.partnerName }}
+                    components={{ c0: <span className="font-mono font-semibold text-primary" /> }}
+                  />
                 </p>
               </div>
             </div>
@@ -124,7 +129,7 @@ export default function DecisionModalShell({
         <div className="flex items-center justify-between gap-3 bg-surface-container-low px-6 py-4">
           <div className="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant">
             <Icon name="lock" className="text-[16px] text-tertiary" />
-            Hành động được ghi nhật ký kiểm toán (Audit Log)
+            {t('listingReview.decisionModalShell.thisActionRecordedAudit')}
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -132,7 +137,7 @@ export default function DecisionModalShell({
               onClick={onClose}
               className="rounded-full bg-surface-container-highest px-5 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
             >
-              Hủy bỏ
+              {t('listingReview.decisionModalShell.cancel')}
             </button>
             <button
               type="button"

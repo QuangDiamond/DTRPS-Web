@@ -1,0 +1,2651 @@
+{
+  "app": {
+    "name": "SmartTravel Admin"
+  },
+  "language": {
+    "label": "Language",
+    "vi": "Tiếng Việt",
+    "en": "English",
+    "changed": "Switched to English"
+  },
+  "nav": {
+    "section": "System administration",
+    "dashboard": "Dashboard",
+    "users": "User management",
+    "partners": "Partner management",
+    "listings": "Listing management",
+    "pois": "POI destinations",
+    "reports": "Reports & Analytics",
+    "notifications": "Notifications",
+    "settings": "System settings",
+    "profile": "Administrator profile",
+    "logout": "Sign out",
+    "loggedOut": "You have signed out of the system",
+    "constants": {
+      "dashboard": "Dashboard",
+      "userManagement": "User management",
+      "partnerManagement": "Partner management",
+      "listingManagement": "Listing management",
+      "poiDestinations": "POI destinations",
+      "reportsAnalytics": "Reports & Analytics",
+      "notifications": "Notifications",
+      "systemSettings": "System settings",
+      "systemAdministration": "System administration"
+    }
+  },
+  "header": {
+    "searchPlaceholder": "Search data, users, tours, POIs...",
+    "notifications": "Notifications",
+    "notificationsUnread": "Notifications ({{count}} unread)",
+    "help": "Help",
+    "helpComingSoon": "The help center is under development",
+    "profile": "Administrator profile"
+  },
+  "actions": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "filter": "Filter",
+    "search": "Search",
+    "export": "Export data",
+    "exportCsv": "Export CSV",
+    "actions": "Actions",
+    "save": "Save",
+    "cancel": "Cancel",
+    "viewDetail": "View details",
+    "viewAll": "View all",
+    "exportExcelCsv": "Export Excel/CSV",
+    "exportExcel": "Export Excel",
+    "exportList": "Export list",
+    "applyFilter": "Apply filters",
+    "quickApprove": "Quick-approve list",
+    "listingDetail": "Submission details",
+    "viewOnMap": "View on map"
+  },
+  "status": {
+    "listing": {
+      "pending": "Pending review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "partner": {
+      "active": {
+        "label": "Active",
+        "filterLabel": "Active"
+      },
+      "pending": {
+        "label": "Pending verification",
+        "filterLabel": "Pending verification"
+      },
+      "suspended": {
+        "label": "Suspended",
+        "filterLabel": "Locked / Suspended"
+      }
+    },
+    "user": {
+      "active": {
+        "label": "Active",
+        "filterLabel": "Active"
+      },
+      "suspended": {
+        "label": "Suspended",
+        "filterLabel": "Locked / Temporarily suspended"
+      }
+    },
+    "poi": {
+      "active": {
+        "label": "Public",
+        "longLabel": "Publicly visible in the system",
+        "option": "Public"
+      },
+      "maintenance": {
+        "label": "Under maintenance",
+        "longLabel": "Under maintenance, not receiving visitors",
+        "option": "Under maintenance"
+      },
+      "paused": {
+        "label": "Paused",
+        "longLabel": "Hidden from the app for now",
+        "option": "Paused"
+      },
+      "draft": {
+        "label": "Draft",
+        "longLabel": "Draft, not yet published",
+        "option": "Draft"
+      }
+    }
+  },
+  "category": {
+    "listing": {
+      "hotel": {
+        "label": "Hotel",
+        "filterLabel": "Hotel / Homestay"
+      },
+      "fnb": {
+        "label": "Food & Drink",
+        "filterLabel": "Restaurant / Food & Drink"
+      },
+      "attraction": {
+        "label": "Attraction",
+        "filterLabel": "Attraction / Heritage site"
+      },
+      "tour": {
+        "label": "Tour",
+        "filterLabel": "Experiences & Tours"
+      },
+      "shopping": {
+        "label": "Shopping",
+        "filterLabel": "Local specialty shopping"
+      }
+    },
+    "partnerType": {
+      "hotel": {
+        "label": "Hotel",
+        "filterLabel": "Hotel / Homestay"
+      },
+      "fnb": {
+        "label": "F&B Restaurant",
+        "filterLabel": "Restaurant / F&B"
+      },
+      "attraction": {
+        "label": "Attraction",
+        "filterLabel": "Attraction"
+      },
+      "tour": {
+        "label": "Tours & Experiences",
+        "filterLabel": "Experience tours"
+      }
+    },
+    "poi": {
+      "heritage": {
+        "label": "UNESCO heritage & historical sites",
+        "shortLabel": "Cultural heritage"
+      },
+      "nature": {
+        "label": "Nature & Scenic landscapes",
+        "shortLabel": "Nature"
+      },
+      "food": {
+        "label": "Cuisine & Traditional markets",
+        "shortLabel": "Traditional cuisine"
+      },
+      "resort": {
+        "label": "Resorts & Coastal ecotourism",
+        "shortLabel": "Beach resort"
+      },
+      "stay": {
+        "label": "Accommodation & Homestays / Hotels",
+        "shortLabel": "Accommodation"
+      },
+      "craft": {
+        "label": "Shopping & Traditional craft villages",
+        "shortLabel": "Craft villages & Culture"
+      },
+      "tour": {
+        "label": "Tours & Experiences",
+        "shortLabel": "Tours & Experiences"
+      }
+    },
+    "userAccountType": {
+      "standard": "Standard member",
+      "vip": "VIP member",
+      "partner": "Affiliated partner"
+    }
+  },
+  "filters": {
+    "allCategories": "All categories",
+    "allPartnerTypes": "All business types",
+    "allStatuses": "All statuses",
+    "userStatusAll": "Status: All",
+    "accountTypeAll": "Account type: All"
+  },
+  "pages": {
+    "dashboard": {
+      "breadcrumb": "Main dashboard",
+      "title": "Overview Dashboard"
+    },
+    "users": {
+      "title": "Traveler Management",
+      "badge": "Live data",
+      "description": "Monitor, assign permissions and support member accounts across the entire Smart Travel platform."
+    },
+    "partners": {
+      "eyebrow": "Smart ecosystem",
+      "eyebrowNote": "B2B partner network",
+      "title": "Business Partner Management",
+      "description": "Monitor, verify and connect travel service providers across Vietnam."
+    },
+    "listings": {
+      "eyebrow": "Data moderation center",
+      "eyebrowNote": "Real-time processing queue",
+      "title": "Place Listing Management",
+      "description": "Control and assess smart tourism standards and verify partner information before publishing to the app."
+    },
+    "reports": {
+      "title": "In-depth Reports & Analytics",
+      "description": "Performance data on users, trips, the partner network and travel destinations nationwide",
+      "live": "Real-time updates"
+    }
+  },
+  "table": {
+    "selectAllOnPage": "Select all on this page",
+    "users": {
+      "user": "User",
+      "email": "Email",
+      "phone": "Phone number",
+      "joinedAt": "Sign-up date",
+      "savedTrips": "Saved trips",
+      "status": "Account status",
+      "actions": "Actions"
+    },
+    "partners": {
+      "partner": "Partner & Representative business",
+      "type": "Business type",
+      "contact": "Contact information",
+      "listings": "Listings",
+      "joinedAt": "Joined on",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "listings": {
+      "place": "Place & POI code",
+      "partner": "Submitted by",
+      "category": "Category",
+      "province": "Location & Province",
+      "wait": "Waiting time",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "approved": {
+      "place": "Place & POI code",
+      "owner": "Owning partner",
+      "category": "Category",
+      "approvedAt": "Approved at",
+      "visibility": "Visibility",
+      "actions": "Actions"
+    },
+    "rejected": {
+      "place": "Place & POI code",
+      "partner": "Submitted by",
+      "reason": "Main rejection reason",
+      "rejectedAt": "Rejected on",
+      "resubmission": "Resubmission status",
+      "actions": "Actions"
+    },
+    "pois": {
+      "name": "POI name & Photo",
+      "id": "POI code",
+      "category": "Category",
+      "location": "Location / Province",
+      "price": "Estimated price",
+      "source": "Data source",
+      "rating": "Rating",
+      "status": "Status",
+      "actions": "Actions",
+      "vector": "Vector (pgvector)"
+    },
+    "dashboardPending": {
+      "place": "Place / Business name",
+      "partner": "Submitted by",
+      "category": "Category",
+      "province": "Province / City",
+      "time": "Time",
+      "status": "Status",
+      "actions": "Actions"
+    }
+  },
+  "common": {
+    "loading": "Loading data...",
+    "retry": "Try again",
+    "close": "Close",
+    "loadError": "Could not load data",
+    "systemLoadError": "Could not load system data",
+    "administrator": "Administrator"
+  },
+  "session": {
+    "idleLogout": "Your session ended after {{minutes}} minutes of inactivity",
+    "welcome": "Signed in successfully. Welcome, {{name}}!"
+  },
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo_one": "{{count}} minute ago",
+    "minutesAgo_other": "{{count}} minutes ago",
+    "hoursAgo_one": "{{count}} hour ago",
+    "hoursAgo_other": "{{count}} hours ago",
+    "daysAgo_one": "{{count}} day ago",
+    "daysAgo_other": "{{count}} days ago",
+    "todayAt": "Today {{time}}",
+    "yesterdayAt": "Yesterday {{time}}",
+    "am": "AM",
+    "pm": "PM",
+    "month": "{{name}}",
+    "monthShort": "{{name}}"
+  },
+  "province": {
+    "short": {
+      "quangnam": "Quang Nam",
+      "danang": "Da Nang",
+      "hanoi": "Hanoi",
+      "hcm": "Ho Chi Minh City",
+      "kiengiang": "Kien Giang",
+      "ninhbinh": "Ninh Binh",
+      "quangngai": "Quang Ngai",
+      "thanhhoa": "Thanh Hoa"
+    },
+    "full": {
+      "quangnam": "Quang Nam (Hoi An)",
+      "danang": "Da Nang",
+      "hanoi": "Hanoi",
+      "hcm": "Ho Chi Minh City",
+      "kiengiang": "Kien Giang (Phu Quoc)",
+      "ninhbinh": "Ninh Binh",
+      "quangngai": "Quang Ngai",
+      "thanhhoa": "Thanh Hoa (Sam Son)"
+    }
+  },
+  "dashboard": {
+    "live": "Live",
+    "welcome": "Welcome back, {{name}}! Data is updated in real time today.",
+    "loadError": "Could not load overview data",
+    "range": {
+      "today": "Today",
+      "7days": "Last 7 days",
+      "30days": "Last 30 days",
+      "thisyear": "This year",
+      "custom": "Custom"
+    },
+    "picker": {
+      "title": "Select a date range",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply"
+    },
+    "exportButton": "Export Excel/PDF",
+    "toast": {
+      "filtered": "Data filtered for {{range}}",
+      "approved": "{{name}} has been approved & published",
+      "refreshed": "Latest activities updated",
+      "exported": "Dashboard data exported (CSV opens in Excel)"
+    },
+    "kpi": {
+      "totalUsers": "Total users",
+      "vs30Days": "Compared with 30 days ago",
+      "newUsersApprox": "(≈ +{{count}} users)",
+      "totalPartners": "Total partners",
+      "newPartnersLabel": "New businesses this month:",
+      "newPartnersValue": "+{{count}} businesses",
+      "totalListings": "Total system listings",
+      "listingTypes": "Hotels, F&B, POIs",
+      "coverage": "Covering {{covered}}/63 provinces of Vietnam",
+      "pendingReviews": "Pending review",
+      "needsAction": "Action required",
+      "avgWait": "Average waiting time:",
+      "hours": "{{count}} hrs",
+      "approvedListings": "Approved places",
+      "meetsStandard": "{{percent}} meet standards",
+      "syncedToAi": "Vector indexed for AI search (pgvector)",
+      "rejectedListings": "Rejected listings",
+      "ofAllSubmissions": "{{percent}} of all submissions",
+      "mainRejectReason": "Main reason: standards violations / missing legal documents"
+    },
+    "csv": {
+      "filename": "dashboard",
+      "metricOrCode": "Metric / Code",
+      "valueOrName": "Value / Name",
+      "period": "Period",
+      "code": "Code",
+      "place": "Place",
+      "partner": "Partner",
+      "category": "Category",
+      "province": "Province/City",
+      "submittedAt": "Submitted at"
+    },
+    "growth": {
+      "title": "New users & AI queries (pgvector)",
+      "subtitle": "User growth vs. AI semantic searches over the last 6 months",
+      "newUsers": "New users",
+      "usersValue": "{{count}} Users",
+      "current": "Now",
+      "currentFull": "{{month}} (Current)",
+      "insight": "Natural-language AI semantic searches rose <bold>{{percent}}</bold> this autumn.",
+      "viewReport": "View report",
+      "aiSearches": "AI queries (pgvector)",
+      "aiSearchesValue": "{{count}} AI queries"
+    },
+    "categories": {
+      "title": "Place categories",
+      "subtitle": "By tourism business category",
+      "total": "Total POIs",
+      "percentOfTotal": "{{percent}}% of all POIs",
+      "hotel": "Accommodation / Hotels & Homestays",
+      "fnb": "Restaurants / Food & Cafés",
+      "attraction": "Attractions & Culture",
+      "tour": "Experiences & Tours",
+      "shopping": "Local specialty shopping"
+    },
+    "pending": {
+      "title": "Listing Requests Awaiting Approval",
+      "newCount": "{{count}} new",
+      "subtitle": "Business licenses & quality standards need verification",
+      "searchPlaceholder": "Search by name or partner...",
+      "filter": "Filter data",
+      "emptyAll": "All quick-view requests have been processed",
+      "emptyFiltered": "No requests match the filter",
+      "code": "Code: {{id}}",
+      "summary": "Showing <bold>{{shown}}</bold> of <bold>{{total}}</bold> listing requests awaiting review",
+      "viewAll": "View all {{count}} requests"
+    },
+    "activity": {
+      "title": "Recent activity",
+      "refresh": "Refresh",
+      "partner_registered": "New partner <highlight>{{subject}}</highlight> has completed account registration.",
+      "listing_approved": "An admin approved the listing <bold>{{subject}}</bold>.",
+      "listing_rejected": "An admin rejected the listing <bold>{{subject}}</bold>.",
+      "listing_submitted": "A new listing request was submitted by <bold>{{subject}}</bold>.",
+      "businessAccount": "Business account",
+      "published": "Published",
+      "inQueue": "In queue",
+      "reason": "Reason: {{reason}}",
+      "aiTitle": "AI monitoring assistant",
+      "aiStatus": "45ms response • 99.98% SLA"
+    }
+  },
+  "users": {
+    "lockUserModal": {
+      "lockUserAccount": "Lock user account",
+      "lockAccounts_one": "Lock {{count}} account",
+      "lockAccounts_other": "Lock {{count}} accounts",
+      "willNotAbleSign": "{{name}} ({{id}}) will not be able to sign in or create new trips",
+      "theSelectedAccountsWill": "The selected accounts will not be able to sign in or create new trips",
+      "cancel": "Cancel",
+      "confirmLock": "Confirm lock",
+      "reasonLockingAccount": "Reason for locking the account",
+      "additionalNotesCustomerSupport": "Additional notes for Customer Support (optional)..."
+    },
+    "userFilterBar": {
+      "searchByTravelerName": "Search by traveler name, email, phone number or UID...",
+      "status": "Status",
+      "accountType": "Account type",
+      "signUpDate": "Sign-up date",
+      "applyFilters": "Apply filters",
+      "resetFilters": "Reset filters"
+    },
+    "userFormModal": {
+      "pleaseEnterFullName": "Please enter a full name",
+      "editUser": "Edit user",
+      "addNewUser": "Add new user",
+      "updateDetails": "Update details for {{id}}",
+      "newAccountsCreatedWith": "New accounts are created with Active status",
+      "saveChanges": "Save changes",
+      "addUser": "Add user",
+      "fullName": "Full name *",
+      "eGNguyenVan": "e.g. Nguyen Van Hung",
+      "phoneNumber": "Phone number *",
+      "city": "City",
+      "accountType": "Account type"
+    },
+    "userRow": {
+      "select": "Select {{name}}",
+      "partner": "Partner",
+      "trips_one": "{{count}} trip",
+      "trips_other": "{{count}} trips",
+      "details": "Details",
+      "unlock": "Unlock",
+      "lockAccount": "Lock account",
+      "aiSearches_one": "{{count}} AI search",
+      "aiSearches_other": "{{count}} AI searches",
+      "noAiSearches": "No AI searches yet"
+    },
+    "userStatsCards": {
+      "totalUsers": "Total users",
+      "vsLastMonth": "vs. last month",
+      "active": "Active",
+      "onlineRate": "online rate",
+      "newAccountsThisMonth": "New accounts this month",
+      "today": "+{{newToday}} today",
+      "avg280Day": "avg. 280/day",
+      "lockedSuspended": "Locked / Suspended",
+      "totalPolicyViolations": "total policy violations"
+    },
+    "userTable": {
+      "usersSelected_one": "{{count}} user selected",
+      "usersSelected_other": "{{count}} users selected",
+      "lockSelected": "Lock selected",
+      "unlockSelected": "Unlock selected",
+      "clearSelection": "Clear selection",
+      "noMatchingUsersFound": "No matching users found",
+      "tryDifferentKeywordOr": "Try a different keyword or filter."
+    },
+    "page": {
+      "allSelectedAccountsAlready": "All selected accounts are already locked",
+      "lockedAccount": "Locked the account of {{name}}",
+      "lockedAccounts_one": "Locked {{count}} account",
+      "lockedAccounts_other": "Locked {{count}} accounts",
+      "allSelectedAccountsAlready2": "All selected accounts are already active",
+      "unlocked": "Unlocked {{name}}",
+      "unlockedAccounts_one": "Unlocked {{count}} account",
+      "unlockedAccounts_other": "Unlocked {{count}} accounts",
+      "updatedDetails": "Updated the details of {{name}}",
+      "addedUser": "Added user {{name}} ({{id}})",
+      "fullName": "Full name",
+      "phoneNumber": "Phone number",
+      "city": "City",
+      "signUpDate": "Sign-up date",
+      "accountType": "Account type",
+      "trips": "Trips",
+      "status": "Status",
+      "lockReason": "Lock reason",
+      "exportedUsersExcelFile_one": "Exported {{count}} user to an Excel file (CSV)",
+      "exportedUsersExcelFile_other": "Exported {{count}} users to an Excel file (CSV)",
+      "addNewUser": "Add new user",
+      "users": "users"
+    },
+    "constants": {
+      "signUpDateAll": "Sign-up date: All",
+      "last30Days": "Last 30 days",
+      "thisQuarter": "This quarter",
+      "last12Months": "Last 12 months"
+    },
+    "lockReasons": {
+      "spamReviews": "Review spam",
+      "inappropriateContent": "Posting inappropriate content",
+      "promotionFraud": "Promotion fraud / fake bookings",
+      "compromised": "Suspected account takeover",
+      "userRequest": "At the user's request"
+    }
+  },
+  "userDetail": {
+    "lockAccountDialog": {
+      "confirmUserAccountLock": "Confirm user account lock",
+      "youAboutSuspendAccess": "You are about to suspend access for traveler <c0>{{name}} ({{id}})</c0>.",
+      "reasonLockingAccount": "Reason for locking the account <c0>*</c0>",
+      "enterDetailedReasonNotify": "Enter a detailed reason to notify the user and record this Super Admin action...",
+      "thisWillImmediatelyInvalidate": "This will immediately invalidate the sign-in session on {{device}}.",
+      "cancel": "Cancel",
+      "lockNow": "Lock now"
+    },
+    "sessionLogTab": {
+      "securityLogSessionHistory": "Security log & Session history"
+    },
+    "tripDetailModal": {
+      "itineraryCode": "Itinerary code",
+      "duration": "Duration",
+      "departure": "Departure",
+      "end": "End",
+      "attractions": "Attractions",
+      "estimatedBudget": "Estimated budget",
+      "paid": "Paid",
+      "downloadItinerary": "Download itinerary"
+    },
+    "tripsTab": {
+      "upcoming": "Upcoming",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "searchByTripName": "Search by trip name, destination or itinerary code...",
+      "tripStatus": "Trip status",
+      "showingLatestTrips": "Showing the latest {{length}} / {{totalTrips}} trips",
+      "noDetailedTripData": "No detailed trip data yet",
+      "noMatchingTrips": "No matching trips",
+      "reviewSubmitted": "{{rating}}★ (Review submitted)",
+      "departure": "Departure: <c0>{{startDate}}</c0>",
+      "dates": "Dates: <c0>{{startDate}} - {{endDate}}</c0>",
+      "scope": "Scope:",
+      "visited": "visited",
+      "estimatedBudget": "Estimated budget",
+      "payment": "Payment",
+      "downloadItinerary": "Download itinerary",
+      "viewTripDetails": "View trip details"
+    },
+    "userMetricCards": {
+      "tripsCreated": "Trips created",
+      "itineraries": "Itineraries",
+      "completed": "{{completed}} completed",
+      "upcoming": "{{upcoming}} upcoming",
+      "favoritePlacesSaved": "Favorite places (Saved)",
+      "savedPois": "Saved POIs",
+      "ratingsReviews": "Ratings & Reviews",
+      "reviews": "Reviews",
+      "averageScore50": "Average score <c0>{{toFixed}} / 5.0</c0>",
+      "spendingPlatform": "Spending on the platform",
+      "vnd": "VND"
+    },
+    "userProfileCard": {
+      "id": "ID:",
+      "tier": "Tier: <c0>{{tierLabel}}</c0>",
+      "lockReason": "Lock reason: {{suspendReason}}",
+      "lastSign": "Last sign-in: <c0>{{time}}</c0> on {{device}}",
+      "aiTrustScore": "AI trust score",
+      "verifiedByAi": "Verified by AI",
+      "travelerBadges": "Traveler badges:"
+    },
+    "page": {
+      "reVerifyYourAccount": "Re-verify your account details",
+      "smartTravelNeedsYou": "Smart Travel needs you to re-verify your email and phone number to keep using all features.",
+      "communityStandardsViolationWarning": "Community standards violation warning",
+      "weNoticedContentFrom": "We noticed content from your account that does not meet our community standards. Please review the guidelines.",
+      "exclusiveMemberOffer": "Exclusive member offer",
+      "thankYouTravelingWith": "Thank you for traveling with Smart Travel! A special offer for your next trip is waiting for you in the app.",
+      "userNotFound": "User {{id}} not found",
+      "backUserList": "Back to user list",
+      "couldNotLoadUser": "Could not load the user profile",
+      "itinerariesTrips": "Itineraries & Trips ({{total}})",
+      "savedFavoritePlaces": "Saved & Favorite places ({{savedPois}})",
+      "reviewsCommentsHistory": "Reviews & Comments history ({{reviewCount}})",
+      "signDeviceLogAudit": "Sign-in & Device log (Audit Log)",
+      "lockedAccountSessionHas": "Locked the account of {{name}}; the session on {{device}} has been revoked",
+      "unlockedAccount": "Unlocked the account of {{name}}",
+      "updatedProfile": "Updated the profile of {{name}}",
+      "sentEmail": "Sent email \"{{subject}}\" to {{email}}",
+      "emailSent": "Email \"{{subject}}\" sent to {{email}}",
+      "information": "Information",
+      "value": "Value",
+      "itineraryCode": "Itinerary code",
+      "tripName": "Trip name",
+      "traveler": "Traveler",
+      "status": "Status",
+      "time": "Time",
+      "attractions": "Attractions",
+      "cost": "Cost",
+      "downloadedItinerary": "Downloaded itinerary {{id}}",
+      "systemAdministration": "System administration",
+      "userManagement": "User management",
+      "userDetails": "User details: {{name}}",
+      "travelerProfileSyncedAi": "Traveler profile synced to the AI cloud",
+      "updated2MinutesAgo": "• Updated 2 minutes ago",
+      "unlockAccount": "Unlock account",
+      "lockAccount": "Lock account",
+      "sendNotificationEmail": "Send notification email",
+      "editPermissionsProfile": "Edit permissions / Profile",
+      "savedTravelPlaces_one": "{{count}} saved travel place",
+      "savedTravelPlaces_other": "{{count}} saved travel places",
+      "verifiedExperienceReviews_one": "{{count}} verified experience review",
+      "verifiedExperienceReviews_other": "{{count}} verified experience reviews",
+      "accountInterventionPolicy": "Account intervention policy",
+      "everyLockPermissionChange": "Every Lock, Permission change or Password reset on a user account is recorded directly in the Senior Administrator Audit Log.",
+      "permissionsSuperAdminFull": "Permissions: <c0>Super Admin (full access)</c0>"
+    },
+    "utils": {
+      "upcoming": "Upcoming",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "newMember": "New member",
+      "monthsWithUs_one": "{{count}} month with us",
+      "monthsWithUs_other": "{{count}} months with us",
+      "yearsWithUs_one": "{{count}} year with us",
+      "yearsWithUs_other": "{{count}} years with us",
+      "vnd": "{{toLocaleString}} VND"
+    }
+  },
+  "partners": {
+    "partnerFilterBar": {
+      "searchByPartnerName": "Search by partner name, business name, tax code or email...",
+      "clearFilters": "Clear filters",
+      "businessType": "Business type",
+      "profileStatus": "Profile status",
+      "regionProvince": "Region / Province",
+      "sortBy": "Sort by"
+    },
+    "partnerFormModal": {
+      "pleaseEnterPartnerName": "Please enter the partner name",
+      "pleaseEnterBusinessName": "Please enter the business name",
+      "pleaseEnterAddress": "Please enter the address",
+      "pleaseEnterRepresentative": "Please enter the representative",
+      "editPartner": "Edit partner",
+      "addNewPartner": "Add new partner",
+      "updateProfileDetails": "Update profile details for {{id}}",
+      "newPartnersStayPending": "New partners stay in Pending verification until approved",
+      "saveChanges": "Save changes",
+      "addPartner": "Add partner",
+      "partnerName": "Partner name *",
+      "representativeBusinessName": "Representative business name *",
+      "businessType": "Business type",
+      "provinceCity": "Province / City",
+      "address": "Address *",
+      "eGCamChau": "e.g. Cam Chau, Hoi An",
+      "representative": "Representative *",
+      "eGNguyenVan": "e.g. Nguyen Van Hung",
+      "phoneNumber": "Phone number *",
+      "taxCode": "Tax code *",
+      "n10Or13Digits": "10 or 13 digits"
+    },
+    "partnerRow": {
+      "viewPartnerDetails": "View partner details",
+      "verifyPartnerProfile": "Verify partner profile",
+      "unlockAccount": "Unlock account",
+      "representative": "Representative: {{representative}}",
+      "placeList": "Place list",
+      "moreOptions": "More options",
+      "lockSettings": "Lock / Settings"
+    },
+    "partnerStatsCards": {
+      "ecosystemShare": "Ecosystem share",
+      "totalPartners": "Total partners",
+      "joinedThisMonth": "joined this month",
+      "accommodationHotels": "Accommodation & Hotels",
+      "restaurantsDining": "Restaurants & Dining",
+      "attractionsTours": "Attractions & Tours"
+    },
+    "partnerTable": {
+      "noMatchingPartnersFound": "No matching partners found",
+      "tryChangingKeywordOr": "Try changing the keyword or filters.",
+      "editDetails": "Edit details",
+      "unlockAccount": "Unlock account",
+      "lockAccount": "Lock account"
+    },
+    "page": {
+      "lockedAccountHidPlaces_one": "Locked the account of {{name}} and hid {{count}} place",
+      "lockedAccountHidPlaces_other": "Locked the account of {{name}} and hid {{count}} places",
+      "lockedAccount": "Locked the account of {{name}}",
+      "unlockedAccountRestoredPlaces_one": "Unlocked the account of {{name}} and restored {{count}} place",
+      "unlockedAccountRestoredPlaces_other": "Unlocked the account of {{name}} and restored {{count}} places",
+      "unlockedAccount": "Unlocked the account of {{name}}",
+      "updatedDetails": "Updated the details of {{name}}",
+      "addedPartnerPendingVerification": "Added partner {{name}} — pending verification",
+      "code": "Code",
+      "partner": "Partner",
+      "business": "Business",
+      "type": "Type",
+      "province": "Province",
+      "representative": "Representative",
+      "phone": "Phone",
+      "listings": "Listings",
+      "joined": "Joined on",
+      "status": "Status",
+      "exportedPartnersExcelFile_one": "Exported {{count}} partner to an Excel file (CSV)",
+      "exportedPartnersExcelFile_other": "Exported {{count}} partners to an Excel file (CSV)",
+      "addNewPartner": "+ Add new partner",
+      "partners": "partners"
+    },
+    "utils": {
+      "paused": "{{paused}} paused",
+      "pending": "{{pending}} pending",
+      "approved": "{{approved}} approved"
+    },
+    "constants": {
+      "newestSignUps": "Newest sign-ups",
+      "mostListedPlaces": "Most listed places",
+      "highestRated": "Highest rated",
+      "nationwide63Provinces": "Nationwide (63 provinces)"
+    },
+    "lockReasons": {
+      "qualityViolation": "Violation of tourism service quality standards",
+      "unresolvedComplaints": "Unresolved complaints from travelers",
+      "expiredLicense": "Business / fire safety license expired",
+      "partnerRequest": "Suspended at the partner's request",
+      "other": "Other (detailed note)"
+    }
+  },
+  "partnerDetail": {
+    "auditLogTab": {
+      "auditLog": "Audit log",
+      "everyActionPartnerAccount": "Every action on the partner account is recorded automatically and cannot be edited",
+      "events_one": "{{count}} event",
+      "events_other": "{{count}} events"
+    },
+    "commissionModal": {
+      "adjustCommissionRate": "Adjust commission rate",
+      "currentRateAppliesTransactions": "Current rate: {{current}}% — applies to transactions made after saving",
+      "saveNewRate": "Save new rate",
+      "platformCommissionRate": "Platform commission rate (%)",
+      "theCommissionRateMust": "The commission rate must be between {{MIN_COMMISSION}}–{{MAX_COMMISSION}}%"
+    },
+    "legalTab": {
+      "legalBusinessRegistration": "Legal & Business registration",
+      "notarizedCorporateLegalDocuments": "Notarized corporate legal documents",
+      "pendingVerification": "Pending verification",
+      "verified": "Verified",
+      "viewOriginalFile": "View original file",
+      "fullCompanyName": "Full company name",
+      "taxCodeBusinessLicense": "Tax code / Business license no.",
+      "founded": "Founded on",
+      "issuingAuthority": "Issuing authority",
+      "registeredCharterCapital": "Registered charter capital",
+      "headOfficeAddress": "Head office address",
+      "legalRepresentative": "Legal representative",
+      "representativeSIdNumber": "Representative's ID number",
+      "contactRepresentativeAdmin": "Contact & Representative admin",
+      "pointContactSupportTransaction": "Point of contact for support and transaction verification",
+      "n2fa": "2FA:",
+      "on": "On",
+      "off": "Off",
+      "grantExtraPermissions": "Grant extra permissions",
+      "resendActivationCode": "Resend activation code",
+      "position": "Position: {{position}}",
+      "primaryAdmin": "Primary admin",
+      "notificationEmail": "Notification email",
+      "otpPhoneNumber": "OTP phone number",
+      "paymentGatewayBusinessAccount": "Payment gateway & Business account",
+      "aiEscrowDeposit": "AI Escrow deposit",
+      "thisPartnerHasNot": "This partner has not linked a payment account",
+      "assessmentsIndustryCertifications": "Assessments & Industry certifications",
+      "periodicQualityInspectionTourism": "Periodic quality inspection of tourism & accommodation services",
+      "nextAssessmentDue": "Next assessment due: <c0>{{nextReviewDate}}</c0>",
+      "scheduleReAssessment": "Schedule re-assessment",
+      "partnershipAgreementCommission": "Partnership agreement & Commission",
+      "commissionPolicyRoomTicket": "Commission policy and room/ticket release terms",
+      "active": "Active",
+      "suspended": "Suspended",
+      "contract": "Contract: <c0>{{contractCode}}</c0>",
+      "adjustCommission": "Adjust commission",
+      "contractType": "Contract type",
+      "platformCommissionRate": "Platform commission rate",
+      "activated": "Activated on",
+      "nextRenewalDate": "Next renewal date",
+      "otaSettlementCycle": "OTA settlement cycle"
+    },
+    "partnerProfileCard": {
+      "registeredPlaces": "Registered places",
+      "business": "Business",
+      "approved": "Approved",
+      "public": "Public",
+      "pendingApproval": "Pending approval",
+      "needsAction": "Needs action",
+      "mainBusiness": "Main business: {{businessName}}",
+      "representative": "Representative: <c0>{{representative}}</c0>",
+      "joined": "Joined: {{joinedAt}} (<c0>{{joinedAt2}}</c0>)",
+      "aiTrust": "AI trust",
+      "averageRating": "Average rating",
+      "aiSearchHits": "AI search appearances",
+      "hits": "Hits"
+    },
+    "scheduleReviewModal": {
+      "scheduleReAssessment": "Schedule re-assessment",
+      "pickDateNextService": "Pick the date of the next service quality inspection",
+      "saveSchedule": "Save schedule",
+      "reAssessmentDate": "Re-assessment date"
+    },
+    "page": {
+      "partnerApp": "Partner app",
+      "licenseRenewalReminder": "License renewal reminder",
+      "yourBusinessFireSafety": "Your business / fire safety license is about to expire. Please upload the renewed copy on the partner portal.",
+      "periodicReAssessmentSchedule": "Periodic re-assessment schedule",
+      "smartTravelWillCarry": "Smart Travel will carry out a periodic service quality re-assessment. Please prepare the relevant documents.",
+      "partnershipPolicyUpdate": "Partnership policy update",
+      "thePartnershipCommissionPolicy": "The partnership & commission policy has been updated. Please see the details on the partner portal.",
+      "businessLegalInformation": "Business & Legal information",
+      "contractLimits": "Contract & Limits",
+      "partnershipTransactionHistory": "Partnership & Transaction history",
+      "partnerReviewsRanking": "Partner reviews & Ranking",
+      "auditLog": "Audit Log",
+      "partnerNotFound": "Partner {{id}} not found",
+      "backPartnerList": "Back to partner list",
+      "couldNotLoadPartner": "Could not load the partner profile",
+      "lockedAccountHidPlaces_one": "Locked the account of {{name}} and hid {{count}} place",
+      "lockedAccountHidPlaces_other": "Locked the account of {{name}} and hid {{count}} places",
+      "lockedAccount": "Locked the account of {{name}}",
+      "unlockedRestoredPlaces_one": "Unlocked {{name}} and restored {{count}} place",
+      "unlockedRestoredPlaces_other": "Unlocked {{name}} and restored {{count}} places",
+      "unlocked": "Unlocked {{name}}",
+      "updatedDetails": "Updated the details of {{name}}",
+      "sentNotificationVia": "Sent notification \"{{title}}\" via {{join}}",
+      "notificationSent": "Notification \"{{title}}\" sent to {{name}}",
+      "scheduledReAssessment": "Scheduled re-assessment for {{isoDate}}",
+      "reAssessmentScheduled": "Re-assessment scheduled for {{isoDate}}",
+      "changedCommissionFrom": "Changed commission from {{commission}}% to {{commission2}}%",
+      "commissionRateUpdated": "Commission rate updated to {{commission}}%",
+      "resentActivationCode": "Resent activation code to {{otpPhone}}",
+      "activationCodeSent": "Activation code sent to {{otpPhone}}",
+      "systemAdministration": "System administration",
+      "partnerManagement": "Partner management",
+      "partnerDetails": "Partner details: {{name}}",
+      "code": "Code: {{id}}",
+      "backList": "Back to list",
+      "aiCloudProfileSync": "AI cloud profile sync",
+      "lockAccount": "Lock account",
+      "unlockAccount": "Unlock account",
+      "rejectedProfile": "Rejected the profile of {{name}}",
+      "rejectProfile": "Reject profile",
+      "sendNotification": "Send notification",
+      "editDetails": "Edit details",
+      "approvedProfile": "Approved the profile of {{name}}",
+      "approvePartner": "Approve partner",
+      "verificationDocuments": "Verification documents:",
+      "aPreviewWillAvailable": "A preview of {{name}} will be available once the document store is connected",
+      "fineGrainedPermissionsPartner": "Fine-grained permissions for partner accounts are under development",
+      "contractCommissionDetailedDesign": "Contract {{contractCode}} • Commission {{commission}}%. The detailed design for this tab is pending from Stitch.",
+      "adjustCommission": "Adjust commission",
+      "thisTabSDesign": "This tab's design is pending from Stitch. Meanwhile, you can view the partner's listed places.",
+      "viewPartnerSPlaces": "View partner's places",
+      "tierAverageRating5": "Tier {{tierLabel}} • Average rating {{value}}/5 • AI trust {{trustScore}}/100. The detailed design is pending from Stitch.",
+      "accountInterventionPolicyEvery": "Account intervention policy: every edit or lock on a partner is automatically recorded in the Smart Travel Vietnam Audit Log.",
+      "inspectionSessionId": "Inspection session ID: {{sessionCode}}",
+      "printProfileExtract": "Print profile extract",
+      "sendNotificationPartner": "Send a notification to the partner"
+    },
+    "utils": {
+      "newlyJoined": "Newly joined",
+      "monthsWithUs_one": "{{count}} month with us",
+      "monthsWithUs_other": "{{count}} months with us",
+      "yearsWithUs_one": "{{count}} year with us",
+      "yearsWithUs_other": "{{count}} years with us",
+      "vnd": "{{toLocaleString}} VND"
+    },
+    "trustLevel": {
+      "verySafe": "Very safe",
+      "safe": "Safe",
+      "watch": "Needs monitoring",
+      "highRisk": "High risk"
+    }
+  },
+  "components": {
+    "lockPartnerModal": {
+      "confirmPartnerAccountSuspension": "Confirm partner account suspension",
+      "suspendThisPartnerAccount": "Suspend this partner account?",
+      "thisWillPauseVisibility": "This will pause the visibility of <c0>{{name}} ({{id}})</c0>",
+      "onSmartTravelVietnam": "on the Smart Travel Vietnam app.",
+      "andItsRelatedListed": "and its <c0>{{affectedListings}} related listed places</c0>",
+      "reasonLockingAccount": "Reason for locking the account",
+      "aDetailedNoteRequired": "A detailed note is required when choosing \"Other\"...",
+      "additionalNotesCustomerSupport": "Additional notes for Customer Support and the partner...",
+      "cancel": "Cancel",
+      "confirmLock": "Confirm lock"
+    },
+    "notFoundState": {
+      "theRecordMayHave": "The record may have been deleted or renamed, or you may not have access to it."
+    },
+    "pagination": {
+      "showing": "Showing <c0>{{start}} - {{end}}</c0> of <c1>{{totalItems}}</c1> {{itemLabel}}",
+      "rowsPerPage": "Rows per page:",
+      "previous": "Previous"
+    },
+    "sendMessageModal": {
+      "send": "Send",
+      "subject": "Subject *",
+      "enterSubject": "Enter a subject...",
+      "message": "Message *",
+      "enterYourMessage": "Enter your message...",
+      "deliveryChannels": "Delivery channels *"
+    },
+    "sortableHeader": {
+      "sortBy": "Sort by {{toLowerCase}}"
+    },
+    "unsavedChangesDialog": {
+      "leavePage": "Leave page",
+      "leaveWithoutSaving": "Leave without saving?"
+    },
+    "notificationRulesFields": {
+      "notificationEvents": "Notification events",
+      "aiPlannerLoadAlert": "AI search (pgvector) load alert threshold",
+      "aiLoadAlertThreshold": "AI load alert threshold",
+      "sendUrgentAlertWhen": "Send an urgent alert when the AI server cluster load exceeds this threshold for 5 consecutive minutes.",
+      "deliveryChannels": "Delivery channels",
+      "urgentAlertsViaTelegram": "Urgent alerts via Telegram & SMS",
+      "urgentAlertsViaTelegram2": "Urgent alerts via Telegram and SMS",
+      "selectAtLeastOne": "Select at least one delivery channel"
+    },
+    "otpInput": {
+      "digit": "Digit {{value}}"
+    },
+    "passwordInput": {
+      "hidePassword": "Hide password",
+      "showPassword": "Show password"
+    }
+  },
+  "stores": {
+    "users": {
+      "by": "{{text}} (by {{actor}})",
+      "accountCreated": "Account created",
+      "couldNotSaveNew": "Could not save the new account",
+      "profileAccountPermissionsUpdated": "Profile / account permissions updated",
+      "couldNotSaveUser": "Could not save the user profile",
+      "accountLocked": "Account locked — {{reason}}",
+      "couldNotLockAccount": "Could not lock the account",
+      "unlockAccount": "Unlock account",
+      "couldNotUnlockAccount": "Could not unlock the account"
+    },
+    "partners": {
+      "newPartnerProfileCreated": "New partner profile created, pending verification",
+      "couldNotSaveNew": "Could not save the new partner profile",
+      "businessProfileDetailsUpdated": "Business profile details updated",
+      "couldNotSavePartner": "Could not save the partner details",
+      "statusChanged": "Status changed to \"{{label}}\" — {{statusNote}}",
+      "statusChanged2": "Status changed to \"{{label}}\"",
+      "couldNotChangePartner": "Could not change the partner status",
+      "couldNotSavePartner2": "Could not save the partner profile"
+    },
+    "listings": {
+      "couldNotSaveApproval": "Could not save the approval result",
+      "couldNotSaveRejection": "Could not save the rejection result",
+      "couldNotReopenSubmission": "Could not reopen the submission",
+      "couldNotCloseSubmission": "Could not close the submission",
+      "couldNotUpdateVisibility": "Could not update the visibility",
+      "couldNotSavePlace": "Could not save the place details",
+      "couldNotAssignCategory": "Could not assign the category",
+      "addedManuallyByAdministrator": "Added manually by an administrator",
+      "couldNotSaveNew": "Could not save the new place"
+    },
+    "pois": {
+      "couldNotSaveNew": "Could not save the new destination",
+      "couldNotSaveDestination": "Could not save the destination changes",
+      "couldNotReindex": "Could not index POI vectors"
+    },
+    "notifications": {
+      "couldNotUpdateNotification": "Could not update the notification status",
+      "couldNotSaveNotification": "Could not save the notification rules"
+    },
+    "settings": {
+      "couldNotSaveSystem": "Could not save the system configuration"
+    },
+    "adminProfile": {
+      "contactInformationUpdated": "Contact information updated",
+      "fullNameSocEmail": "Full name, SOC email and hotline: {{hotline}}",
+      "couldNotSaveContact": "Could not save the contact information",
+      "changeAccountPassword": "Change account password",
+      "administratorPasswordChanged": "Administrator password changed",
+      "n2faReconfigured": "2FA reconfigured",
+      "relinkedGoogleAuthenticatorApp": "Relinked the Google Authenticator app",
+      "couldNotSave2fa": "Could not save the 2FA configuration",
+      "backupCodesRegenerated": "Backup codes regenerated",
+      "newRecoveryCodesOld": "{{length}} new recovery codes; old codes invalidated",
+      "couldNotGenerateNew": "Could not generate new backup codes",
+      "fido2KeyLinked": "FIDO2 key linked",
+      "couldNotSaveSecurity": "Could not save the security key",
+      "signedOutOtherDevices": "Signed out of other devices",
+      "revokedSignSessions_one": "Revoked {{count}} sign-in session",
+      "revokedSignSessions_other": "Revoked {{count}} sign-in sessions",
+      "couldNotRevokeSign": "Could not revoke the sign-in sessions"
+    },
+    "auth": {
+      "yourSessionHasExpired": "Your session has expired; please sign in again"
+    }
+  },
+  "hooks": {
+    "usePartnerActions": {
+      "accountLockNote": "Account lock note: {{note}}",
+      "profileRejected": "Profile rejected"
+    }
+  },
+  "utils": {
+    "validation": {
+      "invalidEmailAddress": "Invalid email address",
+      "invalidPhoneNumberE": "Invalid phone number (e.g. 0905 888 999)",
+      "websiteMustStartWith": "Website must start with http:// or https://",
+      "taxCodeMustHave": "Tax code must have 10 or 13 digits"
+    },
+    "poi": {
+      "free": "Free",
+      "vnd": " VND",
+      "perUnit": " VND/{{unit}}",
+      "units": {
+        "ticket": "ticket",
+        "person": "person",
+        "visit": "visit",
+        "night": "night"
+      }
+    },
+    "error": {
+      "somethingWentWrongPlease": "Something went wrong; please try again"
+    },
+    "device": {
+      "browser": "Browser",
+      "unknownDevice": "unknown device",
+      "on": "{{browser}} on {{os}}"
+    }
+  },
+  "listings": {
+    "listingFilterBar": {
+      "searchByPlaceName": "Search by place name, POI code or partner name...",
+      "category": "Category",
+      "province": "Province",
+      "partnerTier": "Partner tier",
+      "priority": "Priority"
+    },
+    "listingRow": {
+      "select": "Select {{name}}",
+      "over24h": "Over 24h",
+      "openDetailedReviewScreen": "Open the detailed review screen",
+      "reviewApprove": "Review & Approve",
+      "viewSubmissionDetails": "View submission details",
+      "viewRejectionReason": "View rejection reason",
+      "viewReason": "View reason"
+    },
+    "listingStatsCards": {
+      "totalSystemListings": "Total system listings",
+      "n84VsLast": "+8.4% vs. last month",
+      "urgentPending": "Urgent pending",
+      "submissionsWaitingOver24h_one": "{{count}} submission waiting over 24h",
+      "submissionsWaitingOver24h_other": "{{count}} submissions waiting over 24h",
+      "approved": "Approved",
+      "approvalRate": "Approval rate {{approved}}",
+      "rejectedDefective": "Rejected / Defective",
+      "additionalPermitsRequested": "Additional permits requested"
+    },
+    "listingStatusTabs": {
+      "allListings": "All listings",
+      "pendingApproval": "Pending approval",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "listingTable": {
+      "noMatchingSubmissions": "No matching submissions",
+      "tryAnotherStatusTab": "Try another status tab or filter."
+    },
+    "rejectReasonModal": {
+      "rejectionReason": "Rejection reason",
+      "viewFullSubmission": "View full submission",
+      "noSpecificReasonWas": "No specific reason was recorded.",
+      "feedbackSentPartner": "Feedback sent to the partner",
+      "rejectedAtPartner": "Rejected at: {{reviewedAt}} • Partner: {{partnerName}}"
+    },
+    "reviewPolicyModal": {
+      "listingModerationPolicy": "Listing moderation policy",
+      "standardsAppliedWhenReviewing": "Standards applied when reviewing submissions before publishing to the app"
+    },
+    "page": {
+      "selectAtLeastOne": "Select at least one \"Pending review\" submission to quick-approve",
+      "quickApprovedListingSubmissions_one": "Quick-approved {{count}} listing submission",
+      "quickApprovedListingSubmissions_other": "Quick-approved {{count}} listing submissions",
+      "poiCode": "POI code",
+      "place": "Place",
+      "partner": "Partner",
+      "partnerTier": "Partner tier",
+      "category": "Category",
+      "address": "Address",
+      "provinceCity": "Province/City",
+      "submittedAt": "Submitted at",
+      "status": "Status",
+      "rejectionReason": "Rejection reason",
+      "exportedSubmissionsExcelFile_one": "Exported {{count}} submission to an Excel file (CSV)",
+      "exportedSubmissionsExcelFile_other": "Exported {{count}} submissions to an Excel file (CSV)",
+      "moderationPolicy": "Moderation policy",
+      "filteringByPartner": "Filtering by partner:",
+      "clearPartnerFilter": "Clear partner filter",
+      "submissions": "submissions",
+      "youAboutApprovePending": "You are about to approve <c0>{{length}} pending submissions</c0> and publish them to the app. Make sure they meet the moderation policy.",
+      "approveSubmissions_one": "Approve {{count}} submission",
+      "approveSubmissions_other": "Approve {{count}} submissions",
+      "selectedSubmissionsNotPending_one": "{{count}} selected submission is not pending review and will be skipped.",
+      "selectedSubmissionsNotPending_other": "{{count}} selected submissions are not pending review and will be skipped."
+    },
+    "utils": {
+      "overdueH": "Overdue ({{hours}}h)"
+    },
+    "constants": {
+      "diamondPartner": "Diamond partner",
+      "soleProprietorship": "Sole proprietorship",
+      "goldPartner": "Gold partner",
+      "verifiedPartner": "Verified partner",
+      "newPartner": "New partner",
+      "publicOrganization": "Public organization",
+      "allPartners": "All partners",
+      "strategicPartnerGold": "Strategic partner (Gold)",
+      "newlyRegisteredPartner": "Newly registered partner",
+      "verified": "Verified",
+      "newPartner2": "New partner",
+      "idVerified": "ID verified",
+      "nationwideProvinceCity": "Nationwide (Province/City)",
+      "allPriorities": "All priorities",
+      "waitingOver24hUrgent": "Waiting over 24h (Urgent)",
+      "waiting212h": "Waiting 2 - 12h",
+      "submittedToday": "Submitted today",
+      "validGpsCoordinates": "Valid GPS coordinates",
+      "withinTourismZoningArea": "Within a tourism zoning area",
+      "photosMeetResolutionStandard": "Photos meet the resolution standard",
+      "licenseStillValid": "License still valid",
+      "pendingReview": "Pending review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "mandatoryLegalDocuments": "Mandatory legal documents",
+      "everyBusinessMustHold": "Every business must hold a valid business license. Accommodation also needs a fire safety certificate; dining needs a food hygiene & safety certificate.",
+      "photosContent": "Photos & content",
+      "atLeast5Real": "At least 5 real HD photos with no third-party logos. Descriptions must be honest and must not exaggerate the services.",
+      "processingDeadline": "Processing deadline",
+      "submissionsMustReviewedWithin": "Submissions must be reviewed within 24 hours of submission. Overdue submissions are flagged \"Urgent\" and prioritized.",
+      "rejectProfile": "Reject profile",
+      "aClearRejectionReason": "A clear rejection reason is required so the partner can make corrections. The partner may resubmit after fixing the issues.",
+      "missingFireSafetyFood": "Missing fire safety / food safety certificate",
+      "insufficientLegalDocumentationFood": "Insufficient legal documentation (food safety / fire safety license expired or invalid)",
+      "theLicenseHasExpired": "The license has expired or lacks a renewal document and cannot be verified against the database.",
+      "theLegalLicensesFood": "the legal licenses (food safety / fire safety) have expired or are invalid",
+      "uploadNewValidNotarized": "upload a new, valid notarized scan",
+      "incorrectBusinessRegistrationDetails": "Incorrect business registration details",
+      "inaccurateBusinessInformationOr": "Inaccurate business information or listed prices that differ from reality",
+      "thePublishedPriceList": "The published price list differs from the booking prices on the travel platform.",
+      "theBusinessInformationListed": "the business information and listed price list do not match reality",
+      "reviewUpdatePriceList": "review and update the price list and service details accurately",
+      "incorrectGpsCoordinates": "Incorrect GPS coordinates",
+      "invalidLocationGpsCoordinates": "Invalid location / GPS coordinates off by more than 30m",
+      "theMapPinFar": "The map pin is far from the registered business address.",
+      "theGpsCoordinatesMap": "the GPS coordinates on the map do not match the registered business address",
+      "pinExactLocationBusiness": "pin the exact location of the business on the map again",
+      "poorQualityPhotosWatermarks": "Poor-quality photos / Watermarks",
+      "poorQualityWatermarkedOr": "Poor-quality, watermarked or blurry photos",
+      "theStorefrontOrSignage": "The storefront or signage photos do not meet the minimum 1080p resolution.",
+      "theStorefrontSignagePhotos": "the storefront / signage photos do not meet quality standards (blurry or watermarked)",
+      "retakeClearRealLife": "retake clear real-life photos with a minimum resolution of 1080p",
+      "duplicatePlace": "Duplicate place",
+      "duplicatesPlaceThatAlready": "Duplicates a place that already exists in the system",
+      "aPoiWithSame": "A POI with the same name and location is already managed by another partner.",
+      "thePlaceDuplicatesExisting": "the place duplicates an existing POI in the system",
+      "provideDocumentsProvingManagement": "provide documents proving management rights or contact partner support",
+      "otherReason": "Other reason",
+      "otherReasonSeeFeedback": "Other reason (see the feedback below)",
+      "itDoesNotYet": "it does not yet meet the listing moderation policy",
+      "addContentDescribedDetailed": "add the content described in the detailed feedback",
+      "visible": "Visible",
+      "hidden": "Hidden",
+      "recentlyApproved": "Recently approved",
+      "highestRated": "Highest rated",
+      "mostViewed": "Most viewed",
+      "anyRating": "Any rating",
+      "n45StarsUp": "4.5 stars & up",
+      "n40StarsUp": "4.0 stars & up",
+      "n35StarsUp": "3.5 stars & up",
+      "allRejectionReasons": "All rejection reasons",
+      "resubmittedNew": "Resubmitted (New)",
+      "notResubmittedWithinDeadline": "Not resubmitted (Within deadline)",
+      "updateOverdue": "Update overdue",
+      "permanentlyLocked": "Permanently locked",
+      "resubmissionStatus": "Resubmission status",
+      "provinceCity": "Province/City"
+    },
+    "hideReasons": {
+      "renovation": "Premises renovation",
+      "seasonalClosure": "Seasonal closure",
+      "partnerRequest": "At the partner's request",
+      "investigatingFeedback": "Investigating traveler feedback"
+    }
+  },
+  "listingReview": {
+    "approveListingModal": {
+      "confirmPlaceApproval": "Confirm place approval",
+      "approveThisPlace": "Approve this place?",
+      "closeDialog": "Close dialog",
+      "thisConfirmsEntireBusiness": "This confirms the entire business submission and starts distributing the place information to travelers.",
+      "placeName": "Place name",
+      "managingPartner": "Managing partner:",
+      "listingCategory": "Listing category:",
+      "businessAddress": "Business address:",
+      "systemImpactNotice": "System impact notice",
+      "onceApprovedThisPlace": "Once approved, this place will be officially activated and appear across the Smart Travel Vietnam traveler app. A congratulation notice with a management link will be sent to the partner automatically.",
+      "internalApprovalNoteOptional": "Internal approval note (optional)",
+      "characters": "{{length}} / {{REVIEW_NOTE_MAX_LENGTH}} characters",
+      "enterMessageOrInternal": "Enter a message or internal note... (e.g. Complete submission, originals verified via video call)",
+      "confirmApproval": "Confirm approval",
+      "activating": "Activating...",
+      "approvedSuccessfully": "Approved successfully!"
+    },
+    "basicInfoSection": {
+      "basicPlaceInformation": "Basic place information",
+      "crossCheckMarketingDetails": "Cross-check marketing details, category and listing documents",
+      "registeredPlaceName": "Registered place name",
+      "ownerSDetailedDescription": "Owner's detailed description",
+      "actualAddress": "Actual address",
+      "bookingEmail": "Booking email",
+      "officialWebsite": "Official website",
+      "notProvided": "Not provided",
+      "referenceListingPrice": "Reference listing price"
+    },
+    "businessInfoSection": {
+      "inDepthBusinessInformation": "In-depth business information",
+      "propertySizeAmenitiesRoom": "Property size, amenities and room policies",
+      "thePartnerHasNot": "The partner has not declared detailed business information",
+      "amenitiesTravelers": "Amenities for travelers"
+    },
+    "decisionModalShell": {
+      "closeWindow": "Close window",
+      "codePartner": "Code: <c0>{{id}}</c0> • Partner: {{partnerName}}",
+      "thisActionRecordedAudit": "This action is recorded in the Audit Log",
+      "cancel": "Cancel"
+    },
+    "documentPreviewModal": {
+      "thePdfPreviewWill": "The PDF preview will be available once the document server is connected",
+      "theImagePreviewWill": "The image preview will be available once the document server is connected",
+      "verifiedAgainstNationalDatabase": "Verified against the national database",
+      "notVerified": "Not verified"
+    },
+    "legalDocumentsSection": {
+      "legalDocuments": "Legal documents",
+      "sealedDocumentsVerifiedAgainst": "{{verifiedCount}}/{{length}} sealed documents verified against the national database",
+      "required": "Required",
+      "downloadZip": "Download ZIP",
+      "previewDocument": "Preview document",
+      "clickToggleVerificationStatus": "Click to toggle verification status",
+      "verified": "Verified",
+      "awaitingVerification": "Awaiting verification"
+    },
+    "locationSection": {
+      "locationMapCoordinates": "Location & Map coordinates",
+      "coordinatesNE": "Coordinates: {{latitude}}° N, {{longitude}}° E",
+      "thePartnerHasNot": "The partner has not pinned GPS coordinates",
+      "accuracy": "Accuracy: {{accuracy}}"
+    },
+    "partnerChecklistCard": {
+      "active": "Active",
+      "approved": "Approved",
+      "response": "Response",
+      "submittingOrganization": "Submitting organization",
+      "verifiedPartner": "Verified partner",
+      "newPartner": "New partner",
+      "representative": "{{code}} • Representative: <c0>{{representative}}</c0>",
+      "partnerHotline": "Partner hotline",
+      "standardInspectionChecklist": "Standard inspection checklist",
+      "passed": "{{passedCount}} / {{length}} Passed",
+      "clickMarkAsPassed": "Click to mark as passed / failed"
+    },
+    "photoGallerySection": {
+      "photosUploadedByPartner": "Photos uploaded by the partner",
+      "checkDisplayQualityReal": "Check display quality, real-life angles and no watermarks",
+      "uploadedStandardPhotos": "Uploaded {{uploaded}}/{{requiredPhotoCount}} standard photos",
+      "coverPhoto": "Cover photo",
+      "partnerUploadedPhoto": "Partner-uploaded photo",
+      "valid": "Valid",
+      "thePartnerHasNot": "The partner has not uploaded detail photos",
+      "thePartnerHasNot2": "The partner has not uploaded any photos"
+    },
+    "photoLightbox": {
+      "photo": "Photo {{value}}/{{length}}",
+      "previousPhoto": "Previous photo",
+      "nextPhoto": "Next photo",
+      "closeEsc": "Close (Esc)"
+    },
+    "rejectListingModal": {
+      "dearSubmissionDoesNot": "Dear {{partnerName}}, the submission \"{{name}}\" ({{id}}) does not yet qualify for approval because {{templateCause}}. Please {{templateFix}} and resubmit it for review.",
+      "rejectPlaceListing": "Reject place listing",
+      "requestCompleteSubmissionEvidence": "Request a complete submission and evidence before activation",
+      "rejectionReview": "Rejection review",
+      "confirmRejection": "Confirm rejection",
+      "n1ChooseMainRejection": "1. Choose the main rejection reason <c0>*</c0>",
+      "chooseExactly1Reason": "Choose exactly 1 reason",
+      "n2DetailedFeedbackRevision": "2. Detailed feedback & Revision guidance for the Partner <c0>*</c0>",
+      "template": "Template",
+      "fillTemplateSelectedReason": "Fill in the template for the selected reason",
+      "chooseReasonFirst": "Choose a reason first",
+      "enterDetailsRequiredAdditions": "Enter details of the required additions or explanations...",
+      "characters": "{{length}} / {{MAX_FEEDBACK_LENGTH}} characters",
+      "thePlaceStatusWill": "The place status will change to <c0>REJECTED</c0>. The partner will be notified by Email & App to complete and resubmit the submission."
+    },
+    "reviewActionBar": {
+      "enterInternalModerationNote": "Enter an internal moderation note...",
+      "noModerationNote": "No moderation note",
+      "verifiedValidDocuments": "Verified {{verifiedDocs}}/{{totalDocs}} valid documents",
+      "rejectPlace": "REJECT PLACE",
+      "approvePlace": "APPROVE PLACE",
+      "approvedSuccessfully": "APPROVED SUCCESSFULLY",
+      "submissionRejected": "SUBMISSION REJECTED",
+      "nextPendingSubmission": "Next pending submission"
+    },
+    "reviewHeader": {
+      "systemAdministration": "System administration",
+      "listingManagement": "Listing management",
+      "backListings": "Back to listings",
+      "submitted": "Submitted: <c0>{{submittedAt}}</c0>",
+      "reviewLevel": "Review level: <c0>{{reviewLevel}}</c0>",
+      "area": "Area: <c0>{{areaLabel}}</c0>",
+      "submissionCompleteness": "Submission completeness",
+      "waitingTime": "Waiting time",
+      "processingTime": "Processing time"
+    },
+    "reviewLogCard": {
+      "systemReviewLog": "System review log"
+    },
+    "page": {
+      "submissionNotFound": "Submission {{id}} not found",
+      "backListings": "Back to listings",
+      "couldNotLoadReview": "Could not load the review submission",
+      "checklistItemsHaveNot_one": "{{count}} checklist item has not passed",
+      "checklistItemsHaveNot_other": "{{count}} checklist items have not passed",
+      "documentsHaveNotBeen_one": "{{count}} document has not been verified",
+      "documentsHaveNotBeen_other": "{{count}} documents have not been verified",
+      "approvedPlaceNowLive": "Approved {{name}}! The place is now live and {{partnerName}} has been notified.",
+      "rejectedListingEmailNotification": "Rejected listing {{id}}. An email and notification have been sent to {{partnerName}}.",
+      "preparingZipDocuments_one": "Preparing a ZIP of {{count}} document for {{id}}",
+      "preparingZipDocuments_other": "Preparing a ZIP of {{count}} documents for {{id}}",
+      "cannotApproveYet": "Cannot approve yet: {{approveBlockedReason}}"
+    },
+    "utils": {
+      "partnerSubmittedNewListing": "Partner {{partnerName}} submitted a new listing.",
+      "note": "Note: {{reviewNote}}",
+      "anAdministratorApprovedPlace": "An administrator approved the place.",
+      "anAdministratorRejectedPlace": "An administrator rejected the place. Reason: {{value}}.",
+      "at": "{{value}}/{{value2}}/{{getFullYear}} at {{value3}}:{{value4}}"
+    }
+  },
+  "approvedListings": {
+    "page": {
+      "filtersReset": "Filters reset",
+      "allSelectedPlacesAlready": "All selected places are already hidden",
+      "hid": "Hid {{name}}",
+      "hidPlaces_one": "Hid {{count}} place",
+      "hidPlaces_other": "Hid {{count}} places",
+      "isVisibleAppAgain": "{{name}} is visible on the app again",
+      "assignedCategoryPlaces_one": "Assigned a category to {{count}} place",
+      "assignedCategoryPlaces_other": "Assigned a category to {{count}} places",
+      "updatedDetails": "Updated the details of {{name}}",
+      "addedPublishedItApp": "Added {{name}} ({{id}}) and published it on the app",
+      "poiCode": "POI code",
+      "place": "Place",
+      "partner": "Partner",
+      "partnerTier": "Partner tier",
+      "category": "Category",
+      "provinceCity": "Province/City",
+      "reviews": "Reviews",
+      "reviews2": "Reviews",
+      "views": "Views",
+      "approved": "Approved on",
+      "visibility": "Visibility",
+      "hiddenReason": "Hidden reason",
+      "hidden": "Hidden",
+      "visible": "Visible",
+      "exportedPlacesExcelFile_one": "Exported {{count}} place to an Excel file (CSV)",
+      "exportedPlacesExcelFile_other": "Exported {{count}} places to an Excel file (CSV)",
+      "systemAdministration": "System administration",
+      "listingManagement": "Listing management",
+      "approvedPlaces": "Approved places",
+      "approvedPlaces2": "Approved Places",
+      "accommodationDiningAttractionBusinesses": "Accommodation, dining and attraction businesses that have passed review and are publicly available on the Smart Travel app.",
+      "exportExcel": "Export Excel",
+      "advancedFilters": "Advanced filters",
+      "addManually": "Add manually",
+      "approvedPlaces3": "approved places"
+    },
+    "approvedFilterBar": {
+      "allRegions": "All regions",
+      "searchByPlaceName": "Search by place name, POI-xxxxx code or partner name...",
+      "category": "Category",
+      "region": "Region",
+      "visibility": "Visibility",
+      "sort": "Sort",
+      "resetFilters": "Reset filters",
+      "advanced": "Advanced",
+      "partnerTier": "Partner tier",
+      "minimumRating": "Minimum rating"
+    },
+    "approvedRow": {
+      "select": "Select {{name}}",
+      "noReviewsYet": "No reviews yet",
+      "hidden": "Hidden",
+      "visible": "Visible",
+      "viewApp": "View on the app",
+      "editDetails": "Edit details",
+      "makeVisibleAgain": "Make visible again",
+      "hidePlace": "Hide place"
+    },
+    "approvedStatsCards": {
+      "totalApprovedPlaces": "Total approved places",
+      "meetStandards": "{{approved}} meet standards",
+      "all63Provinces": "All 63 provinces",
+      "publiclyVisible": "Publicly visible",
+      "visible": "{{visible}} visible",
+      "readyTravelersExplore": "Ready for travelers to explore",
+      "hiddenUnderMaintenance": "Hidden / Under maintenance",
+      "temporarilyArchived": "Temporarily archived",
+      "waitingPartnerReopen": "Waiting for the partner to reopen",
+      "savesBookingsThisWeek": "Saves & Bookings this week",
+      "strongItineraryEngagement": "Strong itinerary engagement"
+    },
+    "approvedTable": {
+      "itemsSelected_one": "{{count}} item selected",
+      "itemsSelected_other": "{{count}} items selected",
+      "hideSelected": "Hide selected",
+      "assignCategory": "Assign category",
+      "clearSelection": "Clear selection",
+      "noMatchingPlaces": "No matching places",
+      "tryDifferentKeywordOr": "Try a different keyword or filter."
+    },
+    "assignCategoryModal": {
+      "assignCategory": "Assign category",
+      "applyNewCategorySelected_one": "Apply a new category to {{count}} selected place",
+      "applyNewCategorySelected_other": "Apply a new category to {{count}} selected places"
+    },
+    "hideListingModal": {
+      "hidePlace": "Hide place",
+      "hidePlaces_one": "Hide {{count}} place",
+      "hidePlaces_other": "Hide {{count}} places",
+      "willNoLongerAppear": "{{name}} ({{id}}) will no longer appear on the traveler app",
+      "theSelectedPlacesWill": "The selected places will no longer appear on the traveler app",
+      "confirmHide": "Confirm hide",
+      "reasonHiding": "Reason for hiding *",
+      "eGPremisesRenovation": "e.g. Premises renovation"
+    },
+    "listingFormModal": {
+      "pleaseEnterPlaceName": "Please enter the place name",
+      "pleaseEnterOwningPartner": "Please enter the owning partner",
+      "pleaseEnterCategoryLabel": "Please enter the category label",
+      "pleaseEnterAddress": "Please enter the address",
+      "editPlaceDetails": "Edit place details",
+      "addPlaceManually": "Add place manually",
+      "updateDisplayDetails": "Update the display details of {{id}}",
+      "placesAddedByAdministrators": "Places added by administrators are approved and published immediately",
+      "saveChanges": "Save changes",
+      "addPlace": "Add place",
+      "placeName": "Place name *",
+      "owningPartner": "Owning partner *",
+      "category": "Category",
+      "displayedCategoryLabel": "Displayed category label *",
+      "eGBeachfrontResort": "e.g. Beachfront resort",
+      "address": "Address *",
+      "eGCamChau": "e.g. Cam Chau, Hoi An City, Quang Nam",
+      "provinceCity": "Province / City"
+    }
+  },
+  "rejectedListings": {
+    "rejectedFilterBar": {
+      "searchByBusinessName": "Search by business name, POI-xxxxx code or PTN partner...",
+      "rejectionReason": "Rejection reason",
+      "resubmissionStatus": "Resubmission status",
+      "provinceCity": "Province/City",
+      "resetFilters": "Reset filters",
+      "reset": "Reset"
+    },
+    "rejectedRow": {
+      "select": "Select {{name}}",
+      "reReview": "Re-review",
+      "viewReason": "View reason"
+    },
+    "rejectedStatsCards": {
+      "totalRejected": "Total rejected",
+      "violationsMissingDocuments": "Violations / Missing documents",
+      "awaitingReReview": "Awaiting re-review",
+      "urgent": "Urgent",
+      "notYetFixed": "Not yet fixed",
+      "waitingPartnerUpdate": "Waiting for the partner to update",
+      "permanentlyClosed": "Permanently closed",
+      "spamFraudulentInformation": "Spam / Fraudulent information"
+    },
+    "rejectedTable": {
+      "submissionsSelected_one": "{{count}} submission selected",
+      "submissionsSelected_other": "{{count}} submissions selected",
+      "sendUpdateReminder": "Send update reminder",
+      "permanentlyClosed": "Permanently closed",
+      "clearSelection": "Clear selection",
+      "noMatchingSubmissions": "No matching submissions",
+      "tryDifferentKeywordOr": "Try a different keyword or filter."
+    },
+    "rejectionDetailModal": {
+      "submittedBy": "Submitted by",
+      "rejected": "Rejected on",
+      "resubmissionDeadline": "Resubmission deadline",
+      "address": "Address",
+      "rejectionReasonDetails": "Rejection reason details",
+      "reReviewSubmission": "Re-review submission",
+      "permanentlyClosed": "Permanently closed",
+      "sendUpdateReminder": "Send update reminder",
+      "feedbackSentPartner": "Feedback sent to the partner",
+      "resubmissionStatus": "Resubmission status:"
+    },
+    "page": {
+      "movedBackReReview": "Moved {{name}} back to the re-review queue",
+      "noSubmissionsNeedUpdate": "No submissions need an update reminder",
+      "updateReminderEmailSent": "Update reminder email sent to {{partnerName}}",
+      "updateRemindersSentPartners_one": "Update reminder sent to {{count}} partner",
+      "updateRemindersSentPartners_other": "Update reminders sent to {{count}} partners",
+      "onlySubmissionsThatHave": "Only submissions that have not been resubmitted or are overdue can be permanently closed",
+      "permanentlyClosedSubmissions_one": "Permanently closed {{count}} submission",
+      "permanentlyClosedSubmissions_other": "Permanently closed {{count}} submissions",
+      "poiCode": "POI code",
+      "place": "Place",
+      "partner": "Partner",
+      "partnerCode": "Partner code",
+      "provinceCity": "Province/City",
+      "reasonGroup": "Reason group",
+      "rejectionReason": "Rejection reason",
+      "feedbackPartner": "Feedback to partner",
+      "rejected": "Rejected on",
+      "resubmissionStatus": "Resubmission status",
+      "exportedViolationReportSubmissions_one": "Exported a violation report of {{count}} submission (CSV)",
+      "exportedViolationReportSubmissions_other": "Exported a violation report of {{count}} submissions (CSV)",
+      "systemAdministration": "System administration",
+      "listingManagement": "Listing management",
+      "rejectedPlaces": "Rejected places",
+      "rejectedPlacesFailedReview": "Rejected places <c0>Failed review</c0>",
+      "trackManageListingSubmissions": "Track and manage listing submissions that failed review, their rejection reasons and the resubmission process from travel partners.",
+      "reviewStandards": "Review standards",
+      "exportViolationReport": "Export violation report",
+      "rejectedSubmissions": "rejected submissions",
+      "aiPolicyWhenPartner": "AI policy: when a partner resubmits a corrected submission, the system automatically tags it <c0>\"Resubmitted\"</c0> and moves it to the top of the list for a moderator to review within 24 working hours.",
+      "viewReviewSla": "View review SLA →",
+      "permanentlyCloseSubmission": "Permanently close submission",
+      "closeSubmissions_one": "Close {{count}} submission",
+      "closeSubmissions_other": "Close {{count}} submissions",
+      "theSubmissionWillPermanently": "The submission <c0>{{name}}</c0> will be permanently closed and the partner will not be able to resubmit it. This action is recorded in the audit log.",
+      "theSubmissionsSelectedPlaces": "The submissions of <c0>{{length}} selected places</c0> will be permanently closed and the partner will not be able to resubmit them. This action is recorded in the audit log."
+    },
+    "utils": {
+      "yesterday": "Yesterday",
+      "daysAgo_one": "{{count}} day ago",
+      "daysAgo_other": "{{count}} days ago",
+      "resubmitted": "Resubmitted ({{when}})",
+      "notResubmittedDaysLeft_one": "Not resubmitted ({{count}} day left)",
+      "notResubmittedDaysLeft_other": "Not resubmitted ({{count}} days left)",
+      "overdueAutoArchived": "Overdue (Auto-archived)",
+      "permanentlyClosed": "Permanently closed"
+    }
+  },
+  "pois": {
+    "poiFilterBar": {
+      "searchByPoiName": "Search by POI name, place code, address or keyword...",
+      "province": "Province",
+      "nationwide63Provinces": "Nationwide (63 provinces)",
+      "status": "Status",
+      "dataSource": "Data source",
+      "clearFilters": "Clear filters"
+    },
+    "poiListHeader": {
+      "systemAdministration": "System administration",
+      "poiDestinations": "POI destinations",
+      "travelDestinationDataHub": "Travel Destination Data Hub (POI)",
+      "syncing": "Indexing...",
+      "aiEngineSync": "pgvector Engine",
+      "nationwideDatabaseLandmarksHeritage": "Nationwide database of landmarks, heritage sites, food, accommodation and attractions powering AI semantic search (pgvector).",
+      "syncPoiData": "Index POI vectors",
+      "exportPoiCatalog": "Export POI catalog",
+      "addNewPoi": "Add new POI"
+    },
+    "poiStatsCards": {
+      "totalPoisNationwide": "Total POIs nationwide",
+      "newPlacesThisMonth_one": "+{{count}} new place this month",
+      "newPlacesThisMonth_other": "+{{count}} new places this month",
+      "share": "Share",
+      "availablePois": "Available POIs",
+      "runningSmoothly": "{{available}} running smoothly"
+    },
+    "poiTable": {
+      "noDestinationsMatchFilters": "No destinations match the filters",
+      "clearFilters": "Clear filters"
+    },
+    "poiTablePagination": {
+      "show": "Show",
+      "of": "of <c0>{{totalItems}}</c0> {{itemLabel}}",
+      "firstPage": "First page",
+      "previousPage": "Previous page",
+      "lastPage": "Last page"
+    },
+    "poiTableRow": {
+      "noReviewsYet": "No reviews yet",
+      "editPoi": "Edit POI"
+    },
+    "page": {
+      "filtersCleared": "Filters cleared",
+      "thereNoPoisExport": "There are no POIs to export",
+      "poiCode": "POI code",
+      "poiName": "POI name",
+      "category": "Category",
+      "provinceCity": "Province/City",
+      "address": "Address",
+      "estimatedPrice": "Estimated price",
+      "openingHours": "Opening hours",
+      "dataSource": "Data source",
+      "reviews": "Reviews",
+      "reviews2": "Reviews",
+      "status": "Status",
+      "exportedPoisExcelFile_one": "Exported {{count}} POI to an Excel file (CSV)",
+      "exportedPoisExcelFile_other": "Exported {{count}} POIs to an Excel file (CSV)",
+      "matchingDestinations": "matching destinations",
+      "destinationsNationwide": "destinations nationwide",
+      "shownMobileApp": "{{id}} • Shown on the Mobile App",
+      "editPoi": "Edit POI",
+      "vectorIndexed": "Vector index",
+      "indexedPois_one": "Indexed {{count}} POI into the vector database (pgvector)",
+      "indexedPois_other": "Indexed {{count}} POIs into the vector database (pgvector)",
+      "allPoisIndexed": "All POIs are already vector indexed"
+    },
+    "constants": {
+      "all": "All",
+      "attractionsHeritageSites": "Attractions & Heritage sites",
+      "foodRestaurants": "Food & Restaurants",
+      "accommodationHomestaysHotels": "Accommodation & Homestays/Hotels",
+      "beachesNature": "Beaches & Nature",
+      "shoppingTraditionalCraftVillages": "Shopping & Traditional craft villages",
+      "sightseeingHeritage": "Sightseeing & Heritage",
+      "restaurantsDining": "Restaurants & Dining",
+      "accommodationHotels": "Accommodation & Hotels",
+      "toursExperiences": "Tours & Experiences",
+      "nationalTourismAdministration": "National Tourism Administration",
+      "verifiedByAi": "Verified by AI",
+      "aiDataCollection": "AI data collection",
+      "managementBoard": "Management board",
+      "heritageSiteLocalManagement": "Heritage site / local management board",
+      "partnerSubmission": "Partner submission",
+      "system": "System",
+      "verifiedBySystem": "Verified by the system",
+      "quangNam": "Quang Nam",
+      "daNang": "Da Nang",
+      "hanoi": "Hanoi",
+      "quangNinh": "Quang Ninh",
+      "hoChiMinhCity": "Ho Chi Minh City",
+      "laoCaiSaPa": "Lao Cai (Sa Pa)",
+      "thuaThienHue": "Thua Thien Hue",
+      "kienGiangPhuQuoc": "Kien Giang (Phu Quoc)"
+    },
+    "vector": {
+      "indexed": "Vector Indexed",
+      "notIndexed": "Not indexed"
+    }
+  },
+  "poiEditor": {
+    "poiAiPlannerSection": {
+      "peakTravelSeason": "Peak travel season",
+      "eGFebruaryAugust": "e.g. February - August",
+      "bestTimeDayVisit": "Best time of day to visit",
+      "eGEvening16": "e.g. Evening (16:30 - 20:30)"
+    },
+    "poiBasicInfoSection": {
+      "n1BasicPoiInformation": "1. Basic POI information",
+      "identityDataDisplayCategory": "Identity data, display category and visit duration",
+      "required": "Required",
+      "poiDestinationName": "POI destination name",
+      "eGPhoCo": "e.g. Phố cổ Hội An (Hoi An Ancient Town)",
+      "mainCategory": "Main category <c0>*</c0>",
+      "subCategoriesAiSuggestion": "Sub-categories / AI suggestion tags",
+      "separateWithCommas": "Separate with commas",
+      "admissionPriceVnd": "Admission price (in VND)",
+      "eG120000": "e.g. 120,000 VND / ticket",
+      "openingHours": "Opening hours",
+      "eG0700": "e.g. 07:00 - 21:30 daily",
+      "eG34": "e.g. 3 - 4 hours",
+      "suggestedVisitDuration": "Suggested visit duration"
+    },
+    "poiContactSection": {
+      "n3ContactInformationManaging": "3. Contact information & Managing organization",
+      "siteManagementOrganizationTraveler": "Site management organization and traveler support hotline",
+      "officialManagingOrganization": "Official managing organization",
+      "rescueSupportHotline": "Rescue / support hotline",
+      "officialWebsite": "Official website",
+      "feedbackEmail": "Feedback email"
+    },
+    "poiCoordinateInput": {
+      "invalidLimit": "Invalid {{label}} (limit ±{{value}}°)"
+    },
+    "poiDescriptionEditor": {
+      "text": "Text",
+      "boldText": "bold text",
+      "italicText": "italic text",
+      "underlinedText": "underlined text",
+      "linkText": "link text",
+      "imageDescription": "image description",
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "bulletedList": "Bulleted list",
+      "numberedList": "Numbered list",
+      "quote": "Quote",
+      "insertLink": "Insert link",
+      "insertImage": "Insert image",
+      "detailedDestinationDescription": "Detailed destination description",
+      "charactersEnteredLanguageVi": "{{length}} characters entered • Language: VI",
+      "introduceDestinationSHistory": "Introduce the destination's history, highlights and notable experiences..."
+    },
+    "poiEditorFooter": {
+      "newPoiNotYet": "New POI — not yet saved to the system",
+      "lastUpdatedBy": "Last updated by <c0>{{updatedBy}}</c0>:",
+      "unsavedChanges": "Unsaved changes",
+      "dataBackedUpAutomatically": "Data is backed up automatically",
+      "cancel": "Cancel",
+      "createNewPoi": "Create new POI",
+      "savePoiChanges": "Save POI changes"
+    },
+    "poiEditorHeader": {
+      "systemAdministration": "System administration",
+      "poiDestinations": "POI destinations",
+      "addEditPoi": "Add / Edit POI:",
+      "newPoi": "New POI",
+      "code": "(Code: {{poiId}})",
+      "backPoiList": "Back to POI list",
+      "editPoiCode": "Edit POI: {{poiName}} <c0>(Code: {{poiId}})</c0>",
+      "addNewPoiDestination": "Add new POI destination",
+      "changeVisibilityStatus": "Change visibility status",
+      "poiStatus": "POI status",
+      "cancel": "Cancel",
+      "previewMobileApp": "Preview on the Mobile App",
+      "savePoiChanges": "Save POI changes",
+      "createNewPoi": "Create new POI"
+    },
+    "poiLocationSection": {
+      "n4GeographicCoordinatesDigital": "4. Geographic coordinates & Digital map",
+      "pinpointExactDestinationLocation": "Pinpoint the exact destination location on the map",
+      "provinceCity": "Province / City",
+      "detailedAddress": "Detailed address",
+      "houseNumberStreetWard": "House number, street, ward, district, province",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "map": "Map of {{poiCode}}",
+      "checkCoordinatesGoogleMaps": "Check coordinates on Google Maps",
+      "surroundingClusterRadius": "Surrounding cluster radius",
+      "meters": "{{clusterRadius}} meters",
+      "clusterRadius": "Cluster radius",
+      "autoLinkedCluster": "Auto-linked cluster: <c0>{{join}}</c0>.",
+      "noDestinationsLinkedWithin": "No destinations are linked within this radius yet."
+    },
+    "poiMediaSection": {
+      "photosBelowXPx_one": "{{count}} photo is below {{MIN_WIDTH}}x{{MIN_HEIGHT}}px and may look blurry in the app",
+      "photosBelowXPx_other": "{{count}} photos are below {{MIN_WIDTH}}x{{MIN_HEIGHT}}px and may look blurry in the app",
+      "reachedPhotoLimitRemove": "Reached the {{POI_MAX_PHOTOS}}-photo limit; remove some photos from the gallery",
+      "coverPhotoReplaced": "Cover photo replaced",
+      "coverPhotoAdded": "Cover photo added",
+      "couldNotReadImage": "Could not read the image",
+      "reachedLimitPhotosPer": "Reached the limit of {{POI_MAX_PHOTOS}} photos per POI",
+      "addedPhotosGallery_one": "Added {{count}} photo to the gallery",
+      "addedPhotosGallery_other": "Added {{count}} photos to the gallery",
+      "onlyPhotosWereAdded": "Only {{length}}/{{length2}} photos were added due to the {{POI_MAX_PHOTOS}}-photo limit",
+      "filesNotValidImages_one": "{{count}} file is not a valid image",
+      "filesNotValidImages_other": "{{count}} files are not valid images",
+      "selectedFromPhotoLibrary": "Selected from the photo library • Updated by {{uploader}}",
+      "setAsCoverPhoto": "Set \"{{caption}}\" as the cover photo",
+      "removedPhotoFromGallery": "Removed photo \"{{caption}}\" from the gallery",
+      "n2PhotosMedia": "2. Photos & Media",
+      "minimumResolution1920x1080pxWebp": "Minimum resolution 1920x1080px, WebP or high-quality JPG/PNG",
+      "upPhotos": "Up to {{POI_MAX_PHOTOS}} photos",
+      "coverPhoto169": "Cover photo (16:9 ratio)",
+      "activeMainPhoto": "Active main photo",
+      "noCoverPhotoYet": "No cover photo yet",
+      "viewFullSize": "View full size",
+      "replaceCoverPhoto": "Replace cover photo",
+      "uploadCoverPhoto": "Upload a cover photo",
+      "webpJpgPngRecommended": "WebP / JPG / PNG • Recommended 2560 × 1440 px",
+      "photoGallery": "Photo gallery",
+      "photos": "{{photoCount}}/{{POI_MAX_PHOTOS}} photos",
+      "setAsCover": "Set as cover",
+      "viewPhoto": "View photo",
+      "deletePhoto": "Delete photo",
+      "photosReached": "{{POI_MAX_PHOTOS}} photos reached",
+      "addNewPhoto": "Add new photo"
+    },
+    "poiMobilePreviewModal": {
+      "openingHours": "Opening hours",
+      "admission": "Admission",
+      "suggestedDuration": "Suggested duration",
+      "bestSeason": "Best season",
+      "previewMobileApp": "Preview on the Mobile App",
+      "previewBasedDataBeing": "Preview based on the data being edited (not saved)",
+      "destinationName": "Destination name",
+      "overview": "Overview",
+      "gallery": "Gallery",
+      "findSimilarAi": "Find similar places with AI"
+    },
+    "poiPersonaPicker": {
+      "bestSuited": "Best suited for",
+      "clickRemoveThisAudience": "Click to remove this audience",
+      "add": "Add",
+      "typeNewAudiencePress": "Type a new audience and press Enter...",
+      "allAvailableSuggestionsHave": "All available suggestions have been selected.",
+      "add2": "Add \"{{trim}}\""
+    },
+    "page": {
+      "destinationNotFound": "Destination {{id}} not found",
+      "backPoiList": "Back to POI list",
+      "pleaseCheckInvalidFields": "Please check the invalid fields",
+      "createdDestination": "Created destination \"{{name}}\" ({{id}})",
+      "thereNoChangesSave": "There are no changes to save",
+      "savedChangesPoi": "Saved changes to POI {{id}}",
+      "newPoi": "New POI",
+      "changesPoiHaveNot": "Changes to POI <c0>{{id}}</c0> have not been saved and will be discarded if you leave this page.",
+      "changesNewPoiHave": "Changes to the new POI have not been saved and will be discarded if you leave this page."
+    },
+    "utils": {
+      "pleaseEnterPoiDestination": "Please enter the POI destination name",
+      "aMustVisitPlace": "★ A must-visit place when in {{city}}.",
+      "aMustVisitPlace2": "★ A must-visit place.",
+      "aRecommendedPlaceVisit": "A recommended place to visit when in {{city}}.",
+      "aRecommendedPlaceVisit2": "A recommended place to visit.",
+      "anExtraStopWhen": "An extra stop when the itinerary has free time.",
+      "pxMbUploadedBy": "{{naturalWidth}} × {{naturalHeight}} px • {{sizeMb}} MB • Uploaded by {{uploader}}",
+      "newPhoto": "New photo",
+      "cannotReadImage": "Could not read the image \"{{name}}\""
+    },
+    "aiSearchSection": {
+      "title": "5. AI semantic search (pgvector)",
+      "description": "Context used to build the embedding so travelers can find this place in plain language",
+      "indexStatus": "Vector index status",
+      "indexedHint": "Embedding is up to date — this destination appears in AI search results.",
+      "notIndexedHint": "The content changed or has not been indexed — it cannot be found by AI search yet.",
+      "reindex": "Re-index vector",
+      "reindexing": "Generating embedding...",
+      "reindexed": "Destination vector re-indexed"
+    }
+  },
+  "reports": {
+    "aiInsightsModal": {
+      "aiAnalysis": "AI analysis",
+      "automatedInsightsCompiledAt": "Automated insights for {{scopeLabel}} • Compiled at {{generatedAt}}",
+      "gotIt": "Got it"
+    },
+    "partnerPerformanceCard": {
+      "partnerPerformance": "Partner performance",
+      "topPartnersByBookings": "Top partners by bookings",
+      "bookingRevenue": "Booking revenue",
+      "vnd": "{{totalRevenue}} VND",
+      "noPartnerBookingsThis": "No partner bookings in this scope yet",
+      "partner": "Partner",
+      "bookings": "Bookings",
+      "reviews": "Reviews",
+      "growth": "Growth"
+    },
+    "poiCategoryBreakdown": {
+      "placesByCategory": "Places by Category",
+      "totalPois": "Total: {{total}} POIs",
+      "accommodationDiningMakeUp": "Accommodation and dining make up the largest share of the nationwide travel database"
+    },
+    "reportKpiGrid": {
+      "totalUsers": "Total users",
+      "monthlyActiveUsersMau": "Monthly active users (MAU)",
+      "ofUsers": "<c0>{{toFixed}}%</c0> of users",
+      "tripsCreated": "Trips created",
+      "avgTripsUser": "Avg. {{toFixed}} trips/user",
+      "businessPartners": "Business partners",
+      "totalPoiPlaces": "Total POI places",
+      "provincesCities": "{{provincesCovered}} provinces & cities",
+      "listingApprovalRate": "Listing approval rate",
+      "avgReviewHrs": "Avg. review: {{avgApprovalHours}} hrs"
+    },
+    "reportsFilterBar": {
+      "selectReportPeriod": "Select the report period",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "region": "Region",
+      "serviceType": "Service type"
+    },
+    "reportsHeader": {
+      "reloading": "Reloading...",
+      "reloadData": "Reload data",
+      "exportPdf": "Export PDF",
+      "exportCsvExcel": "Export CSV/Excel",
+      "aiAnalysis": "AI analysis"
+    },
+    "topDestinations": {
+      "mostPlannedDestinations": "Most Popular Destinations",
+      "rankedFromTripsAggregated": "Ranked from {{totalTrips}} trips aggregated on Smart Travel Vietnam during the period",
+      "trendIndex": "Trend index:",
+      "positiveGrowth": "Positive growth",
+      "someDestinationsSlowing": "Some destinations are slowing",
+      "noDestinationDataThis": "No destination data for this filter yet",
+      "itinerariesPlanned": "planned visits by travelers",
+      "highlights": "Highlights:"
+    },
+    "trafficTrendChart": {
+      "engagementTrend": "Engagement trend",
+      "userTrafficGrowth": "User & Traffic growth in {{year}}",
+      "viewsK": "Views (K)",
+      "newUsers": "New users",
+      "chartMonthlyViewsNew": "Chart of monthly views and new users",
+      "forecastKViewsNew": "{{month}} (forecast): {{pageViewsK}}K views • {{newUsers}} new users",
+      "kViewsNewUsers": "{{month}}: {{pageViewsK}}K views • {{newUsers}} new users",
+      "details": "Details"
+    },
+    "tripSeasonChart": {
+      "peakSeason": "Peak season",
+      "tripsPerMonth": "Trips per month",
+      "peak": "Peak: {{peakFrom}}-{{peakTo}}",
+      "aTotalTripsTour": "A total of <c0>{{total}} trips</c0>. Tour + hotel bookings rise {{bundleGrowthPercent}}% in summer.",
+      "chartTripsPerMonth": "Chart of trips per month",
+      "trips": "{{month}}: {{trips}} trips",
+      "peak2": "{{trips}} (Peak {{month}})",
+      "avgTripLength": "Avg. trip length",
+      "daysTrip": "{{avgDurationDays}} days / trip",
+      "estimatedSpend": "Estimated spend",
+      "vnd": "{{avgSpendVnd}} VND"
+    },
+    "page": {
+      "reportDataUpdated": "Report data updated",
+      "reportExportedCsvFile": "Report exported to a CSV file (opens in Excel)",
+      "chooseSaveAsPdf": "Choose \"Save as PDF\" in the print dialog to export the report",
+      "couldNotLoadReport": "Could not load the report"
+    },
+    "utils": {
+      "nationwide": "Nationwide",
+      "northernVietnam": "Northern Vietnam",
+      "centralVietnam": "Central Vietnam",
+      "southernVietnam": "Southern Vietnam",
+      "allServices": "All services",
+      "hotelsHomestays": "Hotels & Homestays",
+      "foodEateries": "Food & Eateries",
+      "attractionsTours": "Attractions & Tours",
+      "localExperiences": "Local experiences",
+      "n7Days": "7 days",
+      "n30Days": "30 days",
+      "q": "Q{{quarter}}/{{getFullYear}}",
+      "year": "Year {{getFullYear}}",
+      "today": "Today",
+      "b": "{{toFixed}}B",
+      "m": "{{toFixed}}M",
+      "scope": "Scope",
+      "metric": "METRIC",
+      "value": "Value",
+      "notes": "Notes",
+      "totalUsers": "Total users",
+      "monthlyActiveUsersMau": "Monthly active users (MAU)",
+      "tripsCreated": "Trips created",
+      "businessPartners": "Business partners",
+      "totalPoiPlaces": "Total POI places",
+      "provinces": "{{provincesCovered}} provinces",
+      "listingApprovalRate": "Listing approval rate (%)",
+      "avgReviewHrs": "Avg. review {{avgApprovalHours}} hrs",
+      "month": "MONTH",
+      "viewsThousands": "Views (thousands)",
+      "newUsers": "New users",
+      "trips": "Trips",
+      "destination": "DESTINATION",
+      "itinerariesPlanned": "Planned visits",
+      "growth": "Growth",
+      "poiCategory": "POI CATEGORY",
+      "places": "Places",
+      "share": "Share (%)",
+      "partner": "PARTNER",
+      "bookings": "Bookings",
+      "revenueVnd": "Revenue (VND)",
+      "item": "Item"
+    }
+  },
+  "notifications": {
+    "notificationGroup": {
+      "today": "Today",
+      "new": "{{unread}} new",
+      "cloudSyncJustNow": "Cloud sync: just now",
+      "earlier": "Earlier",
+      "archivedAutomatically": "Archived automatically",
+      "unreadItems_one": "{{count}} unread item",
+      "unreadItems_other": "{{count}} unread items",
+      "allItemsRead": "All items read"
+    },
+    "notificationItem": {
+      "markAsRead": "Mark as read"
+    },
+    "notificationPagination": {
+      "showingNotifications": "Showing <c0>{{start}}-{{end}}</c0> of <c1>{{totalItems}}</c1> notifications",
+      "previousPage": "Previous page"
+    },
+    "notificationRulesModal": {
+      "notificationRuleSettings": "Notification rule settings",
+      "chooseEventsThatCreate": "Choose the events that create notifications, the AI alert threshold and the admin delivery channels",
+      "saveRules": "Save rules"
+    },
+    "notificationStatsCards": {
+      "newNotifications": "New notifications",
+      "urgent": "Urgent",
+      "inLastHour": "+{{newLastHour}} in the last hour",
+      "listingsPendingReview": "Listings pending review",
+      "newlyReceived": "Newly received",
+      "accommodationTourSubmissions": "Accommodation & tour submissions",
+      "systemAlerts": "System alerts",
+      "needsAction": "Needs action",
+      "stable": "Stable",
+      "noUnresolvedAlerts": "No unresolved alerts",
+      "sameDayResolutionRate": "Same-day resolution rate",
+      "avgResponseTimeMin": "Avg. response time: <c0>{{avgResponseMinutes}} min</c0>"
+    },
+    "priorityFilterMenu": {
+      "allPriorities": "All priorities",
+      "filterByPriority": "Filter by priority",
+      "priority": "Priority: {{label}}"
+    },
+    "urgentChannelBanner": {
+      "urgentAlertChannelsTelegram": "Urgent alert channels (Telegram & SMS)",
+      "automaticallyAlertsWhenAi": "Automatically alerts when AI load exceeds {{aiLoadThreshold}}% or a serious price discrepancy is reported",
+      "enabled": "Enabled",
+      "paused": "Paused",
+      "urgentAlertChannels": "Urgent alert channels"
+    },
+    "page": {
+      "markedNotificationsAsRead_one": "Marked {{count}} notification as read",
+      "markedNotificationsAsRead_other": "Marked {{count}} notifications as read",
+      "noUnreadNotifications": "No unread notifications",
+      "markedAsRead": "Marked \"{{title}}\" as read",
+      "urgentAlertsViaTelegram": "Urgent alerts via Telegram & SMS enabled",
+      "urgentAlertsViaTelegram2": "Urgent alerts via Telegram & SMS paused",
+      "notificationRulesSaved": "Notification rules saved",
+      "systemAdministration": "System administration",
+      "notifications": "Notifications",
+      "systemNotificationCenter": "System notification center",
+      "adminNotificationCenter": "Admin Notification Center",
+      "liveAiMonitoring": "Live AI monitoring",
+      "stayTopEveryData": "Stay on top of every data change, new listing request and operational security alert nationwide.",
+      "markAllAsRead": "Mark all as read",
+      "ruleSettings": "Rule settings",
+      "filterNotifications": "Filter notifications...",
+      "noMatchingNotifications": "No matching notifications",
+      "clearFilters": "Clear filters"
+    },
+    "utils": {
+      "justNow": "Just now",
+      "minutesAgo_one": "{{count}} minute ago",
+      "minutesAgo_other": "{{count}} minutes ago",
+      "hoursAgo_one": "{{count}} hour ago",
+      "hoursAgo_other": "{{count}} hours ago",
+      "yesterday": "Yesterday, {{value}}:{{value2}}",
+      "daysAgo_one": "{{count}} day ago",
+      "daysAgo_other": "{{count}} days ago"
+    },
+    "constants": {
+      "all": "All",
+      "listingsPartners": "Listings & Partners",
+      "usersReports": "Users & Reports",
+      "technicalAiAlerts": "Technical & AI alerts",
+      "urgent": "Urgent",
+      "normal": "Normal",
+      "low": "Low",
+      "inAdminApp": "In the admin app",
+      "newUpdatedListingSubmissions": "New / updated listing submissions",
+      "whenPartnerSubmitsNew": "When a partner submits a new listing or uploads extra documents",
+      "newPartnerRegistrations": "New partner registrations",
+      "whenBusinessCompletesRegistration": "When a business completes registration and the security deposit",
+      "travelerComplaintsFeedback": "Traveler complaints & feedback",
+      "reportsPriceDiscrepanciesService": "Reports of price discrepancies, service quality issues or fraud",
+      "aiLoadOverThreshold": "AI load over threshold",
+      "trackAiPlannerRequest": "Track AI search (pgvector) query rates per server cluster",
+      "poiGpsDataSync": "POI & GPS data sync",
+      "nationalDataSyncResults": "National data sync results and GPS latency",
+      "securityAccounts": "Security & accounts",
+      "accountLocksUnusualSign": "Account locks, unusual sign-ins, policy violations"
+    }
+  },
+  "settings": {
+    "adminIdentityBanner": {
+      "highestAuthority": "Highest Authority",
+      "rootRole": "Root role",
+      "accountHardwareSecurityKey": "Account: <c0>{{value}}</c0> • Hardware security key {{hardwareKey}}: <c1>Linked</c1>",
+      "viewPermissionMatrix": "View permission matrix"
+    },
+    "aiPlannerCard": {
+      "nationalMapDataSync": "National map data sync frequency (OSM & Google Maps)"
+    },
+    "ipWhitelistField": {
+      "theIpRangeMust": "The IP range must use CIDR notation, e.g. 118.70.192.0/24",
+      "thisIpRangeAlready": "This IP range is already in the list",
+      "newOffice": "New office",
+      "addedIpRangeNot": "Added IP range {{value}} (not saved)",
+      "removedIpRangeNot": "Removed IP range {{cidr}} (not saved)",
+      "restrictAccessOperationsOffice": "Restrict access to operations office IP ranges",
+      "addCidrIp": "+ Add CIDR IP",
+      "removeIpRange": "Remove IP range",
+      "noIpRestrictionAny": "No IP restriction — any address can reach the admin portal",
+      "noteOfficeBranch": "Note (office, branch...)",
+      "add": "Add"
+    },
+    "listingSlaCard": {
+      "listingReviewStandardsSla": "Listing Review Standards (SLA)",
+      "tourismServiceQualityRequirements": "Tourism service quality requirements and the partner review process",
+      "strictSla": "Strict SLA",
+      "committedPartnerReviewTime": "Committed partner review time (SLA)",
+      "hours": "{{hours}} hours",
+      "standard": "Standard",
+      "requireBusinessLicenseFire": "Require a business license & fire safety certificate",
+      "automaticallyRejectWhenAccommodation": "Automatically reject when an accommodation/tour partner's legal documents lack an official seal",
+      "checkDuplicateGpsCoordinates": "Check for duplicate GPS coordinates within 50m",
+      "enableAiGeofencingFlag": "Enable AI geofencing to flag duplicate or spam places",
+      "automaticallyEmailResultPartner": "Automatically email the result to the partner",
+      "includeDetailedChecklistWhen": "Include a detailed checklist when the listing requires changes"
+    },
+    "notificationSettingsCard": {
+      "notificationsAlertEmails": "Notifications & Alert emails",
+      "eventsThatCreateNotifications": "Events that create notifications, the urgent alert threshold and admin delivery channels",
+      "notificationCenter": "Notification center"
+    },
+    "permissionMatrixModal": {
+      "adminPermissionMatrix": "Admin permission matrix",
+      "accessEachModuleBy": "Access to each module by role. Only Super Admins can change permissions.",
+      "module": "Module"
+    },
+    "platformInfoCard": {
+      "smartTravelPlatformInformation": "Smart Travel platform information",
+      "corePlatformIdentitySettings": "Core platform identity settings",
+      "versionInformation": "Version information",
+      "nationwideSystemDisplayName": "Nationwide system display name",
+      "releaseVersion": "Release version",
+      "operatingTimeZone": "Operating time zone",
+      "defaultFallbackLanguages": "Default & fallback languages",
+      "thePrimarySystemLanguage": "The primary system language cannot be disabled",
+      "tiengVietPrimary": "Tiếng Việt (Primary)",
+      "englishFallback": "English (Fallback)",
+      "poiCacheCdnAsset": "POI cache & CDN asset storage"
+    },
+    "securityCard": {
+      "adminPortalSecurity": "Admin Portal Security",
+      "authenticationRulesAccessControl": "Authentication rules, access control and infrastructure protection",
+      "twoFactorAuthentication2fa": "Two-factor authentication 2FA (TOTP Authenticator)",
+      "requiredAllSuperAdmins": "Required for all Super Admins, Moderators & Support staff",
+      "autoSignOutAfter": "Auto sign-out after inactivity",
+      "minutes": "{{minutes}} minutes",
+      "securityAuditLog": "Security audit log",
+      "distributedTamperProofAutomatic": "Distributed, tamper-proof automatic storage",
+      "daysEnabled": "{{auditLogRetentionDays}} days (enabled)"
+    },
+    "settingsFooter": {
+      "unsavedChangesSettingsGroups_one": "Unsaved changes in {{count}} settings group",
+      "unsavedChangesSettingsGroups_other": "Unsaved changes in {{count}} settings groups",
+      "lastConfigurationUpdate": "Last configuration update: {{updatedAt}}",
+      "lastSaved": "Last saved: {{updatedAt}}",
+      "byIp": "By: {{updatedBy}} (IP: {{updatedIp}})",
+      "cancel": "Cancel",
+      "saveConfigurationChanges": "Save configuration changes"
+    },
+    "settingToggleRow": {
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "page": {
+      "pleaseEnterSystemDisplay": "Please enter the system display name",
+      "theSystemDisplayName": "The system display name cannot be empty",
+      "selectAtLeastOne": "Select at least one notification channel",
+      "thereNoChangesSave": "There are no changes to save",
+      "theSmartTravelSystem": "The Smart Travel system configuration has been updated and synced to the entire cluster.",
+      "thereNoChangesDiscard": "There are no changes to discard",
+      "unsavedChangesDiscarded": "Unsaved changes discarded",
+      "defaultsRestoredClickSave": "Defaults restored. Click \"Save configuration changes\" to apply them.",
+      "systemAdministration": "System administration",
+      "systemSettings": "System settings",
+      "systemConfigurationSettings": "System Configuration Settings",
+      "managePlatformOperatingParameters": "Manage platform operating parameters, listing review policies, security permissions and AI integrations for the nationwide smart travel network.",
+      "restoreDefaults": "Restore defaults",
+      "saveConfigurationChanges": "Save configuration changes",
+      "unsavedChanges": "Unsaved changes",
+      "operationsServerCluster": "Operations server cluster: {{dataCenter}}",
+      "lastSynced": "Last synced: <c0>{{syncedAt}}</c0>",
+      "allParametersIncludingIp": "All parameters (including the IP list and notification rules) will return to their recommended values. Changes only take effect after you click <c0>Save configuration changes</c0>.",
+      "restoreDefaultConfiguration": "Restore default configuration?",
+      "restore": "Restore",
+      "adminAccountsWillProtected": "Admin accounts will be protected by passwords only, increasing the risk of account takeover. SOC2 Type II requires 2FA for all administrators.",
+      "turnOffTwoFactor": "Turn off two-factor authentication (2FA)?",
+      "turnOff2faAnyway": "Turn off 2FA anyway",
+      "changesSettingsGroupsHave_one": "Changes in {{count}} settings group have not been saved and will be discarded if you leave this page.",
+      "changesSettingsGroupsHave_other": "Changes in {{count}} settings groups have not been saved and will be discarded if you leave this page.",
+      "leaveWithoutSavingConfiguration": "Leave without saving the configuration?"
+    },
+    "constants": {
+      "generalSettings": "General settings",
+      "listingReviewRules": "Listing & Review rules",
+      "aiPlannerPoiConfiguration": "AI Search (pgvector) & POI",
+      "securityAdminPermissions": "Security & Admin permissions",
+      "notificationsAlertEmails": "Notifications & Alert emails",
+      "gmt700Hanoi": "GMT+7:00 (Hanoi, Bangkok, Jakarta)",
+      "gmt800Singapore": "GMT+8:00 (Singapore, Beijing)",
+      "everyHourHighFrequency": "Every hour (High frequency - High API cost)",
+      "every6HoursRecommended": "Every 6 hours (Recommended for production)",
+      "every12Hours": "Every 12 hours",
+      "every24HoursNightly": "Every 24 hours (Nightly at 02:00 AM)",
+      "n50Lenient": "50% (Broad)",
+      "n85Recommended": "85% (Strict)",
+      "n95Strict": "95% (Very strict)",
+      "productionBuildV38": "Production build v3.8.4",
+      "distributedSystemOperatingNormally": "Distributed system operating normally • POI API latency: 24ms • Uptime 99.98%",
+      "fullAccess": "Full access",
+      "viewProcess": "View & process",
+      "viewOnly": "View only",
+      "noAccess": "No access",
+      "moderator": "Moderator",
+      "support": "Support",
+      "dashboard": "Dashboard",
+      "userManagement": "User management",
+      "partnerManagement": "Partner management",
+      "listingManagement": "Listing management",
+      "poiDestinations": "POI destinations",
+      "reportsAnalytics": "Reports & Analytics",
+      "notifications": "Notifications",
+      "systemSettings": "System settings",
+      "n75Standard": "75% (Standard)"
+    },
+    "aiSearchCard": {
+      "title": "AI Semantic Search (pgvector)",
+      "description": "Analyzes natural-language queries and ranks POIs / listings by vector similarity",
+      "minSimilarity": "Minimum AI match score",
+      "topK": "Maximum results per query (top-K)",
+      "topKHint": "Balance recall and speed",
+      "topKSelected": "{{count}} results",
+      "embeddingModel": "Embedding model",
+      "dimensions": "{{count}} dimensions",
+      "recall": "Retrieval accuracy (recall@10)",
+      "indexType": "HNSW index • cosine"
+    }
+  },
+  "profile": {
+    "activityLogModal": {
+      "activityLog": "Activity log",
+      "thisAccountSAdmin": "This account's admin actions, kept tamper-proof for 365 days"
+    },
+    "addSecurityKeyModal": {
+      "backupYubikey": "Backup YubiKey #{{keyCount}}",
+      "backupFido2Key": "Backup FIDO2 key",
+      "addBackupSecurityKey": "Add backup security key",
+      "plugFido2KeyVia": "Plug in the FIDO2 key via USB-C or tap it over NFC, then touch the key when prompted",
+      "startLinking": "Start linking",
+      "touchYourSecurityKey": "Touch your security key...",
+      "waitingConfirmationFrom": "Waiting for confirmation from \"{{deviceName}}\"",
+      "keyNickname": "Key nickname",
+      "reachedLimitKeysPer": "Reached the limit of {{MAX_SECURITY_KEYS}} keys per account",
+      "keysLinkedKeepAt": "{{keyCount}}/{{MAX_SECURITY_KEYS}} keys linked. Keep at least 1 backup key in a safe place."
+    },
+    "backupCodesModal": {
+      "smartTravelAdmin2fa": "Smart Travel Admin — 2FA recovery codes",
+      "account": "Account: {{accountEmail}}",
+      "created": "Created on: {{value}}",
+      "eachCodeCanUsed": "Each code can be used only once. Keep them somewhere safe.",
+      "backupCodesCopied": "Backup codes copied",
+      "couldNotCopyPlease": "Could not copy; please download the .txt file",
+      "backupRecoveryCodes": "Backup recovery codes ({{length}})",
+      "useTheseIfYou": "Use these if you lose your authenticator device. Each code can be used only once.",
+      "allOldCodesWill": "All old codes will be invalidated.",
+      "confirmRegeneration": "Confirm regeneration",
+      "generateNewCodes": "Generate new codes",
+      "copy": "Copy",
+      "downloadTxt": "Download .txt",
+      "backupCodesFileDownloaded": "Backup codes file downloaded"
+    },
+    "changePasswordCard": {
+      "pleaseEnterYourCurrent": "Please enter your current password",
+      "theNewPasswordNeeds": "The new password needs at least 8 characters, an uppercase letter, a number and a special character",
+      "theNewPasswordMust": "The new password must differ from the current one",
+      "theConfirmationPasswordDoes": "The confirmation password does not match",
+      "administratorPasswordChangedSuccessfully": "Administrator password changed successfully!",
+      "changeAccountPassword": "Change account password",
+      "weRecommendChangingYour": "We recommend changing your password every {{PASSWORD_ROTATION_DAYS}} days per ISO 27001",
+      "currentPassword": "Current password",
+      "hidePassword": "Hide password",
+      "showPassword": "Show password",
+      "newPassword": "New password",
+      "confirmNewPassword": "Confirm new password",
+      "passwordStrength": "Password strength:",
+      "includeUppercaseLowercaseNumbers": "Include uppercase, lowercase, numbers and special characters (@, #, !, $). Last changed:",
+      "today": "today",
+      "daysAgo_one": "{{count}} day ago",
+      "daysAgo_other": "{{count}} days ago",
+      "verifying": "Verifying...",
+      "changePassword": "Change password"
+    },
+    "contactInfoCard": {
+      "pleaseEnterYourFull": "Please enter your full name",
+      "pleaseCheckContactInformation": "Please check the contact information",
+      "thereNoChangesSave": "There are no changes to save",
+      "contactInformationSavedSuccessfully": "Contact information saved successfully",
+      "editContactInformation": "Edit contact information",
+      "updateIdentityShownOperational": "Update the identity shown on operational records and the admin profile",
+      "administratorFullName": "Administrator full name",
+      "jobTitle": "Job title",
+      "emergencyNotificationEmailSoc": "Emergency notification email (SOC Alert)",
+      "operationsHotlinePhoneNumber": "Operations hotline phone number",
+      "discardChanges": "Discard changes",
+      "updateInformation": "Update information"
+    },
+    "permissionSummaryCard": {
+      "seniorSystemPermissions": "Senior system permissions",
+      "viewFullPermissionMatrix": "View the full permission matrix →"
+    },
+    "profileIdentityCard": {
+      "workEmail": "Work email",
+      "directHotline": "Direct hotline",
+      "department": "Department",
+      "lastSign": "Last sign-in:",
+      "fromIp": "{{signedInAt}} from IP <c0>{{ip}}</c0> ({{device}})"
+    },
+    "securityCheckModal": {
+      "systemSecurityCheck": "System security check",
+      "reviewAuthenticationSettingsSign": "Review the authentication settings, sign-in sessions and access restrictions of the admin portal",
+      "openSecuritySettings": "Open security settings",
+      "scanningSecurityConfiguration": "Scanning security configuration...",
+      "checkingItemsAgainstSoc2": "Checking {{length}} items against SOC2 Type II & ISO 27001",
+      "safetyScore": "Safety score",
+      "noRisksDetected": "No risks detected",
+      "itemsNeedAttention_one": "{{count}} item needs attention",
+      "itemsNeedAttention_other": "{{count}} items need attention"
+    },
+    "sessionHistoryTable": {
+      "lastSignSessions": "Last {{MAX_ROWS}} sign-in sessions",
+      "signOutAllOther": "Sign out of all other devices",
+      "deviceBrowser": "Device & Browser",
+      "ipAddress": "IP address",
+      "location": "Location",
+      "time": "Time",
+      "status": "Status",
+      "active": "Active",
+      "thisSession": "This session"
+    },
+    "sessionSafetyCard": {
+      "sessionSafetyScore": "Session safety score",
+      "theAccountProtectedBy": "The account is protected by a FIDO2 hardware key and internal static IP analysis. No unusual access has been detected in the last 90 days.",
+      "foundItemsThatNeed_one": "Found {{count}} item that needs attention: {{join}}.",
+      "foundItemsThatNeed_other": "Found {{count}} items that need attention: {{join}}.",
+      "viewCheckDetails": "View check details"
+    },
+    "totpSetupModal": {
+      "secretKeyCopied": "Secret key copied",
+      "couldNotCopyPlease": "Could not copy; please select and copy it manually",
+      "pleaseEnterAllDigits": "Please enter all {{OTP_LENGTH}} digits",
+      "theCodeIncorrectOr": "The code is incorrect or has expired; please try a new code",
+      "reconfigureGoogleAuthenticator": "Reconfigure Google Authenticator",
+      "scanQrCodeWith": "Scan the QR code with your authenticator app, then enter the 6-digit code to confirm",
+      "confirmLink": "Confirm link",
+      "qrCodeLinkAuthenticator": "QR code to link the authenticator app",
+      "orEnterSecretKey": "Or enter the secret key manually",
+      "couldNotCreateKey": "Could not create a key; please try again",
+      "creatingKey": "Creating key…",
+      "copyKey": "Copy key",
+      "demoCode": "Demo code: <c0>{{DEMO_TOTP_CODE}}</c0>"
+    },
+    "twoFactorCard": {
+      "twoFactorSecurityAuthentication": "Two-factor security & Authentication keys",
+      "multiFactorAuthenticationMethods": "Multi-factor authentication methods required for top-level admin accounts",
+      "totpAuthenticationCode": "TOTP authentication code",
+      "on": "On",
+      "theAuthenticatorAppGenerating": "The authenticator app generating codes every 30 seconds has been active since {{value}}.",
+      "reconfigure": "Reconfigure",
+      "backupCodes": "Backup codes ({{length}})",
+      "fido2HardwareKey": "FIDO2 hardware key",
+      "notLinked": "Not linked",
+      "linked": "{{length}} linked",
+      "serialPlugKeyInto_one": "Serial {{serial}}. Plug the key into a USB-C port before approving sensitive transactions. {{count}} more backup key is linked.",
+      "serialPlugKeyInto_other": "Serial {{serial}}. Plug the key into a USB-C port before approving sensitive transactions. {{count}} more backup keys are linked.",
+      "serialPlugKeyInto2": "Serial {{serial}}. Plug the key into a USB-C port before approving sensitive transactions.",
+      "linkFido2KeyApprove": "Link a FIDO2 key to approve sensitive transactions.",
+      "addBackupKey": "Add backup key"
+    },
+    "page": {
+      "linkedKey": "Linked key {{name}} ({{serial}})",
+      "revokedSessionsOtherDevices_one": "Revoked {{count}} session on other devices. That device must sign in again with 2FA.",
+      "revokedSessionsOtherDevices_other": "Revoked {{count}} sessions on other devices. Those devices must sign in again with 2FA.",
+      "thereNoOtherSessions": "There are no other sessions to revoke",
+      "code": "Code",
+      "time": "Time",
+      "active": "Active",
+      "details": "Details",
+      "exportedActivityLogRows_one": "Exported {{count}} activity log row",
+      "exportedActivityLogRows_other": "Exported {{count}} activity log rows",
+      "systemAdministration": "System administration",
+      "administratorProfile": "Administrator profile",
+      "personalInformationAccountSecurity": "Personal information & Account security",
+      "administratorProfileSecurity": "Administrator Profile & Security",
+      "rootHighestAdministrativeAuthority": "{{role}} Root - Highest administrative authority",
+      "manageYourIdentitySenior": "Manage your identity, senior system permissions and two-factor (2FA) security settings",
+      "activityLog": "Activity log",
+      "systemSecurityCheck": "System security check",
+      "the2faAuthenticatorApp": "The 2FA authenticator app was relinked successfully",
+      "generatedNewBackupCodes": "Generated {{length}} new backup codes; old codes are now invalid",
+      "allSessionsExceptCurrent": "All sessions except the current one ({{device}}) will be revoked. Those devices must sign in again with a password and 2FA code.",
+      "signOutAllOther": "Sign out of all other devices?",
+      "signOutOtherDevices": "Sign out other devices"
+    },
+    "utils": {
+      "veryStrong": "Very strong",
+      "strong": "Strong",
+      "fair": "Fair",
+      "medium": "Medium",
+      "weak": "Weak",
+      "notEntered": "Not entered",
+      "twoFactorAuthentication2fa": "Two-factor authentication (2FA) required for administrators",
+      "enabledSystemSettings": "Enabled in System settings",
+      "disabledTurnItBack": "Disabled — turn it back on in System settings › Security",
+      "fido2HardwareKeyLinked": "FIDO2 hardware key linked",
+      "activeKeys_one": "{{count}} active key",
+      "activeKeys_other": "{{count}} active keys",
+      "noKeysLinked": "No keys linked",
+      "passwordChangedWithinDays": "Password changed within {{PASSWORD_ROTATION_DAYS}} days",
+      "lastChangedDaysAgo_one": "Last changed {{count}} day ago",
+      "lastChangedDaysAgo_other": "Last changed {{count}} days ago",
+      "backupRecoveryCodesAvailable": "Backup recovery codes available",
+      "unusedCodes_one": "{{count}} unused code",
+      "unusedCodes_other": "{{count}} unused codes",
+      "adminPortalIpRange": "Admin portal IP range restriction",
+      "allowedIpRanges_one": "{{count}} allowed IP range",
+      "allowedIpRanges_other": "{{count}} allowed IP ranges",
+      "noIpRestrictionAny": "No IP restriction — any address can access it",
+      "autoSignOutAfter": "Auto sign-out after ≤ 30 minutes of inactivity",
+      "currentlyMinutes": "Currently {{sessionTimeoutMinutes}} minutes",
+      "enterpriseGradeSecurityLevel": "Enterprise-grade security (level 4)",
+      "level3SecurityNeeds": "Level 3 security — needs review",
+      "level2SecurityMedium": "Level 2 security — medium risk",
+      "highRiskActNow": "High risk — act now"
+    },
+    "constants": {
+      "thisSession": "This session",
+      "expired": "Expired",
+      "closed": "Closed",
+      "revoked": "Revoked",
+      "userManagement": "User management",
+      "fullAccess": "Full access",
+      "createAssignPermissionsLock": "Create, assign permissions, lock accounts and audit data",
+      "partnersListings": "Partners & Listings",
+      "fullApproveCancelRights": "Full approve/cancel rights",
+      "approveTravelPartnersHotels": "Approve travel partners, hotels and destinations nationwide",
+      "financialReportsKpis": "Financial reports & KPIs",
+      "fullExportRights": "Full export rights",
+      "accessBookingRevenueCommissions": "Access booking revenue, commissions and user growth",
+      "systemAiConfiguration": "System & AI configuration",
+      "topLevelConfigurationRights": "Top-level configuration rights",
+      "tuneAiItineraryRecommendation": "Configure AI semantic search (pgvector) and the API Keys Gateway"
+    }
+  },
+  "auth": {
+    "authMessages": {
+      "demoCode": " (demo code: {{DEMO_OTP_CODE}})",
+      "otpCodeSent": "OTP code sent to {{email}}{{demoHint}}"
+    },
+    "forgotPassword": {
+      "pleaseEnterValidEmail": "Please enter a valid email address",
+      "recoverAdminPassword": "Recover admin password",
+      "enterAdminEmailYou": "Enter the admin email you were issued. We will send a 6-digit OTP code to verify your identity.",
+      "adminEmail": "Admin email",
+      "sendOtpCode": "Send OTP code",
+      "sendingVerificationCode": "Sending verification code...",
+      "theOtpCodeValid": "The OTP code is valid for <c0>5 minutes</c0>. If you do not receive the email, check your Spam folder or contact the <c1>Cybersecurity Team</c1>.",
+      "backSign": "Back to Sign in"
+    },
+    "login": {
+      "pleaseEnterBothYour": "Please enter both your email and password",
+      "administratorPortal": "Administrator Portal",
+      "signWithYourIssued": "Sign in with your issued admin account to continue operating the system.",
+      "adminEmail": "Admin email",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "signAdminPortal": "Sign in to the Admin Portal",
+      "verifyingCredentials": "Verifying credentials...",
+      "secureSignWith2fa": "Secure sign-in with 2FA. Social sign-in is NOT supported to protect national data.",
+      "enterpriseGradeSecurity2fa": "Enterprise-grade security & 2FA",
+      "demoAccount": "Demo account: {{email}} / {{password}}"
+    },
+    "resetPassword": {
+      "theNewPasswordDoes": "The new password does not meet all security requirements",
+      "theConfirmationPasswordDoes": "The confirmation password does not match",
+      "passwordChangedSuccessfullyPlease": "Password changed successfully. Please sign in again.",
+      "setNewPassword": "Set a new password",
+      "identityVerifiedCreateNew": "Identity verified. Create a new password for the admin account:",
+      "newPassword": "New password",
+      "confirmNewPassword": "Confirm new password",
+      "updatePassword": "Update password",
+      "updatingPassword": "Updating password...",
+      "backSign": "Back to Sign in"
+    },
+    "verifyOtp": {
+      "theOtpCodeHas": "The OTP code has expired. Click \"Resend OTP code\" to get a new one.",
+      "pleaseEnterAllDigits": "Please enter all {{OTP_LENGTH}} digits",
+      "otpVerifiedSuccessfully": "OTP verified successfully",
+      "youHaveEnteredWrong": "You have entered a wrong code more than {{MAX_OTP_ATTEMPTS}} times. Verification is temporarily locked; please contact the Cybersecurity Team.",
+      "incorrectCodeYouHave_one": "Incorrect code. You have {{count}} attempt left.",
+      "incorrectCodeYouHave_other": "Incorrect code. You have {{count}} attempts left.",
+      "verifyOtpSecurityCode": "Verify OTP security code",
+      "a6DigitVerification": "A 6-digit verification code has been sent to:",
+      "enter6DigitCode": "Enter the 6-digit code",
+      "codeExpired": "Code expired",
+      "codeValid": "Code valid for:",
+      "sending": "Sending...",
+      "resendOtpCode": "Resend OTP code",
+      "ifYouDoNot": "If you do not receive the email, check your Spam folder or contact the <c0>Cybersecurity Team</c0> for an emergency unlock.",
+      "confirmSecurityCode": "Confirm security code",
+      "verifyingCode": "Verifying code...",
+      "changeVerificationEmail": "Change verification email",
+      "backSign": "Back to Sign in"
+    },
+    "constants": {
+      "atLeast8Characters": "At least 8 characters",
+      "anUppercaseLetterZ": "An uppercase letter (A-Z)",
+      "aNumber09": "A number (0-9)",
+      "aSpecialCharacter": "A special character (!@#...)",
+      "infrastructureV384": "Infrastructure v3.8.4 running smoothly",
+      "comprehensiveOperationsManagementSystem": "Comprehensive Operations & Management System",
+      "vietnamSCentralSmart": "Vietnam's central smart travel orchestration platform, giving the dedicated admin team real-time control and analytics.",
+      "multiLayerSecurityZero": "Multi-layer security & Zero-Trust encryption",
+      "hardwareCertificateAuthenticationReal": "Hardware certificate authentication and real-time intrusion-proof activity logging.",
+      "realTimeDataManagement": "Real-time Data Management",
+      "syncsInternationalVisitorFlows": "Syncs international visitor flows, room occupancy and transactions across 63 provinces.",
+      "automatedPartnerListingReview": "Automated partner & listing review",
+      "aiAssistedReviewHotels": "AI-assisted review of hotels, tour operators and experiences.",
+      "adminAccountSecurityRecovery": "Admin Account Security & Recovery",
+      "multiLayerAuthenticationSecure": "Multi-layer authentication and secure encryption protect control of the nationwide smart travel system.",
+      "highlySecure6Digit": "Highly secure 6-digit OTP",
+      "shortValidityAutomaticallyExpires": "Short validity, automatically expires after 5 minutes",
+      "temporaryLockAfterMore": "Temporary lock after more than 5 wrong attempts",
+      "protectsAdminAccountsAgainst": "Protects admin accounts against brute-force attempts",
+      "twoFactorAuthentication2fa": "Two-factor authentication (2FA / Zero-Trust)",
+      "ensuresOnlyRightfulAccount": "Ensures only the rightful account owner gets access"
+    },
+    "errors": {
+      "invalidCredentials": "Incorrect email or password",
+      "unknownEmail": "This email does not exist in the admin system",
+      "accountNotFound": "Admin account not found",
+      "wrongCurrentPassword": "The current password is incorrect",
+      "sessionExpired": "Your session has expired"
+    }
+  },
+  "notFound": {
+    "page": {
+      "pageNotFound": "Page not found",
+      "thePageYouLooking": "The page you are looking for does not exist or has been moved. Please check the address.",
+      "goBack": "Go back",
+      "goDashboard": "Go to Dashboard"
+    }
+  },
+  "layout": {
+    "authBrandPanel": {
+      "viettelTier3Idc": "Viettel Tier-3 IDC, ISO 27001 certified"
+    },
+    "authLayout": {
+      "privacyPolicy": "Privacy Policy",
+      "operatingRegulations": "Operating Regulations",
+      "systemAdministrator": "System administrator",
+      "n2025SmartTravelVietnam": "© 2025 Smart Travel Vietnam Co., Ltd. All rights reserved.",
+      "isBeingUpdated": "{{label}} is being updated"
+    }
+  },
+  "services": {
+    "httpClient": {
+      "theSubmittedDataInvalid": "The submitted data is invalid",
+      "yourSessionHasExpired": "Your session has expired; please sign in again",
+      "youDoNotHave": "You do not have permission to perform this action",
+      "theRequestedDataWas": "The requested data was not found",
+      "theDataWasChanged": "The data was changed by someone else; please reload",
+      "theDataDoesNot": "The data does not meet the requirements",
+      "theServerEncounteredProblem": "The server encountered a problem; please try again later",
+      "theServerTookToo": "The server took too long to respond; please try again",
+      "couldNotConnectServer": "Could not connect to the server",
+      "requestFailedCode": "Request failed (code {{status}})"
+    },
+    "profileService": {
+      "currentDevice": "Current device"
+    },
+    "settingsService": {
+      "superAdminAdministrator": "Super Admin administrator"
+    }
+  },
+  "search": {
+    "semantic": {
+      "label": "AI Semantic Search",
+      "submit": "Search with AI",
+      "searching": "Analyzing...",
+      "poiPlaceholder": "Describe the destination in plain language, e.g. \"quiet beach for families in Da Nang\"",
+      "listingPlaceholder": "Describe what you need, e.g. \"homestay near Hoi An ancient town with a garden\"",
+      "results_one": "{{count}} match for \"{{query}}\"",
+      "results_other": "{{count}} matches for \"{{query}}\"",
+      "sortedBySimilarity": "Sorted by AI match score",
+      "clear": "Clear AI search",
+      "match": "{{score}}% AI match",
+      "matchTitle": "AI Match Score (cosine similarity, pgvector)"
+    }
+  }
+}

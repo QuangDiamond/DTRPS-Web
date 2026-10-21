@@ -1,18 +1,22 @@
+import i18n from 'i18next';
 import type {
+  ApprovedListingFilters,
+  TranslationKey,
+  ApprovedSortOption,
   ListingCategory,
   ListingFilters,
   ListingPriority,
-  ApprovedListingFilters,
-  ApprovedSortOption,
   ListingStatus,
   ListingVisibility,
   PartnerTier,
   ProvinceCode,
   RejectedListingFilters,
+  RejectionReason,
   RejectionReasonCode,
   ResubmissionStatus,
   SelectOption,
-} from '../types/admin';
+} from '@/types';
+import { linkedOption, localizeConfig, localizedOption } from '@/utils/localize';
 import { PROVINCE_LABELS } from './partner';
 
 // ===== Danh mục =====
@@ -31,67 +35,70 @@ interface ListingCategoryConfig {
   iconBoxClass: string;
 }
 
-export const LISTING_CATEGORY_CONFIG: Record<ListingCategory, ListingCategoryConfig> = {
-  hotel: {
-    defaultIcon: 'cottage',
-    label: 'Khách sạn',
-    filterLabel: 'Khách sạn / Homestay',
-    badgeClass: 'bg-secondary-container/60 text-on-secondary-container',
-    pillClass: 'bg-secondary-container text-on-secondary-container',
-    iconBoxClass: 'bg-secondary-container/40 text-primary',
-  },
-  fnb: {
-    defaultIcon: 'restaurant',
-    label: 'Ẩm thực',
-    filterLabel: 'Nhà hàng / Ẩm thực',
-    badgeClass: 'bg-tertiary-fixed text-on-tertiary-fixed',
-    pillClass: 'bg-tertiary-fixed text-on-tertiary-fixed',
-    iconBoxClass: 'bg-tertiary-fixed/60 text-tertiary',
-  },
-  attraction: {
-    defaultIcon: 'attractions',
-    label: 'Tham quan',
-    filterLabel: 'Điểm tham quan / Di tích',
-    badgeClass: 'bg-surface-container-highest text-on-surface',
-    pillClass: 'bg-surface-container-high text-on-surface',
-    iconBoxClass: 'bg-surface-container-high text-primary',
-  },
-  tour: {
-    defaultIcon: 'tour',
-    label: 'Tour',
-    filterLabel: 'Trải nghiệm & Tour',
-    badgeClass: 'bg-surface-container-high text-primary',
-    pillClass: 'bg-primary-fixed text-on-primary-fixed',
-    iconBoxClass: 'bg-surface-container-high text-primary',
-  },
-  shopping: {
-    defaultIcon: 'shopping_bag',
-    label: 'Mua sắm',
-    filterLabel: 'Mua sắm đặc sản',
-    badgeClass: 'bg-error-container/60 text-on-error-container',
-    pillClass: 'bg-error-container/60 text-on-error-container',
-    iconBoxClass: 'bg-error-container/40 text-error',
-  },
-};
+export const LISTING_CATEGORY_CONFIG: Record<ListingCategory, ListingCategoryConfig> =
+  localizeConfig(
+    'category.listing',
+    {
+      hotel: {
+        defaultIcon: 'cottage',
+        label: 'Khách sạn',
+        filterLabel: 'Khách sạn / Homestay',
+        badgeClass: 'bg-secondary-container/60 text-on-secondary-container',
+        pillClass: 'bg-secondary-container text-on-secondary-container',
+        iconBoxClass: 'bg-secondary-container/40 text-primary',
+      },
+      fnb: {
+        defaultIcon: 'restaurant',
+        label: 'Ẩm thực',
+        filterLabel: 'Nhà hàng / Ẩm thực',
+        badgeClass: 'bg-tertiary-fixed text-on-tertiary-fixed',
+        pillClass: 'bg-tertiary-fixed text-on-tertiary-fixed',
+        iconBoxClass: 'bg-tertiary-fixed/60 text-tertiary',
+      },
+      attraction: {
+        defaultIcon: 'attractions',
+        label: 'Tham quan',
+        filterLabel: 'Điểm tham quan / Di tích',
+        badgeClass: 'bg-surface-container-highest text-on-surface',
+        pillClass: 'bg-surface-container-high text-on-surface',
+        iconBoxClass: 'bg-surface-container-high text-primary',
+      },
+      tour: {
+        defaultIcon: 'tour',
+        label: 'Tour',
+        filterLabel: 'Trải nghiệm & Tour',
+        badgeClass: 'bg-surface-container-high text-primary',
+        pillClass: 'bg-primary-fixed text-on-primary-fixed',
+        iconBoxClass: 'bg-surface-container-high text-primary',
+      },
+      shopping: {
+        defaultIcon: 'shopping_bag',
+        label: 'Mua sắm',
+        filterLabel: 'Mua sắm đặc sản',
+        badgeClass: 'bg-error-container/60 text-on-error-container',
+        pillClass: 'bg-error-container/60 text-on-error-container',
+        iconBoxClass: 'bg-error-container/40 text-error',
+      },
+    },
+    ['label', 'filterLabel'],
+  );
 
 const LISTING_CATEGORIES = Object.keys(LISTING_CATEGORY_CONFIG) as ListingCategory[];
 
 /** Bộ lọc gọn (Bảng điều khiển) */
 export const LISTING_CATEGORY_FILTER_OPTIONS: SelectOption<ListingCategory | 'all'>[] = [
-  { value: 'all', label: 'Tất cả danh mục' },
-  ...LISTING_CATEGORIES.map((category) => ({
-    value: category,
-    label: LISTING_CATEGORY_CONFIG[category].label,
-  })),
+  localizedOption('all', 'filters.allCategories', 'Tất cả danh mục'),
+  ...LISTING_CATEGORIES.map((category) =>
+    linkedOption(category, () => LISTING_CATEGORY_CONFIG[category].label),
+  ),
 ];
 
 /** Bộ lọc đầy đủ (Quản lý niêm yết) */
 export const LISTING_CATEGORY_SELECT_OPTIONS: SelectOption<ListingCategory | 'all'>[] = [
-  { value: 'all', label: 'Tất cả danh mục' },
-  ...LISTING_CATEGORIES.map((category) => ({
-    value: category,
-    label: LISTING_CATEGORY_CONFIG[category].filterLabel,
-  })),
+  localizedOption('all', 'filters.allCategories', 'Tất cả danh mục'),
+  ...LISTING_CATEGORIES.map((category) =>
+    linkedOption(category, () => LISTING_CATEGORY_CONFIG[category].filterLabel),
+  ),
 ];
 
 // ===== Trạng thái =====
@@ -101,42 +108,111 @@ interface ListingStatusConfig {
   dotClass: string;
 }
 
-export const LISTING_STATUS_CONFIG: Record<ListingStatus, ListingStatusConfig> = {
-  pending: {
-    label: 'Chờ duyệt',
-    badgeClass: 'bg-tertiary-fixed text-on-tertiary-fixed',
-    dotClass: 'bg-tertiary animate-pulse',
+export const LISTING_STATUS_CONFIG: Record<ListingStatus, ListingStatusConfig> = localizeConfig(
+  'status.listing',
+  {
+    pending: {
+      label: 'Chờ duyệt',
+      badgeClass: 'bg-tertiary-fixed text-on-tertiary-fixed',
+      dotClass: 'bg-tertiary animate-pulse',
+    },
+    approved: {
+      label: 'Đã duyệt',
+      badgeClass: 'bg-secondary-container text-on-secondary-container',
+      dotClass: 'bg-primary',
+    },
+    rejected: {
+      label: 'Từ chối',
+      badgeClass: 'bg-error-container text-on-error-container',
+      dotClass: 'bg-error',
+    },
   },
-  approved: {
-    label: 'Đã duyệt',
-    badgeClass: 'bg-secondary-container text-on-secondary-container',
-    dotClass: 'bg-primary',
-  },
-  rejected: {
-    label: 'Từ chối',
-    badgeClass: 'bg-error-container text-on-error-container',
-    dotClass: 'bg-error',
-  },
-};
+  ['label'],
+);
 
 // ===== Hạng đối tác =====
 export const PARTNER_TIER_CONFIG: Record<PartnerTier, { label: string; className: string }> = {
-  diamond: { label: 'Đối tác Diamond', className: 'font-medium text-primary' },
-  individual: { label: 'Hộ kinh doanh cá thể', className: 'text-on-surface-variant' },
-  gold: { label: 'Đối tác Gold', className: 'font-medium text-tertiary' },
-  verified: { label: 'Đối tác Xác thực', className: 'text-on-surface-variant' },
-  new: { label: 'Đối tác Mới', className: 'text-on-surface-variant' },
-  public: { label: 'Tổ chức Công', className: 'font-medium text-primary' },
+  diamond: {
+    get label() {
+      return i18n.t('listings.constants.diamondPartner');
+    },
+    className: 'font-medium text-primary',
+  },
+  individual: {
+    get label() {
+      return i18n.t('listings.constants.soleProprietorship');
+    },
+    className: 'text-on-surface-variant',
+  },
+  gold: {
+    get label() {
+      return i18n.t('listings.constants.goldPartner');
+    },
+    className: 'font-medium text-tertiary',
+  },
+  verified: {
+    get label() {
+      return i18n.t('listings.constants.verifiedPartner');
+    },
+    className: 'text-on-surface-variant',
+  },
+  new: {
+    get label() {
+      return i18n.t('listings.constants.newPartner');
+    },
+    className: 'text-on-surface-variant',
+  },
+  public: {
+    get label() {
+      return i18n.t('listings.constants.publicOrganization');
+    },
+    className: 'font-medium text-primary',
+  },
 };
 
 export const PARTNER_TIER_OPTIONS: SelectOption<PartnerTier | 'all'>[] = [
-  { value: 'all', label: 'Tất cả đối tác' },
-  { value: 'diamond', label: 'Đối tác Diamond' },
-  { value: 'gold', label: 'Đối tác Chiến lược (Gold)' },
-  { value: 'verified', label: 'Đối tác Xác thực' },
-  { value: 'new', label: 'Đối tác Mới đăng ký' },
-  { value: 'public', label: 'Tổ chức Công' },
-  { value: 'individual', label: 'Hộ kinh doanh cá thể' },
+  {
+    value: 'all',
+    get label() {
+      return i18n.t('listings.constants.allPartners');
+    },
+  },
+  {
+    value: 'diamond',
+    get label() {
+      return i18n.t('listings.constants.diamondPartner');
+    },
+  },
+  {
+    value: 'gold',
+    get label() {
+      return i18n.t('listings.constants.strategicPartnerGold');
+    },
+  },
+  {
+    value: 'verified',
+    get label() {
+      return i18n.t('listings.constants.verifiedPartner');
+    },
+  },
+  {
+    value: 'new',
+    get label() {
+      return i18n.t('listings.constants.newlyRegisteredPartner');
+    },
+  },
+  {
+    value: 'public',
+    get label() {
+      return i18n.t('listings.constants.publicOrganization');
+    },
+  },
+  {
+    value: 'individual',
+    get label() {
+      return i18n.t('listings.constants.soleProprietorship');
+    },
+  },
 ];
 
 /** Badge hạng đối tác trong bảng Địa điểm đã duyệt (null = chỉ hiện dòng chữ) */
@@ -145,46 +221,85 @@ export const PARTNER_TIER_BADGE: Record<
   { label: string; icon?: string; className?: string }
 > = {
   diamond: {
-    label: 'Đối tác Diamond',
+    get label() {
+      return i18n.t('listings.constants.diamondPartner');
+    },
     icon: 'diamond',
     className: 'bg-primary-fixed text-on-primary-fixed-variant',
   },
   gold: {
-    label: 'Đối tác Gold',
+    get label() {
+      return i18n.t('listings.constants.goldPartner');
+    },
     icon: 'hotel_class',
     className: 'bg-tertiary-fixed text-on-tertiary-fixed',
   },
   verified: {
-    label: 'Đã xác thực',
+    get label() {
+      return i18n.t('listings.constants.verified');
+    },
     icon: 'verified',
     className: 'bg-secondary-container/70 text-on-secondary-container',
   },
   public: {
-    label: 'Tổ chức Công',
+    get label() {
+      return i18n.t('listings.constants.publicOrganization');
+    },
     icon: 'account_balance',
     className: 'bg-surface-container-high text-primary',
   },
   new: {
-    label: 'Đối tác mới',
+    get label() {
+      return i18n.t('listings.constants.newPartner2');
+    },
     icon: 'new_releases',
     className: 'bg-surface-container-high text-on-surface-variant',
   },
-  individual: { label: 'Đã xác minh CCCD' },
+  individual: {
+    get label() {
+      return i18n.t('listings.constants.idVerified');
+    },
+  },
 };
 
 // ===== Tỉnh thành & mức độ ưu tiên =====
 export const LISTING_PROVINCE_OPTIONS: SelectOption<ProvinceCode | 'all'>[] = [
-  { value: 'all', label: 'Toàn quốc (Tỉnh/Thành)' },
-  ...(['quangnam', 'danang', 'hanoi', 'ninhbinh', 'kiengiang'] as ProvinceCode[]).map(
-    (province) => ({ value: province, label: PROVINCE_LABELS[province] }),
+  {
+    value: 'all',
+    get label() {
+      return i18n.t('listings.constants.nationwideProvinceCity');
+    },
+  },
+  ...(['quangnam', 'danang', 'hanoi', 'ninhbinh', 'kiengiang'] as ProvinceCode[]).map((province) =>
+    linkedOption(province, () => PROVINCE_LABELS[province]),
   ),
 ];
 
 export const LISTING_PRIORITY_OPTIONS: SelectOption<ListingPriority>[] = [
-  { value: 'all', label: 'Tất cả mức độ' },
-  { value: 'overdue', label: 'Chờ quá 24h (Khẩn)' },
-  { value: 'medium', label: 'Chờ từ 2 - 12h' },
-  { value: 'today', label: 'Mới gửi hôm nay' },
+  {
+    value: 'all',
+    get label() {
+      return i18n.t('listings.constants.allPriorities');
+    },
+  },
+  {
+    value: 'overdue',
+    get label() {
+      return i18n.t('listings.constants.waitingOver24hUrgent');
+    },
+  },
+  {
+    value: 'medium',
+    get label() {
+      return i18n.t('listings.constants.waiting212h');
+    },
+  },
+  {
+    value: 'today',
+    get label() {
+      return i18n.t('listings.constants.submittedToday');
+    },
+  },
 ];
 
 export const DEFAULT_LISTING_FILTERS: ListingFilters = {
@@ -201,19 +316,33 @@ export const LISTING_OVERDUE_HOURS = 24;
 export const LISTING_PAGE_SIZE_OPTIONS = [5, 10, 25] as const;
 
 // ===== Thẩm định =====
-export const QUICK_REJECT_REASONS = [
-  'Thiếu giấy phép kinh doanh',
-  'Thiếu giấy phép ATVSTP',
-  'Hình ảnh mờ / không đúng thực tế',
-  'Thông tin địa chỉ không chính xác',
-];
 
 /** Checklist kiểm định chuẩn — dùng cho hồ sơ không có dữ liệu chi tiết */
 export const DEFAULT_REVIEW_CHECKLIST = [
-  { id: 'gps', label: 'Tọa độ GPS hợp lệ' },
-  { id: 'zoning', label: 'Vị trí quy hoạch du lịch' },
-  { id: 'photos', label: 'Ảnh đạt độ phân giải chuẩn' },
-  { id: 'license', label: 'Giấy phép còn hiệu lực' },
+  {
+    id: 'gps',
+    get label() {
+      return i18n.t('listings.constants.validGpsCoordinates');
+    },
+  },
+  {
+    id: 'zoning',
+    get label() {
+      return i18n.t('listings.constants.withinTourismZoningArea');
+    },
+  },
+  {
+    id: 'photos',
+    get label() {
+      return i18n.t('listings.constants.photosMeetResolutionStandard');
+    },
+  },
+  {
+    id: 'license',
+    get label() {
+      return i18n.t('listings.constants.licenseStillValid');
+    },
+  },
 ];
 
 /** Trạng thái hiển thị trên banner màn Xem xét & Duyệt */
@@ -222,18 +351,24 @@ export const REVIEW_STATUS_BANNER: Record<
   { label: string; badgeClass: string; dotClass: string }
 > = {
   pending: {
-    label: 'Chờ duyệt',
+    get label() {
+      return i18n.t('listings.constants.pendingReview');
+    },
     badgeClass: 'border-tertiary-fixed bg-tertiary-fixed/60 text-on-tertiary-fixed',
     dotClass: 'animate-pulse bg-tertiary-container',
   },
   approved: {
-    label: 'Đã phê duyệt',
+    get label() {
+      return i18n.t('listings.constants.approved');
+    },
     badgeClass:
       'border-secondary-fixed-dim/50 bg-secondary-container/60 text-on-secondary-fixed-variant',
     dotClass: 'bg-secondary',
   },
   rejected: {
-    label: 'Đã từ chối',
+    get label() {
+      return i18n.t('listings.constants.rejected');
+    },
     badgeClass: 'border-error-container bg-error-container/70 text-on-error-container',
     dotClass: 'bg-error',
   },
@@ -242,106 +377,159 @@ export const REVIEW_STATUS_BANNER: Record<
 export const REVIEW_POLICIES = [
   {
     icon: 'gavel',
-    title: 'Pháp lý bắt buộc',
-    description:
-      'Mọi cơ sở phải có giấy phép kinh doanh còn hiệu lực. Lưu trú cần thêm giấy chứng nhận PCCC; ẩm thực cần giấy ATVSTP.',
+    get title() {
+      return i18n.t('listings.constants.mandatoryLegalDocuments');
+    },
+    get description() {
+      return i18n.t('listings.constants.everyBusinessMustHold');
+    },
   },
   {
     icon: 'photo_library',
-    title: 'Hình ảnh & nội dung',
-    description:
-      'Tối thiểu 5 ảnh thật, độ phân giải HD, không chèn logo bên thứ ba. Mô tả trung thực, không phóng đại dịch vụ.',
+    get title() {
+      return i18n.t('listings.constants.photosContent');
+    },
+    get description() {
+      return i18n.t('listings.constants.atLeast5Real');
+    },
   },
   {
     icon: 'schedule',
-    title: 'Thời hạn xử lý',
-    description:
-      'Hồ sơ phải được thẩm định trong 24 giờ kể từ khi gửi. Hồ sơ quá hạn được đánh dấu "Khẩn" và ưu tiên xử lý.',
+    get title() {
+      return i18n.t('listings.constants.processingDeadline');
+    },
+    get description() {
+      return i18n.t('listings.constants.submissionsMustReviewedWithin');
+    },
   },
   {
     icon: 'report',
-    title: 'Từ chối hồ sơ',
-    description:
-      'Bắt buộc ghi rõ lý do từ chối để đối tác bổ sung. Đối tác được gửi lại hồ sơ sau khi khắc phục.',
+    get title() {
+      return i18n.t('listings.constants.rejectProfile');
+    },
+    get description() {
+      return i18n.t('listings.constants.aClearRejectionReason');
+    },
   },
 ];
-
-// ===== Lý do từ chối (modal Từ chối niêm yết) =====
-export interface RejectionReason {
-  id: RejectionReasonCode;
-  title: string;
-  /** Nhãn ngắn trong bộ lọc */
-  shortLabel: string;
-  icon: string;
-  /** Màu chữ + icon trong bảng Địa điểm bị từ chối */
-  toneClass: string;
-  description?: string;
-  /** Câu dùng trong văn bản mẫu gửi đối tác */
-  templateCause: string;
-  /** Hướng dẫn khắc phục trong văn bản mẫu */
-  templateFix: string;
-}
 
 export const REJECTION_REASONS: RejectionReason[] = [
   {
     id: 'legal',
-    shortLabel: 'Thiếu chứng nhận PCCC / ATTP',
+    get shortLabel() {
+      return i18n.t('listings.constants.missingFireSafetyFood');
+    },
     icon: 'local_fire_department',
     toneClass: 'text-error',
-    title: 'Không đủ tài liệu chứng minh pháp lý (Giấy phép ATTP / PCCC hết hạn hoặc không hợp lệ)',
-    description: 'Giấy phép đã hết hạn hoặc thiếu văn bản gia hạn, không đối chiếu được với CSDL.',
-    templateCause: 'giấy phép pháp lý (ATTP / PCCC) đã hết hạn hoặc chưa hợp lệ',
-    templateFix: 'cập nhật bản scan công chứng mới còn hiệu lực',
+    get title() {
+      return i18n.t('listings.constants.insufficientLegalDocumentationFood');
+    },
+    get description() {
+      return i18n.t('listings.constants.theLicenseHasExpired');
+    },
+    get templateCause() {
+      return i18n.t('listings.constants.theLegalLicensesFood');
+    },
+    get templateFix() {
+      return i18n.t('listings.constants.uploadNewValidNotarized');
+    },
   },
   {
     id: 'pricing',
-    shortLabel: 'Sai thông tin đăng ký kinh doanh',
+    get shortLabel() {
+      return i18n.t('listings.constants.incorrectBusinessRegistrationDetails');
+    },
     icon: 'description',
     toneClass: 'text-error',
-    title: 'Thông tin kinh doanh không chính xác hoặc sai lệch giá niêm yết thực tế',
-    description: 'Chênh lệch bảng giá công bố và giá đặt phòng qua hệ thống du lịch.',
-    templateCause: 'thông tin kinh doanh và bảng giá niêm yết chưa khớp với thực tế',
-    templateFix: 'rà soát và cập nhật lại bảng giá, thông tin dịch vụ chính xác',
+    get title() {
+      return i18n.t('listings.constants.inaccurateBusinessInformationOr');
+    },
+    get description() {
+      return i18n.t('listings.constants.thePublishedPriceList');
+    },
+    get templateCause() {
+      return i18n.t('listings.constants.theBusinessInformationListed');
+    },
+    get templateFix() {
+      return i18n.t('listings.constants.reviewUpdatePriceList');
+    },
   },
   {
     id: 'location',
-    shortLabel: 'Tọa độ GPS sai lệch',
+    get shortLabel() {
+      return i18n.t('listings.constants.incorrectGpsCoordinates');
+    },
     icon: 'wrong_location',
     toneClass: 'text-tertiary',
-    title: 'Vị trí địa lý không hợp lệ / Sai lệch tọa độ GPS (> 30m)',
-    description: 'Tọa độ pin trên bản đồ lệch xa so với địa chỉ đăng ký kinh doanh.',
-    templateCause: 'tọa độ GPS trên bản đồ lệch so với địa chỉ đăng ký kinh doanh',
-    templateFix: 'ghim lại vị trí chính xác của cơ sở trên bản đồ',
+    get title() {
+      return i18n.t('listings.constants.invalidLocationGpsCoordinates');
+    },
+    get description() {
+      return i18n.t('listings.constants.theMapPinFar');
+    },
+    get templateCause() {
+      return i18n.t('listings.constants.theGpsCoordinatesMap');
+    },
+    get templateFix() {
+      return i18n.t('listings.constants.pinExactLocationBusiness');
+    },
   },
   {
     id: 'photos',
-    shortLabel: 'Ảnh kém chất lượng / dính Watermark',
+    get shortLabel() {
+      return i18n.t('listings.constants.poorQualityPhotosWatermarks');
+    },
     icon: 'broken_image',
     toneClass: 'text-on-surface-variant',
-    title: 'Hình ảnh chất lượng kém / dính watermark / không rõ nét',
-    description: 'Ảnh mặt tiền hoặc biển hiệu vi phạm tiêu chuẩn độ phân giải tối thiểu 1080p.',
-    templateCause:
-      'hình ảnh mặt tiền / biển hiệu chưa đạt chuẩn chất lượng (mờ hoặc dính watermark)',
-    templateFix: 'chụp lại ảnh thực tế rõ nét, độ phân giải tối thiểu 1080p',
+    get title() {
+      return i18n.t('listings.constants.poorQualityWatermarkedOr');
+    },
+    get description() {
+      return i18n.t('listings.constants.theStorefrontOrSignage');
+    },
+    get templateCause() {
+      return i18n.t('listings.constants.theStorefrontSignagePhotos');
+    },
+    get templateFix() {
+      return i18n.t('listings.constants.retakeClearRealLife');
+    },
   },
   {
     id: 'duplicate',
-    shortLabel: 'Trùng lặp địa điểm',
+    get shortLabel() {
+      return i18n.t('listings.constants.duplicatePlace');
+    },
     icon: 'content_copy',
     toneClass: 'text-on-surface-variant',
-    title: 'Trùng lặp địa điểm đã tồn tại trên hệ thống',
-    description: 'Đã có POI cùng tên và cùng vị trí được quản lý bởi đối tác khác.',
-    templateCause: 'địa điểm trùng với một POI đã tồn tại trên hệ thống',
-    templateFix: 'cung cấp giấy tờ chứng minh quyền quản lý hoặc liên hệ bộ phận hỗ trợ đối tác',
+    get title() {
+      return i18n.t('listings.constants.duplicatesPlaceThatAlready');
+    },
+    get description() {
+      return i18n.t('listings.constants.aPoiWithSame');
+    },
+    get templateCause() {
+      return i18n.t('listings.constants.thePlaceDuplicatesExisting');
+    },
+    get templateFix() {
+      return i18n.t('listings.constants.provideDocumentsProvingManagement');
+    },
   },
   {
     id: 'other',
-    shortLabel: 'Lý do khác',
+    get shortLabel() {
+      return i18n.t('listings.constants.otherReason');
+    },
     icon: 'info',
     toneClass: 'text-on-surface-variant',
-    title: 'Lý do khác (Chi tiết ở phần góp ý bên dưới)',
-    templateCause: 'chưa đáp ứng quy chế kiểm duyệt niêm yết',
-    templateFix: 'bổ sung các nội dung theo góp ý chi tiết',
+    get title() {
+      return i18n.t('listings.constants.otherReasonSeeFeedback');
+    },
+    get templateCause() {
+      return i18n.t('listings.constants.itDoesNotYet');
+    },
+    get templateFix() {
+      return i18n.t('listings.constants.addContentDescribedDetailed');
+    },
   },
 ];
 
@@ -349,22 +537,72 @@ export const MAX_FEEDBACK_LENGTH = 500;
 
 // ===== Địa điểm đã duyệt =====
 export const VISIBILITY_FILTER_OPTIONS: SelectOption<ListingVisibility | 'all'>[] = [
-  { value: 'all', label: 'Trạng thái: Tất cả' },
-  { value: 'visible', label: 'Đang hiển thị' },
-  { value: 'hidden', label: 'Tạm ẩn' },
+  {
+    value: 'all',
+    get label() {
+      return i18n.t('filters.userStatusAll');
+    },
+  },
+  {
+    value: 'visible',
+    get label() {
+      return i18n.t('listings.constants.visible');
+    },
+  },
+  {
+    value: 'hidden',
+    get label() {
+      return i18n.t('listings.constants.hidden');
+    },
+  },
 ];
 
 export const APPROVED_SORT_OPTIONS: SelectOption<ApprovedSortOption>[] = [
-  { value: 'recent', label: 'Mới duyệt gần đây' },
-  { value: 'rating', label: 'Đánh giá cao nhất' },
-  { value: 'views', label: 'Lượt xem nhiều nhất' },
+  {
+    value: 'recent',
+    get label() {
+      return i18n.t('listings.constants.recentlyApproved');
+    },
+  },
+  {
+    value: 'rating',
+    get label() {
+      return i18n.t('listings.constants.highestRated');
+    },
+  },
+  {
+    value: 'views',
+    get label() {
+      return i18n.t('listings.constants.mostViewed');
+    },
+  },
 ];
 
 export const MIN_RATING_OPTIONS: SelectOption<string>[] = [
-  { value: '0', label: 'Mọi mức đánh giá' },
-  { value: '4.5', label: 'Từ 4.5 sao' },
-  { value: '4', label: 'Từ 4.0 sao' },
-  { value: '3.5', label: 'Từ 3.5 sao' },
+  {
+    value: '0',
+    get label() {
+      return i18n.t('listings.constants.anyRating');
+    },
+  },
+  {
+    value: '4.5',
+    get label() {
+      return i18n.t('listings.constants.n45StarsUp');
+    },
+  },
+  {
+    value: '4',
+    get label() {
+      return i18n.t('listings.constants.n40StarsUp');
+    },
+  },
+  {
+    value: '3.5',
+    get label() {
+      return i18n.t('listings.constants.n35StarsUp');
+    },
+  },
 ];
 
 export const DEFAULT_APPROVED_FILTERS: ApprovedListingFilters = {
@@ -377,20 +615,25 @@ export const DEFAULT_APPROVED_FILTERS: ApprovedListingFilters = {
   minRating: 0,
 };
 
-/** Lý do tạm ẩn hay dùng */
+/** Lý do tạm ẩn hay dùng — key bản dịch, hiển thị bằng t(key) */
 export const HIDE_REASONS = [
-  'Sửa chữa mặt bằng',
-  'Tạm ngưng kinh doanh theo mùa',
-  'Theo yêu cầu của đối tác',
-  'Đang xác minh phản ánh của du khách',
-];
+  'listings.hideReasons.renovation',
+  'listings.hideReasons.seasonalClosure',
+  'listings.hideReasons.partnerRequest',
+  'listings.hideReasons.investigatingFeedback',
+] as const satisfies readonly TranslationKey[];
 
 // ===== Địa điểm bị từ chối =====
 /** Số ngày đối tác được bổ sung & gửi lại hồ sơ sau khi bị từ chối */
 export const RESUBMIT_WINDOW_DAYS = 7;
 
 export const REJECTION_REASON_FILTER_OPTIONS: SelectOption<RejectionReasonCode | 'all'>[] = [
-  { value: 'all', label: 'Tất cả lý do từ chối' },
+  {
+    value: 'all',
+    get label() {
+      return i18n.t('listings.constants.allRejectionReasons');
+    },
+  },
   ...REJECTION_REASONS.map((reason) => ({ value: reason.id, label: reason.shortLabel })),
 ];
 
@@ -399,29 +642,42 @@ export const RESUBMISSION_CONFIG: Record<
   { filterLabel: string; icon: string; badgeClass: string }
 > = {
   resubmitted: {
-    filterLabel: 'Đã gửi lại hồ sơ (Mới)',
+    get filterLabel() {
+      return i18n.t('listings.constants.resubmittedNew');
+    },
     icon: 'refresh',
     badgeClass: 'bg-secondary-container font-semibold text-on-secondary-container',
   },
   waiting: {
-    filterLabel: 'Chưa gửi lại (Trong hạn)',
+    get filterLabel() {
+      return i18n.t('listings.constants.notResubmittedWithinDeadline');
+    },
     icon: 'hourglass_top',
     badgeClass: 'bg-surface-container-high font-medium text-on-surface-variant',
   },
   overdue: {
-    filterLabel: 'Quá hạn bổ sung',
+    get filterLabel() {
+      return i18n.t('listings.constants.updateOverdue');
+    },
     icon: 'alarm_off',
     badgeClass: 'bg-error-container/70 font-semibold text-on-error-container',
   },
   locked: {
-    filterLabel: 'Đã khóa vĩnh viễn',
+    get filterLabel() {
+      return i18n.t('listings.constants.permanentlyLocked');
+    },
     icon: 'lock',
     badgeClass: 'bg-surface-variant font-semibold text-on-surface-variant',
   },
 };
 
 export const RESUBMISSION_FILTER_OPTIONS: SelectOption<ResubmissionStatus | 'all'>[] = [
-  { value: 'all', label: 'Trạng thái gửi lại' },
+  {
+    value: 'all',
+    get label() {
+      return i18n.t('listings.constants.resubmissionStatus');
+    },
+  },
   ...(Object.keys(RESUBMISSION_CONFIG) as ResubmissionStatus[]).map((status) => ({
     value: status,
     label: RESUBMISSION_CONFIG[status].filterLabel,
@@ -429,9 +685,14 @@ export const RESUBMISSION_FILTER_OPTIONS: SelectOption<ResubmissionStatus | 'all
 ];
 
 export const REJECTED_PROVINCE_OPTIONS: SelectOption<ProvinceCode | 'all'>[] = [
-  { value: 'all', label: 'Tỉnh/Thành phố' },
+  {
+    value: 'all',
+    get label() {
+      return i18n.t('listings.constants.provinceCity');
+    },
+  },
   ...(['danang', 'quangnam', 'thanhhoa', 'quangngai', 'hanoi', 'kiengiang'] as ProvinceCode[]).map(
-    (province) => ({ value: province, label: PROVINCE_LABELS[province] }),
+    (province) => linkedOption(province, () => PROVINCE_LABELS[province]),
   ),
 ];
 

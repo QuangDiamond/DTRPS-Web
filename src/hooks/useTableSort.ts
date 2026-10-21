@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import type { SortState } from '../utils/sort';
+import type { SortState } from '@/utils/sort';
 
 /** Trạng thái sắp xếp bảng: bấm cột lần lượt → tăng dần → giảm dần → bỏ sắp xếp */
 export function useTableSort<K extends string>(initial: SortState<K> | null = null) {

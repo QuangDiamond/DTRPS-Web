@@ -1,12 +1,9 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
-import Button from '../../../components/common/Button';
-import Modal from '../../../components/common/Modal';
-import {
-  LISTING_CATEGORY_CONFIG,
-  LISTING_CATEGORY_SELECT_OPTIONS,
-} from '../../../constants/listing';
-import { PROVINCE_OPTIONS } from '../../../constants/partner';
-import type { Listing, ListingCategory, ListingFormValues } from '../../../types/admin';
+import { useTranslation } from 'react-i18next';
+import { type FormEvent, type ReactNode, useState } from 'react';
+import { Button, Modal } from '@/components/common';
+import { LISTING_CATEGORY_CONFIG, LISTING_CATEGORY_SELECT_OPTIONS } from '@/constants/listing';
+import { PROVINCE_OPTIONS } from '@/constants/partner';
+import type { Listing, ListingCategory, ListingFormValues } from '@/types';
 
 interface ListingFormModalProps {
   /** null = thêm thủ công, có giá trị = chỉnh sửa */
@@ -53,6 +50,7 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 }
 
 export default function ListingFormModal({ listing, onSubmit, onClose }: ListingFormModalProps) {
+  const { t } = useTranslation();
   const [values, setValues] = useState<ListingFormValues>(() => toValues(listing));
   const [errors, setErrors] = useState<FormErrors>({});
   const isEdit = listing !== null;
@@ -65,10 +63,14 @@ export default function ListingFormModal({ listing, onSubmit, onClose }: Listing
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const nextErrors: FormErrors = {};
-    if (!values.name.trim()) nextErrors.name = 'Vui lòng nhập tên địa điểm';
-    if (!values.partnerName.trim()) nextErrors.partnerName = 'Vui lòng nhập đối tác sở hữu';
-    if (!values.categoryLabel.trim()) nextErrors.categoryLabel = 'Vui lòng nhập nhãn phân loại';
-    if (!values.address.trim()) nextErrors.address = 'Vui lòng nhập địa chỉ';
+    if (!values.name.trim())
+      nextErrors.name = t('approvedListings.listingFormModal.pleaseEnterPlaceName');
+    if (!values.partnerName.trim())
+      nextErrors.partnerName = t('approvedListings.listingFormModal.pleaseEnterOwningPartner');
+    if (!values.categoryLabel.trim())
+      nextErrors.categoryLabel = t('approvedListings.listingFormModal.pleaseEnterCategoryLabel');
+    if (!values.address.trim())
+      nextErrors.address = t('approvedListings.listingFormModal.pleaseEnterAddress');
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
     onSubmit({
@@ -82,21 +84,27 @@ export default function ListingFormModal({ listing, onSubmit, onClose }: Listing
 
   return (
     <Modal
-      title={isEdit ? 'Chỉnh sửa thông tin địa điểm' : 'Thêm địa điểm thủ công'}
+      title={
+        isEdit
+          ? t('approvedListings.listingFormModal.editPlaceDetails')
+          : t('approvedListings.listingFormModal.addPlaceManually')
+      }
       description={
         isEdit
-          ? `Cập nhật thông tin hiển thị của ${listing.id}`
-          : 'Địa điểm do quản trị viên thêm sẽ được phê duyệt và hiển thị ngay'
+          ? t('approvedListings.listingFormModal.updateDisplayDetails', { id: listing.id })
+          : t('approvedListings.listingFormModal.placesAddedByAdministrators')
       }
       onClose={onClose}
       size="lg"
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
-            Hủy
+            {t('actions.cancel')}
           </Button>
           <Button icon={isEdit ? 'save' : 'add_location_alt'} type="submit" form={FORM_ID}>
-            {isEdit ? 'Lưu thay đổi' : 'Thêm địa điểm'}
+            {isEdit
+              ? t('approvedListings.listingFormModal.saveChanges')
+              : t('approvedListings.listingFormModal.addPlace')}
           </Button>
         </>
       }
@@ -107,7 +115,7 @@ export default function ListingFormModal({ listing, onSubmit, onClose }: Listing
         noValidate
         className="grid grid-cols-1 gap-4 sm:grid-cols-2"
       >
-        <Field label="Tên địa điểm *" error={errors.name}>
+        <Field label={t('approvedListings.listingFormModal.placeName')} error={errors.name}>
           <input
             className={INPUT_CLASS}
             value={values.name}
@@ -115,7 +123,10 @@ export default function ListingFormModal({ listing, onSubmit, onClose }: Listing
             placeholder="VD: Hoi An Garden Homestay"
           />
         </Field>
-        <Field label="Đối tác sở hữu *" error={errors.partnerName}>
+        <Field
+          label={t('approvedListings.listingFormModal.owningPartner')}
+          error={errors.partnerName}
+        >
           <input
             className={INPUT_CLASS}
             value={values.partnerName}
@@ -123,7 +134,7 @@ export default function ListingFormModal({ listing, onSubmit, onClose }: Listing
             placeholder="VD: Hoi An Hospitality Ltd."
           />
         </Field>
-        <Field label="Danh mục">
+        <Field label={t('approvedListings.listingFormModal.category')}>
           <select
             className={`${INPUT_CLASS} cursor-pointer`}
             value={values.category}
@@ -141,23 +152,26 @@ export default function ListingFormModal({ listing, onSubmit, onClose }: Listing
             ))}
           </select>
         </Field>
-        <Field label="Nhãn phân loại hiển thị *" error={errors.categoryLabel}>
+        <Field
+          label={t('approvedListings.listingFormModal.displayedCategoryLabel')}
+          error={errors.categoryLabel}
+        >
           <input
             className={INPUT_CLASS}
             value={values.categoryLabel}
             onChange={(event) => update('categoryLabel', event.target.value)}
-            placeholder="VD: Resort ven biển"
+            placeholder={t('approvedListings.listingFormModal.eGBeachfrontResort')}
           />
         </Field>
-        <Field label="Địa chỉ *" error={errors.address}>
+        <Field label={t('approvedListings.listingFormModal.address')} error={errors.address}>
           <input
             className={INPUT_CLASS}
             value={values.address}
             onChange={(event) => update('address', event.target.value)}
-            placeholder="VD: Cẩm Châu, TP. Hội An, Quảng Nam"
+            placeholder={t('approvedListings.listingFormModal.eGCamChau')}
           />
         </Field>
-        <Field label="Tỉnh / Thành phố">
+        <Field label={t('approvedListings.listingFormModal.provinceCity')}>
           <select
             className={`${INPUT_CLASS} cursor-pointer`}
             value={values.province}

@@ -1,4 +1,5 @@
-import type { SortState } from '../../utils/sort';
+import { useTranslation } from 'react-i18next';
+import type { SortState } from '@/utils/sort';
 import Icon from './Icon';
 
 interface SortableHeaderProps<K extends string> {
@@ -18,6 +19,7 @@ export default function SortableHeader<K extends string>({
   onSort,
   className = '',
 }: SortableHeaderProps<K>) {
+  const { t } = useTranslation();
   const direction = sort?.key === sortKey ? sort.direction : null;
   const icon =
     direction === 'asc' ? 'arrow_upward' : direction === 'desc' ? 'arrow_downward' : 'unfold_more';
@@ -30,7 +32,7 @@ export default function SortableHeader<K extends string>({
       <button
         type="button"
         onClick={() => onSort(sortKey)}
-        title={`Sắp xếp theo ${label.toLowerCase()}`}
+        title={t('components.sortableHeader.sortBy', { toLowerCase: label.toLowerCase() })}
         className={`group inline-flex items-center gap-1 [text-transform:inherit] transition-colors hover:text-on-surface ${
           direction ? 'text-primary' : ''
         }`}

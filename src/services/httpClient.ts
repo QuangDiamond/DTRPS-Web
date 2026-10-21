@@ -1,3 +1,4 @@
+import i18n from 'i18next';
 import { API_URL, REQUEST_TIMEOUT_MS } from './config';
 import { getAccessToken } from './tokenStore';
 
@@ -54,13 +55,27 @@ function messageFromPayload(payload: unknown): string | undefined {
 }
 
 const STATUS_MESSAGES: Record<number, string> = {
-  400: 'Dữ liệu gửi lên không hợp lệ',
-  401: 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại',
-  403: 'Bạn không có quyền thực hiện thao tác này',
-  404: 'Không tìm thấy dữ liệu yêu cầu',
-  409: 'Dữ liệu đã bị thay đổi bởi người khác, vui lòng tải lại',
-  422: 'Dữ liệu chưa đúng quy định',
-  500: 'Máy chủ gặp sự cố, vui lòng thử lại sau',
+  get 400() {
+    return i18n.t('services.httpClient.theSubmittedDataInvalid');
+  },
+  get 401() {
+    return i18n.t('services.httpClient.yourSessionHasExpired');
+  },
+  get 403() {
+    return i18n.t('services.httpClient.youDoNotHave');
+  },
+  get 404() {
+    return i18n.t('services.httpClient.theRequestedDataWas');
+  },
+  get 409() {
+    return i18n.t('services.httpClient.theDataWasChanged');
+  },
+  get 422() {
+    return i18n.t('services.httpClient.theDataDoesNot');
+  },
+  get 500() {
+    return i18n.t('services.httpClient.theServerEncounteredProblem');
+  },
 };
 
 /** Gọi REST API, trả về JSON đã ép kiểu T. Ném ApiError khi lỗi mạng / HTTP không thành công. */
@@ -70,7 +85,11 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   signal?.addEventListener('abort', () => controller.abort(), { once: true });
 
-  const headers: Record<string, string> = { Accept: 'application/json' };
+  // Server trả nội dung nghiệp vụ (tên giấy tờ, ghi chú...) theo ngôn ngữ giao diện đang chọn
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    'Accept-Language': i18n.resolvedLanguage ?? 'vi',
+  };
   if (body !== undefined) headers['Content-Type'] = 'application/json';
   const token = getAccessToken();
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -86,7 +105,9 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   } catch (error) {
     const aborted = error instanceof DOMException && error.name === 'AbortError';
     throw new ApiError(
-      aborted ? 'Máy chủ phản hồi quá lâu, vui lòng thử lại' : 'Không kết nối được máy chủ',
+      aborted
+        ? i18n.t('services.httpClient.theServerTookToo')
+        : i18n.t('services.httpClient.couldNotConnectServer'),
       0,
       error,
     );
@@ -111,7 +132,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     throw new ApiError(
       messageFromPayload(payload) ??
         STATUS_MESSAGES[response.status] ??
-        `Yêu cầu thất bại (mã ${response.status})`,
+        i18n.t('services.httpClient.requestFailedCode', { status: response.status }),
       response.status,
       payload,
     );

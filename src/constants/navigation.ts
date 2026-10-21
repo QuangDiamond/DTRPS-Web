@@ -1,30 +1,87 @@
-import type { NavItem } from '../types/navigation';
+import i18n from 'i18next';
+import type { BreadcrumbItem, NavItem } from '@/types';
+import { localizeField } from '@/utils/localize';
 import { ROUTES } from './routes';
 
-export const ADMIN_NAV_ITEMS: NavItem[] = [
-  { label: 'Bảng điều khiển', path: ROUTES.DASHBOARD, icon: 'dashboard' },
-  { label: 'Quản lý người dùng', path: ROUTES.USERS, icon: 'group' },
-  { label: 'Quản lý đối tác', path: ROUTES.PARTNERS, icon: 'business_center' },
+const NAV_ITEMS: (NavItem & { id: string })[] = [
   {
-    label: 'Quản lý niêm yết',
+    id: 'dashboard',
+    get label() {
+      return i18n.t('nav.constants.dashboard');
+    },
+    path: ROUTES.DASHBOARD,
+    icon: 'dashboard',
+  },
+  {
+    id: 'users',
+    get label() {
+      return i18n.t('nav.constants.userManagement');
+    },
+    path: ROUTES.USERS,
+    icon: 'group',
+  },
+  {
+    id: 'partners',
+    get label() {
+      return i18n.t('nav.constants.partnerManagement');
+    },
+    path: ROUTES.PARTNERS,
+    icon: 'business_center',
+  },
+  {
+    id: 'listings',
+    get label() {
+      return i18n.t('nav.constants.listingManagement');
+    },
     path: ROUTES.LISTINGS,
     icon: 'store_mall_directory',
-    badge: { count: 12, tone: 'tertiary' },
+    badge: { source: 'pendingListings', tone: 'tertiary' },
   },
-  { label: 'Quản lý điểm đến POI', path: ROUTES.LOCATIONS, icon: 'place' },
-  { label: 'Báo cáo & Thống kê', path: ROUTES.REPORTS, icon: 'bar_chart' },
   {
-    label: 'Thông báo',
+    id: 'pois',
+    get label() {
+      return i18n.t('nav.constants.poiDestinations');
+    },
+    path: ROUTES.POIS,
+    icon: 'place',
+  },
+  {
+    id: 'reports',
+    get label() {
+      return i18n.t('nav.constants.reportsAnalytics');
+    },
+    path: ROUTES.REPORTS,
+    icon: 'bar_chart',
+  },
+  {
+    id: 'notifications',
+    get label() {
+      return i18n.t('nav.constants.notifications');
+    },
     path: ROUTES.NOTIFICATIONS,
     icon: 'notifications',
-    badge: { count: 5, tone: 'secondary' },
+    badge: { source: 'unreadNotifications', tone: 'secondary' },
   },
-  { label: 'Cài đặt hệ thống', path: ROUTES.SETTINGS, icon: 'settings' },
+  {
+    id: 'settings',
+    get label() {
+      return i18n.t('nav.constants.systemSettings');
+    },
+    path: ROUTES.SETTINGS,
+    icon: 'settings',
+  },
 ];
+NAV_ITEMS.forEach((item) => localizeField(item, 'label', `nav.${item.id}`));
+
+/** Menu Sidebar — nhãn đổi theo ngôn ngữ đang chọn */
+export const ADMIN_NAV_ITEMS: NavItem[] = NAV_ITEMS;
 
 /** Breadcrumb gốc dùng chung cho mọi trang admin */
-export const ADMIN_ROOT_CRUMB = {
-  label: 'Quản trị hệ thống',
+export const ADMIN_ROOT_CRUMB: BreadcrumbItem = {
+  get label() {
+    return i18n.t('nav.constants.systemAdministration');
+  },
   icon: 'home',
   to: ROUTES.DASHBOARD,
 };
+localizeField(ADMIN_ROOT_CRUMB, 'label', 'nav.section');

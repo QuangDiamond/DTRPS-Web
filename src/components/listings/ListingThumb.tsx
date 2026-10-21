@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { LISTING_CATEGORY_CONFIG } from '../../constants/listing';
-import type { Listing } from '../../types/admin';
-import Icon from '../common/Icon';
+import { Icon } from '@/components/common';
+import { LISTING_CATEGORY_CONFIG } from '@/constants/listing';
+import type { Listing } from '@/types';
 
 interface ListingThumbProps {
   listing: Listing;

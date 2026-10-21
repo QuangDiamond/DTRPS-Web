@@ -1,4 +1,4 @@
-import type { SelectOption } from '../../types/admin';
+import type { SelectOption } from '@/types';
 import Icon from './Icon';
 
 interface FilterSelectProps<T extends string> {

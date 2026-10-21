@@ -1,6 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { Listing, ListingDetail } from '../../../types/admin';
+import { Icon } from '@/components/common';
+import type { Listing, ListingDetail } from '@/types';
 import ReviewSection, { FieldLabel, READONLY_FIELD_CLASS } from './ReviewSection';
 
 interface BasicInfoSectionProps {
@@ -26,11 +27,12 @@ function IconField({
 }
 
 export default function BasicInfoSection({ listing, detail }: BasicInfoSectionProps) {
+  const { t } = useTranslation();
   return (
     <ReviewSection
       number="01"
-      title="Thông tin cơ bản địa điểm"
-      subtitle="Đối chiếu thông tin tiếp thị, danh mục và giấy tờ niêm yết"
+      title={t('listingReview.basicInfoSection.basicPlaceInformation')}
+      subtitle={t('listingReview.basicInfoSection.crossCheckMarketingDetails')}
       badge={
         <span className="rounded-full border border-primary-fixed/60 bg-primary-fixed/20 px-3 py-1 text-[11.5px] font-bold text-on-primary-fixed-variant">
           {detail.categoryDetail}
@@ -39,14 +41,14 @@ export default function BasicInfoSection({ listing, detail }: BasicInfoSectionPr
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="md:col-span-2">
-          <FieldLabel>Tên địa điểm đăng ký</FieldLabel>
+          <FieldLabel>{t('listingReview.basicInfoSection.registeredPlaceName')}</FieldLabel>
           <div className={`${READONLY_FIELD_CLASS} text-[15px] font-bold text-on-surface`}>
             {listing.name}
           </div>
         </div>
 
         <div className="md:col-span-2">
-          <FieldLabel>Mô tả chi tiết từ chủ cơ sở</FieldLabel>
+          <FieldLabel>{t('listingReview.basicInfoSection.ownerSDetailedDescription')}</FieldLabel>
           <div
             className={`${READONLY_FIELD_CLASS} p-3.5 text-[13px] leading-relaxed text-on-surface-variant`}
           >
@@ -55,7 +57,7 @@ export default function BasicInfoSection({ listing, detail }: BasicInfoSectionPr
         </div>
 
         <div className="md:col-span-2">
-          <FieldLabel>Địa chỉ thực tế</FieldLabel>
+          <FieldLabel>{t('listingReview.basicInfoSection.actualAddress')}</FieldLabel>
           <IconField icon="location_on" className="font-medium">
             <span>{detail.fullAddress}</span>
           </IconField>
@@ -68,13 +70,13 @@ export default function BasicInfoSection({ listing, detail }: BasicInfoSectionPr
           </IconField>
         </div>
         <div>
-          <FieldLabel>Email đặt phòng</FieldLabel>
+          <FieldLabel>{t('listingReview.basicInfoSection.bookingEmail')}</FieldLabel>
           <IconField icon="mail" className="font-medium">
             <span className="truncate">{detail.email}</span>
           </IconField>
         </div>
         <div>
-          <FieldLabel>Website chính thức</FieldLabel>
+          <FieldLabel>{t('listingReview.basicInfoSection.officialWebsite')}</FieldLabel>
           <IconField icon="language" className="font-medium">
             {detail.website ? (
               <a
@@ -86,7 +88,9 @@ export default function BasicInfoSection({ listing, detail }: BasicInfoSectionPr
                 {detail.website}
               </a>
             ) : (
-              <span className="text-outline">Chưa cung cấp</span>
+              <span className="text-outline">
+                {t('listingReview.basicInfoSection.notProvided')}
+              </span>
             )}
           </IconField>
         </div>
@@ -99,7 +103,7 @@ export default function BasicInfoSection({ listing, detail }: BasicInfoSectionPr
 
         {detail.price && (
           <div className="md:col-span-2">
-            <FieldLabel>Mức giá tham chiếu niêm yết</FieldLabel>
+            <FieldLabel>{t('listingReview.basicInfoSection.referenceListingPrice')}</FieldLabel>
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary-fixed/80 bg-primary-fixed/20 px-4 py-3">
               <div className="flex items-center gap-2.5 text-[16px] font-bold text-primary">
                 <Icon name="payments" className="text-[22px]" />

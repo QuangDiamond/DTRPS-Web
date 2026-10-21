@@ -1,6 +1,6 @@
-import Icon from '../../../components/common/Icon';
-import { PARTNER_TYPE_CONFIG } from '../../../constants/partner';
-import type { PartnerType } from '../../../types/admin';
+import { Icon } from '@/components/common';
+import { PARTNER_TYPE_CONFIG } from '@/constants/partner';
+import type { PartnerType } from '@/types';
 
 export default function PartnerTypeBadge({ type }: { type: PartnerType }) {
   const config = PARTNER_TYPE_CONFIG[type];

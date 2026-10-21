@@ -1,11 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import { useRef, useState } from 'react';
-import Icon from '../../../components/common/Icon';
-import {
-  NOTIFICATION_PRIORITIES,
-  NOTIFICATION_PRIORITY_CONFIG,
-} from '../../../constants/notification';
-import type { NotificationPriority } from '../../../types/admin';
-import { useDismiss } from '../../../hooks/useDismiss';
+import { Icon } from '@/components/common';
+import { NOTIFICATION_PRIORITIES, NOTIFICATION_PRIORITY_CONFIG } from '@/constants/notification';
+import { useDismiss } from '@/hooks';
+import type { NotificationPriority } from '@/types';
 
 interface PriorityFilterMenuProps {
   value: NotificationPriority | 'all';
@@ -15,6 +13,7 @@ interface PriorityFilterMenuProps {
 
 /** Nút "Lọc mức ưu tiên" + menu chọn mức */
 export default function PriorityFilterMenu({ value, counts, onChange }: PriorityFilterMenuProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -31,7 +30,11 @@ export default function PriorityFilterMenu({ value, counts, onChange }: Priority
     dotClass: string;
     count?: number;
   }[] = [
-    { id: 'all', label: 'Tất cả mức ưu tiên', dotClass: 'bg-outline-variant' },
+    {
+      id: 'all',
+      label: t('notifications.priorityFilterMenu.allPriorities'),
+      dotClass: 'bg-outline-variant',
+    },
     ...NOTIFICATION_PRIORITIES.map((priority) => ({
       id: priority,
       label: NOTIFICATION_PRIORITY_CONFIG[priority].label,
@@ -55,8 +58,10 @@ export default function PriorityFilterMenu({ value, counts, onChange }: Priority
         <Icon name="filter_list" className="text-[19px] text-primary" />
         <span>
           {value === 'all'
-            ? 'Lọc mức ưu tiên'
-            : `Ưu tiên: ${NOTIFICATION_PRIORITY_CONFIG[value].label}`}
+            ? t('notifications.priorityFilterMenu.filterByPriority')
+            : t('notifications.priorityFilterMenu.priority', {
+                label: NOTIFICATION_PRIORITY_CONFIG[value].label,
+              })}
         </span>
       </button>
 

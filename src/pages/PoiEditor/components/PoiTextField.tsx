@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
+import { Icon } from '@/components/common';
 
 export const POI_INPUT_CLASS =
   'w-full bg-surface-container-low text-on-surface font-body-md text-body-md py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all';

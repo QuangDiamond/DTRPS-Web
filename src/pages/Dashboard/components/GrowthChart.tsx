@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { GrowthPoint } from '../../../types/admin';
-import { formatNumber } from '../../../utils/format';
-import { DASHBOARD_CARD_CLASS } from '../dashboardUtils';
+import { Trans, useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { DASHBOARD_CARD_CLASS } from '@/pages/Dashboard/dashboardUtils';
+import type { GrowthPoint } from '@/types';
+import { formatMonthLabel, formatNumber } from '@/utils/format';
 
 interface GrowthChartProps {
   data: GrowthPoint[];
@@ -20,11 +21,21 @@ const GRID_LINES = [40, 90, 140];
 
 /** Làm tròn trục Y lên bội số 5,000 gần nhất */
 function getScaleMax(data: GrowthPoint[]): number {
-  const max = Math.max(...data.map((point) => Math.max(point.users, point.trips)), 1);
+  const max = Math.max(...data.map((point) => Math.max(point.users, point.aiSearches)), 1);
   return Math.ceil(max / 5000) * 5000;
 }
 
+/** Tăng trưởng tương tác AI mùa thu (số liệu mẫu của thiết kế) */
+const AI_ENGAGEMENT_GROWTH = '34.2%';
+
 export default function GrowthChart({ data, onViewReport }: GrowthChartProps) {
+  const { t } = useTranslation();
+  const axisLabel = (point: GrowthPoint) =>
+    point.current ? t('dashboard.growth.current') : formatMonthLabel(point.month);
+  const tooltipLabel = (point: GrowthPoint) =>
+    point.current
+      ? t('dashboard.growth.currentFull', { month: formatMonthLabel(point.month) })
+      : formatMonthLabel(point.month);
   const lastIndex = data.length - 1;
   const [activeIndex, setActiveIndex] = useState(lastIndex);
 
@@ -34,7 +45,7 @@ export default function GrowthChart({ data, onViewReport }: GrowthChartProps) {
   const points = data.map((point, index) => ({
     x: X_START + index * step,
     usersY: toY(point.users),
-    tripsY: toY(point.trips),
+    tripsY: toY(point.aiSearches),
   }));
 
   const usersLine = points.map((p) => `${p.x},${p.usersY}`).join(' ');
@@ -47,20 +58,20 @@ export default function GrowthChart({ data, onViewReport }: GrowthChartProps) {
       <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
           <h2 className="font-headline-sm text-[18px] font-bold text-on-surface">
-            Lượng người dùng mới &amp; Chuyến đi tạo
+            {t('dashboard.growth.title')}
           </h2>
           <p className="font-body-sm text-[13px] text-on-surface-variant">
-            Biểu đồ đối sánh tăng trưởng người dùng &amp; hành trình AI sinh ra 6 tháng gần nhất
+            {t('dashboard.growth.subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 font-label-sm text-[12px] font-medium text-on-surface">
             <span className="inline-block h-3 w-3 rounded-full bg-primary" />
-            <span>Người dùng mới</span>
+            <span>{t('dashboard.growth.newUsers')}</span>
           </div>
           <div className="flex items-center gap-2 font-label-sm text-[12px] font-medium text-on-surface">
             <span className="inline-block h-3 w-3 rounded-full bg-tertiary-container" />
-            <span>Chuyến đi tạo</span>
+            <span>{t('dashboard.growth.aiSearches')}</span>
           </div>
         </div>
       </div>
@@ -170,7 +181,7 @@ export default function GrowthChart({ data, onViewReport }: GrowthChartProps) {
           {/* Nhãn trục X */}
           {data.map((point, index) => (
             <text
-              key={point.label}
+              key={point.month}
               x={points[index].x}
               y="210"
               textAnchor="middle"
@@ -179,7 +190,7 @@ export default function GrowthChart({ data, onViewReport }: GrowthChartProps) {
                 index === activeIndex ? 'fill-primary font-bold' : 'fill-on-surface-variant'
               }`}
             >
-              {point.label}
+              {axisLabel(point)}
             </text>
           ))}
 
@@ -200,13 +211,13 @@ export default function GrowthChart({ data, onViewReport }: GrowthChartProps) {
         {active && (
           <div className="pointer-events-none absolute top-2 right-10 hidden flex-col rounded-xl bg-inverse-surface px-3 py-2 text-surface shadow-lg sm:flex">
             <span className="font-label-sm text-[10px] font-bold tracking-wider text-surface-container-highest uppercase">
-              {active.fullLabel}
+              {tooltipLabel(active)}
             </span>
             <span className="font-label-md text-[13px] font-bold text-primary-fixed">
-              {formatNumber(active.users)} Người dùng
+              {t('dashboard.growth.usersValue', { count: formatNumber(active.users) })}
             </span>
             <span className="font-body-sm text-[11px] font-medium text-tertiary-fixed">
-              {formatNumber(active.trips)} Chuyến đi
+              {t('dashboard.growth.aiSearchesValue', { count: formatNumber(active.aiSearches) })}
             </span>
           </div>
         )}
@@ -217,8 +228,11 @@ export default function GrowthChart({ data, onViewReport }: GrowthChartProps) {
         <div className="flex items-center gap-2.5">
           <Icon name="insights" className="text-[20px] text-primary" />
           <span className="font-body-sm text-[13px] text-on-surface-variant">
-            Tỷ lệ tương tác tạo lịch trình du lịch thông minh qua AI tăng{' '}
-            <strong className="font-semibold text-on-surface">34.2%</strong> trong mùa thu.
+            <Trans
+              i18nKey="dashboard.growth.insight"
+              values={{ percent: AI_ENGAGEMENT_GROWTH }}
+              components={{ bold: <strong className="font-semibold text-on-surface" /> }}
+            />
           </span>
         </div>
         <button
@@ -226,7 +240,7 @@ export default function GrowthChart({ data, onViewReport }: GrowthChartProps) {
           onClick={onViewReport}
           className="flex shrink-0 items-center gap-0.5 font-label-sm text-[12px] font-bold text-primary hover:underline"
         >
-          <span>Xem báo cáo</span>
+          <span>{t('dashboard.growth.viewReport')}</span>
           <Icon name="chevron_right" className="text-[16px]" />
         </button>
       </div>

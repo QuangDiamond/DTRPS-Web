@@ -1,4 +1,4 @@
-import Icon from '../common/Icon';
+import { Icon } from '@/components/common';
 
 /** Thông báo lỗi trong form xác thực */
 export default function AuthAlert({ message }: { message: string }) {

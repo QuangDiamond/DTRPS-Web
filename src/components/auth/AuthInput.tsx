@@ -1,5 +1,5 @@
 import type { InputHTMLAttributes, ReactNode } from 'react';
-import Icon from '../common/Icon';
+import { Icon } from '@/components/common';
 
 export interface AuthInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'className'> {
   id: string;

@@ -1,5 +1,6 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import { formatCoordinate, parseCoordinate } from '../poiFormUtils';
+import { formatCoordinate, parseCoordinate } from '@/pages/PoiEditor/poiFormUtils';
 
 interface PoiCoordinateInputProps {
   label: string;
@@ -17,13 +18,16 @@ export default function PoiCoordinateInput({
   onChange,
   onInvalid,
 }: PoiCoordinateInputProps) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState<string | null>(null);
 
   const commit = () => {
     if (draft === null) return;
     const parsed = parseCoordinate(draft, axis);
     if (parsed === null) {
-      onInvalid(`${label} không hợp lệ (giới hạn ±${axis === 'lat' ? 90 : 180}°)`);
+      onInvalid(
+        t('poiEditor.poiCoordinateInput.invalidLimit', { label, value: axis === 'lat' ? 90 : 180 }),
+      );
     } else if (parsed !== value) {
       onChange(parsed);
     }

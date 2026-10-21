@@ -1,6 +1,6 @@
-import { DEFAULT_SYSTEM_SETTINGS } from '../constants/settings';
-import type { SystemSettings } from '../types/admin';
-import type { SettingsSnapshot } from '../types/api';
+import i18n from 'i18next';
+import { DEFAULT_SYSTEM_SETTINGS } from '@/constants/settings';
+import type { SettingsSnapshot, SystemSettings } from '@/types';
 import { ENDPOINTS } from './endpoints';
 import { createSource, writeRequest } from './request';
 
@@ -11,7 +11,9 @@ const MOCK_SNAPSHOT: SettingsSnapshot = {
   settings: DEFAULT_SYSTEM_SETTINGS,
   meta: {
     updatedAt: '2024-10-24T14:32:08+07:00',
-    updatedBy: 'Quản trị viên Super Admin',
+    get updatedBy() {
+      return i18n.t('services.settingsService.superAdminAdministrator');
+    },
     updatedIp: MOCK_ADMIN_IP,
     syncedAt: new Date(Date.now() - 4 * 60_000).toISOString(),
   },

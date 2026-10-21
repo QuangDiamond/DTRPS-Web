@@ -1,3 +1,4 @@
+import i18n from 'i18next';
 /** Quy tắc kiểm tra dữ liệu dùng chung cho mọi form trong hệ thống */
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -27,8 +28,16 @@ export function isValidTaxCode(value: string): boolean {
 }
 
 export const VALIDATION_MESSAGES = {
-  email: 'Email không hợp lệ',
-  phone: 'Số điện thoại không hợp lệ (VD: 0905 888 999)',
-  url: 'Website phải bắt đầu bằng http:// hoặc https://',
-  taxCode: 'Mã số thuế gồm 10 hoặc 13 số',
+  get email() {
+    return i18n.t('utils.validation.invalidEmailAddress');
+  },
+  get phone() {
+    return i18n.t('utils.validation.invalidPhoneNumberE');
+  },
+  get url() {
+    return i18n.t('utils.validation.websiteMustStartWith');
+  },
+  get taxCode() {
+    return i18n.t('utils.validation.taxCodeMustHave');
+  },
 } as const;

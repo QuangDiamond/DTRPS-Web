@@ -1,6 +1,6 @@
-import type { ApprovedListingFilters, Listing } from '../../types/admin';
-import { formatDateWithPeriod } from '../../utils/format';
-import { normalizeText } from '../../utils/string';
+import type { ApprovedListingFilters, Listing } from '@/types';
+import { formatDateWithPeriod } from '@/utils/format';
+import { normalizeText } from '@/utils/string';
 
 export function isHidden(listing: Listing): boolean {
   return listing.visibility === 'hidden';

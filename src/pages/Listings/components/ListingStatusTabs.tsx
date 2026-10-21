@@ -1,7 +1,8 @@
-import Icon from '../../../components/common/Icon';
-import type { ListingStats } from '../../../types/admin';
-import { formatNumber } from '../../../utils/format';
-import type { ListingTab } from '../listingUtils';
+import i18n from 'i18next';
+import { Icon } from '@/components/common';
+import type { ListingTab } from '@/pages/Listings/listingUtils';
+import type { ListingStats } from '@/types';
+import { formatNumber } from '@/utils/format';
 
 interface ListingStatusTabsProps {
   active: ListingTab;
@@ -21,7 +22,9 @@ interface TabConfig {
 const TABS: TabConfig[] = [
   {
     value: 'all',
-    label: 'Tất cả niêm yết',
+    get label() {
+      return i18n.t('listings.listingStatusTabs.allListings');
+    },
     icon: 'folder_copy',
     iconClass: '',
     count: (stats) => stats.total,
@@ -29,7 +32,9 @@ const TABS: TabConfig[] = [
   },
   {
     value: 'pending',
-    label: 'Chờ phê duyệt',
+    get label() {
+      return i18n.t('listings.listingStatusTabs.pendingApproval');
+    },
     icon: 'hourglass_top',
     iconClass: 'text-tertiary',
     count: (stats) => stats.pending,
@@ -37,7 +42,9 @@ const TABS: TabConfig[] = [
   },
   {
     value: 'approved',
-    label: 'Đã phê duyệt',
+    get label() {
+      return i18n.t('listings.listingStatusTabs.approved');
+    },
     icon: 'check_circle',
     iconClass: '',
     count: (stats) => stats.approved,
@@ -45,7 +52,9 @@ const TABS: TabConfig[] = [
   },
   {
     value: 'rejected',
-    label: 'Bị từ chối',
+    get label() {
+      return i18n.t('listings.listingStatusTabs.rejected');
+    },
     icon: 'cancel',
     iconClass: '',
     count: (stats) => stats.rejected,

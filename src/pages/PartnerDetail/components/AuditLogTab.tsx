@@ -1,19 +1,23 @@
-import Icon from '../../../components/common/Icon';
-import type { PartnerAuditEntry } from '../../../types/admin';
-import { formatDayTime } from '../../../utils/format';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import type { PartnerAuditEntry } from '@/types';
+import { formatDayTime } from '@/utils/format';
 
 export default function AuditLogTab({ entries }: { entries: PartnerAuditEntry[] }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-2xl bg-surface-container-lowest p-6 shadow-sm">
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <h2 className="font-headline-sm text-headline-sm text-on-surface">Nhật ký kiểm toán</h2>
+          <h2 className="font-headline-sm text-headline-sm text-on-surface">
+            {t('partnerDetail.auditLogTab.auditLog')}
+          </h2>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
-            Mọi thao tác trên tài khoản đối tác được ghi nhận tự động, không thể chỉnh sửa
+            {t('partnerDetail.auditLogTab.everyActionPartnerAccount')}
           </p>
         </div>
         <span className="rounded-full bg-surface-container px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-surface-variant">
-          {entries.length} sự kiện
+          {t('partnerDetail.auditLogTab.events', { count: entries.length })}
         </span>
       </div>
 

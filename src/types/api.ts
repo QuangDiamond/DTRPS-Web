@@ -1,27 +1,12 @@
 /** Kiểu dữ liệu của lớp service (hợp đồng với backend) */
-import type {
-  ActivityItem,
-  AdminAccountDetails,
-  AdminActivity,
-  AdminNotification,
-  AdminSession,
-  AppUser,
-  CategoryShare,
-  DashboardStats,
-  GrowthPoint,
-  Listing,
-  ListingStats,
-  NotificationRules,
-  NotificationStats,
-  Partner,
-  PartnerStats,
-  Poi,
-  PoiStats,
-  SecurityKey,
-  SettingsMeta,
-  SystemSettings,
-  UserStats,
-} from './admin';
+import type { ActivityItem, CategoryShare, DashboardStats, GrowthPoint } from './dashboard';
+import type { Listing, ListingStats } from './listing';
+import type { AdminNotification, NotificationRules, NotificationStats } from './notification';
+import type { Partner, PartnerStats } from './partner';
+import type { Poi, PoiStats } from './poi';
+import type { AdminAccountDetails, AdminActivity, AdminSession, SecurityKey } from './profile';
+import type { SettingsMeta, SystemSettings } from './settings';
+import type { AppUser, UserStats } from './user';
 
 export type LoadStatus = 'loading' | 'ready' | 'error';
 

@@ -1,6 +1,5 @@
-import { MOCK_POIS, POI_BASE_STATS } from '../constants/mockPois';
-import type { Poi, PoiFormValues } from '../types/admin';
-import type { PoisSnapshot } from '../types/api';
+import { MOCK_POIS, POI_BASE_STATS } from '@/mocks/data/mockPois';
+import type { Poi, PoiFormValues, PoisSnapshot } from '@/types';
 import { ENDPOINTS } from './endpoints';
 import { createSource, writeRequest } from './request';
 

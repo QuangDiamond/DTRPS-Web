@@ -160,6 +160,23 @@
   display: none;
 }
 
+/* Bảng dữ liệu rộng: hiện lại thanh cuộn ngang mảnh để lướt sang các cột bị khuất */
+.table-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-outline-variant) var(--color-surface-container-low);
+}
+.table-scroll::-webkit-scrollbar {
+  display: block;
+  height: 8px;
+}
+.table-scroll::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: var(--color-outline-variant);
+}
+.table-scroll::-webkit-scrollbar-track {
+  background: var(--color-surface-container-low);
+}
+
 /* Hiệu ứng mở modal (dùng qua animate-[fadeIn_0.2s_ease-out]) */
 @keyframes fadeIn {
   from {

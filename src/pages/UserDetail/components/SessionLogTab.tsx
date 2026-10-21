@@ -1,12 +1,14 @@
-import Icon from '../../../components/common/Icon';
-import type { UserAuditEntry } from '../../../types/admin';
-import { formatDayTime } from '../../../utils/format';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import type { UserAuditEntry } from '@/types';
+import { formatDayTime } from '@/utils/format';
 
 export default function SessionLogTab({ entries }: { entries: UserAuditEntry[] }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-2xl bg-surface-container-lowest p-space-xl shadow-sm">
       <h4 className="mb-space-md font-headline-sm text-headline-sm font-bold text-on-surface">
-        Nhật ký bảo mật & Lịch sử phiên
+        {t('userDetail.sessionLogTab.securityLogSessionHistory')}
       </h4>
       <div className="flex flex-col gap-space-sm font-body-sm text-body-sm">
         {entries.map((entry) => (

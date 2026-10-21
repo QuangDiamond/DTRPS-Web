@@ -1,13 +1,6 @@
-import type { Listing, ListingDetail } from '../../types/admin';
-import { pad2 } from '../../utils/format';
-
-export interface ReviewLogEntry {
-  id: string;
-  /** ISO datetime */
-  time: string;
-  text: string;
-  tone: 'primary' | 'muted' | 'error';
-}
+import i18n from 'i18next';
+import type { Listing, ListingDetail, ReviewLogEntry } from '@/types';
+import { pad2 } from '@/utils/format';
 
 /** Nhật ký thẩm định: nộp hồ sơ + log hệ thống + kết quả xử lý (mới nhất lên đầu) */
 export function buildReviewLogs(listing: Listing, detail: ListingDetail): ReviewLogEntry[] {
@@ -16,7 +9,9 @@ export function buildReviewLogs(listing: Listing, detail: ListingDetail): Review
     {
       id: 'submitted',
       time: listing.submittedAt,
-      text: `Đối tác ${listing.partnerName} nộp hồ sơ niêm yết mới.`,
+      text: i18n.t('listingReview.utils.partnerSubmittedNewListing', {
+        partnerName: listing.partnerName,
+      }),
       tone: 'muted',
     },
     ...detail.logs.map((log, index) => ({
@@ -28,14 +23,22 @@ export function buildReviewLogs(listing: Listing, detail: ListingDetail): Review
   ];
 
   if (listing.reviewedAt && listing.status !== 'pending') {
-    const note = listing.reviewNote ? ` Ghi chú: ${listing.reviewNote}` : '';
+    const note = listing.reviewNote
+      ? i18n.t('listingReview.utils.note', { reviewNote: listing.reviewNote })
+      : '';
     entries.push({
       id: 'reviewed',
       time: listing.reviewedAt,
-      text:
+      text: [
         listing.status === 'approved'
-          ? `Quản trị viên phê duyệt địa điểm.${note}`
-          : `Quản trị viên từ chối địa điểm. Lý do: ${listing.rejectReason ?? '—'}.${note}`,
+          ? i18n.t('listingReview.utils.anAdministratorApprovedPlace')
+          : i18n.t('listingReview.utils.anAdministratorRejectedPlace', {
+              value: listing.rejectReason ?? '—',
+            }),
+        note,
+      ]
+        .filter(Boolean)
+        .join(' '),
       tone: listing.status === 'approved' ? 'primary' : 'error',
     });
   }
@@ -53,9 +56,13 @@ export function formatWaitDuration(fromIso: string, toIso?: string): string {
 /** "24/10/2024 lúc 09:42" */
 export function formatSubmittedAt(iso: string): string {
   const date = new Date(iso);
-  return `${pad2(date.getDate())}/${pad2(date.getMonth() + 1)}/${date.getFullYear()} lúc ${pad2(
-    date.getHours(),
-  )}:${pad2(date.getMinutes())}`;
+  return i18n.t('listingReview.utils.at', {
+    value: pad2(date.getDate()),
+    value2: pad2(date.getMonth() + 1),
+    getFullYear: date.getFullYear(),
+    value3: pad2(date.getHours()),
+    value4: pad2(date.getMinutes()),
+  });
 }
 
 export function getMapsUrl(listing: Listing, detail: ListingDetail): string {

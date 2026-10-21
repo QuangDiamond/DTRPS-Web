@@ -1,9 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import Button from '../../../components/common/Button';
-import Modal from '../../../components/common/Modal';
-import NotificationRulesFields from '../../../components/notifications/NotificationRulesFields';
-import { countEnabledChannels } from '../../../utils/notificationRules';
-import type { NotificationRules } from '../../../types/admin';
+import { Button, Modal } from '@/components/common';
+import NotificationRulesFields from '@/components/notifications/NotificationRulesFields';
+import type { NotificationRules } from '@/types';
+import { countEnabledChannels } from '@/utils/notificationRules';
 
 interface NotificationRulesModalProps {
   rules: NotificationRules;
@@ -17,25 +17,26 @@ export default function NotificationRulesModal({
   onSave,
   onClose,
 }: NotificationRulesModalProps) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState<NotificationRules>(rules);
 
   return (
     <Modal
-      title="Cài đặt quy tắc thông báo"
-      description="Chọn sự kiện tạo thông báo, ngưỡng cảnh báo AI và kênh tiếp nhận của quản trị viên"
+      title={t('notifications.notificationRulesModal.notificationRuleSettings')}
+      description={t('notifications.notificationRulesModal.chooseEventsThatCreate')}
       size="lg"
       onClose={onClose}
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
-            Hủy
+            {t('actions.cancel')}
           </Button>
           <Button
             icon="save"
             disabled={countEnabledChannels(draft) === 0}
             onClick={() => onSave(draft)}
           >
-            Lưu quy tắc
+            {t('notifications.notificationRulesModal.saveRules')}
           </Button>
         </>
       }

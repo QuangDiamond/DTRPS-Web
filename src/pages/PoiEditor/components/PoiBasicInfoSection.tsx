@@ -1,13 +1,11 @@
-import Icon from '../../../components/common/Icon';
-import { POI_CATEGORY_OPTIONS } from '../../../constants/poi';
-import type { PoiFormValues } from '../../../types/admin';
-import type { PoiFieldChange, PoiFormErrors } from '../poiFormUtils';
+import { Trans, useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { POI_CATEGORY_OPTIONS } from '@/constants/poi';
+import type { PoiFieldChange, PoiFormErrors } from '@/pages/PoiEditor/poiFormUtils';
+import type { PoiFormValues } from '@/types';
 import PoiDescriptionEditor from './PoiDescriptionEditor';
 import PoiSectionCard from './PoiSectionCard';
 import PoiTextField, { POI_INPUT_CLASS } from './PoiTextField';
-
-const DEFAULT_AI_NOTE =
-  'Được AI tính toán dựa trên số điểm dừng bên trong khu vực và lộ trình di chuyển phổ biến.';
 
 interface PoiBasicInfoSectionProps {
   values: PoiFormValues;
@@ -20,31 +18,35 @@ export default function PoiBasicInfoSection({
   errors,
   onChange,
 }: PoiBasicInfoSectionProps) {
+  const { t } = useTranslation();
   return (
     <PoiSectionCard
       icon="info"
-      title="1. Thông tin cơ bản POI"
-      description="Dữ liệu định danh, danh mục hiển thị và thời lượng khám phá"
+      title={t('poiEditor.poiBasicInfoSection.n1BasicPoiInformation')}
+      description={t('poiEditor.poiBasicInfoSection.identityDataDisplayCategory')}
       badge={
         <span className="rounded-full bg-surface-container-low px-space-sm py-0.5 font-label-sm text-label-sm font-semibold text-primary">
-          Bắt buộc
+          {t('poiEditor.poiBasicInfoSection.required')}
         </span>
       }
     >
       <div className="grid grid-cols-1 gap-space-md md:grid-cols-2">
         <PoiTextField
           className="md:col-span-2"
-          label="Tên điểm đến POI"
+          label={t('poiEditor.poiBasicInfoSection.poiDestinationName')}
           required
           value={values.name}
-          placeholder="Ví dụ: Phố cổ Hội An (Hoi An Ancient Town)"
+          placeholder={t('poiEditor.poiBasicInfoSection.eGPhoCo')}
           error={errors.name}
           onChange={(name) => onChange('name', name)}
         />
 
         <div className="flex flex-col gap-1.5">
           <label className="flex items-center gap-1 font-label-md text-label-md font-semibold text-on-surface">
-            Danh mục chính <span className="text-error">*</span>
+            <Trans
+              i18nKey="poiEditor.poiBasicInfoSection.mainCategory"
+              components={{ c0: <span className="text-error" /> }}
+            />
           </label>
           <div className="relative">
             <select
@@ -71,9 +73,9 @@ export default function PoiBasicInfoSection({
         </div>
 
         <PoiTextField
-          label="Danh mục phụ / Tag gợi ý AI"
+          label={t('poiEditor.poiBasicInfoSection.subCategoriesAiSuggestion')}
           value={values.tags}
-          placeholder="Phân tách bằng dấu phẩy"
+          placeholder={t('poiEditor.poiBasicInfoSection.separateWithCommas')}
           onChange={(tags) => onChange('tags', tags)}
         />
 
@@ -83,41 +85,32 @@ export default function PoiBasicInfoSection({
         />
 
         <PoiTextField
-          label="Mức giá vé tham quan (Quy chuẩn VNĐ)"
+          label={t('poiEditor.poiBasicInfoSection.admissionPriceVnd')}
           icon="payments"
           value={values.price}
-          placeholder="Ví dụ: 120,000 VNĐ / vé"
+          placeholder={t('poiEditor.poiBasicInfoSection.eG120000')}
           onChange={(price) => onChange('price', price)}
         />
         <PoiTextField
-          label="Khung giờ mở cửa"
+          label={t('poiEditor.poiBasicInfoSection.openingHours')}
           icon="schedule"
           value={values.openingHours}
-          placeholder="Ví dụ: 07:00 - 21:30 hàng ngày"
+          placeholder={t('poiEditor.poiBasicInfoSection.eG0700')}
           onChange={(openingHours) => onChange('openingHours', openingHours)}
         />
 
         <div className="flex flex-col gap-1.5 md:col-span-2">
           <label className="flex items-center justify-between font-label-md text-label-md font-semibold text-on-surface">
-            <span>Thời gian tham quan gợi ý cho AI Engine</span>
-            <span className="text-label-sm font-bold text-primary">
-              {values.aiRecommendedHours > 0
-                ? `Khuyến nghị tối ưu: ${values.aiRecommendedHours}h`
-                : 'AI sẽ phân tích sau khi lưu'}
-            </span>
+            <span>{t('poiEditor.poiBasicInfoSection.suggestedVisitDuration')}</span>
           </label>
           <div className="flex items-center gap-space-md">
             <input
               type="text"
               value={values.suggestedDuration}
-              placeholder="Ví dụ: 3 - 4 giờ"
+              placeholder={t('poiEditor.poiBasicInfoSection.eG34')}
               onChange={(event) => onChange('suggestedDuration', event.target.value)}
               className={`${POI_INPUT_CLASS} max-w-[240px] px-space-md placeholder:text-outline`}
             />
-            <div className="flex items-center gap-space-xs font-body-sm text-body-sm text-outline">
-              <Icon name="auto_awesome" className="text-[16px] text-tertiary" />
-              <span>{values.aiDurationNote ?? DEFAULT_AI_NOTE}</span>
-            </div>
           </div>
         </div>
       </div>

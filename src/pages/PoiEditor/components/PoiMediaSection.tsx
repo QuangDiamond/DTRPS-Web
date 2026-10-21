@@ -1,14 +1,15 @@
-import { useRef, type ChangeEvent } from 'react';
-import Icon from '../../../components/common/Icon';
-import { POI_MAX_PHOTOS } from '../../../constants/poi';
-import { useToast } from '../../../hooks/useToast';
-import type { PoiFormValues, PoiPhoto } from '../../../types/admin';
+import { useTranslation } from 'react-i18next';
+import { type ChangeEvent, useRef } from 'react';
+import { Icon } from '@/components/common';
+import { POI_MAX_PHOTOS } from '@/constants/poi';
+import { useToast } from '@/hooks';
 import {
   captionFromFileName,
+  type PoiFieldChange,
   readPhotoFile,
   totalPhotos,
-  type PoiFieldChange,
-} from '../poiFormUtils';
+} from '@/pages/PoiEditor/poiFormUtils';
+import type { PoiFormValues, PoiPhoto } from '@/types';
 import PoiSectionCard from './PoiSectionCard';
 
 const MIN_WIDTH = 1920;
@@ -28,6 +29,7 @@ export default function PoiMediaSection({
   onChange,
   onPreview,
 }: PoiMediaSectionProps) {
+  const { t } = useTranslation();
   const { showToast } = useToast();
   const coverInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -39,7 +41,11 @@ export default function PoiMediaSection({
     const small = photos.filter((photo) => photo.width < MIN_WIDTH || photo.height < MIN_HEIGHT);
     if (small.length > 0) {
       showToast(
-        `${small.length} ảnh có độ phân giải thấp hơn ${MIN_WIDTH}x${MIN_HEIGHT}px, hiển thị trên app có thể bị mờ`,
+        t('poiEditor.poiMediaSection.photosBelowXPx', {
+          count: small.length,
+          MIN_WIDTH,
+          MIN_HEIGHT,
+        }),
         'info',
       );
     }
@@ -52,16 +58,27 @@ export default function PoiMediaSection({
     try {
       const { width, height, ...photo } = await readPhotoFile(file, uploader);
       if (!cover && isFull) {
-        showToast(`Đã đạt tối đa ${POI_MAX_PHOTOS} ảnh, hãy xóa bớt ảnh trong thư viện`, 'error');
+        showToast(
+          t('poiEditor.poiMediaSection.reachedPhotoLimitRemove', { POI_MAX_PHOTOS }),
+          'error',
+        );
         return;
       }
       onChange('cover', photo);
       // Ảnh thu nhỏ ở bảng danh sách sẽ lấy theo ảnh bìa mới
       onChange('thumbnailUrl', undefined);
       warnLowResolution([{ caption: photo.caption, width, height }]);
-      showToast(cover ? 'Đã thay ảnh bìa đại diện' : 'Đã thêm ảnh bìa đại diện', 'success');
+      showToast(
+        cover
+          ? t('poiEditor.poiMediaSection.coverPhotoReplaced')
+          : t('poiEditor.poiMediaSection.coverPhotoAdded'),
+        'success',
+      );
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Không đọc được ảnh', 'error');
+      showToast(
+        error instanceof Error ? error.message : t('poiEditor.poiMediaSection.couldNotReadImage'),
+        'error',
+      );
     }
   };
 
@@ -72,7 +89,7 @@ export default function PoiMediaSection({
 
     const slots = POI_MAX_PHOTOS - photoCount;
     if (slots <= 0) {
-      showToast(`Đã đạt tối đa ${POI_MAX_PHOTOS} ảnh cho một POI`, 'error');
+      showToast(t('poiEditor.poiMediaSection.reachedLimitPhotosPer', { POI_MAX_PHOTOS }), 'error');
       return;
     }
     const accepted = files.slice(0, slots);
@@ -93,15 +110,26 @@ export default function PoiMediaSection({
         })),
       ]);
       warnLowResolution(photos);
-      showToast(`Đã thêm ${photos.length} ảnh vào thư viện`, 'success');
+      showToast(
+        t('poiEditor.poiMediaSection.addedPhotosGallery', { count: photos.length }),
+        'success',
+      );
     }
     if (files.length > accepted.length) {
       showToast(
-        `Chỉ thêm được ${accepted.length}/${files.length} ảnh do giới hạn ${POI_MAX_PHOTOS} ảnh`,
+        t('poiEditor.poiMediaSection.onlyPhotosWereAdded', {
+          length: accepted.length,
+          length2: files.length,
+          POI_MAX_PHOTOS,
+        }),
         'info',
       );
     }
-    if (failedCount > 0) showToast(`${failedCount} file không phải ảnh hợp lệ`, 'error');
+    if (failedCount > 0)
+      showToast(
+        t('poiEditor.poiMediaSection.filesNotValidImages', { count: failedCount }),
+        'error',
+      );
   };
 
   /** Đưa ảnh trong thư viện lên làm ảnh bìa, ảnh bìa cũ trở về đúng vị trí đó */
@@ -113,10 +141,13 @@ export default function PoiMediaSection({
     onChange('thumbnailUrl', undefined);
     onChange('cover', {
       ...photo,
-      meta: photo.meta ?? `Chọn từ thư viện ảnh • Cập nhật bởi ${uploader}`,
+      meta: photo.meta ?? t('poiEditor.poiMediaSection.selectedFromPhotoLibrary', { uploader }),
     });
     onChange('gallery', nextGallery);
-    showToast(`Đã đặt "${photo.caption}" làm ảnh bìa`, 'success');
+    showToast(
+      t('poiEditor.poiMediaSection.setAsCoverPhoto', { caption: photo.caption }),
+      'success',
+    );
   };
 
   const removePhoto = (photo: PoiPhoto) => {
@@ -124,17 +155,20 @@ export default function PoiMediaSection({
       'gallery',
       gallery.filter((item) => item.id !== photo.id),
     );
-    showToast(`Đã xóa ảnh "${photo.caption}" khỏi thư viện`, 'info');
+    showToast(
+      t('poiEditor.poiMediaSection.removedPhotoFromGallery', { caption: photo.caption }),
+      'info',
+    );
   };
 
   return (
     <PoiSectionCard
       icon="photo_library"
-      title="2. Hình ảnh & Truyền thông"
-      description="Độ phân giải tối thiểu 1920x1080px, định dạng WebP hoặc JPG/PNG cao cấp"
+      title={t('poiEditor.poiMediaSection.n2PhotosMedia')}
+      description={t('poiEditor.poiMediaSection.minimumResolution1920x1080pxWebp')}
       badge={
         <span className="rounded-full bg-surface-container-low px-space-sm py-0.5 font-label-sm text-label-sm font-semibold text-outline">
-          Tối đa {POI_MAX_PHOTOS} ảnh
+          {t('poiEditor.poiMediaSection.upPhotos', { POI_MAX_PHOTOS })}
         </span>
       }
     >
@@ -158,15 +192,15 @@ export default function PoiMediaSection({
       <div className="flex flex-col gap-space-xs">
         <div className="flex items-center justify-between">
           <span className="font-label-md text-label-md font-semibold text-on-surface">
-            Ảnh bìa đại diện (Tỷ lệ 16:9)
+            {t('poiEditor.poiMediaSection.coverPhoto169')}
           </span>
           {cover ? (
             <span className="font-label-sm text-label-sm font-semibold text-secondary">
-              Đang kích hoạt ảnh chính
+              {t('poiEditor.poiMediaSection.activeMainPhoto')}
             </span>
           ) : (
             <span className="font-label-sm text-label-sm font-semibold text-error">
-              Chưa có ảnh bìa
+              {t('poiEditor.poiMediaSection.noCoverPhotoYet')}
             </span>
           )}
         </div>
@@ -190,7 +224,7 @@ export default function PoiMediaSection({
               <div className="flex shrink-0 items-center gap-space-xs">
                 <button
                   type="button"
-                  title="Xem kích thước đầy đủ"
+                  title={t('poiEditor.poiMediaSection.viewFullSize')}
                   onClick={() => onPreview(cover)}
                   className="rounded-full bg-surface-container-lowest/80 p-2 text-on-surface backdrop-blur-md transition-colors hover:bg-surface-container-lowest"
                 >
@@ -198,7 +232,7 @@ export default function PoiMediaSection({
                 </button>
                 <button
                   type="button"
-                  title="Thay ảnh bìa"
+                  title={t('poiEditor.poiMediaSection.replaceCoverPhoto')}
                   onClick={() => coverInputRef.current?.click()}
                   className="rounded-full bg-surface-container-lowest/80 p-2 text-error backdrop-blur-md transition-colors hover:bg-surface-container-lowest"
                 >
@@ -217,10 +251,10 @@ export default function PoiMediaSection({
               <Icon name="add_photo_alternate" className="text-[26px]" />
             </span>
             <span className="font-label-md text-label-md font-semibold">
-              Tải lên ảnh bìa đại diện
+              {t('poiEditor.poiMediaSection.uploadCoverPhoto')}
             </span>
             <span className="font-body-sm text-body-sm">
-              WebP / JPG / PNG • Khuyến nghị 2560 × 1440 px
+              {t('poiEditor.poiMediaSection.webpJpgPngRecommended')}
             </span>
           </button>
         )}
@@ -230,10 +264,10 @@ export default function PoiMediaSection({
       <div className="flex flex-col gap-space-xs">
         <div className="flex items-center justify-between">
           <span className="font-label-md text-label-md font-semibold text-on-surface">
-            Bộ sưu tập thư viện ảnh
+            {t('poiEditor.poiMediaSection.photoGallery')}
           </span>
           <span className="font-label-sm text-label-sm text-outline">
-            {photoCount}/{POI_MAX_PHOTOS} ảnh
+            {t('poiEditor.poiMediaSection.photos', { photoCount, POI_MAX_PHOTOS })}
           </span>
         </div>
         <div className="grid grid-cols-2 gap-space-sm sm:grid-cols-3 md:grid-cols-5">
@@ -251,7 +285,7 @@ export default function PoiMediaSection({
               <div className="absolute inset-0 flex items-center justify-center gap-1 bg-on-surface/40 opacity-0 transition-opacity group-hover:opacity-100">
                 <button
                   type="button"
-                  title="Đặt làm ảnh bìa"
+                  title={t('poiEditor.poiMediaSection.setAsCover')}
                   onClick={() => setAsCover(photo)}
                   className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container-lowest text-label-sm text-on-surface"
                 >
@@ -259,7 +293,7 @@ export default function PoiMediaSection({
                 </button>
                 <button
                   type="button"
-                  title="Xem ảnh"
+                  title={t('poiEditor.poiMediaSection.viewPhoto')}
                   onClick={() => onPreview(photo)}
                   className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container-lowest text-label-sm text-on-surface"
                 >
@@ -267,7 +301,7 @@ export default function PoiMediaSection({
                 </button>
                 <button
                   type="button"
-                  title="Xóa ảnh"
+                  title={t('poiEditor.poiMediaSection.deletePhoto')}
                   onClick={() => removePhoto(photo)}
                   className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container-lowest text-label-sm text-error"
                 >
@@ -290,7 +324,9 @@ export default function PoiMediaSection({
               <Icon name="add_photo_alternate" className="text-[20px]" />
             </div>
             <span className="font-label-sm text-label-sm font-semibold">
-              {isFull ? `Đã đủ ${POI_MAX_PHOTOS} ảnh` : 'Thêm ảnh mới'}
+              {isFull
+                ? t('poiEditor.poiMediaSection.photosReached', { POI_MAX_PHOTOS })
+                : t('poiEditor.poiMediaSection.addNewPhoto')}
             </span>
           </button>
         </div>

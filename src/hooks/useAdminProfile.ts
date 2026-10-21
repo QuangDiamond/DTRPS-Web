@@ -1,5 +1,8 @@
 import { useContext } from 'react';
-import { AdminProfileContext, type AdminProfileContextValue } from '../contexts/adminProfile';
+import {
+  AdminProfileContext,
+  type AdminProfileContextValue,
+} from '@/contexts/adminProfile/adminProfileContext';
 
 export function useAdminProfile(): AdminProfileContextValue {
   const context = useContext(AdminProfileContext);

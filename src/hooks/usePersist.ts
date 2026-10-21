@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { getErrorMessage } from '../utils/error';
+import { getErrorMessage } from '@/utils/error';
 import { useToast } from './useToast';
 
 /**

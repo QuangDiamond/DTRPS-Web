@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import Button from './Button';
 import Icon from './Icon';
 
@@ -12,9 +13,10 @@ interface ErrorStateProps {
 export default function ErrorState({
   message,
   onRetry,
-  title = 'Không tải được dữ liệu',
+  title,
   fullScreen = false,
 }: ErrorStateProps) {
+  const { t } = useTranslation();
   return (
     <div
       role="alert"
@@ -25,12 +27,14 @@ export default function ErrorState({
       <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-error-container text-on-error-container">
         <Icon name="cloud_off" className="text-[30px]" />
       </div>
-      <h2 className="font-headline-sm text-headline-sm text-on-surface">{title}</h2>
+      <h2 className="font-headline-sm text-headline-sm text-on-surface">
+        {title ?? t('common.loadError')}
+      </h2>
       {message && (
         <p className="max-w-md font-body-md text-body-md text-on-surface-variant">{message}</p>
       )}
       <Button icon="refresh" onClick={onRetry}>
-        Thử lại
+        {t('common.retry')}
       </Button>
     </div>
   );

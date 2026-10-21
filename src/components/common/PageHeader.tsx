@@ -1,6 +1,6 @@
 import { Fragment, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import type { BreadcrumbItem } from '../../types/navigation';
+import type { BreadcrumbItem } from '@/types';
 import Icon from './Icon';
 
 interface PageHeaderProps {

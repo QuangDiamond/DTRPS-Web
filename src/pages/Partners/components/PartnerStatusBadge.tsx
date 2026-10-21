@@ -1,5 +1,5 @@
-import { PARTNER_STATUS_CONFIG } from '../../../constants/partner';
-import type { PartnerStatus } from '../../../types/admin';
+import { PARTNER_STATUS_CONFIG } from '@/constants/partner';
+import type { PartnerStatus } from '@/types';
 
 export default function PartnerStatusBadge({ status }: { status: PartnerStatus }) {
   const config = PARTNER_STATUS_CONFIG[status];

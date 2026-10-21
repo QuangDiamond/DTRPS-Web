@@ -1,6 +1,7 @@
-import Icon from '../../../components/common/Icon';
-import type { SettingsMeta } from '../../../types/admin';
-import { formatTimestamp } from '../../../utils/format';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import type { SettingsMeta } from '@/types';
+import { formatTimestamp } from '@/utils/format';
 
 interface SettingsFooterProps {
   meta: SettingsMeta;
@@ -16,6 +17,7 @@ export default function SettingsFooter({
   onCancel,
   onSave,
 }: SettingsFooterProps) {
+  const { t } = useTranslation();
   return (
     <footer className="sticky bottom-4 z-30 flex flex-col items-center justify-between gap-space-md rounded-2xl bg-surface-container-lowest/95 p-space-md shadow-[0_12px_32px_-4px_rgba(15,23,42,0.12)] backdrop-blur-xl sm:flex-row">
       <div className="flex min-w-0 items-center gap-space-sm">
@@ -31,13 +33,20 @@ export default function SettingsFooter({
         <div className="flex min-w-0 flex-col">
           <span className="truncate font-label-md text-label-md font-semibold text-on-surface">
             {dirtyCount > 0
-              ? `Có thay đổi chưa lưu ở ${dirtyCount} nhóm cấu hình`
-              : `Lần cập nhật cấu hình gần nhất: ${formatTimestamp(meta.updatedAt)}`}
+              ? t('settings.settingsFooter.unsavedChangesSettingsGroups', { count: dirtyCount })
+              : t('settings.settingsFooter.lastConfigurationUpdate', {
+                  updatedAt: formatTimestamp(meta.updatedAt),
+                })}
           </span>
           <span className="truncate font-body-sm text-body-sm text-on-surface-variant">
             {dirtyCount > 0
-              ? `Lần lưu gần nhất: ${formatTimestamp(meta.updatedAt)}`
-              : `Bởi: ${meta.updatedBy} (IP: ${meta.updatedIp})`}
+              ? t('settings.settingsFooter.lastSaved', {
+                  updatedAt: formatTimestamp(meta.updatedAt),
+                })
+              : t('settings.settingsFooter.byIp', {
+                  updatedBy: meta.updatedBy,
+                  updatedIp: meta.updatedIp,
+                })}
           </span>
         </div>
       </div>
@@ -47,7 +56,7 @@ export default function SettingsFooter({
           onClick={onCancel}
           className="rounded-xl bg-surface-container-high px-space-md py-2.5 font-label-md text-label-md text-on-surface transition-colors hover:bg-surface-container-highest"
         >
-          Hủy bỏ
+          {t('settings.settingsFooter.cancel')}
         </button>
         <button
           type="button"
@@ -55,7 +64,7 @@ export default function SettingsFooter({
           className="flex items-center gap-2 rounded-xl bg-primary px-space-lg py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-md transition-all hover:bg-primary-container hover:shadow-lg"
         >
           <Icon name="check_circle" className="text-[18px]" />
-          <span>Lưu thay đổi cấu hình</span>
+          <span>{t('settings.settingsFooter.saveConfigurationChanges')}</span>
         </button>
       </div>
     </footer>

@@ -1,9 +1,11 @@
-import { useMemo, useState, type ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { TripStatus, UserTrip } from '../../../types/admin';
-import { formatDate } from '../../../utils/format';
-import { normalizeText } from '../../../utils/string';
-import { formatVnd, TRIP_STATUS_CONFIG } from '../userProfileUtils';
+import { Trans, useTranslation } from 'react-i18next';
+import i18n from 'i18next';
+import { type ReactNode, useMemo, useState } from 'react';
+import { Icon } from '@/components/common';
+import { formatVnd, TRIP_STATUS_CONFIG } from '@/pages/UserDetail/userProfileUtils';
+import type { TripStatus, UserTrip } from '@/types';
+import { formatDate } from '@/utils/format';
+import { normalizeText } from '@/utils/string';
 
 interface TripsTabProps {
   trips: UserTrip[];
@@ -13,10 +15,30 @@ interface TripsTabProps {
 }
 
 const STATUS_OPTIONS: { value: TripStatus | 'all'; label: string }[] = [
-  { value: 'all', label: 'Tất cả trạng thái' },
-  { value: 'upcoming', label: 'Sắp diễn ra' },
-  { value: 'completed', label: 'Đã hoàn thành' },
-  { value: 'cancelled', label: 'Đã hủy' },
+  {
+    value: 'all',
+    get label() {
+      return i18n.t('filters.allStatuses');
+    },
+  },
+  {
+    value: 'upcoming',
+    get label() {
+      return i18n.t('userDetail.tripsTab.upcoming');
+    },
+  },
+  {
+    value: 'completed',
+    get label() {
+      return i18n.t('userDetail.tripsTab.completed');
+    },
+  },
+  {
+    value: 'cancelled',
+    get label() {
+      return i18n.t('userDetail.tripsTab.cancelled');
+    },
+  },
 ];
 
 function TripMeta({
@@ -37,6 +59,7 @@ function TripMeta({
 }
 
 export default function TripsTab({ trips, totalTrips, onDownload, onViewTrip }: TripsTabProps) {
+  const { t } = useTranslation();
   const [keyword, setKeyword] = useState('');
   const [status, setStatus] = useState<TripStatus | 'all'>('all');
 
@@ -63,12 +86,12 @@ export default function TripsTab({ trips, totalTrips, onDownload, onViewTrip }: 
               type="text"
               value={keyword}
               onChange={(event) => setKeyword(event.target.value)}
-              placeholder="Tìm kiếm tên chuyến đi, địa phương, mã lộ trình..."
+              placeholder={t('userDetail.tripsTab.searchByTripName')}
               className="w-full rounded-xl bg-surface-container-low py-2 pr-4 pl-10 font-body-sm text-body-sm text-on-surface outline-none placeholder:text-outline focus:bg-surface-container focus:ring-1 focus:ring-primary"
             />
           </div>
           <select
-            aria-label="Trạng thái chuyến đi"
+            aria-label={t('userDetail.tripsTab.tripStatus')}
             value={status}
             onChange={(event) => {
               const next = STATUS_OPTIONS.find((option) => option.value === event.target.value);
@@ -84,7 +107,7 @@ export default function TripsTab({ trips, totalTrips, onDownload, onViewTrip }: 
           </select>
         </div>
         <span className="font-label-sm text-label-sm text-on-surface-variant">
-          Hiển thị {visible.length} / {totalTrips} chuyến đi mới nhất
+          {t('userDetail.tripsTab.showingLatestTrips', { length: visible.length, totalTrips })}
         </span>
       </div>
 
@@ -93,8 +116,8 @@ export default function TripsTab({ trips, totalTrips, onDownload, onViewTrip }: 
           <Icon name="luggage" className="text-[40px] text-outline" />
           <span className="font-title-md text-title-md">
             {trips.length === 0
-              ? 'Chưa có dữ liệu chuyến đi chi tiết'
-              : 'Không có chuyến đi phù hợp'}
+              ? t('userDetail.tripsTab.noDetailedTripData')
+              : t('userDetail.tripsTab.noMatchingTrips')}
           </span>
         </div>
       ) : (
@@ -133,44 +156,49 @@ export default function TripsTab({ trips, totalTrips, onDownload, onViewTrip }: 
                         )}
                         {config.label}
                       </span>
-                      {trip.aiPlanned && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-surface-container px-space-sm py-0.5 font-label-sm text-label-sm font-semibold text-primary">
-                          <Icon name="auto_awesome" filled className="text-[13px]" />
-                          Tạo bởi AI Planner
-                        </span>
-                      )}
                       {trip.rating && (
                         <span className="inline-flex items-center gap-0.5 rounded-full bg-tertiary-fixed px-space-sm py-0.5 font-label-sm text-label-sm font-bold text-on-tertiary-fixed">
                           <Icon name="star" filled className="text-[12px] text-tertiary" />
-                          {trip.rating}★ (Đã gửi đánh giá)
+                          {t('userDetail.tripsTab.reviewSubmitted', { rating: trip.rating })}
                         </span>
                       )}
                     </div>
                     <div className="flex flex-wrap items-center gap-x-space-lg gap-y-1 font-body-sm text-body-sm text-on-surface-variant">
                       {upcoming ? (
                         <TripMeta icon="event" iconClass="text-primary">
-                          Khởi hành:{' '}
-                          <strong className="text-on-surface">{formatDate(trip.startDate)}</strong>
+                          <Trans
+                            i18nKey="userDetail.tripsTab.departure"
+                            values={{ startDate: formatDate(trip.startDate) }}
+                            components={{ c0: <strong className="text-on-surface" /> }}
+                          />
                         </TripMeta>
                       ) : (
                         <TripMeta icon="event_available">
-                          Thời gian:{' '}
-                          <strong>
-                            {formatDate(trip.startDate)} - {formatDate(trip.endDate)}
-                          </strong>
+                          <Trans
+                            i18nKey="userDetail.tripsTab.dates"
+                            values={{
+                              startDate: formatDate(trip.startDate),
+                              endDate: formatDate(trip.endDate),
+                            }}
+                            components={{ c0: <strong /> }}
+                          />
                         </TripMeta>
                       )}
                       <TripMeta icon="tour">
-                        Quy mô:{' '}
+                        {t('userDetail.tripsTab.scope')}{' '}
                         <strong>
                           {trip.poiCount} POI
-                          {trip.status === 'completed' ? ' đã ghé thăm' : ' tham quan'}
+                          {trip.status === 'completed'
+                            ? t('userDetail.tripsTab.visited')
+                            : ' tham quan'}
                         </strong>
                       </TripMeta>
                       {trip.travelers && <TripMeta icon="group">{trip.travelers}</TripMeta>}
                       <TripMeta icon={upcoming ? 'credit_card' : 'receipt_long'}>
-                        {upcoming ? 'Kinh phí dự toán' : 'Thanh toán'}:{' '}
-                        <strong>{formatVnd(trip.amount)}</strong>
+                        {upcoming
+                          ? t('userDetail.tripsTab.estimatedBudget')
+                          : t('userDetail.tripsTab.payment')}
+                        : <strong>{formatVnd(trip.amount)}</strong>
                       </TripMeta>
                     </div>
                   </div>
@@ -183,7 +211,7 @@ export default function TripsTab({ trips, totalTrips, onDownload, onViewTrip }: 
                     className="inline-flex items-center gap-1.5 rounded-xl bg-surface-container px-space-md py-2 font-label-md text-label-md font-semibold text-on-surface transition-colors hover:bg-surface-container-high"
                   >
                     <Icon name="download" className="text-[18px]" />
-                    <span>Tải file lịch trình</span>
+                    <span>{t('userDetail.tripsTab.downloadItinerary')}</span>
                   </button>
                   <button
                     type="button"
@@ -194,7 +222,7 @@ export default function TripsTab({ trips, totalTrips, onDownload, onViewTrip }: 
                         : 'bg-surface-container text-primary hover:bg-surface-container-high'
                     }`}
                   >
-                    <span>Xem chi tiết chuyến đi</span>
+                    <span>{t('userDetail.tripsTab.viewTripDetails')}</span>
                     <Icon name="chevron_right" className="text-[16px]" />
                   </button>
                 </div>

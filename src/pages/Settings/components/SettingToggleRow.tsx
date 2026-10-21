@@ -1,5 +1,5 @@
-import Icon from '../../../components/common/Icon';
-import ToggleSwitch from '../../../components/common/ToggleSwitch';
+import { useTranslation } from 'react-i18next';
+import { Icon, ToggleSwitch } from '@/components/common';
 
 interface SettingToggleRowProps {
   icon: string;
@@ -19,6 +19,7 @@ export default function SettingToggleRow({
   onChange,
   showStatus = false,
 }: SettingToggleRowProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between gap-space-md rounded-xl bg-surface-container-low p-space-md">
       <div className="flex items-start gap-space-sm">
@@ -33,7 +34,9 @@ export default function SettingToggleRow({
           <span
             className={`hidden font-label-sm text-label-sm font-bold sm:inline ${checked ? 'text-primary' : 'text-outline'}`}
           >
-            {checked ? 'Đã kích hoạt' : 'Đã tắt'}
+            {checked
+              ? t('settings.settingToggleRow.enabled')
+              : t('settings.settingToggleRow.disabled')}
           </span>
         )}
         <ToggleSwitch checked={checked} onChange={onChange} label={title} />

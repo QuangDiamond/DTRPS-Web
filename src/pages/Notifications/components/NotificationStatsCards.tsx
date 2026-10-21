@@ -1,6 +1,7 @@
-import Icon from '../../../components/common/Icon';
-import type { NotificationStats } from '../../../types/admin';
-import { formatNumber } from '../../../utils/format';
+import { Trans, useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import type { NotificationStats } from '@/types';
+import { formatNumber } from '@/utils/format';
 
 const CARD_CLASS =
   'group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm transition-all hover:shadow-md';
@@ -18,12 +19,15 @@ export default function NotificationStatsCards({
   stats,
   pendingListings,
 }: NotificationStatsCardsProps) {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 gap-space-md sm:grid-cols-2 lg:grid-cols-4">
       <div className={CARD_CLASS}>
         <div className="flex items-start justify-between">
           <div className="flex flex-col">
-            <span className={LABEL_CLASS}>Thông báo mới</span>
+            <span className={LABEL_CLASS}>
+              {t('notifications.notificationStatsCards.newNotifications')}
+            </span>
             <span className="mt-1 font-display-lg text-display-lg font-bold text-on-surface">
               {formatNumber(stats.unread)}
             </span>
@@ -34,10 +38,13 @@ export default function NotificationStatsCards({
         </div>
         <div className="mt-4 flex items-center gap-2 pt-2">
           <span className="flex items-center gap-1 rounded-full bg-error-container px-space-xs py-0.5 font-label-sm text-label-sm font-bold text-on-error-container">
-            <span className="h-1.5 w-1.5 rounded-full bg-error" /> Khẩn cấp
+            <span className="h-1.5 w-1.5 rounded-full bg-error" />{' '}
+            {t('notifications.notificationStatsCards.urgent')}
           </span>
           <span className="font-body-sm text-body-sm font-medium text-on-surface-variant">
-            +{stats.newLastHour} trong 1 giờ qua
+            {t('notifications.notificationStatsCards.inLastHour', {
+              newLastHour: stats.newLastHour,
+            })}
           </span>
         </div>
       </div>
@@ -45,7 +52,9 @@ export default function NotificationStatsCards({
       <div className={CARD_CLASS}>
         <div className="flex items-start justify-between">
           <div className="flex flex-col">
-            <span className={LABEL_CLASS}>Chờ duyệt niêm yết</span>
+            <span className={LABEL_CLASS}>
+              {t('notifications.notificationStatsCards.listingsPendingReview')}
+            </span>
             <span className="mt-1 font-display-lg text-display-lg font-bold text-on-surface">
               {formatNumber(pendingListings)}
             </span>
@@ -56,10 +65,10 @@ export default function NotificationStatsCards({
         </div>
         <div className="mt-4 flex items-center gap-2 pt-2">
           <span className="rounded-full bg-secondary-fixed px-space-xs py-0.5 font-label-sm text-label-sm font-bold text-on-secondary-fixed-variant">
-            Mới tiếp nhận
+            {t('notifications.notificationStatsCards.newlyReceived')}
           </span>
           <span className="font-body-sm text-body-sm font-medium text-on-surface-variant">
-            Hồ sơ cơ sở lưu trú &amp; tour
+            {t('notifications.notificationStatsCards.accommodationTourSubmissions')}
           </span>
         </div>
       </div>
@@ -67,7 +76,9 @@ export default function NotificationStatsCards({
       <div className={CARD_CLASS}>
         <div className="flex items-start justify-between">
           <div className="flex flex-col">
-            <span className={LABEL_CLASS}>Cảnh báo hệ thống</span>
+            <span className={LABEL_CLASS}>
+              {t('notifications.notificationStatsCards.systemAlerts')}
+            </span>
             <span className="mt-1 font-display-lg text-display-lg font-bold text-tertiary">
               {String(stats.systemAlerts).padStart(2, '0')}
             </span>
@@ -78,10 +89,14 @@ export default function NotificationStatsCards({
         </div>
         <div className="mt-4 flex items-center gap-2 pt-2">
           <span className="rounded-full bg-tertiary-fixed px-space-xs py-0.5 font-label-sm text-label-sm font-bold whitespace-nowrap text-on-tertiary-fixed">
-            {stats.systemAlerts > 0 ? 'Cần xử lý' : 'Ổn định'}
+            {stats.systemAlerts > 0
+              ? t('notifications.notificationStatsCards.needsAction')
+              : t('notifications.notificationStatsCards.stable')}
           </span>
           <span className="truncate font-body-sm text-body-sm text-on-surface-variant">
-            {stats.systemAlerts > 0 ? stats.systemAlertNote : 'Không còn cảnh báo chưa xử lý'}
+            {stats.systemAlerts > 0
+              ? stats.systemAlertNote
+              : t('notifications.notificationStatsCards.noUnresolvedAlerts')}
           </span>
         </div>
       </div>
@@ -89,7 +104,9 @@ export default function NotificationStatsCards({
       <div className={CARD_CLASS}>
         <div className="flex items-start justify-between">
           <div className="flex flex-col">
-            <span className={LABEL_CLASS}>Tỷ lệ xử lý trong ngày</span>
+            <span className={LABEL_CLASS}>
+              {t('notifications.notificationStatsCards.sameDayResolutionRate')}
+            </span>
             <span className="mt-1 font-display-lg text-display-lg font-bold text-primary">
               {stats.resolvedRate.toFixed(1)}%
             </span>
@@ -101,7 +118,11 @@ export default function NotificationStatsCards({
         <div className="mt-4 flex items-center gap-2 pt-2">
           <Icon name="speed" className="text-[18px] text-primary" />
           <span className="font-body-sm text-body-sm text-on-surface-variant">
-            Thời gian phản hồi TB: <strong>{stats.avgResponseMinutes} phút</strong>
+            <Trans
+              i18nKey="notifications.notificationStatsCards.avgResponseTimeMin"
+              values={{ avgResponseMinutes: stats.avgResponseMinutes }}
+              components={{ c0: <strong /> }}
+            />
           </span>
         </div>
       </div>

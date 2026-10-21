@@ -1,3 +1,4 @@
+import i18n from 'i18next';
 import type {
   PoiCategory,
   PoiCategoryTab,
@@ -8,7 +9,8 @@ import type {
   PoiSource,
   PoiStatus,
   SelectOption,
-} from '../types/admin';
+} from '@/types';
+import { linkedOption, localizeConfig, localizedOption } from '@/utils/localize';
 
 export const POI_CATEGORY_CONFIG: Record<
   PoiCategory,
@@ -22,76 +24,110 @@ export const POI_CATEGORY_CONFIG: Record<
     tab: Exclude<PoiCategoryTab, 'all'> | null;
     kpiGroup: PoiKpiGroup;
   }
-> = {
-  heritage: {
-    label: 'Di tích & Di sản văn hóa UNESCO',
-    shortLabel: 'Di sản văn hóa',
-    icon: 'account_balance',
-    badgeClass: 'bg-secondary-container/50 text-on-secondary-container',
-    tab: 'heritage',
-    kpiGroup: 'sights',
+> = localizeConfig(
+  'category.poi',
+  {
+    heritage: {
+      label: 'Di tích & Di sản văn hóa UNESCO',
+      shortLabel: 'Di sản văn hóa',
+      icon: 'account_balance',
+      badgeClass: 'bg-secondary-container/50 text-on-secondary-container',
+      tab: 'heritage',
+      kpiGroup: 'sights',
+    },
+    nature: {
+      label: 'Thiên nhiên & Danh lam thắng cảnh',
+      shortLabel: 'Thiên nhiên',
+      icon: 'landscape',
+      badgeClass: 'bg-surface-container-highest text-primary',
+      tab: 'nature',
+      kpiGroup: 'sights',
+    },
+    food: {
+      label: 'Ẩm thực & Chợ truyền thống',
+      shortLabel: 'Ẩm thực truyền thống',
+      icon: 'restaurant',
+      badgeClass: 'bg-tertiary-fixed/60 text-on-tertiary-fixed',
+      tab: 'food',
+      kpiGroup: 'food',
+    },
+    resort: {
+      label: 'Nghỉ dưỡng & Sinh thái biển',
+      shortLabel: 'Nghỉ dưỡng biển',
+      icon: 'beach_access',
+      badgeClass: 'bg-surface-container-highest text-primary',
+      tab: 'nature',
+      kpiGroup: 'sights',
+    },
+    stay: {
+      label: 'Lưu trú & Homestay / Khách sạn',
+      shortLabel: 'Lưu trú',
+      icon: 'hotel',
+      badgeClass: 'bg-primary-fixed/60 text-on-primary-fixed-variant',
+      tab: 'stay',
+      kpiGroup: 'stay',
+    },
+    craft: {
+      label: 'Mua sắm & Làng nghề truyền thống',
+      shortLabel: 'Làng nghề & Văn hóa',
+      icon: 'architecture',
+      badgeClass: 'bg-tertiary-fixed/40 text-on-tertiary-fixed-variant',
+      tab: 'craft',
+      kpiGroup: 'sights',
+    },
+    tour: {
+      label: 'Tour & Trải nghiệm',
+      shortLabel: 'Tour & Trải nghiệm',
+      icon: 'kayaking',
+      badgeClass: 'bg-surface-container-high text-on-surface',
+      tab: null,
+      kpiGroup: 'tour',
+    },
   },
-  nature: {
-    label: 'Thiên nhiên & Danh lam thắng cảnh',
-    shortLabel: 'Thiên nhiên',
-    icon: 'landscape',
-    badgeClass: 'bg-surface-container-highest text-primary',
-    tab: 'nature',
-    kpiGroup: 'sights',
-  },
-  food: {
-    label: 'Ẩm thực & Chợ truyền thống',
-    shortLabel: 'Ẩm thực truyền thống',
-    icon: 'restaurant',
-    badgeClass: 'bg-tertiary-fixed/60 text-on-tertiary-fixed',
-    tab: 'food',
-    kpiGroup: 'food',
-  },
-  resort: {
-    label: 'Nghỉ dưỡng & Sinh thái biển',
-    shortLabel: 'Nghỉ dưỡng biển',
-    icon: 'beach_access',
-    badgeClass: 'bg-surface-container-highest text-primary',
-    tab: 'nature',
-    kpiGroup: 'sights',
-  },
-  stay: {
-    label: 'Lưu trú & Homestay / Khách sạn',
-    shortLabel: 'Lưu trú',
-    icon: 'hotel',
-    badgeClass: 'bg-primary-fixed/60 text-on-primary-fixed-variant',
-    tab: 'stay',
-    kpiGroup: 'stay',
-  },
-  craft: {
-    label: 'Mua sắm & Làng nghề truyền thống',
-    shortLabel: 'Làng nghề & Văn hóa',
-    icon: 'architecture',
-    badgeClass: 'bg-tertiary-fixed/40 text-on-tertiary-fixed-variant',
-    tab: 'craft',
-    kpiGroup: 'sights',
-  },
-  tour: {
-    label: 'Tour & Trải nghiệm',
-    shortLabel: 'Tour & Trải nghiệm',
-    icon: 'kayaking',
-    badgeClass: 'bg-surface-container-high text-on-surface',
-    tab: null,
-    kpiGroup: 'tour',
-  },
-};
+  ['label', 'shortLabel'],
+);
 
 export const POI_CATEGORY_OPTIONS: SelectOption<PoiCategory>[] = (
   Object.keys(POI_CATEGORY_CONFIG) as PoiCategory[]
-).map((category) => ({ value: category, label: POI_CATEGORY_CONFIG[category].label }));
+).map((category) => linkedOption(category, () => POI_CATEGORY_CONFIG[category].label));
 
 export const POI_CATEGORY_TABS: { id: PoiCategoryTab; label: string }[] = [
-  { id: 'all', label: 'Tất cả' },
-  { id: 'heritage', label: 'Điểm tham quan & Di tích' },
-  { id: 'food', label: 'Ẩm thực & Nhà hàng' },
-  { id: 'stay', label: 'Lưu trú & Homestay/Khách sạn' },
-  { id: 'nature', label: 'Bãi biển & Thiên nhiên' },
-  { id: 'craft', label: 'Mua sắm & Làng nghề truyền thống' },
+  {
+    id: 'all',
+    get label() {
+      return i18n.t('pois.constants.all');
+    },
+  },
+  {
+    id: 'heritage',
+    get label() {
+      return i18n.t('pois.constants.attractionsHeritageSites');
+    },
+  },
+  {
+    id: 'food',
+    get label() {
+      return i18n.t('pois.constants.foodRestaurants');
+    },
+  },
+  {
+    id: 'stay',
+    get label() {
+      return i18n.t('pois.constants.accommodationHomestaysHotels');
+    },
+  },
+  {
+    id: 'nature',
+    get label() {
+      return i18n.t('pois.constants.beachesNature');
+    },
+  },
+  {
+    id: 'craft',
+    get label() {
+      return i18n.t('pois.constants.shoppingTraditionalCraftVillages');
+    },
+  },
 ];
 
 export const POI_KPI_GROUP_CONFIG: Record<
@@ -99,28 +135,36 @@ export const POI_KPI_GROUP_CONFIG: Record<
   { label: string; icon: string; iconBoxClass: string; barClass: string; percentClass: string }
 > = {
   sights: {
-    label: 'Tham quan & Di sản',
+    get label() {
+      return i18n.t('pois.constants.sightseeingHeritage');
+    },
     icon: 'account_balance',
     iconBoxClass: 'bg-secondary-container/60 text-secondary',
     barClass: 'bg-secondary',
     percentClass: 'text-secondary',
   },
   food: {
-    label: 'Nhà hàng & Ẩm thực',
+    get label() {
+      return i18n.t('pois.constants.restaurantsDining');
+    },
     icon: 'restaurant',
     iconBoxClass: 'bg-tertiary-fixed/60 text-tertiary',
     barClass: 'bg-tertiary',
     percentClass: 'text-tertiary',
   },
   stay: {
-    label: 'Lưu trú & Khách sạn',
+    get label() {
+      return i18n.t('pois.constants.accommodationHotels');
+    },
     icon: 'hotel',
     iconBoxClass: 'bg-surface-container-highest text-primary',
     barClass: 'bg-primary-container',
     percentClass: 'text-primary',
   },
   tour: {
-    label: 'Tour & Trải nghiệm',
+    get label() {
+      return i18n.t('pois.constants.toursExperiences');
+    },
     icon: 'kayaking',
     iconBoxClass: 'bg-surface-container-high text-on-surface',
     barClass: 'bg-on-surface-variant',
@@ -138,38 +182,42 @@ export const POI_STATUS_CONFIG: Record<
     badgeClass: string;
     dotClass: string;
   }
-> = {
-  active: {
-    label: 'Công khai',
-    longLabel: 'Đang công khai trên hệ thống',
-    badgeClass: 'bg-secondary-container text-on-secondary-container',
-    dotClass: 'bg-primary',
+> = localizeConfig(
+  'status.poi',
+  {
+    active: {
+      label: 'Công khai',
+      longLabel: 'Đang công khai trên hệ thống',
+      badgeClass: 'bg-secondary-container text-on-secondary-container',
+      dotClass: 'bg-primary',
+    },
+    maintenance: {
+      label: 'Đang bảo trì',
+      longLabel: 'Đang bảo trì, tạm ngưng đón khách',
+      badgeClass: 'bg-surface-container-high text-on-surface-variant',
+      dotClass: 'bg-outline',
+    },
+    paused: {
+      label: 'Tạm dừng',
+      longLabel: 'Tạm dừng hiển thị trên ứng dụng',
+      badgeClass: 'bg-tertiary-fixed/60 text-on-tertiary-fixed-variant',
+      dotClass: 'bg-tertiary',
+    },
+    draft: {
+      label: 'Bản nháp',
+      longLabel: 'Bản nháp, chưa công khai',
+      badgeClass: 'bg-surface-container text-outline',
+      dotClass: 'bg-outline-variant',
+    },
   },
-  maintenance: {
-    label: 'Đang bảo trì',
-    longLabel: 'Đang bảo trì, tạm ngưng đón khách',
-    badgeClass: 'bg-surface-container-high text-on-surface-variant',
-    dotClass: 'bg-outline',
-  },
-  paused: {
-    label: 'Tạm dừng',
-    longLabel: 'Tạm dừng hiển thị trên ứng dụng',
-    badgeClass: 'bg-tertiary-fixed/60 text-on-tertiary-fixed-variant',
-    dotClass: 'bg-tertiary',
-  },
-  draft: {
-    label: 'Bản nháp',
-    longLabel: 'Bản nháp, chưa công khai',
-    badgeClass: 'bg-surface-container text-outline',
-    dotClass: 'bg-outline-variant',
-  },
-};
+  ['label', 'longLabel'],
+);
 
 export const POI_STATUS_OPTIONS: SelectOption<PoiStatus>[] = [
-  { value: 'active', label: 'Đang công khai' },
-  { value: 'maintenance', label: 'Đang bảo trì' },
-  { value: 'paused', label: 'Tạm dừng' },
-  { value: 'draft', label: 'Bản nháp' },
+  localizedOption('active', 'status.poi.active.option', 'Đang công khai'),
+  localizedOption('maintenance', 'status.poi.maintenance.option', 'Đang bảo trì'),
+  localizedOption('paused', 'status.poi.paused.option', 'Tạm dừng'),
+  localizedOption('draft', 'status.poi.draft.option', 'Bản nháp'),
 ];
 
 export const POI_SOURCE_CONFIG: Record<
@@ -177,36 +225,56 @@ export const POI_SOURCE_CONFIG: Record<
   { label: string; filterLabel: string; icon: string; textClass: string; iconClass: string }
 > = {
   gov: {
-    label: 'Tổng cục Du lịch',
-    filterLabel: 'Tổng cục Du lịch',
+    get label() {
+      return i18n.t('pois.constants.nationalTourismAdministration');
+    },
+    get filterLabel() {
+      return i18n.t('pois.constants.nationalTourismAdministration');
+    },
     icon: 'policy',
     textClass: 'font-semibold text-primary',
     iconClass: '',
   },
   ai: {
-    label: 'AI đã xác minh',
-    filterLabel: 'Thu thập dữ liệu AI',
+    get label() {
+      return i18n.t('pois.constants.verifiedByAi');
+    },
+    get filterLabel() {
+      return i18n.t('pois.constants.aiDataCollection');
+    },
     icon: 'auto_awesome',
     textClass: 'font-semibold text-secondary',
     iconClass: '',
   },
   authority: {
-    label: 'Ban quản lý',
-    filterLabel: 'Ban quản lý di tích / địa phương',
+    get label() {
+      return i18n.t('pois.constants.managementBoard');
+    },
+    get filterLabel() {
+      return i18n.t('pois.constants.heritageSiteLocalManagement');
+    },
     icon: 'shield',
     textClass: 'font-medium text-on-surface',
     iconClass: 'text-primary',
   },
   partner: {
-    label: 'Đối tác gửi duyệt',
-    filterLabel: 'Đối tác gửi duyệt',
+    get label() {
+      return i18n.t('pois.constants.partnerSubmission');
+    },
+    get filterLabel() {
+      return i18n.t('pois.constants.partnerSubmission');
+    },
     icon: 'storefront',
     textClass: 'font-semibold text-tertiary',
     iconClass: '',
   },
   system: {
-    label: 'Hệ thống',
-    filterLabel: 'Hệ thống xác thực',
+    get label() {
+      return i18n.t('pois.constants.system');
+    },
+    get filterLabel() {
+      return i18n.t('pois.constants.verifiedBySystem');
+    },
     icon: 'database',
     textClass: 'font-semibold text-on-surface-variant',
     iconClass: '',
@@ -218,14 +286,30 @@ export const POI_SOURCE_OPTIONS: SelectOption<PoiSource>[] = (
 ).map((source) => ({ value: source, label: POI_SOURCE_CONFIG[source].filterLabel }));
 
 export const POI_PROVINCE_LABELS: Record<PoiProvince, string> = {
-  'quang-nam': 'Quảng Nam',
-  'da-nang': 'Đà Nẵng',
-  'ha-noi': 'Hà Nội',
-  'quang-ninh': 'Quảng Ninh',
-  hcm: 'TP. Hồ Chí Minh',
-  'lao-cai': 'Lào Cai (Sa Pa)',
-  'thua-thien-hue': 'Thừa Thiên Huế',
-  'kien-giang': 'Kiên Giang (Phú Quốc)',
+  get 'quang-nam'() {
+    return i18n.t('pois.constants.quangNam');
+  },
+  get 'da-nang'() {
+    return i18n.t('pois.constants.daNang');
+  },
+  get 'ha-noi'() {
+    return i18n.t('pois.constants.hanoi');
+  },
+  get 'quang-ninh'() {
+    return i18n.t('pois.constants.quangNinh');
+  },
+  get hcm() {
+    return i18n.t('pois.constants.hoChiMinhCity');
+  },
+  get 'lao-cai'() {
+    return i18n.t('pois.constants.laoCaiSaPa');
+  },
+  get 'thua-thien-hue'() {
+    return i18n.t('pois.constants.thuaThienHue');
+  },
+  get 'kien-giang'() {
+    return i18n.t('pois.constants.kienGiangPhuQuoc');
+  },
 };
 
 export const POI_PROVINCE_OPTIONS: SelectOption<PoiProvince>[] = (
@@ -256,6 +340,7 @@ export const POI_MAX_PHOTOS = 12;
 export const POI_CLUSTER_RADIUS = { min: 100, max: 1100, step: 50 };
 
 export const EMPTY_POI_VALUES: PoiFormValues = {
+  vectorEmbedded: false,
   name: '',
   category: 'heritage',
   tags: '',
@@ -263,7 +348,6 @@ export const EMPTY_POI_VALUES: PoiFormValues = {
   price: '',
   openingHours: '',
   suggestedDuration: '',
-  aiRecommendedHours: 0,
   gallery: [],
   managingUnit: '',
   hotline: '',
@@ -277,7 +361,6 @@ export const EMPTY_POI_VALUES: PoiFormValues = {
   clusterPois: [],
   peakSeason: '',
   idealTime: '',
-  priorityScore: 70,
   personas: [],
   status: 'draft',
 };

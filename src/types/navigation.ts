@@ -1,11 +1,14 @@
 export type BadgeTone = 'tertiary' | 'secondary';
 
+export type NavBadgeSource = 'pendingListings' | 'unreadNotifications';
+
 export interface NavItem {
   label: string;
   path: string;
   icon: string;
+  /** Badge số lượng — giá trị lấy trực tiếp từ store theo `source` */
   badge?: {
-    count: number;
+    source: NavBadgeSource;
     tone: BadgeTone;
   };
 }

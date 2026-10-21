@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { PartnersContext, type PartnersContextValue } from '../contexts/partners';
+import { PartnersContext, type PartnersContextValue } from '@/contexts/partners/partnersContext';
 
 export function usePartners(): PartnersContextValue {
   const context = useContext(PartnersContext);

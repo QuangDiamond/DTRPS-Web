@@ -1,42 +1,51 @@
-import { PASSWORD_RULES } from '../../constants/auth';
-import { PASSWORD_ROTATION_DAYS } from '../../constants/adminProfile';
+import i18n from 'i18next';
+import { PASSWORD_ROTATION_DAYS } from '@/constants/adminProfile';
+import { PASSWORD_RULES } from '@/constants/auth';
 import type {
   AdminAccountDetails,
+  PasswordStrength,
   SecurityCheckItem,
   SecurityKey,
   SystemSettings,
-} from '../../types/admin';
-
-export interface PasswordStrength {
-  /** Số quy tắc đạt (0 - 4) */
-  score: number;
-  label: string;
-  barClass: string;
-  textClass: string;
-}
+} from '@/types';
 
 export function getPasswordStrength(password: string): PasswordStrength {
   const score = password ? PASSWORD_RULES.filter((rule) => rule.test(password)).length : 0;
   if (score >= 4 && password.length >= 12) {
     return {
       score: 4,
-      label: 'Rất mạnh',
+      label: i18n.t('profile.utils.veryStrong'),
       barClass: 'bg-primary',
       textClass: 'text-primary',
     };
   }
   if (score >= 4) {
-    return { score: 4, label: 'Mạnh', barClass: 'bg-primary', textClass: 'text-primary' };
+    return {
+      score: 4,
+      label: i18n.t('profile.utils.strong'),
+      barClass: 'bg-primary',
+      textClass: 'text-primary',
+    };
   }
   if (score === 3) {
-    return { score, label: 'Khá', barClass: 'bg-secondary', textClass: 'text-secondary' };
+    return {
+      score,
+      label: i18n.t('profile.utils.fair'),
+      barClass: 'bg-secondary',
+      textClass: 'text-secondary',
+    };
   }
   if (score === 2) {
-    return { score, label: 'Trung bình', barClass: 'bg-tertiary', textClass: 'text-tertiary' };
+    return {
+      score,
+      label: i18n.t('profile.utils.medium'),
+      barClass: 'bg-tertiary',
+      textClass: 'text-tertiary',
+    };
   }
   return {
     score,
-    label: password ? 'Yếu' : 'Chưa nhập',
+    label: password ? i18n.t('profile.utils.weak') : i18n.t('profile.utils.notEntered'),
     barClass: 'bg-error',
     textClass: 'text-error',
   };
@@ -55,43 +64,48 @@ export function runSecurityChecks(
   return [
     {
       id: '2fa',
-      label: 'Bắt buộc xác thực 2 bước (2FA) cho quản trị viên',
+      label: i18n.t('profile.utils.twoFactorAuthentication2fa'),
       detail: settings.twoFactorRequired
-        ? 'Đang bật trong Cài đặt hệ thống'
-        : 'Đang tắt — bật lại tại Cài đặt hệ thống › Bảo mật',
+        ? i18n.t('profile.utils.enabledSystemSettings')
+        : i18n.t('profile.utils.disabledTurnItBack'),
       passed: settings.twoFactorRequired,
     },
     {
       id: 'fido2',
-      label: 'Khóa phần cứng FIDO2 đã liên kết',
-      detail: keys.length > 0 ? `${keys.length} khóa đang hoạt động` : 'Chưa liên kết khóa nào',
+      label: i18n.t('profile.utils.fido2HardwareKeyLinked'),
+      detail:
+        keys.length > 0
+          ? i18n.t('profile.utils.activeKeys', { count: keys.length })
+          : i18n.t('profile.utils.noKeysLinked'),
       passed: keys.length > 0,
     },
     {
       id: 'password',
-      label: `Mật khẩu được đổi trong vòng ${PASSWORD_ROTATION_DAYS} ngày`,
-      detail: `Lần đổi gần nhất cách đây ${passwordAge} ngày`,
+      label: i18n.t('profile.utils.passwordChangedWithinDays', { PASSWORD_ROTATION_DAYS }),
+      detail: i18n.t('profile.utils.lastChangedDaysAgo', { count: passwordAge }),
       passed: passwordAge <= PASSWORD_ROTATION_DAYS,
     },
     {
       id: 'backup',
-      label: 'Còn mã khôi phục dự phòng',
-      detail: `${details.backupCodes.length} mã chưa sử dụng`,
+      label: i18n.t('profile.utils.backupRecoveryCodesAvailable'),
+      detail: i18n.t('profile.utils.unusedCodes', { count: details.backupCodes.length }),
       passed: details.backupCodes.length >= 3,
     },
     {
       id: 'ip',
-      label: 'Giới hạn dải IP truy cập cổng quản trị',
+      label: i18n.t('profile.utils.adminPortalIpRange'),
       detail:
         settings.ipWhitelist.length > 0
-          ? `${settings.ipWhitelist.length} dải IP được phép`
-          : 'Chưa giới hạn IP — mọi địa chỉ đều truy cập được',
+          ? i18n.t('profile.utils.allowedIpRanges', { count: settings.ipWhitelist.length })
+          : i18n.t('profile.utils.noIpRestrictionAny'),
       passed: settings.ipWhitelist.length > 0,
     },
     {
       id: 'timeout',
-      label: 'Tự động đăng xuất khi không thao tác ≤ 30 phút',
-      detail: `Đang đặt ${settings.sessionTimeoutMinutes} phút`,
+      label: i18n.t('profile.utils.autoSignOutAfter'),
+      detail: i18n.t('profile.utils.currentlyMinutes', {
+        sessionTimeoutMinutes: settings.sessionTimeoutMinutes,
+      }),
       passed: settings.sessionTimeoutMinutes <= 30,
     },
   ];
@@ -103,8 +117,8 @@ export function securityScore(checks: SecurityCheckItem[]): number {
 }
 
 export function securityTier(score: number): string {
-  if (score >= 100) return 'Bảo mật cấp độ doanh nghiệp (cấp 4)';
-  if (score >= 80) return 'Bảo mật cấp 3 — cần rà soát';
-  if (score >= 50) return 'Bảo mật cấp 2 — rủi ro trung bình';
-  return 'Rủi ro cao — cần xử lý ngay';
+  if (score >= 100) return i18n.t('profile.utils.enterpriseGradeSecurityLevel');
+  if (score >= 80) return i18n.t('profile.utils.level3SecurityNeeds');
+  if (score >= 50) return i18n.t('profile.utils.level2SecurityMedium');
+  return i18n.t('profile.utils.highRiskActNow');
 }

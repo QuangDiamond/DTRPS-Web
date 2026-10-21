@@ -1,11 +1,9 @@
+import { Trans, useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import { useState } from 'react';
-import Icon from '../../../components/common/Icon';
-import {
-  MAX_FEEDBACK_LENGTH,
-  REJECTION_REASONS,
-  type RejectionReason,
-} from '../../../constants/listing';
-import type { Listing } from '../../../types/admin';
+import { Icon } from '@/components/common';
+import { MAX_FEEDBACK_LENGTH, REJECTION_REASONS } from '@/constants/listing';
+import type { Listing, RejectionReason } from '@/types';
 import DecisionModalShell from './DecisionModalShell';
 
 interface RejectListingModalProps {
@@ -15,7 +13,13 @@ interface RejectListingModalProps {
 }
 
 function buildTemplate(listing: Listing, reason: RejectionReason): string {
-  return `Kính gửi đối tác ${listing.partnerName}, hồ sơ "${listing.name}" (${listing.id}) chưa đủ điều kiện phê duyệt do ${reason.templateCause}. Vui lòng ${reason.templateFix} và gửi lại yêu cầu thẩm định.`;
+  return i18n.t('listingReview.rejectListingModal.dearSubmissionDoesNot', {
+    partnerName: listing.partnerName,
+    name: listing.name,
+    id: listing.id,
+    templateCause: reason.templateCause,
+    templateFix: reason.templateFix,
+  });
 }
 
 /** Modal Từ chối niêm yết: chọn lý do chính + góp ý chi tiết gửi đối tác */
@@ -24,6 +28,7 @@ export default function RejectListingModal({
   onClose,
   onConfirm,
 }: RejectListingModalProps) {
+  const { t } = useTranslation();
   const [reasonId, setReasonId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState('');
 
@@ -35,10 +40,10 @@ export default function RejectListingModal({
     <DecisionModalShell
       listing={listing}
       tone="reject"
-      title="Từ chối niêm yết địa điểm"
-      subtitle="Yêu cầu hoàn thiện hồ sơ và minh chứng trước khi kích hoạt"
-      stripLabel="Xét duyệt từ chối"
-      confirmLabel="Xác nhận Từ chối"
+      title={t('listingReview.rejectListingModal.rejectPlaceListing')}
+      subtitle={t('listingReview.rejectListingModal.requestCompleteSubmissionEvidence')}
+      stripLabel={t('listingReview.rejectListingModal.rejectionReview')}
+      confirmLabel={t('listingReview.rejectListingModal.confirmRejection')}
       confirmIcon="gavel"
       confirmDisabled={!canConfirm}
       onConfirm={() => selectedReason && onConfirm(selectedReason, trimmedFeedback)}
@@ -48,10 +53,13 @@ export default function RejectListingModal({
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-1.5 font-label-md text-label-md font-semibold text-on-surface">
-            1. Chọn lý do từ chối chính <span className="text-error">*</span>
+            <Trans
+              i18nKey="listingReview.rejectListingModal.n1ChooseMainRejection"
+              components={{ c0: <span className="text-error" /> }}
+            />
           </span>
           <span className="font-label-sm text-label-sm text-on-surface-variant">
-            Bắt buộc chọn 1 lý do
+            {t('listingReview.rejectListingModal.chooseExactly1Reason')}
           </span>
         </div>
         <div className="space-y-2">
@@ -98,17 +106,24 @@ export default function RejectListingModal({
             htmlFor="feedback-content"
             className="flex items-center gap-1.5 font-label-md text-label-md font-semibold text-on-surface"
           >
-            2. Góp ý chi tiết &amp; Hướng dẫn sửa đổi cho Đối tác{' '}
-            <span className="text-error">*</span>
+            <Trans
+              i18nKey="listingReview.rejectListingModal.n2DetailedFeedbackRevision"
+              components={{ c0: <span className="text-error" /> }}
+            />
           </label>
           <button
             type="button"
             disabled={!selectedReason}
             onClick={() => selectedReason && setFeedback(buildTemplate(listing, selectedReason))}
-            title={selectedReason ? 'Điền văn bản mẫu theo lý do đã chọn' : 'Chọn lý do trước'}
+            title={
+              selectedReason
+                ? t('listingReview.rejectListingModal.fillTemplateSelectedReason')
+                : t('listingReview.rejectListingModal.chooseReasonFirst')
+            }
             className="flex items-center gap-1 rounded px-2 py-0.5 font-label-sm text-label-sm font-semibold text-primary transition-colors hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <Icon name="auto_fix_high" className="text-[14px]" /> Văn bản mẫu
+            <Icon name="auto_fix_high" className="text-[14px]" />{' '}
+            {t('listingReview.rejectListingModal.template')}
           </button>
         </div>
         <textarea
@@ -117,11 +132,14 @@ export default function RejectListingModal({
           maxLength={MAX_FEEDBACK_LENGTH}
           value={feedback}
           onChange={(event) => setFeedback(event.target.value)}
-          placeholder="Nhập chi tiết yêu cầu bổ sung hoặc giải trình..."
+          placeholder={t('listingReview.rejectListingModal.enterDetailsRequiredAdditions')}
           className="w-full rounded-xl bg-surface-container-low p-3.5 font-body-md text-body-md text-on-surface transition-all placeholder:text-outline focus:ring-2 focus:ring-primary focus:outline-none"
         />
         <span className="text-right font-label-sm text-label-sm text-on-surface-variant">
-          {feedback.length} / {MAX_FEEDBACK_LENGTH} ký tự
+          {t('listingReview.rejectListingModal.characters', {
+            length: feedback.length,
+            MAX_FEEDBACK_LENGTH,
+          })}
         </span>
       </div>
 
@@ -129,9 +147,10 @@ export default function RejectListingModal({
       <div className="flex items-start gap-3 rounded-xl bg-error-container/20 p-3.5">
         <Icon name="info" className="mt-0.5 shrink-0 text-[20px] text-error" />
         <div className="font-body-sm text-body-sm text-on-surface">
-          Trạng thái địa điểm sẽ chuyển thành{' '}
-          <strong className="font-semibold text-error">BỊ TỪ CHỐI (REJECTED)</strong>. Đối tác sẽ
-          nhận thông báo qua Email &amp; App để bổ sung hồ sơ và gửi lại (Resubmit).
+          <Trans
+            i18nKey="listingReview.rejectListingModal.thePlaceStatusWill"
+            components={{ c0: <strong className="font-semibold text-error" /> }}
+          />
         </div>
       </div>
     </DecisionModalShell>

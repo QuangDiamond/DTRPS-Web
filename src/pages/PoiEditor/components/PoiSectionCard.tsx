@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
+import { Icon } from '@/components/common';
 
 interface PoiSectionCardProps {
   icon: string;

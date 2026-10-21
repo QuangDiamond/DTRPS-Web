@@ -1,7 +1,6 @@
-import { MOCK_NOTIFICATIONS, NOTIFICATION_BASE_STATS } from '../constants/mockNotifications';
-import { DEFAULT_NOTIFICATION_RULES } from '../constants/notification';
-import type { NotificationRules } from '../types/admin';
-import type { NotificationsSnapshot } from '../types/api';
+import { DEFAULT_NOTIFICATION_RULES } from '@/constants/notification';
+import { MOCK_NOTIFICATIONS, NOTIFICATION_BASE_STATS } from '@/mocks/data/mockNotifications';
+import type { NotificationRules, NotificationsSnapshot } from '@/types';
 import { ENDPOINTS } from './endpoints';
 import { createSource, writeRequest } from './request';
 

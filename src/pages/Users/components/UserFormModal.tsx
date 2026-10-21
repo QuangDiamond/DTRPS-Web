@@ -1,9 +1,9 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
-import Button from '../../../components/common/Button';
-import Modal from '../../../components/common/Modal';
-import { USER_ACCOUNT_TYPE_LABELS, USER_CITIES } from '../../../constants/user';
-import type { AppUser, UserAccountType, UserFormValues } from '../../../types/admin';
-import { isValidEmail, isValidPhone, VALIDATION_MESSAGES } from '../../../utils/validation';
+import { useTranslation } from 'react-i18next';
+import { type FormEvent, type ReactNode, useState } from 'react';
+import { Button, Modal } from '@/components/common';
+import { USER_ACCOUNT_TYPE_LABELS, USER_CITIES } from '@/constants/user';
+import type { AppUser, UserAccountType, UserFormValues } from '@/types';
+import { isValidEmail, isValidPhone, VALIDATION_MESSAGES } from '@/utils/validation';
 
 interface UserFormModalProps {
   /** null = thêm mới, có giá trị = chỉnh sửa */
@@ -32,6 +32,7 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 }
 
 export default function UserFormModal({ user, onSubmit, onClose }: UserFormModalProps) {
+  const { t } = useTranslation();
   const [values, setValues] = useState<UserFormValues>(() =>
     user
       ? {
@@ -54,7 +55,7 @@ export default function UserFormModal({ user, onSubmit, onClose }: UserFormModal
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const nextErrors: FormErrors = {};
-    if (!values.name.trim()) nextErrors.name = 'Vui lòng nhập họ tên';
+    if (!values.name.trim()) nextErrors.name = t('users.userFormModal.pleaseEnterFullName');
     if (!isValidEmail(values.email)) nextErrors.email = VALIDATION_MESSAGES.email;
     if (!isValidPhone(values.phone)) nextErrors.phone = VALIDATION_MESSAGES.phone;
     setErrors(nextErrors);
@@ -69,19 +70,21 @@ export default function UserFormModal({ user, onSubmit, onClose }: UserFormModal
 
   return (
     <Modal
-      title={isEdit ? 'Chỉnh sửa người dùng' : 'Thêm người dùng mới'}
+      title={isEdit ? t('users.userFormModal.editUser') : t('users.userFormModal.addNewUser')}
       description={
-        isEdit ? `Cập nhật thông tin ${user.id}` : 'Tài khoản mới sẽ ở trạng thái Đang hoạt động'
+        isEdit
+          ? t('users.userFormModal.updateDetails', { id: user.id })
+          : t('users.userFormModal.newAccountsCreatedWith')
       }
       onClose={onClose}
       size="lg"
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
-            Hủy
+            {t('actions.cancel')}
           </Button>
           <Button icon={isEdit ? 'save' : 'person_add'} type="submit" form={FORM_ID}>
-            {isEdit ? 'Lưu thay đổi' : 'Thêm người dùng'}
+            {isEdit ? t('users.userFormModal.saveChanges') : t('users.userFormModal.addUser')}
           </Button>
         </>
       }
@@ -92,12 +95,12 @@ export default function UserFormModal({ user, onSubmit, onClose }: UserFormModal
         noValidate
         className="grid grid-cols-1 gap-4 sm:grid-cols-2"
       >
-        <Field label="Họ và tên *" error={errors.name}>
+        <Field label={t('users.userFormModal.fullName')} error={errors.name}>
           <input
             className={INPUT_CLASS}
             value={values.name}
             onChange={(event) => update('name', event.target.value)}
-            placeholder="VD: Nguyễn Văn Hùng"
+            placeholder={t('users.userFormModal.eGNguyenVan')}
           />
         </Field>
         <Field label="Email *" error={errors.email}>
@@ -109,7 +112,7 @@ export default function UserFormModal({ user, onSubmit, onClose }: UserFormModal
             placeholder="ten@email.vn"
           />
         </Field>
-        <Field label="Số điện thoại *" error={errors.phone}>
+        <Field label={t('users.userFormModal.phoneNumber')} error={errors.phone}>
           <input
             className={INPUT_CLASS}
             value={values.phone}
@@ -117,7 +120,7 @@ export default function UserFormModal({ user, onSubmit, onClose }: UserFormModal
             placeholder="0905 123 456"
           />
         </Field>
-        <Field label="Thành phố">
+        <Field label={t('users.userFormModal.city')}>
           <select
             className={`${INPUT_CLASS} cursor-pointer`}
             value={values.city}
@@ -130,7 +133,7 @@ export default function UserFormModal({ user, onSubmit, onClose }: UserFormModal
             ))}
           </select>
         </Field>
-        <Field label="Loại tài khoản">
+        <Field label={t('users.userFormModal.accountType')}>
           <select
             className={`${INPUT_CLASS} cursor-pointer`}
             value={values.accountType}

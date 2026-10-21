@@ -1,10 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Icon from '../../../components/common/Icon';
-import Modal from '../../../components/common/Modal';
-import { ROUTES } from '../../../constants/routes';
-import type { SecurityCheckItem } from '../../../types/admin';
-import { securityScore, securityTier } from '../profileUtils';
+import { Icon, Modal } from '@/components/common';
+import { ROUTES } from '@/constants/routes';
+import { securityScore, securityTier } from '@/pages/Profile/profileUtils';
+import type { SecurityCheckItem } from '@/types';
 
 const SCAN_DURATION_MS = 1200;
 
@@ -15,6 +15,7 @@ interface SecurityCheckModalProps {
 
 /** Mô phỏng quét bảo mật rồi hiển thị kết quả từng hạng mục */
 export default function SecurityCheckModal({ checks, onClose }: SecurityCheckModalProps) {
+  const { t } = useTranslation();
   const [scanning, setScanning] = useState(true);
   const score = securityScore(checks);
   const failed = checks.filter((check) => !check.passed).length;
@@ -26,8 +27,8 @@ export default function SecurityCheckModal({ checks, onClose }: SecurityCheckMod
 
   return (
     <Modal
-      title="Kiểm tra bảo mật hệ thống"
-      description="Rà soát cấu hình xác thực, phiên đăng nhập và giới hạn truy cập của cổng quản trị"
+      title={t('profile.securityCheckModal.systemSecurityCheck')}
+      description={t('profile.securityCheckModal.reviewAuthenticationSettingsSign')}
       onClose={onClose}
       footer={
         !scanning && failed > 0 ? (
@@ -35,7 +36,8 @@ export default function SecurityCheckModal({ checks, onClose }: SecurityCheckMod
             to={ROUTES.SETTINGS}
             className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
           >
-            <Icon name="settings" className="text-[18px]" /> Mở Cài đặt bảo mật
+            <Icon name="settings" className="text-[18px]" />{' '}
+            {t('profile.securityCheckModal.openSecuritySettings')}
           </Link>
         ) : undefined
       }
@@ -44,10 +46,10 @@ export default function SecurityCheckModal({ checks, onClose }: SecurityCheckMod
         <div className="flex flex-col items-center gap-space-sm py-space-xl text-center">
           <Icon name="radar" className="animate-spin text-[44px] text-primary" />
           <span className="font-title-md text-title-md text-on-surface">
-            Đang quét cấu hình bảo mật...
+            {t('profile.securityCheckModal.scanningSecurityConfiguration')}
           </span>
           <span className="font-body-sm text-body-sm text-on-surface-variant">
-            Kiểm tra {checks.length} hạng mục theo chuẩn SOC2 Type II &amp; ISO 27001
+            {t('profile.securityCheckModal.checkingItemsAgainstSoc2', { length: checks.length })}
           </span>
         </div>
       ) : (
@@ -59,14 +61,16 @@ export default function SecurityCheckModal({ checks, onClose }: SecurityCheckMod
           >
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm text-on-surface-variant">
-                Điểm an toàn
+                {t('profile.securityCheckModal.safetyScore')}
               </span>
               <span className="font-display-sm text-display-sm font-bold text-on-surface">
                 {score}%
               </span>
             </div>
             <span className="max-w-[60%] text-right font-label-md text-label-md text-on-surface">
-              {failed === 0 ? 'Không phát hiện rủi ro' : `${failed} hạng mục cần xử lý`}
+              {failed === 0
+                ? t('profile.securityCheckModal.noRisksDetected')
+                : t('profile.securityCheckModal.itemsNeedAttention', { count: failed })}
               <span className="block font-body-sm text-body-sm text-on-surface-variant">
                 {securityTier(score)}
               </span>

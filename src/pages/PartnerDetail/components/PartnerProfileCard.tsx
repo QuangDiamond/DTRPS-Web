@@ -1,9 +1,13 @@
+import { Trans, useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
-import { PARTNER_STATUS_CONFIG } from '../../../constants/partner';
-import type { Partner, PartnerProfile } from '../../../types/admin';
-import { formatDate, formatNumber } from '../../../utils/format';
-import { formatPartnershipDuration } from '../partnerProfileUtils';
+import { Icon } from '@/components/common';
+import { PARTNER_STATUS_CONFIG } from '@/constants/partner';
+import {
+  formatPartnershipDuration,
+  getTrustLevelKey,
+} from '@/pages/PartnerDetail/partnerProfileUtils';
+import type { Partner, PartnerProfile } from '@/types';
+import { formatDate, formatNumber } from '@/utils/format';
 
 interface PartnerProfileCardProps {
   partner: Partner;
@@ -30,45 +34,46 @@ function MetaItem({
 }
 
 export default function PartnerProfileCard({ partner, profile }: PartnerProfileCardProps) {
+  const { t } = useTranslation();
   const status = PARTNER_STATUS_CONFIG[partner.status];
   const roundedRating = Math.round(partner.rating);
 
   const metrics = [
     {
-      label: 'Địa điểm đăng ký',
+      label: t('partnerDetail.partnerProfileCard.registeredPlaces'),
       icon: 'domain',
       value: formatNumber(partner.listings.total),
-      unit: 'Cơ sở',
+      unit: t('partnerDetail.partnerProfileCard.business'),
       boxClass: 'bg-surface-container-low',
       headClass: 'text-outline',
       valueClass: 'text-on-surface',
       unitClass: 'text-on-surface-variant',
     },
     {
-      label: 'Đã phê duyệt',
+      label: t('partnerDetail.partnerProfileCard.approved'),
       icon: 'check_circle',
       value: formatNumber(partner.listings.approved),
-      unit: 'Công khai',
+      unit: t('partnerDetail.partnerProfileCard.public'),
       boxClass: 'bg-secondary-container/30',
       headClass: 'font-semibold text-secondary',
       valueClass: 'text-secondary',
       unitClass: 'text-secondary',
     },
     {
-      label: 'Đang chờ duyệt',
+      label: t('partnerDetail.partnerProfileCard.pendingApproval'),
       icon: 'pending',
       value: formatNumber(partner.listings.pending),
-      unit: 'Cần xử lý',
+      unit: t('partnerDetail.partnerProfileCard.needsAction'),
       boxClass: 'bg-tertiary-fixed/40',
       headClass: 'font-semibold text-tertiary',
       valueClass: 'text-tertiary',
       unitClass: 'text-tertiary',
     },
     {
-      label: 'Lưu lịch trình AI',
-      icon: 'bookmark_added',
-      value: formatNumber(profile.aiSaves),
-      unit: 'Lượt',
+      label: t('partnerDetail.partnerProfileCard.aiSearchHits'),
+      icon: 'manage_search',
+      value: formatNumber(profile.aiSearchHits),
+      unit: t('partnerDetail.partnerProfileCard.hits'),
       boxClass: 'bg-surface-container-low',
       headClass: 'text-outline',
       valueClass: 'text-on-surface',
@@ -101,17 +106,20 @@ export default function PartnerProfileCard({ partner, profile }: PartnerProfileC
                 {status.filterLabel}
               </span>
               <span className="rounded-full bg-surface-container px-2.5 py-1 font-label-sm text-label-sm text-on-surface-variant">
-                Cơ sở chính: {partner.businessName}
+                {t('partnerDetail.partnerProfileCard.mainBusiness', {
+                  businessName: partner.businessName,
+                })}
               </span>
             </div>
 
             <div className="mt-2 grid grid-cols-1 gap-x-6 gap-y-2 font-body-sm text-body-sm text-on-surface-variant md:grid-cols-2 xl:grid-cols-3">
               <MetaItem icon="person" filled>
                 <span>
-                  Đại diện:{' '}
-                  <strong className="font-label-md text-on-surface">
-                    {partner.representative}
-                  </strong>
+                  <Trans
+                    i18nKey="partnerDetail.partnerProfileCard.representative"
+                    values={{ representative: partner.representative }}
+                    components={{ c0: <strong className="font-label-md text-on-surface" /> }}
+                  />
                 </span>
               </MetaItem>
               <MetaItem icon="mail">
@@ -133,11 +141,14 @@ export default function PartnerProfileCard({ partner, profile }: PartnerProfileC
               </MetaItem>
               <MetaItem icon="calendar_today">
                 <span>
-                  Gia nhập: {formatDate(partner.joinedAt)} (
-                  <span className="font-medium text-primary">
-                    {formatPartnershipDuration(partner.joinedAt)}
-                  </span>
-                  )
+                  <Trans
+                    i18nKey="partnerDetail.partnerProfileCard.joined"
+                    values={{
+                      joinedAt: formatDate(partner.joinedAt),
+                      joinedAt2: formatPartnershipDuration(partner.joinedAt),
+                    }}
+                    components={{ c0: <span className="font-medium text-primary" /> }}
+                  />
                 </span>
               </MetaItem>
               <MetaItem icon="location_on">
@@ -154,7 +165,7 @@ export default function PartnerProfileCard({ partner, profile }: PartnerProfileC
           <div className="flex items-center gap-2">
             <Icon name="verified_user" className="text-[20px] text-primary" />
             <span className="font-label-sm text-label-sm font-semibold tracking-wider text-outline uppercase">
-              Tín nhiệm AI
+              {t('partnerDetail.partnerProfileCard.aiTrust')}
             </span>
           </div>
           <div className="flex items-baseline gap-1">
@@ -174,7 +185,7 @@ export default function PartnerProfileCard({ partner, profile }: PartnerProfileC
                 : 'bg-error-container text-on-error-container'
             }`}
           >
-            {profile.trustLabel}
+            {t(getTrustLevelKey(profile.trustScore))}
           </span>
         </div>
       </div>
@@ -202,7 +213,9 @@ export default function PartnerProfileCard({ partner, profile }: PartnerProfileC
         ))}
         <div className="col-span-2 flex flex-col justify-between rounded-xl bg-surface-container-low p-3.5 md:col-span-1">
           <div className="mb-1 flex items-center justify-between text-outline">
-            <span className="font-label-sm text-label-sm">Đánh giá trung bình</span>
+            <span className="font-label-sm text-label-sm">
+              {t('partnerDetail.partnerProfileCard.averageRating')}
+            </span>
             <Icon name="star" filled className="text-[18px] text-tertiary-container" />
           </div>
           <div className="flex items-center gap-1.5">

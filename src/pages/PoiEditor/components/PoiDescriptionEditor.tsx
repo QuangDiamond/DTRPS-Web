@@ -1,6 +1,8 @@
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import { useRef } from 'react';
-import Icon from '../../../components/common/Icon';
-import { formatNumber } from '../../../utils/format';
+import { Icon } from '@/components/common';
+import { formatNumber } from '@/utils/format';
 
 type DescriptionFormat =
   'bold' | 'italic' | 'underline' | 'bullet' | 'numbered' | 'quote' | 'link' | 'image';
@@ -27,26 +29,26 @@ const wrap = (
 };
 
 const prefixLines = (selected: string, prefix: (index: number) => string): FormatResult => {
-  const lines = (selected || 'Nội dung').split('\n');
+  const lines = (selected || i18n.t('poiEditor.poiDescriptionEditor.text')).split('\n');
   const text = lines.map((line, index) => `${prefix(index)}${line}`).join('\n');
   return { text, selectStart: 0, selectEnd: text.length };
 };
 
 /** Cú pháp Markdown — khi có backend có thể render ra HTML ở App Mobile */
 const FORMATTERS: Record<DescriptionFormat, (selected: string) => FormatResult> = {
-  bold: (s) => wrap(s, '**', '**', 'chữ đậm'),
-  italic: (s) => wrap(s, '_', '_', 'chữ nghiêng'),
-  underline: (s) => wrap(s, '<u>', '</u>', 'gạch chân'),
+  bold: (s) => wrap(s, '**', '**', i18n.t('poiEditor.poiDescriptionEditor.boldText')),
+  italic: (s) => wrap(s, '_', '_', i18n.t('poiEditor.poiDescriptionEditor.italicText')),
+  underline: (s) => wrap(s, '<u>', '</u>', i18n.t('poiEditor.poiDescriptionEditor.underlinedText')),
   bullet: (s) => prefixLines(s, () => '• '),
   numbered: (s) => prefixLines(s, (index) => `${index + 1}. `),
   quote: (s) => prefixLines(s, () => '> '),
   link: (s) => {
-    const label = s || 'văn bản liên kết';
+    const label = s || i18n.t('poiEditor.poiDescriptionEditor.linkText');
     const text = `[${label}](https://)`;
     return { text, selectStart: label.length + 3, selectEnd: text.length - 1 };
   },
   image: (s) => {
-    const label = s || 'mô tả ảnh';
+    const label = s || i18n.t('poiEditor.poiDescriptionEditor.imageDescription');
     const text = `![${label}](https://)`;
     return { text, selectStart: label.length + 4, selectEnd: text.length - 1 };
   },
@@ -58,20 +60,71 @@ const TEXT_BUTTONS: {
   className: string;
   title: string;
 }[] = [
-  { format: 'bold', label: 'B', className: 'font-bold', title: 'In đậm' },
-  { format: 'italic', label: 'I', className: 'italic', title: 'In nghiêng' },
-  { format: 'underline', label: 'U', className: 'underline', title: 'Gạch chân' },
+  {
+    format: 'bold',
+    label: 'B',
+    className: 'font-bold',
+    get title() {
+      return i18n.t('poiEditor.poiDescriptionEditor.bold');
+    },
+  },
+  {
+    format: 'italic',
+    label: 'I',
+    className: 'italic',
+    get title() {
+      return i18n.t('poiEditor.poiDescriptionEditor.italic');
+    },
+  },
+  {
+    format: 'underline',
+    label: 'U',
+    className: 'underline',
+    get title() {
+      return i18n.t('poiEditor.poiDescriptionEditor.underline');
+    },
+  },
 ];
 
 const ICON_GROUPS: { format: DescriptionFormat; icon: string; title: string }[][] = [
   [
-    { format: 'bullet', icon: 'format_list_bulleted', title: 'Danh sách dấu chấm' },
-    { format: 'numbered', icon: 'format_list_numbered', title: 'Danh sách đánh số' },
-    { format: 'quote', icon: 'format_quote', title: 'Trích dẫn' },
+    {
+      format: 'bullet',
+      icon: 'format_list_bulleted',
+      get title() {
+        return i18n.t('poiEditor.poiDescriptionEditor.bulletedList');
+      },
+    },
+    {
+      format: 'numbered',
+      icon: 'format_list_numbered',
+      get title() {
+        return i18n.t('poiEditor.poiDescriptionEditor.numberedList');
+      },
+    },
+    {
+      format: 'quote',
+      icon: 'format_quote',
+      get title() {
+        return i18n.t('poiEditor.poiDescriptionEditor.quote');
+      },
+    },
   ],
   [
-    { format: 'link', icon: 'link', title: 'Chèn liên kết' },
-    { format: 'image', icon: 'image', title: 'Chèn ảnh' },
+    {
+      format: 'link',
+      icon: 'link',
+      get title() {
+        return i18n.t('poiEditor.poiDescriptionEditor.insertLink');
+      },
+    },
+    {
+      format: 'image',
+      icon: 'image',
+      get title() {
+        return i18n.t('poiEditor.poiDescriptionEditor.insertImage');
+      },
+    },
   ],
 ];
 
@@ -81,6 +134,7 @@ interface PoiDescriptionEditorProps {
 }
 
 export default function PoiDescriptionEditor({ value, onChange }: PoiDescriptionEditorProps) {
+  const { t } = useTranslation();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const applyFormat = (format: DescriptionFormat) => {
@@ -99,10 +153,12 @@ export default function PoiDescriptionEditor({ value, onChange }: PoiDescription
     <div className="flex flex-col gap-1.5 md:col-span-2">
       <div className="flex items-center justify-between">
         <label className="font-label-md text-label-md font-semibold text-on-surface">
-          Mô tả chi tiết điểm đến
+          {t('poiEditor.poiDescriptionEditor.detailedDestinationDescription')}
         </label>
         <span className="font-label-sm text-label-sm text-outline">
-          Đã nhập {formatNumber(value.length)} ký tự • Ngôn ngữ: VI
+          {t('poiEditor.poiDescriptionEditor.charactersEnteredLanguageVi', {
+            length: formatNumber(value.length),
+          })}
         </span>
       </div>
       <div className="flex flex-col overflow-hidden rounded-lg bg-surface-container-low">
@@ -142,7 +198,7 @@ export default function PoiDescriptionEditor({ value, onChange }: PoiDescription
           ref={textareaRef}
           rows={4}
           value={value}
-          placeholder="Giới thiệu lịch sử, điểm nổi bật và trải nghiệm đáng chú ý của điểm đến..."
+          placeholder={t('poiEditor.poiDescriptionEditor.introduceDestinationSHistory')}
           onChange={(event) => onChange(event.target.value)}
           className="w-full resize-none bg-transparent p-space-md font-body-md text-body-md leading-relaxed text-on-surface placeholder:text-outline focus:outline-none"
         />

@@ -1,6 +1,7 @@
-import Icon from '../../../components/common/Icon';
-import { formatNumber } from '../../../utils/format';
-import { getPageItems } from '../../../utils/pagination';
+import { Trans, useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { formatNumber } from '@/utils/format';
+import { getPageItems } from '@/utils/pagination';
 
 interface NotificationPaginationProps {
   page: number;
@@ -18,6 +19,7 @@ export default function NotificationPagination({
   totalItems,
   onPageChange,
 }: NotificationPaginationProps) {
+  const { t } = useTranslation();
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const start = totalItems === 0 ? 0 : (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, totalItems);
@@ -25,16 +27,16 @@ export default function NotificationPagination({
   return (
     <div className="flex items-center justify-between rounded-2xl bg-surface-container-lowest p-space-md shadow-sm">
       <span className="font-body-sm text-body-sm text-outline">
-        Hiển thị{' '}
-        <strong>
-          {start}-{end}
-        </strong>{' '}
-        trong <strong>{formatNumber(totalItems)}</strong> thông báo
+        <Trans
+          i18nKey="notifications.notificationPagination.showingNotifications"
+          values={{ start, end, totalItems: formatNumber(totalItems) }}
+          components={{ c0: <strong />, c1: <strong /> }}
+        />
       </span>
       <div className="flex items-center gap-1">
         <button
           type="button"
-          title="Trang trước"
+          title={t('notifications.notificationPagination.previousPage')}
           disabled={page <= 1}
           onClick={() => onPageChange(page - 1)}
           className={ARROW_CLASS}

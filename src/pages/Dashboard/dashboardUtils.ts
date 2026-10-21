@@ -1,14 +1,15 @@
-import type { DashboardRange, DateRange, SelectOption } from '../../types/admin';
-import { formatDate, toIsoDate } from '../../utils/format';
+import type { DashboardRange, DateRange, SelectOption } from '@/types';
+import { formatDate, toIsoDate } from '@/utils/format';
+import { localizedOption } from '@/utils/localize';
 
 export type PresetRange = Exclude<DashboardRange, 'custom'>;
 
 export const RANGE_OPTIONS: SelectOption<DashboardRange>[] = [
-  { value: 'today', label: 'Hôm nay' },
-  { value: '7days', label: '7 ngày qua' },
-  { value: '30days', label: '30 ngày qua' },
-  { value: 'thisyear', label: 'Năm nay' },
-  { value: 'custom', label: 'Tùy chỉnh' },
+  localizedOption('today', 'dashboard.range.today', 'Hôm nay'),
+  localizedOption('7days', 'dashboard.range.7days', '7 ngày qua'),
+  localizedOption('30days', 'dashboard.range.30days', '30 ngày qua'),
+  localizedOption('thisyear', 'dashboard.range.thisyear', 'Năm nay'),
+  localizedOption('custom', 'dashboard.range.custom', 'Tùy chỉnh'),
 ];
 
 /** Khung thẻ dùng chung của Dashboard */

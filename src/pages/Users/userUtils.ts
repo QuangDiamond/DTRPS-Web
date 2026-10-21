@@ -1,8 +1,8 @@
-import { USER_STATUS_CONFIG } from '../../constants/user';
-import type { AppUser, UserFilters, UserJoinedRange } from '../../types/admin';
-import type { SortAccessors } from '../../utils/sort';
-import { toIsoDate } from '../../utils/format';
-import { normalizeText } from '../../utils/string';
+import { USER_STATUS_CONFIG } from '@/constants/user';
+import type { AppUser, UserFilters, UserJoinedRange } from '@/types';
+import { toIsoDate } from '@/utils/format';
+import type { SortAccessors } from '@/utils/sort';
+import { normalizeText } from '@/utils/string';
 
 /** Ngày bắt đầu (ISO) của khoảng "Ngày đăng ký" */
 function getJoinedFrom(range: UserJoinedRange, now: Date): string | null {

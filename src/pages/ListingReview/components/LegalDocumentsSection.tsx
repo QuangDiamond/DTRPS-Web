@@ -1,5 +1,6 @@
-import Icon from '../../../components/common/Icon';
-import type { ListingDocument } from '../../../types/admin';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import type { ListingDocument } from '@/types';
 import ReviewSection from './ReviewSection';
 
 interface LegalDocumentsSectionProps {
@@ -33,6 +34,7 @@ export default function LegalDocumentsSection({
   onPreview,
   onDownloadAll,
 }: LegalDocumentsSectionProps) {
+  const { t } = useTranslation();
   const verifiedCount = documents.filter((document) => document.verified).length;
 
   return (
@@ -40,12 +42,15 @@ export default function LegalDocumentsSection({
       accent
       number="05"
       numberClassName="bg-tertiary-container"
-      title="Tài liệu pháp lý"
-      subtitle={`${verifiedCount}/${documents.length} văn bản có mộc đỏ đối chiếu CSDL quốc gia`}
+      title={t('listingReview.legalDocumentsSection.legalDocuments')}
+      subtitle={t('listingReview.legalDocumentsSection.sealedDocumentsVerifiedAgainst', {
+        verifiedCount,
+        length: documents.length,
+      })}
       action={
         <div className="flex shrink-0 items-center gap-3">
           <span className="rounded-full border border-error-container bg-error-container/70 px-2 py-0.5 text-[10px] font-extrabold tracking-wider text-on-error-container uppercase">
-            Bắt buộc
+            {t('listingReview.legalDocumentsSection.required')}
           </span>
           <button
             type="button"
@@ -53,7 +58,7 @@ export default function LegalDocumentsSection({
             className="flex items-center gap-1 text-[12px] font-bold text-primary hover:underline"
           >
             <Icon name="download" className="text-[16px]" />
-            Tải ZIP
+            {t('listingReview.legalDocumentsSection.downloadZip')}
           </button>
         </div>
       }
@@ -87,7 +92,7 @@ export default function LegalDocumentsSection({
                   type="button"
                   onClick={() => onPreview(document)}
                   className="rounded-lg border border-surface-container-high bg-surface-container-lowest p-1.5 text-on-surface-variant hover:bg-surface-container"
-                  title="Xem trước tài liệu"
+                  title={t('listingReview.legalDocumentsSection.previewDocument')}
                 >
                   <Icon name="visibility" className="text-[17px]" />
                 </button>
@@ -95,7 +100,11 @@ export default function LegalDocumentsSection({
                   type="button"
                   disabled={!editable}
                   onClick={() => onToggleVerified(document.id)}
-                  title={editable ? 'Bấm để đổi trạng thái đối chiếu' : undefined}
+                  title={
+                    editable
+                      ? t('listingReview.legalDocumentsSection.clickToggleVerificationStatus')
+                      : undefined
+                  }
                   className={`flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold transition-colors disabled:cursor-default ${
                     document.verified
                       ? 'border-secondary-fixed-dim/50 bg-secondary-container/60 text-on-secondary-fixed-variant'
@@ -103,7 +112,9 @@ export default function LegalDocumentsSection({
                   }`}
                 >
                   <Icon name={document.verified ? 'check' : 'pending'} className="text-[14px]" />
-                  {document.verified ? 'Đã đối chiếu' : 'Chờ đối chiếu'}
+                  {document.verified
+                    ? t('listingReview.legalDocumentsSection.verified')
+                    : t('listingReview.legalDocumentsSection.awaitingVerification')}
                 </button>
               </div>
             </div>

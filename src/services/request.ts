@@ -2,7 +2,7 @@
  * Helper chung của các service: mỗi hàm tự chọn nguồn dữ liệu theo cờ USE_MOCK_API,
  * nên khi chuyển sang backend thật chỉ cần đặt VITE_USE_MOCK=false.
  */
-import type { DataSource } from '../types/api';
+import type { DataSource } from '@/types';
 import { MOCK_WRITE_LATENCY_MS, USE_MOCK_API } from './config';
 import { apiRequest, type RequestOptions } from './httpClient';
 

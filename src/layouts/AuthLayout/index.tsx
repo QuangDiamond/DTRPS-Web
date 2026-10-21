@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import type { ReactNode } from 'react';
-import Icon from '../../components/common/Icon';
-import { useToast } from '../../hooks/useToast';
-import type { AuthBrandContent } from '../../types/auth';
+import { Icon } from '@/components/common';
+import { useToast } from '@/hooks';
+import type { AuthBrandContent } from '@/types';
 import AuthBrandPanel from './AuthBrandPanel';
 
 interface AuthLayoutProps {
@@ -9,10 +11,24 @@ interface AuthLayoutProps {
   children: ReactNode;
 }
 
-const LEGAL_LINKS = ['Chính sách Bảo mật', 'Quy chế Vận hành'];
+const LEGAL_LINKS: { id: string; label: string }[] = [
+  {
+    id: 'privacy',
+    get label() {
+      return i18n.t('layout.authLayout.privacyPolicy');
+    },
+  },
+  {
+    id: 'regulations',
+    get label() {
+      return i18n.t('layout.authLayout.operatingRegulations');
+    },
+  },
+];
 
 /** Khung chung cho Đăng nhập + 3 bước Quên mật khẩu */
 export default function AuthLayout({ brand, children }: AuthLayoutProps) {
+  const { t } = useTranslation();
   const { showToast } = useToast();
 
   return (
@@ -40,7 +56,7 @@ export default function AuthLayout({ brand, children }: AuthLayoutProps) {
               <div className="inline-flex items-center gap-1.5 rounded-full bg-secondary-container/40 px-3 py-1 text-on-secondary-container">
                 <Icon name="shield_person" filled className="text-sm" />
                 <span className="font-label-sm text-label-sm font-semibold">
-                  Quản trị viên hệ thống
+                  {t('layout.authLayout.systemAdministrator')}
                 </span>
               </div>
             </div>
@@ -53,17 +69,19 @@ export default function AuthLayout({ brand, children }: AuthLayoutProps) {
             {/* Bản quyền */}
             <div className="mt-space-lg flex flex-col items-center justify-between gap-2 pt-space-md text-on-surface-variant sm:flex-row">
               <p className="font-body-sm text-body-sm">
-                © 2025 Smart Travel Vietnam Co., Ltd. Tất cả quyền được bảo lưu.
+                {t('layout.authLayout.n2025SmartTravelVietnam')}
               </p>
               <div className="flex items-center gap-4">
-                {LEGAL_LINKS.map((label, index) => (
-                  <span key={label} className="flex items-center gap-4">
+                {LEGAL_LINKS.map(({ id, label }, index) => (
+                  <span key={id} className="flex items-center gap-4">
                     {index > 0 && (
                       <span className="font-label-sm text-label-sm text-outline">•</span>
                     )}
                     <button
                       type="button"
-                      onClick={() => showToast(`${label} đang được cập nhật`, 'info')}
+                      onClick={() =>
+                        showToast(t('layout.authLayout.isBeingUpdated', { label }), 'info')
+                      }
                       className="cursor-pointer font-label-sm text-label-sm hover:underline"
                     >
                       {label}

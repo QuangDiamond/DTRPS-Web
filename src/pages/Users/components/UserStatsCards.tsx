@@ -1,6 +1,7 @@
-import Icon from '../../../components/common/Icon';
-import type { UserStats } from '../../../types/admin';
-import { formatNumber, formatPercent } from '../../../utils/format';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import type { UserStats } from '@/types';
+import { formatNumber, formatPercent } from '@/utils/format';
 
 const CARD_CLASS =
   'relative flex flex-col justify-between overflow-hidden rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm';
@@ -10,6 +11,7 @@ const VALUE_CLASS = 'mt-1 font-display-sm text-display-sm font-bold text-on-surf
 const ICON_BOX_CLASS = 'flex h-11 w-11 items-center justify-center rounded-2xl';
 
 export default function UserStatsCards({ stats }: { stats: UserStats }) {
+  const { t } = useTranslation();
   const activeRate = stats.total ? (stats.active / stats.total) * 100 : 0;
 
   return (
@@ -17,7 +19,7 @@ export default function UserStatsCards({ stats }: { stats: UserStats }) {
       <div className={CARD_CLASS}>
         <div className="flex items-start justify-between">
           <div className="flex flex-col">
-            <span className={LABEL_CLASS}>Tổng số người dùng</span>
+            <span className={LABEL_CLASS}>{t('users.userStatsCards.totalUsers')}</span>
             <span className={VALUE_CLASS}>{formatNumber(stats.total)}</span>
           </div>
           <div className={`${ICON_BOX_CLASS} bg-secondary-container/40 text-primary`}>
@@ -29,14 +31,16 @@ export default function UserStatsCards({ stats }: { stats: UserStats }) {
             <Icon name="arrow_upward" className="text-[14px]" />
             +12.4%
           </span>
-          <span className="font-body-sm text-body-sm text-outline">so với tháng trước</span>
+          <span className="font-body-sm text-body-sm text-outline">
+            {t('users.userStatsCards.vsLastMonth')}
+          </span>
         </div>
       </div>
 
       <div className={CARD_CLASS}>
         <div className="flex items-start justify-between">
           <div className="flex flex-col">
-            <span className={LABEL_CLASS}>Đang hoạt động</span>
+            <span className={LABEL_CLASS}>{t('users.userStatsCards.active')}</span>
             <span className={VALUE_CLASS}>{formatNumber(stats.active)}</span>
           </div>
           <div className={`${ICON_BOX_CLASS} bg-primary-container/20 text-primary`}>
@@ -50,14 +54,16 @@ export default function UserStatsCards({ stats }: { stats: UserStats }) {
           <span className="font-label-sm text-label-sm font-bold text-primary">
             {formatPercent(stats.active, stats.total)}
           </span>
-          <span className="font-body-sm text-body-sm text-outline">tỉ lệ trực tuyến</span>
+          <span className="font-body-sm text-body-sm text-outline">
+            {t('users.userStatsCards.onlineRate')}
+          </span>
         </div>
       </div>
 
       <div className={CARD_CLASS}>
         <div className="flex items-start justify-between">
           <div className="flex flex-col">
-            <span className={LABEL_CLASS}>Tài khoản mới tháng này</span>
+            <span className={LABEL_CLASS}>{t('users.userStatsCards.newAccountsThisMonth')}</span>
             <span className={VALUE_CLASS}>{formatNumber(stats.newThisMonth)}</span>
           </div>
           <div className={`${ICON_BOX_CLASS} bg-surface-container-high text-primary-container`}>
@@ -66,17 +72,19 @@ export default function UserStatsCards({ stats }: { stats: UserStats }) {
         </div>
         <div className="mt-space-md flex items-center gap-2 pt-space-xs">
           <span className="inline-flex items-center gap-1 font-label-sm text-label-sm font-bold text-on-surface">
-            <span className="h-2 w-2 rounded-full bg-primary" />+{formatNumber(stats.newToday)} hôm
-            nay
+            <span className="h-2 w-2 rounded-full bg-primary" />
+            {t('users.userStatsCards.today', { newToday: formatNumber(stats.newToday) })}
           </span>
-          <span className="font-body-sm text-body-sm text-outline">trung bình 280/ngày</span>
+          <span className="font-body-sm text-body-sm text-outline">
+            {t('users.userStatsCards.avg280Day')}
+          </span>
         </div>
       </div>
 
       <div className={CARD_CLASS}>
         <div className="flex items-start justify-between">
           <div className="flex flex-col">
-            <span className={LABEL_CLASS}>Tạm khóa / Đình chỉ</span>
+            <span className={LABEL_CLASS}>{t('users.userStatsCards.lockedSuspended')}</span>
             <span className={VALUE_CLASS}>{formatNumber(stats.suspended)}</span>
           </div>
           <div className={`${ICON_BOX_CLASS} bg-error-container/40 text-error`}>
@@ -87,7 +95,9 @@ export default function UserStatsCards({ stats }: { stats: UserStats }) {
           <span className="rounded-full bg-error-container/60 px-2 py-0.5 font-label-sm text-label-sm font-bold text-error">
             {stats.total ? ((stats.suspended / stats.total) * 100).toFixed(2) : '0'}%
           </span>
-          <span className="font-body-sm text-body-sm text-outline">tổng vi phạm chính sách</span>
+          <span className="font-body-sm text-body-sm text-outline">
+            {t('users.userStatsCards.totalPolicyViolations')}
+          </span>
         </div>
       </div>
     </div>

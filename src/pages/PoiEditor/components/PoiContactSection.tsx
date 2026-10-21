@@ -1,5 +1,6 @@
-import type { PoiFormValues } from '../../../types/admin';
-import type { PoiFieldChange, PoiFormErrors } from '../poiFormUtils';
+import { useTranslation } from 'react-i18next';
+import type { PoiFieldChange, PoiFormErrors } from '@/pages/PoiEditor/poiFormUtils';
+import type { PoiFormValues } from '@/types';
 import PoiSectionCard from './PoiSectionCard';
 import PoiTextField from './PoiTextField';
 
@@ -10,21 +11,22 @@ interface PoiContactSectionProps {
 }
 
 export default function PoiContactSection({ values, errors, onChange }: PoiContactSectionProps) {
+  const { t } = useTranslation();
   return (
     <PoiSectionCard
       icon="apartment"
-      title="3. Thông tin liên hệ & Đơn vị phụ trách"
-      description="Đơn vị quản lý di tích, đường dây nóng phục vụ hỗ trợ du khách"
+      title={t('poiEditor.poiContactSection.n3ContactInformationManaging')}
+      description={t('poiEditor.poiContactSection.siteManagementOrganizationTraveler')}
     >
       <div className="grid grid-cols-1 gap-space-md md:grid-cols-2">
         <PoiTextField
           className="md:col-span-2"
-          label="Đơn vị quản lý chính thức"
+          label={t('poiEditor.poiContactSection.officialManagingOrganization')}
           value={values.managingUnit}
           onChange={(managingUnit) => onChange('managingUnit', managingUnit)}
         />
         <PoiTextField
-          label="Số điện thoại Hotline cứu hộ / hỗ trợ"
+          label={t('poiEditor.poiContactSection.rescueSupportHotline')}
           icon="call"
           type="tel"
           value={values.hotline}
@@ -32,7 +34,7 @@ export default function PoiContactSection({ values, errors, onChange }: PoiConta
           onChange={(hotline) => onChange('hotline', hotline)}
         />
         <PoiTextField
-          label="Website chính thức"
+          label={t('poiEditor.poiContactSection.officialWebsite')}
           icon="language"
           type="url"
           value={values.website}
@@ -42,7 +44,7 @@ export default function PoiContactSection({ values, errors, onChange }: PoiConta
         />
         <PoiTextField
           className="md:col-span-2"
-          label="Email tiếp nhận thông tin phản hồi"
+          label={t('poiEditor.poiContactSection.feedbackEmail')}
           icon="mail"
           type="email"
           value={values.email}

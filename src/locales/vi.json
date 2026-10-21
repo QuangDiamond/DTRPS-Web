@@ -1,0 +1,2582 @@
+{
+  "app": {
+    "name": "SmartTravel Admin"
+  },
+  "language": {
+    "label": "Ngôn ngữ",
+    "vi": "Tiếng Việt",
+    "en": "English",
+    "changed": "Đã chuyển sang Tiếng Việt"
+  },
+  "nav": {
+    "section": "Quản trị hệ thống",
+    "dashboard": "Bảng điều khiển",
+    "users": "Quản lý người dùng",
+    "partners": "Quản lý đối tác",
+    "listings": "Quản lý niêm yết",
+    "pois": "Quản lý điểm đến POI",
+    "reports": "Báo cáo & Thống kê",
+    "notifications": "Thông báo",
+    "settings": "Cài đặt hệ thống",
+    "profile": "Hồ sơ quản trị viên",
+    "logout": "Đăng xuất",
+    "loggedOut": "Đã đăng xuất khỏi hệ thống",
+    "constants": {
+      "dashboard": "Bảng điều khiển",
+      "userManagement": "Quản lý người dùng",
+      "partnerManagement": "Quản lý đối tác",
+      "listingManagement": "Quản lý niêm yết",
+      "poiDestinations": "Quản lý điểm đến POI",
+      "reportsAnalytics": "Báo cáo & Thống kê",
+      "notifications": "Thông báo",
+      "systemSettings": "Cài đặt hệ thống",
+      "systemAdministration": "Quản trị hệ thống"
+    }
+  },
+  "header": {
+    "searchPlaceholder": "Tìm kiếm dữ liệu, người dùng, tour, POI...",
+    "notifications": "Thông báo",
+    "notificationsUnread": "Thông báo ({{count}} chưa đọc)",
+    "help": "Trợ giúp",
+    "helpComingSoon": "Trung tâm trợ giúp đang được phát triển",
+    "profile": "Hồ sơ quản trị viên"
+  },
+  "actions": {
+    "approve": "Duyệt",
+    "reject": "Từ chối",
+    "filter": "Lọc",
+    "search": "Tìm kiếm",
+    "export": "Xuất dữ liệu",
+    "exportCsv": "Xuất CSV",
+    "actions": "Thao tác",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "viewDetail": "Xem chi tiết",
+    "viewAll": "Xem tất cả",
+    "exportExcelCsv": "Xuất dữ liệu Excel/CSV",
+    "exportExcel": "Xuất Excel",
+    "exportList": "Xuất danh sách",
+    "applyFilter": "Lọc kết quả",
+    "quickApprove": "Duyệt nhanh danh sách",
+    "listingDetail": "Chi tiết hồ sơ",
+    "viewOnMap": "Xem trên bản đồ"
+  },
+  "status": {
+    "listing": {
+      "pending": "Chờ duyệt",
+      "approved": "Đã duyệt",
+      "rejected": "Từ chối"
+    },
+    "partner": {
+      "active": {
+        "label": "Hoạt động",
+        "filterLabel": "Đang hoạt động"
+      },
+      "pending": {
+        "label": "Chờ xác minh",
+        "filterLabel": "Chờ xác minh"
+      },
+      "suspended": {
+        "label": "Đang khóa",
+        "filterLabel": "Đang khóa / Đình chỉ"
+      }
+    },
+    "user": {
+      "active": {
+        "label": "Hoạt động",
+        "filterLabel": "Đang hoạt động"
+      },
+      "suspended": {
+        "label": "Tạm khóa",
+        "filterLabel": "Đang khóa / Tạm đình chỉ"
+      }
+    },
+    "poi": {
+      "active": {
+        "label": "Công khai",
+        "longLabel": "Đang công khai trên hệ thống",
+        "option": "Đang công khai"
+      },
+      "maintenance": {
+        "label": "Đang bảo trì",
+        "longLabel": "Đang bảo trì, tạm ngưng đón khách",
+        "option": "Đang bảo trì"
+      },
+      "paused": {
+        "label": "Tạm dừng",
+        "longLabel": "Tạm dừng hiển thị trên ứng dụng",
+        "option": "Tạm dừng"
+      },
+      "draft": {
+        "label": "Bản nháp",
+        "longLabel": "Bản nháp, chưa công khai",
+        "option": "Bản nháp"
+      }
+    }
+  },
+  "category": {
+    "listing": {
+      "hotel": {
+        "label": "Khách sạn",
+        "filterLabel": "Khách sạn / Homestay"
+      },
+      "fnb": {
+        "label": "Ẩm thực",
+        "filterLabel": "Nhà hàng / Ẩm thực"
+      },
+      "attraction": {
+        "label": "Tham quan",
+        "filterLabel": "Điểm tham quan / Di tích"
+      },
+      "tour": {
+        "label": "Tour",
+        "filterLabel": "Trải nghiệm & Tour"
+      },
+      "shopping": {
+        "label": "Mua sắm",
+        "filterLabel": "Mua sắm đặc sản"
+      }
+    },
+    "partnerType": {
+      "hotel": {
+        "label": "Khách sạn",
+        "filterLabel": "Khách sạn / Homestay"
+      },
+      "fnb": {
+        "label": "Nhà hàng F&B",
+        "filterLabel": "Nhà hàng / F&B"
+      },
+      "attraction": {
+        "label": "Điểm tham quan",
+        "filterLabel": "Điểm tham quan"
+      },
+      "tour": {
+        "label": "Tour & Trải nghiệm",
+        "filterLabel": "Tour trải nghiệm"
+      }
+    },
+    "poi": {
+      "heritage": {
+        "label": "Di tích & Di sản văn hóa UNESCO",
+        "shortLabel": "Di sản văn hóa"
+      },
+      "nature": {
+        "label": "Thiên nhiên & Danh lam thắng cảnh",
+        "shortLabel": "Thiên nhiên"
+      },
+      "food": {
+        "label": "Ẩm thực & Chợ truyền thống",
+        "shortLabel": "Ẩm thực truyền thống"
+      },
+      "resort": {
+        "label": "Nghỉ dưỡng & Sinh thái biển",
+        "shortLabel": "Nghỉ dưỡng biển"
+      },
+      "stay": {
+        "label": "Lưu trú & Homestay / Khách sạn",
+        "shortLabel": "Lưu trú"
+      },
+      "craft": {
+        "label": "Mua sắm & Làng nghề truyền thống",
+        "shortLabel": "Làng nghề & Văn hóa"
+      },
+      "tour": {
+        "label": "Tour & Trải nghiệm",
+        "shortLabel": "Tour & Trải nghiệm"
+      }
+    },
+    "userAccountType": {
+      "standard": "Thành viên Tiêu chuẩn",
+      "vip": "Thành viên VIP",
+      "partner": "Đối tác liên kết"
+    }
+  },
+  "filters": {
+    "allCategories": "Tất cả danh mục",
+    "allPartnerTypes": "Tất cả loại hình",
+    "allStatuses": "Tất cả trạng thái",
+    "userStatusAll": "Trạng thái: Tất cả",
+    "accountTypeAll": "Loại tài khoản: Tất cả"
+  },
+  "pages": {
+    "dashboard": {
+      "breadcrumb": "Bảng điều khiển chính",
+      "title": "Bảng điều khiển Tổng quan"
+    },
+    "users": {
+      "title": "Quản lý Khách du lịch",
+      "badge": "Dữ liệu trực tiếp",
+      "description": "Giám sát, phân quyền và hỗ trợ tài khoản thành viên trên toàn bộ nền tảng Smart Travel."
+    },
+    "partners": {
+      "eyebrow": "Hệ sinh thái thông minh",
+      "eyebrowNote": "Mạng lưới đối tác B2B",
+      "title": "Quản trị Đối tác Doanh nghiệp",
+      "description": "Giám sát, thẩm định và kết nối các đơn vị cung cấp dịch vụ du lịch trên toàn lãnh thổ Việt Nam."
+    },
+    "listings": {
+      "eyebrow": "Trung tâm kiểm duyệt dữ liệu",
+      "eyebrowNote": "Hàng đợi xử lý thời gian thực",
+      "title": "Quản lý Niêm yết Địa điểm",
+      "description": "Kiểm soát, thẩm định quy chuẩn du lịch thông minh và xác thực thông tin đối tác trước khi công bố lên ứng dụng."
+    },
+    "reports": {
+      "title": "Báo cáo & Thống kê Chuyên sâu",
+      "description": "Dữ liệu hiệu suất người dùng, chuyến đi, mạng lưới đối tác và địa điểm du lịch toàn quốc",
+      "live": "Cập nhật thời gian thực"
+    }
+  },
+  "table": {
+    "selectAllOnPage": "Chọn tất cả trên trang",
+    "users": {
+      "user": "Người dùng",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "joinedAt": "Ngày đăng ký",
+      "savedTrips": "Chuyến đi đã lưu",
+      "status": "Trạng thái tài khoản",
+      "actions": "Hành động"
+    },
+    "partners": {
+      "partner": "Đối tác & Cơ sở đại diện",
+      "type": "Loại hình",
+      "contact": "Thông tin liên hệ",
+      "listings": "Niêm yết",
+      "joinedAt": "Ngày tham gia",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "listings": {
+      "place": "Địa điểm & Mã POI",
+      "partner": "Đối tác gửi",
+      "category": "Phân loại",
+      "province": "Vị trí & Tỉnh thành",
+      "wait": "Thời gian chờ",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "approved": {
+      "place": "Địa điểm & Mã POI",
+      "owner": "Đối tác sở hữu",
+      "category": "Phân loại",
+      "approvedAt": "Thời gian phê duyệt",
+      "visibility": "Trạng thái hiển thị",
+      "actions": "Thao tác"
+    },
+    "rejected": {
+      "place": "Địa điểm & Mã POI",
+      "partner": "Đối tác gửi",
+      "reason": "Lý do từ chối chính",
+      "rejectedAt": "Ngày từ chối",
+      "resubmission": "Trạng thái gửi lại",
+      "actions": "Thao tác"
+    },
+    "pois": {
+      "name": "Tên POI & Hình ảnh",
+      "id": "Mã POI",
+      "category": "Danh mục",
+      "location": "Vị trí / Tỉnh thành",
+      "price": "Mức giá dự kiến",
+      "source": "Nguồn dữ liệu",
+      "rating": "Đánh giá",
+      "status": "Trạng thái",
+      "actions": "Hành động",
+      "vector": "Vector (pgvector)"
+    },
+    "dashboardPending": {
+      "place": "Tên địa điểm / Cơ sở",
+      "partner": "Đối tác gửi",
+      "category": "Danh mục",
+      "province": "Tỉnh / Thành",
+      "time": "Thời gian",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    }
+  },
+  "common": {
+    "loading": "Đang tải dữ liệu...",
+    "retry": "Thử lại",
+    "close": "Đóng",
+    "loadError": "Không tải được dữ liệu",
+    "systemLoadError": "Không tải được dữ liệu hệ thống",
+    "administrator": "Quản trị viên"
+  },
+  "session": {
+    "idleLogout": "Phiên đăng nhập đã kết thúc sau {{minutes}} phút không thao tác",
+    "welcome": "Xác thực thành công. Chào mừng {{name}}!"
+  },
+  "time": {
+    "justNow": "Vừa xong",
+    "minutesAgo_other": "{{count}} phút trước",
+    "hoursAgo_other": "{{count}} giờ trước",
+    "daysAgo_other": "{{count}} ngày trước",
+    "todayAt": "Hôm nay {{time}}",
+    "yesterdayAt": "Hôm qua {{time}}",
+    "am": "SA",
+    "pm": "CH",
+    "month": "Tháng {{month}}",
+    "monthShort": "T{{month}}"
+  },
+  "province": {
+    "short": {
+      "quangnam": "Quảng Nam",
+      "danang": "Đà Nẵng",
+      "hanoi": "Hà Nội",
+      "hcm": "TP. Hồ Chí Minh",
+      "kiengiang": "Kiên Giang",
+      "ninhbinh": "Ninh Bình",
+      "quangngai": "Quảng Ngãi",
+      "thanhhoa": "Thanh Hóa"
+    },
+    "full": {
+      "quangnam": "Quảng Nam (Hội An)",
+      "danang": "Đà Nẵng",
+      "hanoi": "Hà Nội",
+      "hcm": "TP. Hồ Chí Minh",
+      "kiengiang": "Kiên Giang (Phú Quốc)",
+      "ninhbinh": "Ninh Bình",
+      "quangngai": "Quảng Ngãi",
+      "thanhhoa": "Thanh Hóa (Sầm Sơn)"
+    }
+  },
+  "dashboard": {
+    "live": "Trực tiếp",
+    "welcome": "Chào mừng trở lại, {{name}}! Dữ liệu được cập nhật theo thời gian thực hôm nay.",
+    "loadError": "Không tải được dữ liệu tổng quan",
+    "range": {
+      "today": "Hôm nay",
+      "7days": "7 ngày qua",
+      "30days": "30 ngày qua",
+      "thisyear": "Năm nay",
+      "custom": "Tùy chỉnh"
+    },
+    "picker": {
+      "title": "Chọn khoảng thời gian",
+      "from": "Từ ngày",
+      "to": "Đến ngày",
+      "apply": "Áp dụng"
+    },
+    "exportButton": "Xuất dữ liệu Excel/PDF",
+    "toast": {
+      "filtered": "Đã lọc dữ liệu từ {{range}}",
+      "approved": "Đã duyệt & xuất bản {{name}}",
+      "refreshed": "Đã cập nhật hoạt động mới nhất",
+      "exported": "Đã xuất dữ liệu bảng điều khiển (CSV mở bằng Excel)"
+    },
+    "kpi": {
+      "totalUsers": "Tổng số người dùng",
+      "vs30Days": "So với 30 ngày trước",
+      "newUsersApprox": "(≈ +{{count}} người)",
+      "totalPartners": "Tổng số đối tác",
+      "newPartnersLabel": "Cơ sở mới tháng này:",
+      "newPartnersValue": "+{{count}} doanh nghiệp",
+      "totalListings": "Tổng niêm yết hệ thống",
+      "listingTypes": "Khách sạn, F&B, POI",
+      "coverage": "Phủ sóng tại {{covered}}/63 tỉnh thành Việt Nam",
+      "pendingReviews": "Chờ xem xét duyệt",
+      "needsAction": "Cần xử lý ngay",
+      "avgWait": "Thời gian chờ trung bình:",
+      "hours": "{{count}} giờ",
+      "approvedListings": "Địa điểm đã duyệt",
+      "meetsStandard": "{{percent}} đạt chuẩn",
+      "syncedToAi": "Đã index vector cho tìm kiếm AI (pgvector)",
+      "rejectedListings": "Niêm yết bị từ chối",
+      "ofAllSubmissions": "{{percent}} tổng hồ sơ",
+      "mainRejectReason": "Lý do chính: Vi phạm tiêu chuẩn/thiếu pháp lý"
+    },
+    "csv": {
+      "filename": "bang-dieu-khien",
+      "metricOrCode": "Chỉ số / Mã",
+      "valueOrName": "Giá trị / Tên",
+      "period": "Khoảng thời gian",
+      "code": "Mã",
+      "place": "Địa điểm",
+      "partner": "Đối tác",
+      "category": "Danh mục",
+      "province": "Tỉnh/Thành",
+      "submittedAt": "Thời gian gửi"
+    },
+    "growth": {
+      "title": "Người dùng mới & Lượt truy vấn AI (pgvector)",
+      "subtitle": "Đối sánh tăng trưởng người dùng & lượt tìm kiếm ngữ nghĩa AI 6 tháng gần nhất",
+      "newUsers": "Người dùng mới",
+      "usersValue": "{{count}} Người dùng",
+      "current": "Hiện tại",
+      "currentFull": "{{month}} (Hiện tại)",
+      "insight": "Lượt tìm kiếm ngữ nghĩa AI bằng câu lệnh tự nhiên tăng <bold>{{percent}}</bold> trong mùa thu.",
+      "viewReport": "Xem báo cáo",
+      "aiSearches": "Truy vấn AI (pgvector)",
+      "aiSearchesValue": "{{count}} Truy vấn AI"
+    },
+    "categories": {
+      "title": "Phân loại địa điểm",
+      "subtitle": "Theo danh mục kinh doanh du lịch",
+      "total": "Tổng POI",
+      "percentOfTotal": "{{percent}}% tổng POI",
+      "hotel": "Lưu trú / Khách sạn & Homestay",
+      "fnb": "Nhà hàng / Ẩm thực & Cafe",
+      "attraction": "Điểm tham quan & Văn hóa",
+      "tour": "Trải nghiệm & Tour trải nghiệm",
+      "shopping": "Mua sắm đặc sản"
+    },
+    "pending": {
+      "title": "Yêu cầu Niêm yết Chờ Phê Duyệt",
+      "newCount": "{{count}} mới",
+      "subtitle": "Cần xác minh giấy phép kinh doanh & tiêu chuẩn chất lượng",
+      "searchPlaceholder": "Tìm theo tên hoặc đối tác...",
+      "filter": "Lọc dữ liệu",
+      "emptyAll": "Đã xử lý hết danh sách xem nhanh",
+      "emptyFiltered": "Không có yêu cầu phù hợp bộ lọc",
+      "code": "Mã: {{id}}",
+      "summary": "Hiển thị <bold>{{shown}}</bold> trong tổng số <bold>{{total}}</bold> yêu cầu niêm yết đang chờ thẩm định",
+      "viewAll": "Xem tất cả {{count}} yêu cầu"
+    },
+    "activity": {
+      "title": "Hoạt động gần đây",
+      "refresh": "Làm mới",
+      "partner_registered": "Đối tác mới <highlight>{{subject}}</highlight> đã hoàn tất đăng ký tài khoản.",
+      "listing_approved": "Admin đã phê duyệt niêm yết <bold>{{subject}}</bold>.",
+      "listing_rejected": "Admin đã từ chối niêm yết <bold>{{subject}}</bold>.",
+      "listing_submitted": "Yêu cầu niêm yết mới gửi lên từ <bold>{{subject}}</bold>.",
+      "businessAccount": "Tài khoản Doanh nghiệp",
+      "published": "Đã xuất bản",
+      "inQueue": "Đang trong hàng chờ",
+      "reason": "Lý do: {{reason}}",
+      "aiTitle": "Trợ lý AI giám sát",
+      "aiStatus": "Phản hồi 45ms • 99.98% SLA"
+    }
+  },
+  "users": {
+    "lockUserModal": {
+      "lockUserAccount": "Khóa tài khoản người dùng",
+      "lockAccounts_other": "Khóa đồng loạt {{count}} tài khoản",
+      "willNotAbleSign": "{{name}} ({{id}}) sẽ không thể đăng nhập và tạo chuyến đi mới",
+      "theSelectedAccountsWill": "Các tài khoản đã chọn sẽ không thể đăng nhập và tạo chuyến đi mới",
+      "cancel": "Hủy bỏ",
+      "confirmLock": "Xác nhận khóa",
+      "reasonLockingAccount": "Lý do khóa tài khoản",
+      "additionalNotesCustomerSupport": "Ghi chú thêm cho bộ phận CSKH (không bắt buộc)..."
+    },
+    "userFilterBar": {
+      "searchByTravelerName": "Tìm theo tên du khách, email, số điện thoại, mã định danh UID...",
+      "status": "Trạng thái",
+      "accountType": "Loại tài khoản",
+      "signUpDate": "Ngày đăng ký",
+      "applyFilters": "Áp dụng bộ lọc",
+      "resetFilters": "Đặt lại bộ lọc"
+    },
+    "userFormModal": {
+      "pleaseEnterFullName": "Vui lòng nhập họ tên",
+      "editUser": "Chỉnh sửa người dùng",
+      "addNewUser": "Thêm người dùng mới",
+      "updateDetails": "Cập nhật thông tin {{id}}",
+      "newAccountsCreatedWith": "Tài khoản mới sẽ ở trạng thái Đang hoạt động",
+      "saveChanges": "Lưu thay đổi",
+      "addUser": "Thêm người dùng",
+      "fullName": "Họ và tên *",
+      "eGNguyenVan": "VD: Nguyễn Văn Hùng",
+      "phoneNumber": "Số điện thoại *",
+      "city": "Thành phố",
+      "accountType": "Loại tài khoản"
+    },
+    "userRow": {
+      "select": "Chọn {{name}}",
+      "partner": "Đối tác",
+      "trips_other": "{{count}} chuyến đi",
+      "details": "Chi tiết",
+      "unlock": "Mở khóa",
+      "lockAccount": "Khóa tài khoản",
+      "aiSearches_other": "{{count}} lượt tìm kiếm AI",
+      "noAiSearches": "Chưa tìm kiếm AI"
+    },
+    "userStatsCards": {
+      "totalUsers": "Tổng số người dùng",
+      "vsLastMonth": "so với tháng trước",
+      "active": "Đang hoạt động",
+      "onlineRate": "tỉ lệ trực tuyến",
+      "newAccountsThisMonth": "Tài khoản mới tháng này",
+      "today": "+{{newToday}} hôm nay",
+      "avg280Day": "trung bình 280/ngày",
+      "lockedSuspended": "Tạm khóa / Đình chỉ",
+      "totalPolicyViolations": "tổng vi phạm chính sách"
+    },
+    "userTable": {
+      "usersSelected_other": "{{count}} người dùng đã chọn",
+      "lockSelected": "Khóa đồng loạt",
+      "unlockSelected": "Mở khóa đồng loạt",
+      "clearSelection": "Bỏ chọn",
+      "noMatchingUsersFound": "Không tìm thấy người dùng phù hợp",
+      "tryDifferentKeywordOr": "Thử đổi từ khóa hoặc bộ lọc."
+    },
+    "page": {
+      "allSelectedAccountsAlready": "Các tài khoản đã chọn đều đang bị khóa",
+      "lockedAccount": "Đã khóa tài khoản {{name}}",
+      "lockedAccounts_other": "Đã khóa {{count}} tài khoản",
+      "allSelectedAccountsAlready2": "Các tài khoản đã chọn đều đang hoạt động",
+      "unlocked": "Đã mở khóa {{name}}",
+      "unlockedAccounts_other": "Đã mở khóa {{count}} tài khoản",
+      "updatedDetails": "Đã cập nhật thông tin {{name}}",
+      "addedUser": "Đã thêm người dùng {{name}} ({{id}})",
+      "fullName": "Họ tên",
+      "phoneNumber": "Số điện thoại",
+      "city": "Thành phố",
+      "signUpDate": "Ngày đăng ký",
+      "accountType": "Loại tài khoản",
+      "trips": "Số chuyến đi",
+      "status": "Trạng thái",
+      "lockReason": "Lý do khóa",
+      "exportedUsersExcelFile_other": "Đã xuất {{count}} người dùng ra file Excel (CSV)",
+      "addNewUser": "Thêm người dùng mới",
+      "users": "người dùng"
+    },
+    "constants": {
+      "signUpDateAll": "Ngày đăng ký: Tất cả",
+      "last30Days": "30 ngày qua",
+      "thisQuarter": "Quý này",
+      "last12Months": "12 tháng qua"
+    },
+    "lockReasons": {
+      "spamReviews": "Vi phạm spam review",
+      "inappropriateContent": "Đăng nội dung không phù hợp",
+      "promotionFraud": "Gian lận khuyến mãi / đặt chỗ ảo",
+      "compromised": "Nghi ngờ tài khoản bị chiếm đoạt",
+      "userRequest": "Theo yêu cầu của người dùng"
+    }
+  },
+  "userDetail": {
+    "lockAccountDialog": {
+      "confirmUserAccountLock": "Xác nhận khóa tài khoản người dùng",
+      "youAboutSuspendAccess": "Bạn đang thực hiện thao tác tạm ngừng quyền truy cập đối với du khách <c0>{{name}} ({{id}})</c0>.",
+      "reasonLockingAccount": "Lý do khóa tài khoản <c0>*</c0>",
+      "enterDetailedReasonNotify": "Nhập lý do chi tiết để gửi thông báo cho người dùng và lưu vết hành động của Super Admin...",
+      "thisWillImmediatelyInvalidate": "Hành động này sẽ hủy hiệu lực phiên đăng nhập trên thiết bị {{device}} ngay tức thì.",
+      "cancel": "Hủy bỏ",
+      "lockNow": "Xác nhận khóa ngay"
+    },
+    "sessionLogTab": {
+      "securityLogSessionHistory": "Nhật ký bảo mật & Lịch sử phiên"
+    },
+    "tripDetailModal": {
+      "itineraryCode": "Mã lộ trình",
+      "duration": "Thời lượng",
+      "departure": "Khởi hành",
+      "end": "Kết thúc",
+      "attractions": "Số điểm tham quan",
+      "estimatedBudget": "Kinh phí dự toán",
+      "paid": "Đã thanh toán",
+      "downloadItinerary": "Tải file lịch trình"
+    },
+    "tripsTab": {
+      "upcoming": "Sắp diễn ra",
+      "completed": "Đã hoàn thành",
+      "cancelled": "Đã hủy",
+      "searchByTripName": "Tìm kiếm tên chuyến đi, địa phương, mã lộ trình...",
+      "tripStatus": "Trạng thái chuyến đi",
+      "showingLatestTrips": "Hiển thị {{length}} / {{totalTrips}} chuyến đi mới nhất",
+      "noDetailedTripData": "Chưa có dữ liệu chuyến đi chi tiết",
+      "noMatchingTrips": "Không có chuyến đi phù hợp",
+      "reviewSubmitted": "{{rating}}★ (Đã gửi đánh giá)",
+      "departure": "Khởi hành: <c0>{{startDate}}</c0>",
+      "dates": "Thời gian: <c0>{{startDate}} - {{endDate}}</c0>",
+      "scope": "Quy mô:",
+      "visited": "đã ghé thăm",
+      "estimatedBudget": "Kinh phí dự toán",
+      "payment": "Thanh toán",
+      "downloadItinerary": "Tải file lịch trình",
+      "viewTripDetails": "Xem chi tiết chuyến đi"
+    },
+    "userMetricCards": {
+      "tripsCreated": "Chuyến đi đã tạo",
+      "itineraries": "Lịch trình",
+      "completed": "{{completed}} hoàn thành",
+      "upcoming": "{{upcoming}} sắp khởi hành",
+      "favoritePlacesSaved": "Địa điểm yêu thích (Saved)",
+      "savedPois": "POI đã lưu",
+      "ratingsReviews": "Đánh giá & Nhận xét",
+      "reviews": "Đánh giá",
+      "averageScore50": "Điểm trung bình <c0>{{toFixed}} / 5.0</c0>",
+      "spendingPlatform": "Chi tiêu qua hệ thống",
+      "vnd": "đ"
+    },
+    "userProfileCard": {
+      "id": "Mã định danh:",
+      "tier": "Hạng mức: <c0>{{tierLabel}}</c0>",
+      "lockReason": "Lý do khóa: {{suspendReason}}",
+      "lastSign": "Lần đăng nhập cuối: <c0>{{time}}</c0> trên {{device}}",
+      "aiTrustScore": "Chỉ số tín nhiệm AI",
+      "verifiedByAi": "AI đã xác minh",
+      "travelerBadges": "Huy hiệu hành khách:"
+    },
+    "page": {
+      "reVerifyYourAccount": "Xác minh lại thông tin tài khoản",
+      "smartTravelNeedsYou": "Smart Travel cần bạn xác minh lại email và số điện thoại để tiếp tục sử dụng đầy đủ tính năng.",
+      "communityStandardsViolationWarning": "Cảnh báo vi phạm tiêu chuẩn cộng đồng",
+      "weNoticedContentFrom": "Chúng tôi ghi nhận nội dung từ tài khoản của bạn chưa phù hợp tiêu chuẩn cộng đồng. Vui lòng xem lại quy định.",
+      "exclusiveMemberOffer": "Ưu đãi dành riêng cho thành viên",
+      "thankYouTravelingWith": "Cảm ơn bạn đã đồng hành cùng Smart Travel! Ưu đãi đặc biệt cho chuyến đi tiếp theo đang chờ bạn trong ứng dụng.",
+      "userNotFound": "Không tìm thấy người dùng {{id}}",
+      "backUserList": "Quay lại danh sách người dùng",
+      "couldNotLoadUser": "Không tải được hồ sơ người dùng",
+      "itinerariesTrips": "Lịch trình & Chuyến đi ({{total}})",
+      "savedFavoritePlaces": "Địa điểm đã lưu & Yêu thích ({{savedPois}})",
+      "reviewsCommentsHistory": "Lịch sử đánh giá & Bình luận ({{reviewCount}})",
+      "signDeviceLogAudit": "Nhật ký đăng nhập & Thiết bị (Audit Log)",
+      "lockedAccountSessionHas": "Đã khóa tài khoản {{name}}, phiên đăng nhập trên {{device}} đã bị hủy",
+      "unlockedAccount": "Đã mở khóa tài khoản {{name}}",
+      "updatedProfile": "Đã cập nhật hồ sơ {{name}}",
+      "sentEmail": "Gửi email \"{{subject}}\" tới {{email}}",
+      "emailSent": "Đã gửi email \"{{subject}}\" tới {{email}}",
+      "information": "Thông tin",
+      "value": "Giá trị",
+      "itineraryCode": "Mã lộ trình",
+      "tripName": "Tên chuyến đi",
+      "traveler": "Khách du lịch",
+      "status": "Trạng thái",
+      "time": "Thời gian",
+      "attractions": "Số điểm tham quan",
+      "cost": "Chi phí",
+      "downloadedItinerary": "Đã tải file lịch trình {{id}}",
+      "systemAdministration": "Quản trị hệ thống",
+      "userManagement": "Quản lý người dùng",
+      "userDetails": "Chi tiết người dùng: {{name}}",
+      "travelerProfileSyncedAi": "Hồ sơ du khách được đồng bộ đám mây AI",
+      "updated2MinutesAgo": "• Vừa cập nhật 2 phút trước",
+      "unlockAccount": "Mở khóa tài khoản",
+      "lockAccount": "Khóa tài khoản",
+      "sendNotificationEmail": "Gửi email thông báo",
+      "editPermissionsProfile": "Chỉnh sửa quyền / Hồ sơ",
+      "savedTravelPlaces_other": "{{count}} Địa điểm du lịch được lưu trữ",
+      "verifiedExperienceReviews_other": "{{count}} Đánh giá đã xác thực trải nghiệm",
+      "accountInterventionPolicy": "Quy chuẩn can thiệp tài khoản",
+      "everyLockPermissionChange": "Mọi thao tác Khóa, Thay đổi quyền hạn hoặc Đặt lại mật khẩu của người dùng đều được ghi nhận trực tiếp vào Hệ thống Nhật ký Kiểm toán Quản trị viên Cấp cao.",
+      "permissionsSuperAdminFull": "Quyền hạn: <c0>Super Admin (toàn quyền)</c0>"
+    },
+    "utils": {
+      "upcoming": "Sắp diễn ra",
+      "completed": "Đã hoàn thành",
+      "cancelled": "Đã hủy",
+      "newMember": "Mới tham gia",
+      "monthsWithUs_other": "{{count}} tháng đồng hành",
+      "yearsWithUs_other": "{{count}} năm đồng hành",
+      "vnd": "{{toLocaleString}} đ"
+    }
+  },
+  "partners": {
+    "partnerFilterBar": {
+      "searchByPartnerName": "Tìm theo tên đối tác, tên cơ sở, mã số thuế hoặc email...",
+      "clearFilters": "Xóa bộ lọc",
+      "businessType": "Loại hình kinh doanh",
+      "profileStatus": "Trạng thái hồ sơ",
+      "regionProvince": "Khu vực / Tỉnh thành",
+      "sortBy": "Sắp xếp hiển thị"
+    },
+    "partnerFormModal": {
+      "pleaseEnterPartnerName": "Vui lòng nhập tên đối tác",
+      "pleaseEnterBusinessName": "Vui lòng nhập tên cơ sở",
+      "pleaseEnterAddress": "Vui lòng nhập địa chỉ",
+      "pleaseEnterRepresentative": "Vui lòng nhập người đại diện",
+      "editPartner": "Chỉnh sửa đối tác",
+      "addNewPartner": "Thêm đối tác mới",
+      "updateProfileDetails": "Cập nhật thông tin hồ sơ {{id}}",
+      "newPartnersStayPending": "Đối tác mới sẽ ở trạng thái Chờ xác minh cho đến khi được duyệt",
+      "saveChanges": "Lưu thay đổi",
+      "addPartner": "Thêm đối tác",
+      "partnerName": "Tên đối tác *",
+      "representativeBusinessName": "Tên cơ sở đại diện *",
+      "businessType": "Loại hình kinh doanh",
+      "provinceCity": "Tỉnh / Thành phố",
+      "address": "Địa chỉ *",
+      "eGCamChau": "VD: Cẩm Châu, Hội An",
+      "representative": "Người đại diện *",
+      "eGNguyenVan": "VD: Nguyễn Văn Hùng",
+      "phoneNumber": "Số điện thoại *",
+      "taxCode": "Mã số thuế *",
+      "n10Or13Digits": "10 hoặc 13 chữ số"
+    },
+    "partnerRow": {
+      "viewPartnerDetails": "Xem chi tiết đối tác",
+      "verifyPartnerProfile": "Xác minh hồ sơ đối tác",
+      "unlockAccount": "Mở khóa tài khoản",
+      "representative": "Đại diện: {{representative}}",
+      "placeList": "Danh sách địa điểm",
+      "moreOptions": "Tùy chọn khác",
+      "lockSettings": "Khóa / Cài đặt"
+    },
+    "partnerStatsCards": {
+      "ecosystemShare": "Tỷ trọng hệ sinh thái",
+      "totalPartners": "Tổng số đối tác",
+      "joinedThisMonth": "gia nhập tháng này",
+      "accommodationHotels": "Lưu trú & Khách sạn",
+      "restaurantsDining": "Nhà hàng & Ẩm thực",
+      "attractionsTours": "Điểm tham quan & Tour"
+    },
+    "partnerTable": {
+      "noMatchingPartnersFound": "Không tìm thấy đối tác phù hợp",
+      "tryChangingKeywordOr": "Thử thay đổi từ khóa hoặc bộ lọc.",
+      "editDetails": "Chỉnh sửa thông tin",
+      "unlockAccount": "Mở khóa tài khoản",
+      "lockAccount": "Khóa tài khoản"
+    },
+    "page": {
+      "lockedAccountHidPlaces_other": "Đã khóa tài khoản {{name}} và tạm ẩn {{count}} địa điểm",
+      "lockedAccount": "Đã khóa tài khoản {{name}}",
+      "unlockedAccountRestoredPlaces_other": "Đã mở khóa tài khoản {{name}}, hiển thị lại {{count}} địa điểm",
+      "unlockedAccount": "Đã mở khóa tài khoản {{name}}",
+      "updatedDetails": "Đã cập nhật thông tin {{name}}",
+      "addedPartnerPendingVerification": "Đã thêm đối tác {{name}} — đang chờ xác minh",
+      "code": "Mã",
+      "partner": "Đối tác",
+      "business": "Cơ sở",
+      "type": "Loại hình",
+      "province": "Tỉnh/TP",
+      "representative": "Đại diện",
+      "phone": "SĐT",
+      "listings": "Niêm yết",
+      "joined": "Ngày tham gia",
+      "status": "Trạng thái",
+      "exportedPartnersExcelFile_other": "Đã xuất {{count}} đối tác ra file Excel (CSV)",
+      "addNewPartner": "+ Thêm đối tác mới",
+      "partners": "đối tác"
+    },
+    "utils": {
+      "paused": "{{paused}} tạm dừng",
+      "pending": "{{pending}} chờ duyệt",
+      "approved": "{{approved}} đã duyệt"
+    },
+    "constants": {
+      "newestSignUps": "Mới nhất đăng ký",
+      "mostListedPlaces": "Nhiều địa điểm niêm yết nhất",
+      "highestRated": "Đánh giá cao nhất",
+      "nationwide63Provinces": "Toàn quốc (63 Tỉnh/TP)"
+    },
+    "lockReasons": {
+      "qualityViolation": "Vi phạm chính sách tiêu chuẩn chất lượng dịch vụ du lịch",
+      "unresolvedComplaints": "Có khiếu nại chưa xử lý từ du khách",
+      "expiredLicense": "Giấy phép kinh doanh / PCCC hết hiệu lực",
+      "partnerRequest": "Theo yêu cầu tạm dừng của đối tác",
+      "other": "Khác (Ghi chú chi tiết)"
+    }
+  },
+  "partnerDetail": {
+    "auditLogTab": {
+      "auditLog": "Nhật ký kiểm toán",
+      "everyActionPartnerAccount": "Mọi thao tác trên tài khoản đối tác được ghi nhận tự động, không thể chỉnh sửa",
+      "events_other": "{{count}} sự kiện"
+    },
+    "commissionModal": {
+      "adjustCommissionRate": "Điều chỉnh mức hoa hồng",
+      "currentRateAppliesTransactions": "Mức hiện tại: {{current}}% — áp dụng cho các giao dịch phát sinh sau khi lưu",
+      "saveNewRate": "Lưu mức mới",
+      "platformCommissionRate": "Mức hoa hồng hệ thống (%)",
+      "theCommissionRateMust": "Mức hoa hồng phải trong khoảng {{MIN_COMMISSION}}–{{MAX_COMMISSION}}%"
+    },
+    "legalTab": {
+      "legalBusinessRegistration": "Thông tin pháp lý & ĐKKD",
+      "notarizedCorporateLegalDocuments": "Hồ sơ pháp nhân doanh nghiệp đã được công chứng",
+      "pendingVerification": "Chờ xác minh",
+      "verified": "Đã xác thực",
+      "viewOriginalFile": "Xem tệp gốc",
+      "fullCompanyName": "Tên đầy đủ công ty",
+      "taxCodeBusinessLicense": "Mã số thuế / Số GPKD",
+      "founded": "Ngày thành lập",
+      "issuingAuthority": "Cơ quan cấp phép",
+      "registeredCharterCapital": "Vốn điều lệ đăng ký",
+      "headOfficeAddress": "Địa chỉ trụ sở chính",
+      "legalRepresentative": "Người đại diện pháp luật",
+      "representativeSIdNumber": "Số CCCD / CMND đại diện",
+      "contactRepresentativeAdmin": "Liên hệ & Quản trị đại diện",
+      "pointContactSupportTransaction": "Đầu mối tiếp nhận hỗ trợ và xác thực giao dịch",
+      "n2fa": "Khóa 2FA:",
+      "on": "Bật",
+      "off": "Tắt",
+      "grantExtraPermissions": "Phân quyền bổ sung",
+      "resendActivationCode": "Gửi mã kích hoạt lại",
+      "position": "Chức vụ: {{position}}",
+      "primaryAdmin": "Quản trị chính",
+      "notificationEmail": "Email tiếp nhận thông báo",
+      "otpPhoneNumber": "Số điện thoại nhận OTP",
+      "paymentGatewayBusinessAccount": "Cổng thanh toán & Tài khoản doanh nghiệp",
+      "aiEscrowDeposit": "Ký quỹ AI Escrow",
+      "thisPartnerHasNot": "Đối tác chưa liên kết tài khoản thanh toán",
+      "assessmentsIndustryCertifications": "Thẩm định & Chứng nhận ngành",
+      "periodicQualityInspectionTourism": "Kiểm định chất lượng dịch vụ du lịch & lưu trú định kỳ",
+      "nextAssessmentDue": "Hạn kỳ thẩm định tiếp theo: <c0>{{nextReviewDate}}</c0>",
+      "scheduleReAssessment": "Lên lịch tái thẩm định",
+      "partnershipAgreementCommission": "Thỏa thuận hợp tác & Chiết khấu",
+      "commissionPolicyRoomTicket": "Quy chế hoa hồng và điều khoản phát hành phòng/vé",
+      "active": "Đang hoạt động",
+      "suspended": "Tạm ngưng",
+      "contract": "Hợp đồng: <c0>{{contractCode}}</c0>",
+      "adjustCommission": "Điều chỉnh chiết khấu",
+      "contractType": "Loại hợp đồng",
+      "platformCommissionRate": "Mức hoa hồng hệ thống",
+      "activated": "Ngày kích hoạt",
+      "nextRenewalDate": "Ngày gia hạn kế tiếp",
+      "otaSettlementCycle": "Chu kỳ thanh toán đối soát OTA"
+    },
+    "partnerProfileCard": {
+      "registeredPlaces": "Địa điểm đăng ký",
+      "business": "Cơ sở",
+      "approved": "Đã phê duyệt",
+      "public": "Công khai",
+      "pendingApproval": "Đang chờ duyệt",
+      "needsAction": "Cần xử lý",
+      "mainBusiness": "Cơ sở chính: {{businessName}}",
+      "representative": "Đại diện: <c0>{{representative}}</c0>",
+      "joined": "Gia nhập: {{joinedAt}} (<c0>{{joinedAt2}}</c0>)",
+      "aiTrust": "Tín nhiệm AI",
+      "averageRating": "Đánh giá trung bình",
+      "aiSearchHits": "Xuất hiện trong tìm kiếm AI",
+      "hits": "Lượt"
+    },
+    "scheduleReviewModal": {
+      "scheduleReAssessment": "Lên lịch tái thẩm định",
+      "pickDateNextService": "Chọn ngày kiểm định chất lượng dịch vụ kỳ tiếp theo",
+      "saveSchedule": "Lưu lịch",
+      "reAssessmentDate": "Ngày tái thẩm định"
+    },
+    "page": {
+      "partnerApp": "Ứng dụng đối tác",
+      "licenseRenewalReminder": "Nhắc gia hạn giấy phép",
+      "yourBusinessFireSafety": "Giấy phép kinh doanh / PCCC của quý đối tác sắp hết hiệu lực. Vui lòng cập nhật bản mới trên cổng đối tác.",
+      "periodicReAssessmentSchedule": "Lịch tái thẩm định định kỳ",
+      "smartTravelWillCarry": "Smart Travel sẽ tiến hành tái thẩm định chất lượng dịch vụ định kỳ. Vui lòng chuẩn bị hồ sơ liên quan.",
+      "partnershipPolicyUpdate": "Cập nhật chính sách hợp tác",
+      "thePartnershipCommissionPolicy": "Quy chế hợp tác & chiết khấu có điều chỉnh mới. Vui lòng xem chi tiết trên cổng đối tác.",
+      "businessLegalInformation": "Thông tin doanh nghiệp & Pháp lý",
+      "contractLimits": "Hợp đồng & Hạn mức",
+      "partnershipTransactionHistory": "Lịch sử hợp tác & Giao dịch",
+      "partnerReviewsRanking": "Đánh giá & Xếp hạng đối tác",
+      "auditLog": "Nhật ký kiểm toán (Audit Log)",
+      "partnerNotFound": "Không tìm thấy đối tác {{id}}",
+      "backPartnerList": "Quay lại danh sách đối tác",
+      "couldNotLoadPartner": "Không tải được hồ sơ đối tác",
+      "lockedAccountHidPlaces_other": "Đã khóa tài khoản {{name}} và tạm ẩn {{count}} địa điểm",
+      "lockedAccount": "Đã khóa tài khoản {{name}}",
+      "unlockedRestoredPlaces_other": "Đã mở khóa {{name}}, hiển thị lại {{count}} địa điểm",
+      "unlocked": "Đã mở khóa {{name}}",
+      "updatedDetails": "Đã cập nhật thông tin {{name}}",
+      "sentNotificationVia": "Gửi thông báo \"{{title}}\" qua {{join}}",
+      "notificationSent": "Đã gửi thông báo \"{{title}}\" tới {{name}}",
+      "scheduledReAssessment": "Lên lịch tái thẩm định ngày {{isoDate}}",
+      "reAssessmentScheduled": "Đã lên lịch tái thẩm định ngày {{isoDate}}",
+      "changedCommissionFrom": "Điều chỉnh hoa hồng từ {{commission}}% thành {{commission2}}%",
+      "commissionRateUpdated": "Đã cập nhật mức hoa hồng {{commission}}%",
+      "resentActivationCode": "Gửi lại mã kích hoạt tới {{otpPhone}}",
+      "activationCodeSent": "Đã gửi mã kích hoạt tới {{otpPhone}}",
+      "systemAdministration": "Quản trị hệ thống",
+      "partnerManagement": "Quản lý đối tác",
+      "partnerDetails": "Chi tiết đối tác: {{name}}",
+      "code": "Mã: {{id}}",
+      "backList": "Quay lại danh sách",
+      "aiCloudProfileSync": "Đồng bộ hồ sơ đám mây AI",
+      "lockAccount": "Khóa tài khoản",
+      "unlockAccount": "Mở khóa tài khoản",
+      "rejectedProfile": "Đã từ chối hồ sơ {{name}}",
+      "rejectProfile": "Từ chối hồ sơ",
+      "sendNotification": "Gửi thông báo",
+      "editDetails": "Chỉnh sửa thông tin",
+      "approvedProfile": "Đã duyệt hồ sơ {{name}}",
+      "approvePartner": "Duyệt đối tác",
+      "verificationDocuments": "Hồ sơ xác thực:",
+      "aPreviewWillAvailable": "Bản xem trước {{name}} sẽ có khi kết nối kho tài liệu",
+      "fineGrainedPermissionsPartner": "Phân quyền chi tiết cho tài khoản đối tác đang được phát triển",
+      "contractCommissionDetailedDesign": "Hợp đồng {{contractCode}} • Hoa hồng {{commission}}%. Giao diện chi tiết tab này đang chờ thiết kế từ Stitch.",
+      "adjustCommission": "Điều chỉnh chiết khấu",
+      "thisTabSDesign": "Giao diện tab này đang chờ thiết kế từ Stitch. Trong lúc chờ, bạn có thể xem các địa điểm niêm yết của đối tác.",
+      "viewPartnerSPlaces": "Xem địa điểm của đối tác",
+      "tierAverageRating5": "Hạng {{tierLabel}} • Đánh giá trung bình {{value}}/5 • Tín nhiệm AI {{trustScore}}/100. Giao diện chi tiết đang chờ thiết kế từ Stitch.",
+      "accountInterventionPolicyEvery": "Quy chuẩn can thiệp tài khoản: Mọi thao tác chỉnh sửa hoặc khóa đối tác đều được tự động ghi nhận vào Audit Log hệ thống Smart Travel Vietnam.",
+      "inspectionSessionId": "Mã phiên kiểm tra: {{sessionCode}}",
+      "printProfileExtract": "In trích lục hồ sơ",
+      "sendNotificationPartner": "Gửi thông báo tới đối tác"
+    },
+    "utils": {
+      "newlyJoined": "Mới gia nhập",
+      "monthsWithUs_other": "{{count}} tháng đồng hành",
+      "yearsWithUs_other": "{{count}} năm đồng hành",
+      "vnd": "{{toLocaleString}} đ"
+    },
+    "trustLevel": {
+      "verySafe": "Rất an toàn",
+      "safe": "An toàn",
+      "watch": "Cần theo dõi",
+      "highRisk": "Rủi ro cao"
+    }
+  },
+  "components": {
+    "lockPartnerModal": {
+      "confirmPartnerAccountSuspension": "Xác nhận tạm khóa tài khoản đối tác",
+      "suspendThisPartnerAccount": "Xác nhận tạm khóa tài khoản đối tác?",
+      "thisWillPauseVisibility": "Hành động này sẽ tạm dừng hoạt động hiển thị của <c0>{{name}} ({{id}})</c0>",
+      "onSmartTravelVietnam": "trên ứng dụng Smart Travel Vietnam.",
+      "andItsRelatedListed": "và cả <c0>{{affectedListings}} địa điểm niêm yết liên quan</c0>",
+      "reasonLockingAccount": "Lý do khóa tài khoản",
+      "aDetailedNoteRequired": "Bắt buộc ghi chú chi tiết khi chọn \"Khác\"...",
+      "additionalNotesCustomerSupport": "Ghi chú thêm cho bộ phận CSKH và đối tác...",
+      "cancel": "Hủy bỏ",
+      "confirmLock": "Xác nhận khóa"
+    },
+    "notFoundState": {
+      "theRecordMayHave": "Bản ghi có thể đã bị xóa, đổi mã hoặc bạn không có quyền truy cập."
+    },
+    "pagination": {
+      "showing": "Hiển thị <c0>{{start}} - {{end}}</c0> trong tổng số <c1>{{totalItems}}</c1> {{itemLabel}}",
+      "rowsPerPage": "Hiển thị mỗi trang:",
+      "previous": "Trước"
+    },
+    "sendMessageModal": {
+      "send": "Gửi",
+      "subject": "Tiêu đề *",
+      "enterSubject": "Nhập tiêu đề...",
+      "message": "Nội dung *",
+      "enterYourMessage": "Nhập nội dung...",
+      "deliveryChannels": "Kênh gửi *"
+    },
+    "sortableHeader": {
+      "sortBy": "Sắp xếp theo {{toLowerCase}}"
+    },
+    "unsavedChangesDialog": {
+      "leavePage": "Rời trang",
+      "leaveWithoutSaving": "Rời trang khi chưa lưu?"
+    },
+    "notificationRulesFields": {
+      "notificationEvents": "Sự kiện tạo thông báo",
+      "aiPlannerLoadAlert": "Ngưỡng cảnh báo tải tìm kiếm AI (pgvector)",
+      "aiLoadAlertThreshold": "Ngưỡng cảnh báo tải AI",
+      "sendUrgentAlertWhen": "Gửi cảnh báo khẩn khi tải cụm máy chủ AI vượt ngưỡng này trong 5 phút liên tiếp.",
+      "deliveryChannels": "Kênh tiếp nhận",
+      "urgentAlertsViaTelegram": "Cảnh báo khẩn qua Telegram & SMS",
+      "urgentAlertsViaTelegram2": "Cảnh báo khẩn qua Telegram và SMS",
+      "selectAtLeastOne": "Cần chọn ít nhất một kênh tiếp nhận"
+    },
+    "otpInput": {
+      "digit": "Chữ số thứ {{value}}"
+    },
+    "passwordInput": {
+      "hidePassword": "Ẩn mật khẩu",
+      "showPassword": "Hiện mật khẩu"
+    }
+  },
+  "stores": {
+    "users": {
+      "by": "{{text}} (bởi {{actor}})",
+      "accountCreated": "Tạo tài khoản",
+      "couldNotSaveNew": "Không lưu được tài khoản mới",
+      "profileAccountPermissionsUpdated": "Cập nhật hồ sơ / quyền tài khoản",
+      "couldNotSaveUser": "Không lưu được hồ sơ người dùng",
+      "accountLocked": "Khóa tài khoản — {{reason}}",
+      "couldNotLockAccount": "Không khóa được tài khoản",
+      "unlockAccount": "Mở khóa tài khoản",
+      "couldNotUnlockAccount": "Không mở khóa được tài khoản"
+    },
+    "partners": {
+      "newPartnerProfileCreated": "Tạo hồ sơ đối tác mới, chờ xác minh",
+      "couldNotSaveNew": "Không lưu được hồ sơ đối tác mới",
+      "businessProfileDetailsUpdated": "Cập nhật thông tin hồ sơ doanh nghiệp",
+      "couldNotSavePartner": "Không lưu được thông tin đối tác",
+      "statusChanged": "Chuyển trạng thái sang \"{{label}}\" — {{statusNote}}",
+      "statusChanged2": "Chuyển trạng thái sang \"{{label}}\"",
+      "couldNotChangePartner": "Không đổi được trạng thái đối tác",
+      "couldNotSavePartner2": "Không lưu được hồ sơ đối tác"
+    },
+    "listings": {
+      "couldNotSaveApproval": "Không lưu được kết quả phê duyệt",
+      "couldNotSaveRejection": "Không lưu được kết quả từ chối",
+      "couldNotReopenSubmission": "Không mở lại được hồ sơ",
+      "couldNotCloseSubmission": "Không đóng được hồ sơ",
+      "couldNotUpdateVisibility": "Không cập nhật được trạng thái hiển thị",
+      "couldNotSavePlace": "Không lưu được thông tin địa điểm",
+      "couldNotAssignCategory": "Không gán được danh mục",
+      "addedManuallyByAdministrator": "Quản trị viên thêm thủ công",
+      "couldNotSaveNew": "Không lưu được địa điểm mới"
+    },
+    "pois": {
+      "couldNotSaveNew": "Không lưu được điểm đến mới",
+      "couldNotSaveDestination": "Không lưu được thay đổi điểm đến",
+      "couldNotReindex": "Không index được vector cho POI"
+    },
+    "notifications": {
+      "couldNotUpdateNotification": "Không cập nhật được trạng thái thông báo",
+      "couldNotSaveNotification": "Không lưu được quy tắc thông báo"
+    },
+    "settings": {
+      "couldNotSaveSystem": "Không lưu được cấu hình hệ thống"
+    },
+    "adminProfile": {
+      "contactInformationUpdated": "Cập nhật thông tin liên hệ",
+      "fullNameSocEmail": "Họ tên, email SOC và hotline: {{hotline}}",
+      "couldNotSaveContact": "Không lưu được thông tin liên hệ",
+      "changeAccountPassword": "Đổi mật khẩu tài khoản",
+      "administratorPasswordChanged": "Mật khẩu quản trị viên đã được thay đổi",
+      "n2faReconfigured": "Cấu hình lại 2FA",
+      "relinkedGoogleAuthenticatorApp": "Liên kết lại ứng dụng Google Authenticator",
+      "couldNotSave2fa": "Không lưu được cấu hình 2FA",
+      "backupCodesRegenerated": "Tạo lại mã dự phòng",
+      "newRecoveryCodesOld": "{{length}} mã khôi phục mới, mã cũ bị vô hiệu",
+      "couldNotGenerateNew": "Không tạo được mã dự phòng mới",
+      "fido2KeyLinked": "Liên kết khóa FIDO2",
+      "couldNotSaveSecurity": "Không lưu được khóa bảo mật",
+      "signedOutOtherDevices": "Đăng xuất khỏi thiết bị khác",
+      "revokedSignSessions_other": "Thu hồi {{count}} phiên đăng nhập",
+      "couldNotRevokeSign": "Không thu hồi được phiên đăng nhập"
+    },
+    "auth": {
+      "yourSessionHasExpired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại"
+    }
+  },
+  "hooks": {
+    "usePartnerActions": {
+      "accountLockNote": "Ghi chú khóa tài khoản: {{note}}",
+      "profileRejected": "Hồ sơ bị từ chối"
+    }
+  },
+  "utils": {
+    "validation": {
+      "invalidEmailAddress": "Email không hợp lệ",
+      "invalidPhoneNumberE": "Số điện thoại không hợp lệ (VD: 0905 888 999)",
+      "websiteMustStartWith": "Website phải bắt đầu bằng http:// hoặc https://",
+      "taxCodeMustHave": "Mã số thuế gồm 10 hoặc 13 số"
+    },
+    "poi": {
+      "free": "Miễn phí",
+      "vnd": " đ",
+      "perUnit": " đ/{{unit}}",
+      "units": {
+        "ticket": "vé",
+        "person": "người",
+        "visit": "lượt",
+        "night": "đêm"
+      }
+    },
+    "error": {
+      "somethingWentWrongPlease": "Đã có lỗi xảy ra, vui lòng thử lại"
+    },
+    "device": {
+      "browser": "Trình duyệt",
+      "unknownDevice": "thiết bị không xác định",
+      "on": "{{browser}} trên {{os}}"
+    }
+  },
+  "listings": {
+    "listingFilterBar": {
+      "searchByPlaceName": "Tìm theo tên địa điểm, mã POI, tên đối tác...",
+      "category": "Danh mục",
+      "province": "Tỉnh thành",
+      "partnerTier": "Hạng đối tác",
+      "priority": "Mức độ ưu tiên"
+    },
+    "listingRow": {
+      "select": "Chọn {{name}}",
+      "over24h": "Quá 24h",
+      "openDetailedReviewScreen": "Chuyển sang màn hình thẩm định chi tiết",
+      "reviewApprove": "Xem xét & Duyệt",
+      "viewSubmissionDetails": "Xem chi tiết hồ sơ",
+      "viewRejectionReason": "Xem lý do từ chối hồ sơ",
+      "viewReason": "Xem lý do"
+    },
+    "listingStatsCards": {
+      "totalSystemListings": "Tổng niêm yết hệ thống",
+      "n84VsLast": "+8.4% so với tháng trước",
+      "urgentPending": "Chờ xử lý khẩn",
+      "submissionsWaitingOver24h_other": "{{count}} hồ sơ chờ quá 24h",
+      "approved": "Đã được phê duyệt",
+      "approvalRate": "Tỷ lệ chấp thuận {{approved}}",
+      "rejectedDefective": "Bị từ chối / Khiếm khuyết",
+      "additionalPermitsRequested": "Yêu cầu bổ sung giấy phép"
+    },
+    "listingStatusTabs": {
+      "allListings": "Tất cả niêm yết",
+      "pendingApproval": "Chờ phê duyệt",
+      "approved": "Đã phê duyệt",
+      "rejected": "Bị từ chối"
+    },
+    "listingTable": {
+      "noMatchingSubmissions": "Không có hồ sơ phù hợp",
+      "tryAnotherStatusTab": "Thử đổi tab trạng thái hoặc bộ lọc."
+    },
+    "rejectReasonModal": {
+      "rejectionReason": "Lý do từ chối hồ sơ",
+      "viewFullSubmission": "Xem toàn bộ hồ sơ",
+      "noSpecificReasonWas": "Không ghi nhận lý do cụ thể.",
+      "feedbackSentPartner": "Góp ý đã gửi cho đối tác",
+      "rejectedAtPartner": "Thời điểm từ chối: {{reviewedAt}} • Đối tác: {{partnerName}}"
+    },
+    "reviewPolicyModal": {
+      "listingModerationPolicy": "Quy chế kiểm duyệt niêm yết",
+      "standardsAppliedWhenReviewing": "Tiêu chuẩn áp dụng khi thẩm định hồ sơ trước khi công bố lên ứng dụng"
+    },
+    "page": {
+      "selectAtLeastOne": "Hãy tích chọn ít nhất một hồ sơ đang \"Chờ duyệt\" để duyệt nhanh",
+      "quickApprovedListingSubmissions_other": "Đã duyệt nhanh {{count}} hồ sơ niêm yết",
+      "poiCode": "Mã POI",
+      "place": "Địa điểm",
+      "partner": "Đối tác",
+      "partnerTier": "Hạng đối tác",
+      "category": "Danh mục",
+      "address": "Địa chỉ",
+      "provinceCity": "Tỉnh/Thành",
+      "submittedAt": "Thời gian gửi",
+      "status": "Trạng thái",
+      "rejectionReason": "Lý do từ chối",
+      "exportedSubmissionsExcelFile_other": "Đã xuất {{count}} hồ sơ ra file Excel (CSV)",
+      "moderationPolicy": "Quy chế kiểm duyệt",
+      "filteringByPartner": "Đang lọc theo đối tác:",
+      "clearPartnerFilter": "Bỏ lọc đối tác",
+      "submissions": "hồ sơ",
+      "youAboutApprovePending": "Bạn sắp phê duyệt <c0>{{length}} hồ sơ đang chờ</c0> và công bố lên ứng dụng. Hãy chắc chắn các hồ sơ đã đáp ứng quy chế kiểm duyệt.",
+      "approveSubmissions_other": "Duyệt {{count}} hồ sơ",
+      "selectedSubmissionsNotPending_other": "{{count}} hồ sơ đã chọn không ở trạng thái chờ duyệt sẽ được bỏ qua."
+    },
+    "utils": {
+      "overdueH": "Quá hạn ({{hours}}h)"
+    },
+    "constants": {
+      "diamondPartner": "Đối tác Diamond",
+      "soleProprietorship": "Hộ kinh doanh cá thể",
+      "goldPartner": "Đối tác Gold",
+      "verifiedPartner": "Đối tác Xác thực",
+      "newPartner": "Đối tác Mới",
+      "publicOrganization": "Tổ chức Công",
+      "allPartners": "Tất cả đối tác",
+      "strategicPartnerGold": "Đối tác Chiến lược (Gold)",
+      "newlyRegisteredPartner": "Đối tác Mới đăng ký",
+      "verified": "Đã xác thực",
+      "newPartner2": "Đối tác mới",
+      "idVerified": "Đã xác minh CCCD",
+      "nationwideProvinceCity": "Toàn quốc (Tỉnh/Thành)",
+      "allPriorities": "Tất cả mức độ",
+      "waitingOver24hUrgent": "Chờ quá 24h (Khẩn)",
+      "waiting212h": "Chờ từ 2 - 12h",
+      "submittedToday": "Mới gửi hôm nay",
+      "validGpsCoordinates": "Tọa độ GPS hợp lệ",
+      "withinTourismZoningArea": "Vị trí quy hoạch du lịch",
+      "photosMeetResolutionStandard": "Ảnh đạt độ phân giải chuẩn",
+      "licenseStillValid": "Giấy phép còn hiệu lực",
+      "pendingReview": "Chờ duyệt",
+      "approved": "Đã phê duyệt",
+      "rejected": "Đã từ chối",
+      "mandatoryLegalDocuments": "Pháp lý bắt buộc",
+      "everyBusinessMustHold": "Mọi cơ sở phải có giấy phép kinh doanh còn hiệu lực. Lưu trú cần thêm giấy chứng nhận PCCC; ẩm thực cần giấy ATVSTP.",
+      "photosContent": "Hình ảnh & nội dung",
+      "atLeast5Real": "Tối thiểu 5 ảnh thật, độ phân giải HD, không chèn logo bên thứ ba. Mô tả trung thực, không phóng đại dịch vụ.",
+      "processingDeadline": "Thời hạn xử lý",
+      "submissionsMustReviewedWithin": "Hồ sơ phải được thẩm định trong 24 giờ kể từ khi gửi. Hồ sơ quá hạn được đánh dấu \"Khẩn\" và ưu tiên xử lý.",
+      "rejectProfile": "Từ chối hồ sơ",
+      "aClearRejectionReason": "Bắt buộc ghi rõ lý do từ chối để đối tác bổ sung. Đối tác được gửi lại hồ sơ sau khi khắc phục.",
+      "missingFireSafetyFood": "Thiếu chứng nhận PCCC / ATTP",
+      "insufficientLegalDocumentationFood": "Không đủ tài liệu chứng minh pháp lý (Giấy phép ATTP / PCCC hết hạn hoặc không hợp lệ)",
+      "theLicenseHasExpired": "Giấy phép đã hết hạn hoặc thiếu văn bản gia hạn, không đối chiếu được với CSDL.",
+      "theLegalLicensesFood": "giấy phép pháp lý (ATTP / PCCC) đã hết hạn hoặc chưa hợp lệ",
+      "uploadNewValidNotarized": "cập nhật bản scan công chứng mới còn hiệu lực",
+      "incorrectBusinessRegistrationDetails": "Sai thông tin đăng ký kinh doanh",
+      "inaccurateBusinessInformationOr": "Thông tin kinh doanh không chính xác hoặc sai lệch giá niêm yết thực tế",
+      "thePublishedPriceList": "Chênh lệch bảng giá công bố và giá đặt phòng qua hệ thống du lịch.",
+      "theBusinessInformationListed": "thông tin kinh doanh và bảng giá niêm yết chưa khớp với thực tế",
+      "reviewUpdatePriceList": "rà soát và cập nhật lại bảng giá, thông tin dịch vụ chính xác",
+      "incorrectGpsCoordinates": "Tọa độ GPS sai lệch",
+      "invalidLocationGpsCoordinates": "Vị trí địa lý không hợp lệ / Sai lệch tọa độ GPS (> 30m)",
+      "theMapPinFar": "Tọa độ pin trên bản đồ lệch xa so với địa chỉ đăng ký kinh doanh.",
+      "theGpsCoordinatesMap": "tọa độ GPS trên bản đồ lệch so với địa chỉ đăng ký kinh doanh",
+      "pinExactLocationBusiness": "ghim lại vị trí chính xác của cơ sở trên bản đồ",
+      "poorQualityPhotosWatermarks": "Ảnh kém chất lượng / dính Watermark",
+      "poorQualityWatermarkedOr": "Hình ảnh chất lượng kém / dính watermark / không rõ nét",
+      "theStorefrontOrSignage": "Ảnh mặt tiền hoặc biển hiệu vi phạm tiêu chuẩn độ phân giải tối thiểu 1080p.",
+      "theStorefrontSignagePhotos": "hình ảnh mặt tiền / biển hiệu chưa đạt chuẩn chất lượng (mờ hoặc dính watermark)",
+      "retakeClearRealLife": "chụp lại ảnh thực tế rõ nét, độ phân giải tối thiểu 1080p",
+      "duplicatePlace": "Trùng lặp địa điểm",
+      "duplicatesPlaceThatAlready": "Trùng lặp địa điểm đã tồn tại trên hệ thống",
+      "aPoiWithSame": "Đã có POI cùng tên và cùng vị trí được quản lý bởi đối tác khác.",
+      "thePlaceDuplicatesExisting": "địa điểm trùng với một POI đã tồn tại trên hệ thống",
+      "provideDocumentsProvingManagement": "cung cấp giấy tờ chứng minh quyền quản lý hoặc liên hệ bộ phận hỗ trợ đối tác",
+      "otherReason": "Lý do khác",
+      "otherReasonSeeFeedback": "Lý do khác (Chi tiết ở phần góp ý bên dưới)",
+      "itDoesNotYet": "chưa đáp ứng quy chế kiểm duyệt niêm yết",
+      "addContentDescribedDetailed": "bổ sung các nội dung theo góp ý chi tiết",
+      "visible": "Đang hiển thị",
+      "hidden": "Tạm ẩn",
+      "recentlyApproved": "Mới duyệt gần đây",
+      "highestRated": "Đánh giá cao nhất",
+      "mostViewed": "Lượt xem nhiều nhất",
+      "anyRating": "Mọi mức đánh giá",
+      "n45StarsUp": "Từ 4.5 sao",
+      "n40StarsUp": "Từ 4.0 sao",
+      "n35StarsUp": "Từ 3.5 sao",
+      "allRejectionReasons": "Tất cả lý do từ chối",
+      "resubmittedNew": "Đã gửi lại hồ sơ (Mới)",
+      "notResubmittedWithinDeadline": "Chưa gửi lại (Trong hạn)",
+      "updateOverdue": "Quá hạn bổ sung",
+      "permanentlyLocked": "Đã khóa vĩnh viễn",
+      "resubmissionStatus": "Trạng thái gửi lại",
+      "provinceCity": "Tỉnh/Thành phố"
+    },
+    "hideReasons": {
+      "renovation": "Sửa chữa mặt bằng",
+      "seasonalClosure": "Tạm ngưng kinh doanh theo mùa",
+      "partnerRequest": "Theo yêu cầu của đối tác",
+      "investigatingFeedback": "Đang xác minh phản ánh của du khách"
+    }
+  },
+  "listingReview": {
+    "approveListingModal": {
+      "confirmPlaceApproval": "Xác nhận phê duyệt địa điểm",
+      "approveThisPlace": "Xác nhận Phê duyệt địa điểm này?",
+      "closeDialog": "Đóng modal",
+      "thisConfirmsEntireBusiness": "Thao tác này sẽ xác nhận toàn bộ hồ sơ kinh doanh và kích hoạt phân phối thông tin địa điểm tới du khách.",
+      "placeName": "Tên địa điểm",
+      "managingPartner": "Đối tác chủ quản:",
+      "listingCategory": "Danh mục niêm yết:",
+      "businessAddress": "Địa chỉ cơ sở:",
+      "systemImpactNotice": "Lưu ý tác động hệ thống",
+      "onceApprovedThisPlace": "Sau khi phê duyệt, địa điểm này sẽ chính thức được kích hoạt và xuất hiện trên toàn bộ ứng dụng du khách Smart Travel Vietnam. Thông báo chúc mừng kèm đường dẫn quản lý sẽ tự động gửi đến đối tác.",
+      "internalApprovalNoteOptional": "Ghi chú duyệt nội bộ (không bắt buộc)",
+      "characters": "{{length}} / {{REVIEW_NOTE_MAX_LENGTH}} ký tự",
+      "enterMessageOrInternal": "Nhập lời nhắn hoặc ghi chú lưu trữ nội bộ... (ví dụ: Hồ sơ đầy đủ, đối chiếu bản gốc hợp lệ qua video call)",
+      "confirmApproval": "Xác nhận phê duyệt",
+      "activating": "Đang kích hoạt...",
+      "approvedSuccessfully": "Đã phê duyệt thành công!"
+    },
+    "basicInfoSection": {
+      "basicPlaceInformation": "Thông tin cơ bản địa điểm",
+      "crossCheckMarketingDetails": "Đối chiếu thông tin tiếp thị, danh mục và giấy tờ niêm yết",
+      "registeredPlaceName": "Tên địa điểm đăng ký",
+      "ownerSDetailedDescription": "Mô tả chi tiết từ chủ cơ sở",
+      "actualAddress": "Địa chỉ thực tế",
+      "bookingEmail": "Email đặt phòng",
+      "officialWebsite": "Website chính thức",
+      "notProvided": "Chưa cung cấp",
+      "referenceListingPrice": "Mức giá tham chiếu niêm yết"
+    },
+    "businessInfoSection": {
+      "inDepthBusinessInformation": "Thông tin kinh doanh chuyên sâu",
+      "propertySizeAmenitiesRoom": "Quy mô cơ sở lưu trú, tiện nghi và chính sách phòng",
+      "thePartnerHasNot": "Đối tác chưa khai báo thông tin kinh doanh chi tiết",
+      "amenitiesTravelers": "Hệ thống tiện ích phục vụ khách du lịch"
+    },
+    "decisionModalShell": {
+      "closeWindow": "Đóng cửa sổ",
+      "codePartner": "Mã: <c0>{{id}}</c0> • Đối tác: {{partnerName}}",
+      "thisActionRecordedAudit": "Hành động được ghi nhật ký kiểm toán (Audit Log)",
+      "cancel": "Hủy bỏ"
+    },
+    "documentPreviewModal": {
+      "thePdfPreviewWill": "Bản xem trước PDF sẽ hiển thị khi kết nối máy chủ lưu trữ tài liệu",
+      "theImagePreviewWill": "Bản xem trước ảnh sẽ hiển thị khi kết nối máy chủ lưu trữ tài liệu",
+      "verifiedAgainstNationalDatabase": "Đã đối chiếu với CSDL quốc gia",
+      "notVerified": "Chưa đối chiếu"
+    },
+    "legalDocumentsSection": {
+      "legalDocuments": "Tài liệu pháp lý",
+      "sealedDocumentsVerifiedAgainst": "{{verifiedCount}}/{{length}} văn bản có mộc đỏ đối chiếu CSDL quốc gia",
+      "required": "Bắt buộc",
+      "downloadZip": "Tải ZIP",
+      "previewDocument": "Xem trước tài liệu",
+      "clickToggleVerificationStatus": "Bấm để đổi trạng thái đối chiếu",
+      "verified": "Đã đối chiếu",
+      "awaitingVerification": "Chờ đối chiếu"
+    },
+    "locationSection": {
+      "locationMapCoordinates": "Vị trí & Tọa độ bản đồ",
+      "coordinatesNE": "Tọa độ: {{latitude}}° N, {{longitude}}° E",
+      "thePartnerHasNot": "Đối tác chưa ghim tọa độ GPS",
+      "accuracy": "Độ chính xác: {{accuracy}}"
+    },
+    "partnerChecklistCard": {
+      "active": "Hoạt động",
+      "approved": "Đã duyệt",
+      "response": "Phản hồi",
+      "submittingOrganization": "Đơn vị gửi hồ sơ",
+      "verifiedPartner": "Đối tác đã xác thực",
+      "newPartner": "Đối tác mới",
+      "representative": "{{code}} • Đại diện: <c0>{{representative}}</c0>",
+      "partnerHotline": "Hotline đối tác",
+      "standardInspectionChecklist": "Checklist kiểm định chuẩn",
+      "passed": "{{passedCount}} / {{length}} Đạt chuẩn",
+      "clickMarkAsPassed": "Bấm để đánh dấu đạt / chưa đạt"
+    },
+    "photoGallerySection": {
+      "photosUploadedByPartner": "Hình ảnh do đối tác tải lên",
+      "checkDisplayQualityReal": "Kiểm định chất lượng hiển thị, góc chụp thực tế, không dính watermark",
+      "uploadedStandardPhotos": "Đã tải lên {{uploaded}}/{{requiredPhotoCount}} ảnh tiêu chuẩn",
+      "coverPhoto": "Ảnh bìa đại diện",
+      "partnerUploadedPhoto": "Ảnh đối tác tải lên",
+      "valid": "Hợp lệ",
+      "thePartnerHasNot": "Đối tác chưa tải ảnh chi tiết",
+      "thePartnerHasNot2": "Đối tác chưa tải lên hình ảnh nào"
+    },
+    "photoLightbox": {
+      "photo": "Ảnh {{value}}/{{length}}",
+      "previousPhoto": "Ảnh trước",
+      "nextPhoto": "Ảnh sau",
+      "closeEsc": "Đóng (Esc)"
+    },
+    "rejectListingModal": {
+      "dearSubmissionDoesNot": "Kính gửi đối tác {{partnerName}}, hồ sơ \"{{name}}\" ({{id}}) chưa đủ điều kiện phê duyệt do {{templateCause}}. Vui lòng {{templateFix}} và gửi lại yêu cầu thẩm định.",
+      "rejectPlaceListing": "Từ chối niêm yết địa điểm",
+      "requestCompleteSubmissionEvidence": "Yêu cầu hoàn thiện hồ sơ và minh chứng trước khi kích hoạt",
+      "rejectionReview": "Xét duyệt từ chối",
+      "confirmRejection": "Xác nhận Từ chối",
+      "n1ChooseMainRejection": "1. Chọn lý do từ chối chính <c0>*</c0>",
+      "chooseExactly1Reason": "Bắt buộc chọn 1 lý do",
+      "n2DetailedFeedbackRevision": "2. Góp ý chi tiết & Hướng dẫn sửa đổi cho Đối tác <c0>*</c0>",
+      "template": "Văn bản mẫu",
+      "fillTemplateSelectedReason": "Điền văn bản mẫu theo lý do đã chọn",
+      "chooseReasonFirst": "Chọn lý do trước",
+      "enterDetailsRequiredAdditions": "Nhập chi tiết yêu cầu bổ sung hoặc giải trình...",
+      "characters": "{{length}} / {{MAX_FEEDBACK_LENGTH}} ký tự",
+      "thePlaceStatusWill": "Trạng thái địa điểm sẽ chuyển thành <c0>BỊ TỪ CHỐI (REJECTED)</c0>. Đối tác sẽ nhận thông báo qua Email & App để bổ sung hồ sơ và gửi lại (Resubmit)."
+    },
+    "reviewActionBar": {
+      "enterInternalModerationNote": "Nhập ghi chú kiểm duyệt nội bộ...",
+      "noModerationNote": "Không có ghi chú kiểm duyệt",
+      "verifiedValidDocuments": "Đã đối chiếu {{verifiedDocs}}/{{totalDocs}} tài liệu hợp lệ",
+      "rejectPlace": "TỪ CHỐI ĐỊA ĐIỂM",
+      "approvePlace": "PHÊ DUYỆT ĐỊA ĐIỂM",
+      "approvedSuccessfully": "ĐÃ PHÊ DUYỆT THÀNH CÔNG",
+      "submissionRejected": "ĐÃ TỪ CHỐI HỒ SƠ",
+      "nextPendingSubmission": "Hồ sơ chờ tiếp theo"
+    },
+    "reviewHeader": {
+      "systemAdministration": "Quản trị hệ thống",
+      "listingManagement": "Quản lý niêm yết",
+      "backListings": "Quay lại danh sách niêm yết",
+      "submitted": "Nộp hồ sơ: <c0>{{submittedAt}}</c0>",
+      "reviewLevel": "Cấp độ kiểm duyệt: <c0>{{reviewLevel}}</c0>",
+      "area": "Địa bàn: <c0>{{areaLabel}}</c0>",
+      "submissionCompleteness": "Độ hoàn thiện hồ sơ",
+      "waitingTime": "Thời gian chờ",
+      "processingTime": "Thời gian xử lý"
+    },
+    "reviewLogCard": {
+      "systemReviewLog": "Nhật ký thẩm định hệ thống"
+    },
+    "page": {
+      "submissionNotFound": "Không tìm thấy hồ sơ {{id}}",
+      "backListings": "Quay lại danh sách niêm yết",
+      "couldNotLoadReview": "Không tải được hồ sơ thẩm định",
+      "checklistItemsHaveNot_other": "còn {{count}} mục checklist chưa đạt",
+      "documentsHaveNotBeen_other": "còn {{count}} tài liệu chưa đối chiếu",
+      "approvedPlaceNowLive": "Đã phê duyệt {{name}}! Địa điểm đã chính thức hoạt động và thông báo đã gửi tới {{partnerName}}.",
+      "rejectedListingEmailNotification": "Đã từ chối niêm yết {{id}}. Email và thông báo đã được gửi đến {{partnerName}}.",
+      "preparingZipDocuments_other": "Đang chuẩn bị file ZIP {{count}} tài liệu của {{id}}",
+      "cannotApproveYet": "Chưa thể phê duyệt: {{approveBlockedReason}}"
+    },
+    "utils": {
+      "partnerSubmittedNewListing": "Đối tác {{partnerName}} nộp hồ sơ niêm yết mới.",
+      "note": "Ghi chú: {{reviewNote}}",
+      "anAdministratorApprovedPlace": "Quản trị viên phê duyệt địa điểm.",
+      "anAdministratorRejectedPlace": "Quản trị viên từ chối địa điểm. Lý do: {{value}}.",
+      "at": "{{value}}/{{value2}}/{{getFullYear}} lúc {{value3}}:{{value4}}"
+    }
+  },
+  "approvedListings": {
+    "page": {
+      "filtersReset": "Đã làm mới bộ lọc",
+      "allSelectedPlacesAlready": "Các địa điểm đã chọn đều đang tạm ẩn",
+      "hid": "Đã tạm ẩn {{name}}",
+      "hidPlaces_other": "Đã tạm ẩn {{count}} địa điểm",
+      "isVisibleAppAgain": "{{name}} đã hiển thị lại trên ứng dụng",
+      "assignedCategoryPlaces_other": "Đã gán danh mục cho {{count}} địa điểm",
+      "updatedDetails": "Đã cập nhật thông tin {{name}}",
+      "addedPublishedItApp": "Đã thêm {{name}} ({{id}}) và hiển thị ngay trên ứng dụng",
+      "poiCode": "Mã POI",
+      "place": "Địa điểm",
+      "partner": "Đối tác",
+      "partnerTier": "Hạng đối tác",
+      "category": "Phân loại",
+      "provinceCity": "Tỉnh/Thành",
+      "reviews": "Đánh giá",
+      "reviews2": "Lượt đánh giá",
+      "views": "Lượt xem",
+      "approved": "Ngày duyệt",
+      "visibility": "Trạng thái hiển thị",
+      "hiddenReason": "Lý do tạm ẩn",
+      "hidden": "Tạm ẩn",
+      "visible": "Đang hiển thị",
+      "exportedPlacesExcelFile_other": "Đã xuất {{count}} địa điểm ra file Excel (CSV)",
+      "systemAdministration": "Quản trị hệ thống",
+      "listingManagement": "Quản lý niêm yết",
+      "approvedPlaces": "Địa điểm đã duyệt",
+      "approvedPlaces2": "Địa điểm đã phê duyệt",
+      "accommodationDiningAttractionBusinesses": "Danh mục các cơ sở lưu trú, ẩm thực, điểm tham quan đã vượt qua thẩm định và đang phát hành công khai trên ứng dụng du lịch Smart Travel.",
+      "exportExcel": "Xuất dữ liệu Excel",
+      "advancedFilters": "Bộ lọc nâng cao",
+      "addManually": "Thêm thủ công",
+      "approvedPlaces3": "địa điểm đã duyệt"
+    },
+    "approvedFilterBar": {
+      "allRegions": "Tất cả khu vực",
+      "searchByPlaceName": "Tìm kiếm theo tên địa điểm, mã POI-xxxxx, tên đối tác...",
+      "category": "Danh mục",
+      "region": "Khu vực",
+      "visibility": "Trạng thái hiển thị",
+      "sort": "Sắp xếp",
+      "resetFilters": "Làm mới bộ lọc",
+      "advanced": "Nâng cao",
+      "partnerTier": "Hạng đối tác",
+      "minimumRating": "Đánh giá tối thiểu"
+    },
+    "approvedRow": {
+      "select": "Chọn {{name}}",
+      "noReviewsYet": "Chưa có đánh giá",
+      "hidden": "Tạm ẩn",
+      "visible": "Đang hiển thị",
+      "viewApp": "Xem chi tiết trên ứng dụng",
+      "editDetails": "Chỉnh sửa thông tin",
+      "makeVisibleAgain": "Mở hiển thị lại",
+      "hidePlace": "Tạm ẩn địa điểm"
+    },
+    "approvedStatsCards": {
+      "totalApprovedPlaces": "Tổng địa điểm đã duyệt",
+      "meetStandards": "{{approved}} đạt chuẩn",
+      "all63Provinces": "Toàn bộ 63 tỉnh/thành",
+      "publiclyVisible": "Đang hiển thị công khai",
+      "visible": "{{visible}} đang hiển thị",
+      "readyTravelersExplore": "Sẵn sàng cho du khách khám phá",
+      "hiddenUnderMaintenance": "Tạm ẩn / Đang bảo trì",
+      "temporarilyArchived": "Lưu kho tạm thời",
+      "waitingPartnerReopen": "Chờ đối tác mở lại dịch vụ",
+      "savesBookingsThisWeek": "Lượt lưu & Đặt tuần này",
+      "strongItineraryEngagement": "Tương tác hành trình tích cực"
+    },
+    "approvedTable": {
+      "itemsSelected_other": "{{count}} mục đã chọn",
+      "hideSelected": "Tạm ẩn đồng loạt",
+      "assignCategory": "Gán danh mục",
+      "clearSelection": "Bỏ chọn",
+      "noMatchingPlaces": "Không có địa điểm phù hợp",
+      "tryDifferentKeywordOr": "Thử đổi từ khóa hoặc bộ lọc."
+    },
+    "assignCategoryModal": {
+      "assignCategory": "Gán danh mục",
+      "applyNewCategorySelected_other": "Áp dụng danh mục mới cho {{count}} địa điểm đã chọn"
+    },
+    "hideListingModal": {
+      "hidePlace": "Tạm ẩn địa điểm",
+      "hidePlaces_other": "Tạm ẩn đồng loạt {{count}} địa điểm",
+      "willNoLongerAppear": "{{name}} ({{id}}) sẽ ngừng hiển thị trên ứng dụng du khách",
+      "theSelectedPlacesWill": "Các địa điểm đã chọn sẽ ngừng hiển thị trên ứng dụng du khách",
+      "confirmHide": "Xác nhận tạm ẩn",
+      "reasonHiding": "Lý do tạm ẩn *",
+      "eGPremisesRenovation": "VD: Sửa chữa mặt bằng"
+    },
+    "listingFormModal": {
+      "pleaseEnterPlaceName": "Vui lòng nhập tên địa điểm",
+      "pleaseEnterOwningPartner": "Vui lòng nhập đối tác sở hữu",
+      "pleaseEnterCategoryLabel": "Vui lòng nhập nhãn phân loại",
+      "pleaseEnterAddress": "Vui lòng nhập địa chỉ",
+      "editPlaceDetails": "Chỉnh sửa thông tin địa điểm",
+      "addPlaceManually": "Thêm địa điểm thủ công",
+      "updateDisplayDetails": "Cập nhật thông tin hiển thị của {{id}}",
+      "placesAddedByAdministrators": "Địa điểm do quản trị viên thêm sẽ được phê duyệt và hiển thị ngay",
+      "saveChanges": "Lưu thay đổi",
+      "addPlace": "Thêm địa điểm",
+      "placeName": "Tên địa điểm *",
+      "owningPartner": "Đối tác sở hữu *",
+      "category": "Danh mục",
+      "displayedCategoryLabel": "Nhãn phân loại hiển thị *",
+      "eGBeachfrontResort": "VD: Resort ven biển",
+      "address": "Địa chỉ *",
+      "eGCamChau": "VD: Cẩm Châu, TP. Hội An, Quảng Nam",
+      "provinceCity": "Tỉnh / Thành phố"
+    }
+  },
+  "rejectedListings": {
+    "rejectedFilterBar": {
+      "searchByBusinessName": "Tìm theo tên cơ sở, mã POI-xxxxx, tên đối tác PTN...",
+      "rejectionReason": "Lý do từ chối",
+      "resubmissionStatus": "Trạng thái gửi lại",
+      "provinceCity": "Tỉnh/Thành phố",
+      "resetFilters": "Đặt lại bộ lọc",
+      "reset": "Đặt lại"
+    },
+    "rejectedRow": {
+      "select": "Chọn {{name}}",
+      "reReview": "Xem xét lại",
+      "viewReason": "Xem lý do"
+    },
+    "rejectedStatsCards": {
+      "totalRejected": "Tổng từ chối",
+      "violationsMissingDocuments": "Vi phạm / Thiếu giấy tờ",
+      "awaitingReReview": "Chờ thẩm định lại",
+      "urgent": "Cần xử lý gấp",
+      "notYetFixed": "Chưa khắc phục",
+      "waitingPartnerUpdate": "Đang chờ đối tác bổ sung",
+      "permanentlyClosed": "Đóng vĩnh viễn",
+      "spamFraudulentInformation": "Spam / Gian lận thông tin"
+    },
+    "rejectedTable": {
+      "submissionsSelected_other": "{{count}} hồ sơ đã chọn",
+      "sendUpdateReminder": "Gửi nhắc nhở bổ sung",
+      "permanentlyClosed": "Đóng vĩnh viễn",
+      "clearSelection": "Bỏ chọn",
+      "noMatchingSubmissions": "Không có hồ sơ phù hợp",
+      "tryDifferentKeywordOr": "Thử đổi từ khóa hoặc bộ lọc."
+    },
+    "rejectionDetailModal": {
+      "submittedBy": "Đối tác gửi",
+      "rejected": "Ngày từ chối",
+      "resubmissionDeadline": "Hạn gửi lại",
+      "address": "Địa chỉ",
+      "rejectionReasonDetails": "Chi tiết lý do từ chối",
+      "reReviewSubmission": "Xem xét lại hồ sơ",
+      "permanentlyClosed": "Đóng vĩnh viễn",
+      "sendUpdateReminder": "Gửi nhắc nhở bổ sung",
+      "feedbackSentPartner": "Góp ý đã gửi cho đối tác",
+      "resubmissionStatus": "Trạng thái gửi lại:"
+    },
+    "page": {
+      "movedBackReReview": "Đã chuyển {{name}} về hàng chờ thẩm định lại",
+      "noSubmissionsNeedUpdate": "Không có hồ sơ nào cần nhắc nhở bổ sung",
+      "updateReminderEmailSent": "Đã gửi email nhắc nhở bổ sung tới {{partnerName}}",
+      "updateRemindersSentPartners_other": "Đã gửi nhắc nhở bổ sung tới {{count}} đối tác",
+      "onlySubmissionsThatHave": "Chỉ đóng vĩnh viễn được hồ sơ chưa gửi lại hoặc đã quá hạn",
+      "permanentlyClosedSubmissions_other": "Đã đóng vĩnh viễn {{count}} hồ sơ",
+      "poiCode": "Mã POI",
+      "place": "Địa điểm",
+      "partner": "Đối tác",
+      "partnerCode": "Mã đối tác",
+      "provinceCity": "Tỉnh/Thành",
+      "reasonGroup": "Nhóm lý do",
+      "rejectionReason": "Lý do từ chối",
+      "feedbackPartner": "Góp ý gửi đối tác",
+      "rejected": "Ngày từ chối",
+      "resubmissionStatus": "Trạng thái gửi lại",
+      "exportedViolationReportSubmissions_other": "Đã xuất báo cáo vi phạm {{count}} hồ sơ (CSV)",
+      "systemAdministration": "Quản trị hệ thống",
+      "listingManagement": "Quản lý niêm yết",
+      "rejectedPlaces": "Địa điểm bị từ chối",
+      "rejectedPlacesFailedReview": "Địa điểm bị từ chối <c0>Không đạt thẩm định</c0>",
+      "trackManageListingSubmissions": "Theo dõi, quản lý các hồ sơ niêm yết không đạt yêu cầu thẩm định, lý do từ chối và quy trình tiếp nhận hồ sơ gửi lại từ đối tác du lịch.",
+      "reviewStandards": "Quy chuẩn thẩm định",
+      "exportViolationReport": "Xuất báo cáo vi phạm",
+      "rejectedSubmissions": "hồ sơ bị từ chối",
+      "aiPolicyWhenPartner": "Quy chế AI: Khi đối tác gửi lại hồ sơ khắc phục, hệ thống tự động gắn nhãn <c0>\"Đã gửi lại hồ sơ\"</c0> và ưu tiên đẩy lên đầu danh sách để chuyên viên kiểm duyệt trong vòng 24 giờ làm việc.",
+      "viewReviewSla": "Xem SLA thẩm định →",
+      "permanentlyCloseSubmission": "Đóng vĩnh viễn hồ sơ",
+      "closeSubmissions_other": "Đóng {{count}} hồ sơ",
+      "theSubmissionWillPermanently": "Hồ sơ <c0>{{name}}</c0> sẽ bị đóng vĩnh viễn và đối tác không thể gửi lại. Thao tác này được ghi vào nhật ký kiểm toán.",
+      "theSubmissionsSelectedPlaces": "Hồ sơ <c0>{{length}} địa điểm đã chọn</c0> sẽ bị đóng vĩnh viễn và đối tác không thể gửi lại. Thao tác này được ghi vào nhật ký kiểm toán."
+    },
+    "utils": {
+      "yesterday": "Hôm qua",
+      "daysAgo_other": "{{count}} ngày trước",
+      "resubmitted": "Đã gửi lại ({{when}})",
+      "notResubmittedDaysLeft_other": "Chưa gửi (Còn {{count}} ngày)",
+      "overdueAutoArchived": "Quá hạn (Tự động lưu trữ)",
+      "permanentlyClosed": "Đã đóng vĩnh viễn"
+    }
+  },
+  "pois": {
+    "poiFilterBar": {
+      "searchByPoiName": "Tìm theo tên POI, mã địa điểm, địa chỉ, từ khóa...",
+      "province": "Tỉnh thành",
+      "nationwide63Provinces": "Toàn quốc (63 tỉnh thành)",
+      "status": "Trạng thái",
+      "dataSource": "Nguồn dữ liệu",
+      "clearFilters": "Xóa bộ lọc"
+    },
+    "poiListHeader": {
+      "systemAdministration": "Quản trị hệ thống",
+      "poiDestinations": "Quản lý điểm đến POI",
+      "travelDestinationDataHub": "Kho Dữ liệu Điểm đến Du lịch (POI)",
+      "syncing": "Đang index...",
+      "aiEngineSync": "pgvector Engine",
+      "nationwideDatabaseLandmarksHeritage": "Cơ sở dữ liệu các danh lam thắng cảnh, di sản, ẩm thực, lưu trú và điểm tham quan toàn quốc phục vụ Tìm kiếm ngữ nghĩa AI (pgvector).",
+      "syncPoiData": "Index vector POI",
+      "exportPoiCatalog": "Xuất danh mục POI",
+      "addNewPoi": "Thêm POI mới"
+    },
+    "poiStatsCards": {
+      "totalPoisNationwide": "Tổng POI toàn quốc",
+      "newPlacesThisMonth_other": "+{{count}} địa điểm mới tháng này",
+      "share": "Tỷ trọng",
+      "availablePois": "POI Khả dụng",
+      "runningSmoothly": "{{available}} đang hoạt động ổn định"
+    },
+    "poiTable": {
+      "noDestinationsMatchFilters": "Không tìm thấy điểm đến phù hợp với bộ lọc",
+      "clearFilters": "Xóa bộ lọc"
+    },
+    "poiTablePagination": {
+      "show": "Hiển thị",
+      "of": "trên tổng số <c0>{{totalItems}}</c0> {{itemLabel}}",
+      "firstPage": "Trang đầu",
+      "previousPage": "Trang trước",
+      "lastPage": "Trang cuối"
+    },
+    "poiTableRow": {
+      "noReviewsYet": "Chưa có đánh giá",
+      "editPoi": "Chỉnh sửa POI"
+    },
+    "page": {
+      "filtersCleared": "Đã xóa bộ lọc",
+      "thereNoPoisExport": "Không có POI nào để xuất",
+      "poiCode": "Mã POI",
+      "poiName": "Tên POI",
+      "category": "Danh mục",
+      "provinceCity": "Tỉnh/Thành",
+      "address": "Địa chỉ",
+      "estimatedPrice": "Mức giá dự kiến",
+      "openingHours": "Giờ mở cửa",
+      "dataSource": "Nguồn dữ liệu",
+      "reviews": "Đánh giá",
+      "reviews2": "Lượt đánh giá",
+      "status": "Trạng thái",
+      "exportedPoisExcelFile_other": "Đã xuất {{count}} POI ra file Excel (CSV)",
+      "matchingDestinations": "điểm đến phù hợp",
+      "destinationsNationwide": "điểm đến toàn quốc",
+      "shownMobileApp": "{{id}} • Hiển thị trên App Mobile",
+      "editPoi": "Chỉnh sửa POI",
+      "vectorIndexed": "Index vector",
+      "indexedPois_other": "Đã index {{count}} POI vào CSDL vector (pgvector)",
+      "allPoisIndexed": "Toàn bộ POI đã được index vector"
+    },
+    "constants": {
+      "all": "Tất cả",
+      "attractionsHeritageSites": "Điểm tham quan & Di tích",
+      "foodRestaurants": "Ẩm thực & Nhà hàng",
+      "accommodationHomestaysHotels": "Lưu trú & Homestay/Khách sạn",
+      "beachesNature": "Bãi biển & Thiên nhiên",
+      "shoppingTraditionalCraftVillages": "Mua sắm & Làng nghề truyền thống",
+      "sightseeingHeritage": "Tham quan & Di sản",
+      "restaurantsDining": "Nhà hàng & Ẩm thực",
+      "accommodationHotels": "Lưu trú & Khách sạn",
+      "toursExperiences": "Tour & Trải nghiệm",
+      "nationalTourismAdministration": "Tổng cục Du lịch",
+      "verifiedByAi": "AI đã xác minh",
+      "aiDataCollection": "Thu thập dữ liệu AI",
+      "managementBoard": "Ban quản lý",
+      "heritageSiteLocalManagement": "Ban quản lý di tích / địa phương",
+      "partnerSubmission": "Đối tác gửi duyệt",
+      "system": "Hệ thống",
+      "verifiedBySystem": "Hệ thống xác thực",
+      "quangNam": "Quảng Nam",
+      "daNang": "Đà Nẵng",
+      "hanoi": "Hà Nội",
+      "quangNinh": "Quảng Ninh",
+      "hoChiMinhCity": "TP. Hồ Chí Minh",
+      "laoCaiSaPa": "Lào Cai (Sa Pa)",
+      "thuaThienHue": "Thừa Thiên Huế",
+      "kienGiangPhuQuoc": "Kiên Giang (Phú Quốc)"
+    },
+    "vector": {
+      "indexed": "Đã index Vector",
+      "notIndexed": "Chưa index"
+    }
+  },
+  "poiEditor": {
+    "poiAiPlannerSection": {
+      "peakTravelSeason": "Mùa cao điểm du lịch",
+      "eGFebruaryAugust": "Ví dụ: Tháng 2 - Tháng 8",
+      "bestTimeDayVisit": "Thời điểm tham quan lý tưởng trong ngày",
+      "eGEvening16": "Ví dụ: Buổi tối (16:30 - 20:30)"
+    },
+    "poiBasicInfoSection": {
+      "n1BasicPoiInformation": "1. Thông tin cơ bản POI",
+      "identityDataDisplayCategory": "Dữ liệu định danh, danh mục hiển thị và thời lượng khám phá",
+      "required": "Bắt buộc",
+      "poiDestinationName": "Tên điểm đến POI",
+      "eGPhoCo": "Ví dụ: Phố cổ Hội An (Hoi An Ancient Town)",
+      "mainCategory": "Danh mục chính <c0>*</c0>",
+      "subCategoriesAiSuggestion": "Danh mục phụ / Tag gợi ý AI",
+      "separateWithCommas": "Phân tách bằng dấu phẩy",
+      "admissionPriceVnd": "Mức giá vé tham quan (Quy chuẩn VNĐ)",
+      "eG120000": "Ví dụ: 120,000 VNĐ / vé",
+      "openingHours": "Khung giờ mở cửa",
+      "eG0700": "Ví dụ: 07:00 - 21:30 hàng ngày",
+      "eG34": "Ví dụ: 3 - 4 giờ",
+      "suggestedVisitDuration": "Thời gian tham quan gợi ý"
+    },
+    "poiContactSection": {
+      "n3ContactInformationManaging": "3. Thông tin liên hệ & Đơn vị phụ trách",
+      "siteManagementOrganizationTraveler": "Đơn vị quản lý di tích, đường dây nóng phục vụ hỗ trợ du khách",
+      "officialManagingOrganization": "Đơn vị quản lý chính thức",
+      "rescueSupportHotline": "Số điện thoại Hotline cứu hộ / hỗ trợ",
+      "officialWebsite": "Website chính thức",
+      "feedbackEmail": "Email tiếp nhận thông tin phản hồi"
+    },
+    "poiCoordinateInput": {
+      "invalidLimit": "{{label}} không hợp lệ (giới hạn ±{{value}}°)"
+    },
+    "poiDescriptionEditor": {
+      "text": "Nội dung",
+      "boldText": "chữ đậm",
+      "italicText": "chữ nghiêng",
+      "underlinedText": "gạch chân",
+      "linkText": "văn bản liên kết",
+      "imageDescription": "mô tả ảnh",
+      "bold": "In đậm",
+      "italic": "In nghiêng",
+      "underline": "Gạch chân",
+      "bulletedList": "Danh sách dấu chấm",
+      "numberedList": "Danh sách đánh số",
+      "quote": "Trích dẫn",
+      "insertLink": "Chèn liên kết",
+      "insertImage": "Chèn ảnh",
+      "detailedDestinationDescription": "Mô tả chi tiết điểm đến",
+      "charactersEnteredLanguageVi": "Đã nhập {{length}} ký tự • Ngôn ngữ: VI",
+      "introduceDestinationSHistory": "Giới thiệu lịch sử, điểm nổi bật và trải nghiệm đáng chú ý của điểm đến..."
+    },
+    "poiEditorFooter": {
+      "newPoiNotYet": "POI mới — chưa được lưu lên hệ thống",
+      "lastUpdatedBy": "Lần cập nhật cuối bởi <c0>{{updatedBy}}</c0>:",
+      "unsavedChanges": "Có thay đổi chưa lưu",
+      "dataBackedUpAutomatically": "Dữ liệu được sao lưu tự động",
+      "cancel": "Hủy bỏ",
+      "createNewPoi": "Tạo POI mới",
+      "savePoiChanges": "Lưu thay đổi POI"
+    },
+    "poiEditorHeader": {
+      "systemAdministration": "Quản trị hệ thống",
+      "poiDestinations": "Quản lý điểm đến POI",
+      "addEditPoi": "Thêm / Chỉnh sửa POI:",
+      "newPoi": "POI mới",
+      "code": "(Mã: {{poiId}})",
+      "backPoiList": "Quay lại danh sách POI",
+      "editPoiCode": "Chỉnh sửa thông tin POI: {{poiName}} <c0>(Mã: {{poiId}})</c0>",
+      "addNewPoiDestination": "Thêm điểm đến POI mới",
+      "changeVisibilityStatus": "Đổi trạng thái hiển thị",
+      "poiStatus": "Trạng thái POI",
+      "cancel": "Hủy bỏ",
+      "previewMobileApp": "Xem thử hiển thị App Mobile",
+      "savePoiChanges": "Lưu thay đổi POI",
+      "createNewPoi": "Tạo POI mới"
+    },
+    "poiLocationSection": {
+      "n4GeographicCoordinatesDigital": "4. Tọa độ địa lý & Bản đồ số",
+      "pinpointExactDestinationLocation": "Định vị chính xác vị trí điểm đến trên bản đồ",
+      "provinceCity": "Tỉnh / Thành phố",
+      "detailedAddress": "Địa chỉ chi tiết",
+      "houseNumberStreetWard": "Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành",
+      "latitude": "Vĩ độ (Latitude)",
+      "longitude": "Kinh độ (Longitude)",
+      "map": "Bản đồ {{poiCode}}",
+      "checkCoordinatesGoogleMaps": "Kiểm tra tọa độ trên Google Maps",
+      "surroundingClusterRadius": "Bán kính cụm kết nối xung quanh",
+      "meters": "{{clusterRadius}} mét",
+      "clusterRadius": "Bán kính cụm kết nối",
+      "autoLinkedCluster": "Tự động liên kết cụm: <c0>{{join}}</c0>.",
+      "noDestinationsLinkedWithin": "Chưa có điểm đến nào được liên kết trong bán kính này."
+    },
+    "poiMediaSection": {
+      "photosBelowXPx_other": "{{count}} ảnh có độ phân giải thấp hơn {{MIN_WIDTH}}x{{MIN_HEIGHT}}px, hiển thị trên app có thể bị mờ",
+      "reachedPhotoLimitRemove": "Đã đạt tối đa {{POI_MAX_PHOTOS}} ảnh, hãy xóa bớt ảnh trong thư viện",
+      "coverPhotoReplaced": "Đã thay ảnh bìa đại diện",
+      "coverPhotoAdded": "Đã thêm ảnh bìa đại diện",
+      "couldNotReadImage": "Không đọc được ảnh",
+      "reachedLimitPhotosPer": "Đã đạt tối đa {{POI_MAX_PHOTOS}} ảnh cho một POI",
+      "addedPhotosGallery_other": "Đã thêm {{count}} ảnh vào thư viện",
+      "onlyPhotosWereAdded": "Chỉ thêm được {{length}}/{{length2}} ảnh do giới hạn {{POI_MAX_PHOTOS}} ảnh",
+      "filesNotValidImages_other": "{{count}} file không phải ảnh hợp lệ",
+      "selectedFromPhotoLibrary": "Chọn từ thư viện ảnh • Cập nhật bởi {{uploader}}",
+      "setAsCoverPhoto": "Đã đặt \"{{caption}}\" làm ảnh bìa",
+      "removedPhotoFromGallery": "Đã xóa ảnh \"{{caption}}\" khỏi thư viện",
+      "n2PhotosMedia": "2. Hình ảnh & Truyền thông",
+      "minimumResolution1920x1080pxWebp": "Độ phân giải tối thiểu 1920x1080px, định dạng WebP hoặc JPG/PNG cao cấp",
+      "upPhotos": "Tối đa {{POI_MAX_PHOTOS}} ảnh",
+      "coverPhoto169": "Ảnh bìa đại diện (Tỷ lệ 16:9)",
+      "activeMainPhoto": "Đang kích hoạt ảnh chính",
+      "noCoverPhotoYet": "Chưa có ảnh bìa",
+      "viewFullSize": "Xem kích thước đầy đủ",
+      "replaceCoverPhoto": "Thay ảnh bìa",
+      "uploadCoverPhoto": "Tải lên ảnh bìa đại diện",
+      "webpJpgPngRecommended": "WebP / JPG / PNG • Khuyến nghị 2560 × 1440 px",
+      "photoGallery": "Bộ sưu tập thư viện ảnh",
+      "photos": "{{photoCount}}/{{POI_MAX_PHOTOS}} ảnh",
+      "setAsCover": "Đặt làm ảnh bìa",
+      "viewPhoto": "Xem ảnh",
+      "deletePhoto": "Xóa ảnh",
+      "photosReached": "Đã đủ {{POI_MAX_PHOTOS}} ảnh",
+      "addNewPhoto": "Thêm ảnh mới"
+    },
+    "poiMobilePreviewModal": {
+      "openingHours": "Giờ mở cửa",
+      "admission": "Giá vé",
+      "suggestedDuration": "Thời gian gợi ý",
+      "bestSeason": "Mùa đẹp nhất",
+      "previewMobileApp": "Xem thử hiển thị App Mobile",
+      "previewBasedDataBeing": "Bản xem trước dựa trên dữ liệu đang chỉnh sửa (chưa lưu)",
+      "destinationName": "Tên điểm đến",
+      "overview": "Giới thiệu",
+      "gallery": "Thư viện ảnh",
+      "findSimilarAi": "Tìm điểm tương tự bằng AI"
+    },
+    "poiPersonaPicker": {
+      "bestSuited": "Phù hợp nhất với đối tượng",
+      "clickRemoveThisAudience": "Bấm để bỏ đối tượng này",
+      "add": "Thêm",
+      "typeNewAudiencePress": "Nhập đối tượng mới rồi Enter...",
+      "allAvailableSuggestionsHave": "Đã chọn hết gợi ý có sẵn.",
+      "add2": "Thêm \"{{trim}}\""
+    },
+    "page": {
+      "destinationNotFound": "Không tìm thấy điểm đến {{id}}",
+      "backPoiList": "Quay lại danh sách POI",
+      "pleaseCheckInvalidFields": "Vui lòng kiểm tra lại các trường thông tin chưa hợp lệ",
+      "createdDestination": "Đã tạo điểm đến \"{{name}}\" ({{id}})",
+      "thereNoChangesSave": "Không có thay đổi nào cần lưu",
+      "savedChangesPoi": "Đã lưu thay đổi cho POI {{id}}",
+      "newPoi": "POI mới",
+      "changesPoiHaveNot": "Các thay đổi trên POI <c0>{{id}}</c0> chưa được lưu và sẽ bị hủy nếu bạn rời khỏi trang này.",
+      "changesNewPoiHave": "Các thay đổi trên POI mới chưa được lưu và sẽ bị hủy nếu bạn rời khỏi trang này."
+    },
+    "utils": {
+      "pleaseEnterPoiDestination": "Vui lòng nhập tên điểm đến POI",
+      "aMustVisitPlace": "★ Địa điểm bắt buộc ghé thăm khi đến {{city}}.",
+      "aMustVisitPlace2": "★ Địa điểm bắt buộc ghé thăm.",
+      "aRecommendedPlaceVisit": "Địa điểm nên ghé thăm khi đến {{city}}.",
+      "aRecommendedPlaceVisit2": "Địa điểm nên ghé thăm.",
+      "anExtraStopWhen": "Điểm tham quan bổ sung khi lịch trình còn trống.",
+      "pxMbUploadedBy": "{{naturalWidth}} × {{naturalHeight}} px • {{sizeMb}} MB • Tải lên bởi {{uploader}}",
+      "newPhoto": "Ảnh mới",
+      "cannotReadImage": "Không đọc được ảnh \"{{name}}\""
+    },
+    "aiSearchSection": {
+      "title": "5. Tìm kiếm ngữ nghĩa AI (pgvector)",
+      "description": "Ngữ cảnh dùng để sinh embedding giúp du khách tìm thấy điểm đến bằng câu tự nhiên",
+      "indexStatus": "Trạng thái index vector",
+      "indexedHint": "Embedding đã cập nhật — điểm đến xuất hiện trong kết quả tìm kiếm AI.",
+      "notIndexedHint": "Nội dung đã thay đổi hoặc chưa index — chưa thể tìm thấy bằng tìm kiếm AI.",
+      "reindex": "Index lại vector",
+      "reindexing": "Đang sinh embedding...",
+      "reindexed": "Đã index lại vector cho điểm đến"
+    }
+  },
+  "reports": {
+    "aiInsightsModal": {
+      "aiAnalysis": "Phân tích AI",
+      "automatedInsightsCompiledAt": "Nhận định tự động cho {{scopeLabel}} • Tổng hợp lúc {{generatedAt}}",
+      "gotIt": "Đã hiểu"
+    },
+    "partnerPerformanceCard": {
+      "partnerPerformance": "Hiệu suất đối tác",
+      "topPartnersByBookings": "Đối tác dẫn đầu theo lượt đặt",
+      "bookingRevenue": "Doanh thu đặt chỗ",
+      "vnd": "{{totalRevenue}} VNĐ",
+      "noPartnerBookingsThis": "Chưa có đối tác phát sinh lượt đặt trong phạm vi này",
+      "partner": "Đối tác",
+      "bookings": "Lượt đặt",
+      "reviews": "Đánh giá",
+      "growth": "Tăng trưởng"
+    },
+    "poiCategoryBreakdown": {
+      "placesByCategory": "Phân bố Địa điểm theo Danh mục",
+      "totalPois": "Tổng: {{total}} POI",
+      "accommodationDiningMakeUp": "Tỷ lệ cơ sở lưu trú và ẩm thực chiếm ưu thế trong kho dữ liệu du lịch toàn quốc"
+    },
+    "reportKpiGrid": {
+      "totalUsers": "Tổng người dùng",
+      "monthlyActiveUsersMau": "Người dùng hoạt động (MAU)",
+      "ofUsers": "Chiếm <c0>{{toFixed}}%</c0>",
+      "tripsCreated": "Chuyến đi được tạo",
+      "avgTripsUser": "TB {{toFixed}} chuyến/người",
+      "businessPartners": "Đối tác kinh doanh",
+      "totalPoiPlaces": "Tổng địa điểm POI",
+      "provincesCities": "{{provincesCovered}} tỉnh thành phố",
+      "listingApprovalRate": "Tỷ lệ duyệt niêm yết",
+      "avgReviewHrs": "TB duyệt: {{avgApprovalHours}} giờ"
+    },
+    "reportsFilterBar": {
+      "selectReportPeriod": "Chọn khoảng thời gian báo cáo",
+      "from": "Từ ngày",
+      "to": "Đến ngày",
+      "apply": "Áp dụng",
+      "region": "Khu vực",
+      "serviceType": "Loại dịch vụ"
+    },
+    "reportsHeader": {
+      "reloading": "Đang tải lại...",
+      "reloadData": "Tải lại dữ liệu",
+      "exportPdf": "Xuất PDF",
+      "exportCsvExcel": "Xuất CSV/Excel",
+      "aiAnalysis": "Phân tích AI"
+    },
+    "topDestinations": {
+      "mostPlannedDestinations": "Top Điểm Đến Được Quan Tâm Nhiều Nhất",
+      "rankedFromTripsAggregated": "Xếp hạng dựa trên dữ liệu tổng hợp {{totalTrips}} chuyến đi trong kỳ trên Smart Travel Vietnam",
+      "trendIndex": "Chỉ số xu hướng:",
+      "positiveGrowth": "Tăng trưởng tích cực",
+      "someDestinationsSlowing": "Có điểm đến chững lại",
+      "noDestinationDataThis": "Chưa có dữ liệu điểm đến cho bộ lọc này",
+      "itinerariesPlanned": "lượt du khách lên kế hoạch ghé thăm",
+      "highlights": "Điểm nhấn thu hút:"
+    },
+    "trafficTrendChart": {
+      "engagementTrend": "Xu hướng tương tác",
+      "userTrafficGrowth": "Tốc độ tăng trưởng Người dùng & Lượt truy cập năm {{year}}",
+      "viewsK": "Lượt xem (K)",
+      "newUsers": "User mới",
+      "chartMonthlyViewsNew": "Biểu đồ lượt xem và người dùng mới theo tháng",
+      "forecastKViewsNew": "{{month}} (dự báo): {{pageViewsK}}K lượt xem • {{newUsers}} người dùng mới",
+      "kViewsNewUsers": "{{month}}: {{pageViewsK}}K lượt xem • {{newUsers}} người dùng mới",
+      "details": "Chi tiết"
+    },
+    "tripSeasonChart": {
+      "peakSeason": "Mùa cao điểm",
+      "tripsPerMonth": "Số lượng chuyến đi theo tháng",
+      "peak": "Cao điểm: {{peakFrom}}-{{peakTo}}",
+      "aTotalTripsTour": "Tổng cộng <c0>{{total}} chuyến</c0>. Tỷ lệ đặt tour kèm khách sạn tăng {{bundleGrowthPercent}}% vào mùa hè.",
+      "chartTripsPerMonth": "Biểu đồ số chuyến đi theo tháng",
+      "trips": "{{month}}: {{trips}} chuyến đi",
+      "peak2": "{{trips}} (Đỉnh {{month}})",
+      "avgTripLength": "Thời gian đi TB",
+      "daysTrip": "{{avgDurationDays}} Ngày / Chuyến",
+      "estimatedSpend": "Chi tiêu ước tính",
+      "vnd": "{{avgSpendVnd}} VNĐ"
+    },
+    "page": {
+      "reportDataUpdated": "Đã cập nhật dữ liệu báo cáo mới nhất",
+      "reportExportedCsvFile": "Đã xuất báo cáo ra file CSV (mở được bằng Excel)",
+      "chooseSaveAsPdf": "Chọn \"Lưu dưới dạng PDF\" trong hộp thoại in để xuất báo cáo",
+      "couldNotLoadReport": "Không tải được báo cáo"
+    },
+    "utils": {
+      "nationwide": "Toàn quốc",
+      "northernVietnam": "Miền Bắc",
+      "centralVietnam": "Miền Trung",
+      "southernVietnam": "Miền Nam",
+      "allServices": "Tất cả dịch vụ",
+      "hotelsHomestays": "Khách sạn & Homestay",
+      "foodEateries": "Ẩm thực & Quán ăn",
+      "attractionsTours": "Điểm tham quan & Tour",
+      "localExperiences": "Trải nghiệm địa phương",
+      "n7Days": "7 ngày",
+      "n30Days": "30 ngày",
+      "q": "Quý {{quarter}}/{{getFullYear}}",
+      "year": "Năm {{getFullYear}}",
+      "today": "Hôm nay",
+      "b": "{{toFixed}} Tỷ",
+      "m": "{{toFixed}} Triệu",
+      "scope": "Phạm vi",
+      "metric": "CHỈ SỐ",
+      "value": "Giá trị",
+      "notes": "Ghi chú",
+      "totalUsers": "Tổng người dùng",
+      "monthlyActiveUsersMau": "Người dùng hoạt động (MAU)",
+      "tripsCreated": "Chuyến đi được tạo",
+      "businessPartners": "Đối tác kinh doanh",
+      "totalPoiPlaces": "Tổng địa điểm POI",
+      "provinces": "{{provincesCovered}} tỉnh thành",
+      "listingApprovalRate": "Tỷ lệ duyệt niêm yết (%)",
+      "avgReviewHrs": "TB duyệt {{avgApprovalHours}} giờ",
+      "month": "THÁNG",
+      "viewsThousands": "Lượt xem (nghìn)",
+      "newUsers": "Người dùng mới",
+      "trips": "Số chuyến đi",
+      "destination": "ĐIỂM ĐẾN",
+      "itinerariesPlanned": "Lượt lên kế hoạch ghé thăm",
+      "growth": "Tăng trưởng",
+      "poiCategory": "DANH MỤC POI",
+      "places": "Số địa điểm",
+      "share": "Tỷ trọng (%)",
+      "partner": "ĐỐI TÁC",
+      "bookings": "Lượt đặt",
+      "revenueVnd": "Doanh thu (VNĐ)",
+      "item": "Mục"
+    }
+  },
+  "notifications": {
+    "notificationGroup": {
+      "today": "Hôm nay",
+      "new": "{{unread}} mới",
+      "cloudSyncJustNow": "Đồng bộ đám mây: Vừa xong",
+      "earlier": "Trước đó",
+      "archivedAutomatically": "Đã lưu trữ tự động",
+      "unreadItems_other": "{{count}} mục chưa đọc",
+      "allItemsRead": "Tất cả mục đã đọc"
+    },
+    "notificationItem": {
+      "markAsRead": "Đánh dấu đã đọc"
+    },
+    "notificationPagination": {
+      "showingNotifications": "Hiển thị <c0>{{start}}-{{end}}</c0> trong <c1>{{totalItems}}</c1> thông báo",
+      "previousPage": "Trang trước"
+    },
+    "notificationRulesModal": {
+      "notificationRuleSettings": "Cài đặt quy tắc thông báo",
+      "chooseEventsThatCreate": "Chọn sự kiện tạo thông báo, ngưỡng cảnh báo AI và kênh tiếp nhận của quản trị viên",
+      "saveRules": "Lưu quy tắc"
+    },
+    "notificationStatsCards": {
+      "newNotifications": "Thông báo mới",
+      "urgent": "Khẩn cấp",
+      "inLastHour": "+{{newLastHour}} trong 1 giờ qua",
+      "listingsPendingReview": "Chờ duyệt niêm yết",
+      "newlyReceived": "Mới tiếp nhận",
+      "accommodationTourSubmissions": "Hồ sơ cơ sở lưu trú & tour",
+      "systemAlerts": "Cảnh báo hệ thống",
+      "needsAction": "Cần xử lý",
+      "stable": "Ổn định",
+      "noUnresolvedAlerts": "Không còn cảnh báo chưa xử lý",
+      "sameDayResolutionRate": "Tỷ lệ xử lý trong ngày",
+      "avgResponseTimeMin": "Thời gian phản hồi TB: <c0>{{avgResponseMinutes}} phút</c0>"
+    },
+    "priorityFilterMenu": {
+      "allPriorities": "Tất cả mức ưu tiên",
+      "filterByPriority": "Lọc mức ưu tiên",
+      "priority": "Ưu tiên: {{label}}"
+    },
+    "urgentChannelBanner": {
+      "urgentAlertChannelsTelegram": "Kênh tiếp nhận cảnh báo khẩn (Telegram & SMS)",
+      "automaticallyAlertsWhenAi": "Tự động báo tin khi AI tải trên {{aiLoadThreshold}}% hoặc có báo cáo sai lệch giá nghiêm trọng",
+      "enabled": "Đang kích hoạt",
+      "paused": "Đã tạm tắt",
+      "urgentAlertChannels": "Kênh tiếp nhận cảnh báo khẩn"
+    },
+    "page": {
+      "markedNotificationsAsRead_other": "Đã đánh dấu {{count}} thông báo là đã đọc",
+      "noUnreadNotifications": "Không còn thông báo chưa đọc",
+      "markedAsRead": "Đã đánh dấu \"{{title}}\" là đã đọc",
+      "urgentAlertsViaTelegram": "Đã bật kênh cảnh báo khẩn qua Telegram & SMS",
+      "urgentAlertsViaTelegram2": "Đã tạm tắt kênh cảnh báo khẩn qua Telegram & SMS",
+      "notificationRulesSaved": "Đã lưu quy tắc thông báo",
+      "systemAdministration": "Quản trị hệ thống",
+      "notifications": "Thông báo",
+      "systemNotificationCenter": "Trung tâm thông báo hệ thống",
+      "adminNotificationCenter": "Trung tâm Thông báo Quản trị",
+      "liveAiMonitoring": "Giám sát AI trực tiếp",
+      "stayTopEveryData": "Cập nhật kịp thời mọi biến động dữ liệu, yêu cầu niêm yết mới và cảnh báo an ninh vận hành hệ thống toàn quốc.",
+      "markAllAsRead": "Đánh dấu tất cả đã đọc",
+      "ruleSettings": "Cài đặt quy tắc",
+      "filterNotifications": "Lọc thông báo...",
+      "noMatchingNotifications": "Không có thông báo phù hợp",
+      "clearFilters": "Xóa bộ lọc"
+    },
+    "utils": {
+      "justNow": "Vừa xong",
+      "minutesAgo_other": "{{count}} phút trước",
+      "hoursAgo_other": "{{count}} giờ trước",
+      "yesterday": "Hôm qua, {{value}}:{{value2}}",
+      "daysAgo_other": "{{count}} ngày trước"
+    },
+    "constants": {
+      "all": "Tất cả",
+      "listingsPartners": "Niêm yết & Đối tác",
+      "usersReports": "Người dùng & Báo cáo",
+      "technicalAiAlerts": "Cảnh báo kỹ thuật & AI",
+      "urgent": "Khẩn cấp",
+      "normal": "Bình thường",
+      "low": "Thấp",
+      "inAdminApp": "Trong ứng dụng quản trị",
+      "newUpdatedListingSubmissions": "Hồ sơ niêm yết mới / bổ sung",
+      "whenPartnerSubmitsNew": "Khi đối tác gửi hồ sơ mới hoặc tải lên giấy tờ bổ sung",
+      "newPartnerRegistrations": "Đăng ký đối tác mới",
+      "whenBusinessCompletesRegistration": "Khi doanh nghiệp hoàn tất đăng ký và ký quỹ bảo chứng",
+      "travelerComplaintsFeedback": "Khiếu nại & phản ánh của du khách",
+      "reportsPriceDiscrepanciesService": "Phản ánh sai lệch giá, chất lượng dịch vụ, gian lận",
+      "aiLoadOverThreshold": "Tải trọng AI vượt ngưỡng",
+      "trackAiPlannerRequest": "Theo dõi tần suất truy vấn tìm kiếm AI (pgvector) theo cụm máy chủ",
+      "poiGpsDataSync": "Đồng bộ dữ liệu POI & GPS",
+      "nationalDataSyncResults": "Kết quả đồng bộ dữ liệu quốc gia và độ trễ GPS",
+      "securityAccounts": "Bảo mật & tài khoản",
+      "accountLocksUnusualSign": "Khóa tài khoản, đăng nhập bất thường, vi phạm chính sách"
+    }
+  },
+  "settings": {
+    "adminIdentityBanner": {
+      "highestAuthority": "Quyền Lực Cao Nhất",
+      "rootRole": "Vai trò gốc",
+      "accountHardwareSecurityKey": "Tài khoản: <c0>{{value}}</c0> • Khóa bảo mật phần cứng {{hardwareKey}}: <c1>Đã gắn kết</c1>",
+      "viewPermissionMatrix": "Xem ma trận phân quyền"
+    },
+    "aiPlannerCard": {
+      "nationalMapDataSync": "Tần suất đồng bộ dữ liệu bản đồ quốc gia (OSM & Google Maps)"
+    },
+    "ipWhitelistField": {
+      "theIpRangeMust": "Dải IP phải đúng định dạng CIDR, ví dụ 118.70.192.0/24",
+      "thisIpRangeAlready": "Dải IP này đã có trong danh sách",
+      "newOffice": "Văn phòng mới",
+      "addedIpRangeNot": "Đã thêm dải IP {{value}} (chưa lưu)",
+      "removedIpRangeNot": "Đã gỡ dải IP {{cidr}} (chưa lưu)",
+      "restrictAccessOperationsOffice": "Giới hạn dải IP truy cập văn phòng điều hành",
+      "addCidrIp": "+ Thêm IP CIDR",
+      "removeIpRange": "Gỡ dải IP",
+      "noIpRestrictionAny": "Chưa giới hạn IP — mọi địa chỉ đều truy cập được cổng quản trị",
+      "noteOfficeBranch": "Ghi chú (văn phòng, chi nhánh...)",
+      "add": "Thêm"
+    },
+    "listingSlaCard": {
+      "listingReviewStandardsSla": "Quy chuẩn Thẩm định Niêm yết (SLA)",
+      "tourismServiceQualityRequirements": "Ràng buộc chất lượng dịch vụ du lịch và cơ chế xét duyệt hồ sơ đối tác",
+      "strictSla": "SLA nghiêm ngặt",
+      "committedPartnerReviewTime": "Thời gian cam kết xử lý duyệt hồ sơ đối tác (SLA)",
+      "hours": "{{hours}} Giờ",
+      "standard": "Tiêu chuẩn",
+      "requireBusinessLicenseFire": "Yêu cầu tối thiểu GPKD & Chứng nhận PCCC",
+      "automaticallyRejectWhenAccommodation": "Tự động từ chối nếu hồ sơ pháp lý đối tác lưu trú/tour chưa có con dấu thẩm quyền",
+      "checkDuplicateGpsCoordinates": "Kiểm tra trùng lặp tọa độ GPS bán kính < 50m",
+      "enableAiGeofencingFlag": "Kích hoạt Geofencing AI để gắn cờ các cơ sở duplicate hoặc spam địa điểm",
+      "automaticallyEmailResultPartner": "Tự động gửi email thông báo kết quả cho đối tác",
+      "includeDetailedChecklistWhen": "Kèm theo checklist chi tiết nếu hồ sơ niêm yết yêu cầu chỉnh sửa thông tin"
+    },
+    "notificationSettingsCard": {
+      "notificationsAlertEmails": "Thông báo & Email cảnh báo",
+      "eventsThatCreateNotifications": "Sự kiện tạo thông báo, ngưỡng cảnh báo khẩn và kênh tiếp nhận của quản trị viên",
+      "notificationCenter": "Trung tâm thông báo"
+    },
+    "permissionMatrixModal": {
+      "adminPermissionMatrix": "Ma trận phân quyền quản trị",
+      "accessEachModuleBy": "Quyền truy cập từng phân hệ theo vai trò. Chỉ Super Admin được thay đổi phân quyền.",
+      "module": "Phân hệ"
+    },
+    "platformInfoCard": {
+      "smartTravelPlatformInformation": "Thông tin nền tảng Smart Travel",
+      "corePlatformIdentitySettings": "Thông số nhận diện và định danh hạt nhân cốt lõi",
+      "versionInformation": "Thông tin phiên bản",
+      "nationwideSystemDisplayName": "Tên hiển thị hệ thống toàn quốc",
+      "releaseVersion": "Mã phiên bản phát hành",
+      "operatingTimeZone": "Múi giờ vận hành",
+      "defaultFallbackLanguages": "Ngôn ngữ mặc định & dự phòng",
+      "thePrimarySystemLanguage": "Ngôn ngữ chính của hệ thống, không thể tắt",
+      "tiengVietPrimary": "Tiếng Việt (Chính)",
+      "englishFallback": "English (Dự phòng)",
+      "poiCacheCdnAsset": "Dung lượng lưu trữ Cache POI & Assets CDN"
+    },
+    "securityCard": {
+      "adminPortalSecurity": "Bảo mật Cổng Quản trị",
+      "authenticationRulesAccessControl": "Quy tắc xác thực, kiểm soát truy cập và phòng vệ hạ tầng",
+      "twoFactorAuthentication2fa": "Xác thực 2 bước 2FA (TOTP Authenticator)",
+      "requiredAllSuperAdmins": "Bắt buộc cho toàn bộ Quản trị viên Super Admin, Kiểm duyệt viên & Hỗ trợ",
+      "autoSignOutAfter": "Thời gian tự động đăng xuất khi không thao tác",
+      "minutes": "{{minutes}} Phút",
+      "securityAuditLog": "Nhật ký kiểm toán bảo mật",
+      "distributedTamperProofAutomatic": "Lưu trữ tự động phân tán, chống sửa đổi",
+      "daysEnabled": "{{auditLogRetentionDays}} ngày (đang bật)"
+    },
+    "settingsFooter": {
+      "unsavedChangesSettingsGroups_other": "Có thay đổi chưa lưu ở {{count}} nhóm cấu hình",
+      "lastConfigurationUpdate": "Lần cập nhật cấu hình gần nhất: {{updatedAt}}",
+      "lastSaved": "Lần lưu gần nhất: {{updatedAt}}",
+      "byIp": "Bởi: {{updatedBy}} (IP: {{updatedIp}})",
+      "cancel": "Hủy bỏ",
+      "saveConfigurationChanges": "Lưu thay đổi cấu hình"
+    },
+    "settingToggleRow": {
+      "enabled": "Đã kích hoạt",
+      "disabled": "Đã tắt"
+    },
+    "page": {
+      "pleaseEnterSystemDisplay": "Vui lòng nhập tên hiển thị hệ thống",
+      "theSystemDisplayName": "Tên hiển thị hệ thống không được để trống",
+      "selectAtLeastOne": "Cần chọn ít nhất một kênh tiếp nhận thông báo",
+      "thereNoChangesSave": "Không có thay đổi nào cần lưu",
+      "theSmartTravelSystem": "Cấu hình hệ thống Smart Travel đã được cập nhật và đồng bộ đến toàn bộ cluster.",
+      "thereNoChangesDiscard": "Không có thay đổi nào để hủy",
+      "unsavedChangesDiscarded": "Đã hủy các thay đổi chưa lưu",
+      "defaultsRestoredClickSave": "Đã khôi phục giá trị mặc định. Bấm \"Lưu thay đổi cấu hình\" để áp dụng.",
+      "systemAdministration": "Quản trị hệ thống",
+      "systemSettings": "Cài đặt hệ thống",
+      "systemConfigurationSettings": "Cài đặt Cấu hình Hệ thống",
+      "managePlatformOperatingParameters": "Quản lý thông số vận hành nền tảng, chính sách thẩm định niêm yết, phân quyền bảo mật và tích hợp AI cho mạng lưới du lịch thông minh toàn quốc.",
+      "restoreDefaults": "Khôi phục mặc định",
+      "saveConfigurationChanges": "Lưu thay đổi cấu hình",
+      "unsavedChanges": "Có thay đổi chưa lưu",
+      "operationsServerCluster": "Cụm máy chủ điều hành: {{dataCenter}}",
+      "lastSynced": "Cập nhật đồng bộ: <c0>{{syncedAt}}</c0>",
+      "allParametersIncludingIp": "Toàn bộ thông số (kể cả danh sách IP và quy tắc thông báo) sẽ trở về giá trị khuyến nghị. Thay đổi chỉ được áp dụng sau khi bạn bấm <c0>Lưu thay đổi cấu hình</c0>.",
+      "restoreDefaultConfiguration": "Khôi phục cấu hình mặc định?",
+      "restore": "Khôi phục",
+      "adminAccountsWillProtected": "Tài khoản quản trị sẽ chỉ được bảo vệ bằng mật khẩu, làm tăng rủi ro chiếm quyền truy cập. Chuẩn SOC2 Type II yêu cầu bật 2FA cho toàn bộ quản trị viên.",
+      "turnOffTwoFactor": "Tắt xác thực 2 bước (2FA)?",
+      "turnOff2faAnyway": "Vẫn tắt 2FA",
+      "changesSettingsGroupsHave_other": "Các thay đổi ở {{count}} nhóm cấu hình chưa được lưu và sẽ bị hủy nếu bạn rời khỏi trang này.",
+      "leaveWithoutSavingConfiguration": "Rời trang khi chưa lưu cấu hình?"
+    },
+    "constants": {
+      "generalSettings": "Cài đặt chung",
+      "listingReviewRules": "Quy tắc niêm yết & Thẩm định",
+      "aiPlannerPoiConfiguration": "Tìm kiếm AI (pgvector) & POI",
+      "securityAdminPermissions": "Bảo mật & Phân quyền quản trị",
+      "notificationsAlertEmails": "Thông báo & Email cảnh báo",
+      "gmt700Hanoi": "GMT+7:00 (Hà Nội, Băng Cốc, Jakarta)",
+      "gmt800Singapore": "GMT+8:00 (Singapore, Bắc Kinh)",
+      "everyHourHighFrequency": "Mỗi 1 tiếng (Tần suất cao - Phí API cao)",
+      "every6HoursRecommended": "Mỗi 6 tiếng (Khuyến nghị khi vận hành chính thức)",
+      "every12Hours": "Mỗi 12 tiếng",
+      "every24HoursNightly": "Mỗi 24 tiếng (Hằng đêm lúc 02:00 AM)",
+      "n50Lenient": "50% (Rộng)",
+      "n85Recommended": "85% (Chặt)",
+      "n95Strict": "95% (Rất chặt)",
+      "productionBuildV38": "Bản vận hành v3.8.4",
+      "distributedSystemOperatingNormally": "Hệ thống phân tán hoạt động bình thường • Trễ mạng POI API: 24ms • Uptime 99.98%",
+      "fullAccess": "Toàn quyền",
+      "viewProcess": "Xem & xử lý",
+      "viewOnly": "Chỉ xem",
+      "noAccess": "Không truy cập",
+      "moderator": "Kiểm duyệt viên",
+      "support": "Hỗ trợ",
+      "dashboard": "Bảng điều khiển",
+      "userManagement": "Quản lý người dùng",
+      "partnerManagement": "Quản lý đối tác",
+      "listingManagement": "Quản lý niêm yết",
+      "poiDestinations": "Điểm đến POI",
+      "reportsAnalytics": "Báo cáo & Thống kê",
+      "notifications": "Thông báo",
+      "systemSettings": "Cài đặt hệ thống",
+      "n75Standard": "75% (Chuẩn)"
+    },
+    "aiSearchCard": {
+      "title": "Tìm kiếm ngữ nghĩa AI (pgvector)",
+      "description": "Phân tích câu truy vấn tự nhiên và xếp hạng POI / niêm yết theo độ tương đồng vector",
+      "minSimilarity": "Ngưỡng độ tương đồng AI tối thiểu",
+      "topK": "Số kết quả tối đa mỗi truy vấn (top-K)",
+      "topKHint": "Cân bằng độ phủ và tốc độ",
+      "topKSelected": "{{count}} KQ",
+      "embeddingModel": "Model embedding",
+      "dimensions": "{{count}} chiều",
+      "recall": "Độ chính xác truy hồi (recall@10)",
+      "indexType": "Chỉ mục HNSW • cosine"
+    }
+  },
+  "profile": {
+    "activityLogModal": {
+      "activityLog": "Nhật ký hoạt động",
+      "thisAccountSAdmin": "Các thao tác quản trị của tài khoản này, lưu trữ chống sửa đổi 365 ngày"
+    },
+    "addSecurityKeyModal": {
+      "backupYubikey": "YubiKey dự phòng #{{keyCount}}",
+      "backupFido2Key": "Khóa FIDO2 dự phòng",
+      "addBackupSecurityKey": "Thêm khóa bảo mật dự phòng",
+      "plugFido2KeyVia": "Cắm khóa FIDO2 qua USB-C hoặc chạm NFC, sau đó chạm vào khóa khi được yêu cầu",
+      "startLinking": "Bắt đầu liên kết",
+      "touchYourSecurityKey": "Chạm vào khóa bảo mật...",
+      "waitingConfirmationFrom": "Đang chờ xác nhận từ thiết bị \"{{deviceName}}\"",
+      "keyNickname": "Tên gợi nhớ của khóa",
+      "reachedLimitKeysPer": "Đã đạt tối đa {{MAX_SECURITY_KEYS}} khóa cho một tài khoản",
+      "keysLinkedKeepAt": "Đang có {{keyCount}}/{{MAX_SECURITY_KEYS}} khóa liên kết. Nên có ít nhất 1 khóa dự phòng cất ở nơi an toàn."
+    },
+    "backupCodesModal": {
+      "smartTravelAdmin2fa": "Smart Travel Admin — Mã khôi phục 2FA",
+      "account": "Tài khoản: {{accountEmail}}",
+      "created": "Ngày tạo: {{value}}",
+      "eachCodeCanUsed": "Mỗi mã chỉ dùng được một lần. Cất giữ ở nơi an toàn.",
+      "backupCodesCopied": "Đã sao chép mã dự phòng",
+      "couldNotCopyPlease": "Không sao chép được, hãy tải file .txt",
+      "backupRecoveryCodes": "Mã khôi phục dự phòng ({{length}})",
+      "useTheseIfYou": "Dùng khi mất thiết bị xác thực. Mỗi mã chỉ dùng được một lần.",
+      "allOldCodesWill": "Toàn bộ mã cũ sẽ bị vô hiệu hóa.",
+      "confirmRegeneration": "Xác nhận tạo mới",
+      "generateNewCodes": "Tạo mã mới",
+      "copy": "Sao chép",
+      "downloadTxt": "Tải .txt",
+      "backupCodesFileDownloaded": "Đã tải xuống file mã dự phòng"
+    },
+    "changePasswordCard": {
+      "pleaseEnterYourCurrent": "Vui lòng nhập mật khẩu hiện tại",
+      "theNewPasswordNeeds": "Mật khẩu mới cần đủ 8 ký tự, chữ hoa, chữ số và ký tự đặc biệt",
+      "theNewPasswordMust": "Mật khẩu mới phải khác mật khẩu hiện tại",
+      "theConfirmationPasswordDoes": "Mật khẩu xác nhận không khớp",
+      "administratorPasswordChangedSuccessfully": "Mật khẩu quản trị viên đã được đổi thành công!",
+      "changeAccountPassword": "Đổi mật khẩu tài khoản",
+      "weRecommendChangingYour": "Khuyến nghị thay đổi mật khẩu định kỳ {{PASSWORD_ROTATION_DAYS}} ngày theo tiêu chuẩn ISO 27001",
+      "currentPassword": "Mật khẩu hiện tại",
+      "hidePassword": "Ẩn mật khẩu",
+      "showPassword": "Hiện mật khẩu",
+      "newPassword": "Mật khẩu mới",
+      "confirmNewPassword": "Xác nhận mật khẩu mới",
+      "passwordStrength": "Độ mạnh mật khẩu:",
+      "includeUppercaseLowercaseNumbers": "Bao gồm chữ hoa, chữ thường, chữ số và ký tự đặc biệt (@, #, !, $). Lần đổi gần nhất:",
+      "today": "hôm nay",
+      "daysAgo_other": "{{count}} ngày trước",
+      "verifying": "Đang xác thực...",
+      "changePassword": "Đổi mật khẩu"
+    },
+    "contactInfoCard": {
+      "pleaseEnterYourFull": "Vui lòng nhập họ và tên",
+      "pleaseCheckContactInformation": "Vui lòng kiểm tra lại thông tin liên hệ",
+      "thereNoChangesSave": "Không có thay đổi nào cần lưu",
+      "contactInformationSavedSuccessfully": "Thông tin liên hệ đã được lưu thành công",
+      "editContactInformation": "Chỉnh sửa thông tin liên hệ",
+      "updateIdentityShownOperational": "Cập nhật định danh hiển thị trên biên bản vận hành và hồ sơ quản trị",
+      "administratorFullName": "Họ và tên Quản trị viên",
+      "jobTitle": "Chức danh định danh",
+      "emergencyNotificationEmailSoc": "Email thông báo khẩn cấp (SOC Alert)",
+      "operationsHotlinePhoneNumber": "Số điện thoại trực hotline điều hành",
+      "discardChanges": "Hủy thay đổi",
+      "updateInformation": "Cập nhật thông tin"
+    },
+    "permissionSummaryCard": {
+      "seniorSystemPermissions": "Quyền hạn hệ thống cấp cao",
+      "viewFullPermissionMatrix": "Xem ma trận phân quyền đầy đủ →"
+    },
+    "profileIdentityCard": {
+      "workEmail": "Email cơ quan",
+      "directHotline": "Hotline trực tiếp",
+      "department": "Đơn vị công tác",
+      "lastSign": "Lần đăng nhập cuối:",
+      "fromIp": "{{signedInAt}} từ IP <c0>{{ip}}</c0> ({{device}})"
+    },
+    "securityCheckModal": {
+      "systemSecurityCheck": "Kiểm tra bảo mật hệ thống",
+      "reviewAuthenticationSettingsSign": "Rà soát cấu hình xác thực, phiên đăng nhập và giới hạn truy cập của cổng quản trị",
+      "openSecuritySettings": "Mở Cài đặt bảo mật",
+      "scanningSecurityConfiguration": "Đang quét cấu hình bảo mật...",
+      "checkingItemsAgainstSoc2": "Kiểm tra {{length}} hạng mục theo chuẩn SOC2 Type II & ISO 27001",
+      "safetyScore": "Điểm an toàn",
+      "noRisksDetected": "Không phát hiện rủi ro",
+      "itemsNeedAttention_other": "{{count}} hạng mục cần xử lý"
+    },
+    "sessionHistoryTable": {
+      "lastSignSessions": "Lịch sử {{MAX_ROWS}} phiên đăng nhập gần nhất",
+      "signOutAllOther": "Đăng xuất khỏi tất cả thiết bị khác",
+      "deviceBrowser": "Thiết bị & Trình duyệt",
+      "ipAddress": "Địa chỉ IP",
+      "location": "Vị trí địa lý",
+      "time": "Thời gian",
+      "status": "Trạng thái",
+      "active": "Đang hoạt động",
+      "thisSession": "Phiên này"
+    },
+    "sessionSafetyCard": {
+      "sessionSafetyScore": "Chỉ số an toàn phiên",
+      "theAccountProtectedBy": "Tài khoản được bảo vệ bởi khóa phần cứng FIDO2 cùng cơ chế phân tích địa chỉ IP tĩnh nội bộ. Không phát hiện bất kỳ dấu hiệu truy cập bất thường nào trong 90 ngày.",
+      "foundItemsThatNeed_other": "Phát hiện {{count}} mục cần xử lý: {{join}}.",
+      "viewCheckDetails": "Xem chi tiết kiểm tra"
+    },
+    "totpSetupModal": {
+      "secretKeyCopied": "Đã sao chép khóa bí mật",
+      "couldNotCopyPlease": "Không sao chép được, hãy chọn và sao chép thủ công",
+      "pleaseEnterAllDigits": "Vui lòng nhập đủ {{OTP_LENGTH}} chữ số",
+      "theCodeIncorrectOr": "Mã xác thực không đúng hoặc đã hết hạn, vui lòng thử mã mới",
+      "reconfigureGoogleAuthenticator": "Cấu hình lại Google Authenticator",
+      "scanQrCodeWith": "Quét mã QR bằng ứng dụng xác thực, sau đó nhập mã 6 số để xác nhận",
+      "confirmLink": "Xác nhận liên kết",
+      "qrCodeLinkAuthenticator": "Mã QR liên kết ứng dụng xác thực",
+      "orEnterSecretKey": "Hoặc nhập khóa bí mật thủ công",
+      "couldNotCreateKey": "Không tạo được khóa, hãy thử lại",
+      "creatingKey": "Đang tạo khóa…",
+      "copyKey": "Sao chép khóa",
+      "demoCode": "Mã demo: <c0>{{DEMO_TOTP_CODE}}</c0>"
+    },
+    "twoFactorCard": {
+      "twoFactorSecurityAuthentication": "Bảo mật 2 lớp & Khóa xác thực",
+      "multiFactorAuthenticationMethods": "Các phương thức xác thực đa yếu tố bắt buộc đối với tài khoản quản trị cấp cao nhất",
+      "totpAuthenticationCode": "Mã xác thực TOTP",
+      "on": "Đang bật",
+      "theAuthenticatorAppGenerating": "Ứng dụng xác minh sinh mã mỗi 30 giây được kích hoạt từ ngày {{value}}.",
+      "reconfigure": "Cấu hình lại",
+      "backupCodes": "Mã dự phòng ({{length}})",
+      "fido2HardwareKey": "Khóa phần cứng FIDO2",
+      "notLinked": "Chưa liên kết",
+      "linked": "{{length}} Đã liên kết",
+      "serialPlugKeyInto_other": "Serial {{serial}}. Khóa cắm trực tiếp qua cổng USB-C trước khi phê duyệt giao dịch nhạy cảm. Có thêm {{count}} khóa dự phòng.",
+      "serialPlugKeyInto2": "Serial {{serial}}. Khóa cắm trực tiếp qua cổng USB-C trước khi phê duyệt giao dịch nhạy cảm.",
+      "linkFido2KeyApprove": "Liên kết khóa FIDO2 để phê duyệt giao dịch nhạy cảm.",
+      "addBackupKey": "Thêm khóa dự phòng"
+    },
+    "page": {
+      "linkedKey": "Đã liên kết khóa {{name}} ({{serial}})",
+      "revokedSessionsOtherDevices_other": "Đã thu hồi {{count}} phiên trên các thiết bị khác. Thiết bị phải đăng nhập lại kèm 2FA.",
+      "thereNoOtherSessions": "Không còn phiên nào khác cần thu hồi",
+      "code": "Mã",
+      "time": "Thời gian",
+      "active": "Hoạt động",
+      "details": "Chi tiết",
+      "exportedActivityLogRows_other": "Đã xuất {{count}} dòng nhật ký hoạt động",
+      "systemAdministration": "Quản trị hệ thống",
+      "administratorProfile": "Hồ sơ quản trị viên",
+      "personalInformationAccountSecurity": "Thông tin cá nhân & Bảo mật tài khoản",
+      "administratorProfileSecurity": "Hồ sơ Cá nhân & Bảo mật Quản trị viên",
+      "rootHighestAdministrativeAuthority": "{{role}} Root - Toàn quyền quản trị cao nhất",
+      "manageYourIdentitySenior": "Quản lý thông tin định danh, quyền hạn cấp cao trong hệ thống và thiết lập bảo mật 2 lớp 2FA",
+      "activityLog": "Nhật ký hoạt động",
+      "systemSecurityCheck": "Kiểm tra bảo mật hệ thống",
+      "the2faAuthenticatorApp": "Đã liên kết lại ứng dụng xác thực 2FA thành công",
+      "generatedNewBackupCodes": "Đã tạo {{length}} mã dự phòng mới, mã cũ đã bị vô hiệu",
+      "allSessionsExceptCurrent": "Mọi phiên đăng nhập ngoài phiên hiện tại ({{device}}) sẽ bị thu hồi. Các thiết bị đó phải đăng nhập lại bằng mật khẩu và mã 2FA.",
+      "signOutAllOther": "Đăng xuất khỏi tất cả thiết bị khác?",
+      "signOutOtherDevices": "Đăng xuất thiết bị khác"
+    },
+    "utils": {
+      "veryStrong": "Rất mạnh",
+      "strong": "Mạnh",
+      "fair": "Khá",
+      "medium": "Trung bình",
+      "weak": "Yếu",
+      "notEntered": "Chưa nhập",
+      "twoFactorAuthentication2fa": "Bắt buộc xác thực 2 bước (2FA) cho quản trị viên",
+      "enabledSystemSettings": "Đang bật trong Cài đặt hệ thống",
+      "disabledTurnItBack": "Đang tắt — bật lại tại Cài đặt hệ thống › Bảo mật",
+      "fido2HardwareKeyLinked": "Khóa phần cứng FIDO2 đã liên kết",
+      "activeKeys_other": "{{count}} khóa đang hoạt động",
+      "noKeysLinked": "Chưa liên kết khóa nào",
+      "passwordChangedWithinDays": "Mật khẩu được đổi trong vòng {{PASSWORD_ROTATION_DAYS}} ngày",
+      "lastChangedDaysAgo_other": "Lần đổi gần nhất cách đây {{count}} ngày",
+      "backupRecoveryCodesAvailable": "Còn mã khôi phục dự phòng",
+      "unusedCodes_other": "{{count}} mã chưa sử dụng",
+      "adminPortalIpRange": "Giới hạn dải IP truy cập cổng quản trị",
+      "allowedIpRanges_other": "{{count}} dải IP được phép",
+      "noIpRestrictionAny": "Chưa giới hạn IP — mọi địa chỉ đều truy cập được",
+      "autoSignOutAfter": "Tự động đăng xuất khi không thao tác ≤ 30 phút",
+      "currentlyMinutes": "Đang đặt {{sessionTimeoutMinutes}} phút",
+      "enterpriseGradeSecurityLevel": "Bảo mật cấp độ doanh nghiệp (cấp 4)",
+      "level3SecurityNeeds": "Bảo mật cấp 3 — cần rà soát",
+      "level2SecurityMedium": "Bảo mật cấp 2 — rủi ro trung bình",
+      "highRiskActNow": "Rủi ro cao — cần xử lý ngay"
+    },
+    "constants": {
+      "thisSession": "Phiên này",
+      "expired": "Hết hạn",
+      "closed": "Đã đóng",
+      "revoked": "Đã thu hồi",
+      "userManagement": "Quản lý người dùng",
+      "fullAccess": "Toàn quyền",
+      "createAssignPermissionsLock": "Tạo lập, phân quyền, khóa tài khoản và kiểm toán dữ liệu",
+      "partnersListings": "Đối tác & Niêm yết",
+      "fullApproveCancelRights": "Toàn quyền duyệt/hủy",
+      "approveTravelPartnersHotels": "Phê duyệt đối tác du lịch, khách sạn và điểm đến toàn quốc",
+      "financialReportsKpis": "Báo cáo tài chính & KPI",
+      "fullExportRights": "Toàn quyền xuất",
+      "accessBookingRevenueCommissions": "Truy xuất doanh thu đặt chỗ, hoa hồng và tăng trưởng người dùng",
+      "systemAiConfiguration": "Cấu hình hệ thống & AI",
+      "topLevelConfigurationRights": "Quyền cấu hình tối cao",
+      "tuneAiItineraryRecommendation": "Cấu hình tìm kiếm ngữ nghĩa AI (pgvector) và API Keys Gateway"
+    }
+  },
+  "auth": {
+    "authMessages": {
+      "demoCode": " (mã demo: {{DEMO_OTP_CODE}})",
+      "otpCodeSent": "Đã gửi mã OTP tới {{email}}{{demoHint}}"
+    },
+    "forgotPassword": {
+      "pleaseEnterValidEmail": "Vui lòng nhập email hợp lệ",
+      "recoverAdminPassword": "Khôi phục mật khẩu quản trị",
+      "enterAdminEmailYou": "Nhập email quản trị đã được cấp. Hệ thống sẽ gửi mã xác thực OTP gồm 6 chữ số để xác minh danh tính của bạn.",
+      "adminEmail": "Email quản trị",
+      "sendOtpCode": "Gửi mã xác thực OTP",
+      "sendingVerificationCode": "Đang gửi mã xác thực...",
+      "theOtpCodeValid": "Mã OTP có hiệu lực trong <c0>5 phút</c0>. Nếu không nhận được email, vui lòng kiểm tra hòm thư rác (Spam) hoặc liên hệ <c1>Đội ngũ An ninh Mạng</c1>.",
+      "backSign": "Quay lại Đăng nhập"
+    },
+    "login": {
+      "pleaseEnterBothYour": "Vui lòng nhập đầy đủ email và mật khẩu",
+      "administratorPortal": "Cổng thông tin Quản trị viên",
+      "signWithYourIssued": "Vui lòng đăng nhập với tài khoản quản trị được cấp để tiếp tục vận hành hệ thống.",
+      "adminEmail": "Email quản trị",
+      "password": "Mật khẩu",
+      "rememberMe": "Ghi nhớ đăng nhập",
+      "forgotPassword": "Quên mật khẩu?",
+      "signAdminPortal": "Đăng nhập Cổng Quản trị",
+      "verifyingCredentials": "Đang xác thực thông tin...",
+      "secureSignWith2fa": "Đăng nhập an toàn với chuẩn xác thực 2FA. KHÔNG hỗ trợ đăng nhập qua mạng xã hội nhằm bảo toàn dữ liệu quốc gia.",
+      "enterpriseGradeSecurity2fa": "Bảo mật cấp Doanh nghiệp & 2FA",
+      "demoAccount": "Tài khoản demo: {{email}} / {{password}}"
+    },
+    "resetPassword": {
+      "theNewPasswordDoes": "Mật khẩu mới chưa đáp ứng đủ yêu cầu bảo mật",
+      "theConfirmationPasswordDoes": "Mật khẩu xác nhận không khớp",
+      "passwordChangedSuccessfullyPlease": "Đổi mật khẩu thành công. Vui lòng đăng nhập lại.",
+      "setNewPassword": "Thiết lập mật khẩu mới",
+      "identityVerifiedCreateNew": "Danh tính đã được xác minh. Tạo mật khẩu mới cho tài khoản quản trị:",
+      "newPassword": "Mật khẩu mới",
+      "confirmNewPassword": "Xác nhận mật khẩu mới",
+      "updatePassword": "Cập nhật mật khẩu",
+      "updatingPassword": "Đang cập nhật mật khẩu...",
+      "backSign": "Quay lại Đăng nhập"
+    },
+    "verifyOtp": {
+      "theOtpCodeHas": "Mã OTP đã hết hạn. Vui lòng bấm \"Gửi lại mã OTP\" để nhận mã mới.",
+      "pleaseEnterAllDigits": "Vui lòng nhập đủ {{OTP_LENGTH}} chữ số",
+      "otpVerifiedSuccessfully": "Xác thực mã OTP thành công",
+      "youHaveEnteredWrong": "Bạn đã nhập sai quá {{MAX_OTP_ATTEMPTS}} lần. Chức năng xác thực tạm khóa, vui lòng liên hệ Đội ngũ An ninh Mạng.",
+      "incorrectCodeYouHave_other": "Mã xác thực không chính xác. Bạn còn {{count}} lần thử.",
+      "verifyOtpSecurityCode": "Xác thực mã bảo mật OTP",
+      "a6DigitVerification": "Mã xác thực gồm 6 chữ số đã được gửi tới email:",
+      "enter6DigitCode": "Nhập mã xác thực 6 chữ số",
+      "codeExpired": "Mã đã hết hạn",
+      "codeValid": "Mã có hiệu lực trong:",
+      "sending": "Đang gửi...",
+      "resendOtpCode": "Gửi lại mã OTP",
+      "ifYouDoNot": "Nếu không nhận được email, vui lòng kiểm tra hòm thư rác (Spam) hoặc liên hệ <c0>Đội ngũ An ninh Mạng</c0> để được giải tỏa khóa khẩn cấp.",
+      "confirmSecurityCode": "Xác nhận mã bảo mật",
+      "verifyingCode": "Đang xác thực mã...",
+      "changeVerificationEmail": "Thay đổi email xác thực",
+      "backSign": "Quay lại Đăng nhập"
+    },
+    "constants": {
+      "atLeast8Characters": "Tối thiểu 8 ký tự",
+      "anUppercaseLetterZ": "Có chữ in hoa (A-Z)",
+      "aNumber09": "Có chữ số (0-9)",
+      "aSpecialCharacter": "Có ký tự đặc biệt (!@#...)",
+      "infrastructureV384": "Cơ sở hạ tầng v3.8.4 hoạt động ổn định",
+      "comprehensiveOperationsManagementSystem": "Hệ thống Điều hành & Quản lý Toàn diện",
+      "vietnamSCentralSmart": "Kiến trúc điều phối thông minh trung tâm du lịch Việt Nam, trao quyền kiểm soát và phân tích thời gian thực cho ban quản trị chuyên trách.",
+      "multiLayerSecurityZero": "Bảo mật đa tầng & Mã hoá Zero-Trust",
+      "hardwareCertificateAuthenticationReal": "Xác thực chứng chỉ phần cứng, ghi log hoạt động chống xâm nhập thời gian thực.",
+      "realTimeDataManagement": "Quản lý Dữ liệu Thời gian Thực",
+      "syncsInternationalVisitorFlows": "Đồng bộ luồng khách du lịch quốc tế, tỷ lệ phủ buồng và giao dịch tại 63 tỉnh thành.",
+      "automatedPartnerListingReview": "Duyệt đối tác & Niêm yết tự động",
+      "aiAssistedReviewHotels": "Quy trình thẩm định khách sạn, đơn vị lữ hành và trải nghiệm ứng dụng AI phân loại.",
+      "adminAccountSecurityRecovery": "Bảo mật & Khôi phục Tài khoản Quản trị",
+      "multiLayerAuthenticationSecure": "Quy trình xác thực đa lớp và mã hóa an toàn bảo vệ quyền điều phối hệ thống du lịch thông minh toàn quốc.",
+      "highlySecure6Digit": "Mã OTP 6 số bảo mật cao",
+      "shortValidityAutomaticallyExpires": "Thời hạn hiệu lực ngắn, tự động vô hiệu hóa sau 5 phút",
+      "temporaryLockAfterMore": "Khóa tạm thời khi nhập sai quá 5 lần",
+      "protectsAdminAccountsAgainst": "Bảo vệ tài khoản quản trị trước nguy cơ dò mã",
+      "twoFactorAuthentication2fa": "Xác thực 2 yếu tố (2FA / Zero-Trust)",
+      "ensuresOnlyRightfulAccount": "Đảm bảo chỉ đúng chủ tài khoản được cấp quyền truy cập"
+    },
+    "errors": {
+      "invalidCredentials": "Email hoặc mật khẩu không chính xác",
+      "unknownEmail": "Email không tồn tại trong hệ thống quản trị",
+      "accountNotFound": "Không tìm thấy tài khoản quản trị",
+      "wrongCurrentPassword": "Mật khẩu hiện tại không chính xác",
+      "sessionExpired": "Phiên đăng nhập đã hết hạn"
+    }
+  },
+  "notFound": {
+    "page": {
+      "pageNotFound": "Không tìm thấy trang",
+      "thePageYouLooking": "Đường dẫn bạn truy cập không tồn tại hoặc đã được di chuyển. Vui lòng kiểm tra lại địa chỉ.",
+      "goBack": "Quay lại trang trước",
+      "goDashboard": "Về Bảng điều khiển"
+    }
+  },
+  "layout": {
+    "authBrandPanel": {
+      "viettelTier3Idc": "IDC Viettel Tier-3 Đạt chuẩn ISO 27001"
+    },
+    "authLayout": {
+      "privacyPolicy": "Chính sách Bảo mật",
+      "operatingRegulations": "Quy chế Vận hành",
+      "systemAdministrator": "Quản trị viên hệ thống",
+      "n2025SmartTravelVietnam": "© 2025 Smart Travel Vietnam Co., Ltd. Tất cả quyền được bảo lưu.",
+      "isBeingUpdated": "{{label}} đang được cập nhật"
+    }
+  },
+  "services": {
+    "httpClient": {
+      "theSubmittedDataInvalid": "Dữ liệu gửi lên không hợp lệ",
+      "yourSessionHasExpired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại",
+      "youDoNotHave": "Bạn không có quyền thực hiện thao tác này",
+      "theRequestedDataWas": "Không tìm thấy dữ liệu yêu cầu",
+      "theDataWasChanged": "Dữ liệu đã bị thay đổi bởi người khác, vui lòng tải lại",
+      "theDataDoesNot": "Dữ liệu chưa đúng quy định",
+      "theServerEncounteredProblem": "Máy chủ gặp sự cố, vui lòng thử lại sau",
+      "theServerTookToo": "Máy chủ phản hồi quá lâu, vui lòng thử lại",
+      "couldNotConnectServer": "Không kết nối được máy chủ",
+      "requestFailedCode": "Yêu cầu thất bại (mã {{status}})"
+    },
+    "profileService": {
+      "currentDevice": "Thiết bị hiện tại"
+    },
+    "settingsService": {
+      "superAdminAdministrator": "Quản trị viên Super Admin"
+    }
+  },
+  "search": {
+    "semantic": {
+      "label": "Tìm kiếm thông minh (pgvector)",
+      "submit": "Tìm bằng AI",
+      "searching": "Đang phân tích...",
+      "poiPlaceholder": "Mô tả điểm đến bằng câu tự nhiên, ví dụ: \"bãi biển yên tĩnh cho gia đình ở Đà Nẵng\"",
+      "listingPlaceholder": "Mô tả địa điểm cần tìm, ví dụ: \"homestay gần phố cổ Hội An có sân vườn\"",
+      "results_other": "{{count}} kết quả phù hợp cho \"{{query}}\"",
+      "sortedBySimilarity": "Sắp xếp theo độ tương đồng AI",
+      "clear": "Bỏ tìm kiếm AI",
+      "match": "{{score}}% khớp AI",
+      "matchTitle": "Độ tương đồng AI (cosine similarity, pgvector)"
+    }
+  }
+}

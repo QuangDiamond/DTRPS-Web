@@ -1,5 +1,5 @@
-import { LISTING_STATUS_CONFIG } from '../../constants/listing';
-import type { ListingStatus } from '../../types/admin';
+import { LISTING_STATUS_CONFIG } from '@/constants/listing';
+import type { ListingStatus } from '@/types';
 
 export default function ListingStatusBadge({ status }: { status: ListingStatus }) {
   const config = LISTING_STATUS_CONFIG[status];

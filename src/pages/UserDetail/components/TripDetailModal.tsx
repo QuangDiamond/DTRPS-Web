@@ -1,9 +1,8 @@
-import Button from '../../../components/common/Button';
-import Icon from '../../../components/common/Icon';
-import Modal from '../../../components/common/Modal';
-import type { UserTrip } from '../../../types/admin';
-import { formatDate } from '../../../utils/format';
-import { formatVnd, TRIP_STATUS_CONFIG } from '../userProfileUtils';
+import { useTranslation } from 'react-i18next';
+import { Button, Icon, Modal } from '@/components/common';
+import { formatVnd, TRIP_STATUS_CONFIG } from '@/pages/UserDetail/userProfileUtils';
+import type { UserTrip } from '@/types';
+import { formatDate } from '@/utils/format';
 
 interface TripDetailModalProps {
   trip: UserTrip;
@@ -13,16 +12,36 @@ interface TripDetailModalProps {
 
 /** Xem nhanh chuyến đi — TODO: thay bằng màn Chi tiết chuyến đi khi có thiết kế Stitch */
 export default function TripDetailModal({ trip, onClose, onDownload }: TripDetailModalProps) {
+  const { t } = useTranslation();
   const config = TRIP_STATUS_CONFIG[trip.status];
   const facts = [
-    { icon: 'tag', label: 'Mã lộ trình', value: trip.id },
-    { icon: 'schedule', label: 'Thời lượng', value: trip.durationLabel },
-    { icon: 'event', label: 'Khởi hành', value: formatDate(trip.startDate) },
-    { icon: 'event_available', label: 'Kết thúc', value: formatDate(trip.endDate) },
-    { icon: 'tour', label: 'Số điểm tham quan', value: `${trip.poiCount} POI` },
+    { icon: 'tag', label: t('userDetail.tripDetailModal.itineraryCode'), value: trip.id },
+    {
+      icon: 'schedule',
+      label: t('userDetail.tripDetailModal.duration'),
+      value: trip.durationLabel,
+    },
+    {
+      icon: 'event',
+      label: t('userDetail.tripDetailModal.departure'),
+      value: formatDate(trip.startDate),
+    },
+    {
+      icon: 'event_available',
+      label: t('userDetail.tripDetailModal.end'),
+      value: formatDate(trip.endDate),
+    },
+    {
+      icon: 'tour',
+      label: t('userDetail.tripDetailModal.attractions'),
+      value: `${trip.poiCount} POI`,
+    },
     {
       icon: 'payments',
-      label: trip.status === 'upcoming' ? 'Kinh phí dự toán' : 'Đã thanh toán',
+      label:
+        trip.status === 'upcoming'
+          ? t('userDetail.tripDetailModal.estimatedBudget')
+          : t('userDetail.tripDetailModal.paid'),
       value: formatVnd(trip.amount),
     },
   ];
@@ -30,12 +49,12 @@ export default function TripDetailModal({ trip, onClose, onDownload }: TripDetai
   return (
     <Modal
       title={trip.name}
-      description={config.label + (trip.aiPlanned ? ' • Tạo bởi AI Planner' : '')}
+      description={config.label}
       onClose={onClose}
       size="lg"
       footer={
         <Button icon="download" onClick={() => onDownload(trip)}>
-          Tải file lịch trình
+          {t('userDetail.tripDetailModal.downloadItinerary')}
         </Button>
       }
     >

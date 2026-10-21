@@ -1,7 +1,8 @@
+import { Trans, useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { UserProfile } from '../../../types/admin';
-import { formatNumber } from '../../../utils/format';
+import { Icon } from '@/components/common';
+import type { UserProfile } from '@/types';
+import { formatNumber } from '@/utils/format';
 
 interface MetricCardProps {
   label: string;
@@ -52,33 +53,36 @@ function MetricCard({
 }
 
 export default function UserMetricCards({ profile }: { profile: UserProfile }) {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 gap-space-md sm:grid-cols-2 xl:grid-cols-4">
       <MetricCard
-        label="Chuyến đi đã tạo"
+        label={t('userDetail.userMetricCards.tripsCreated')}
         icon="route"
         iconClass="bg-surface-container text-primary"
         value={formatNumber(profile.tripSummary.total)}
-        unit="Lịch trình"
+        unit={t('userDetail.userMetricCards.itineraries')}
         footer={
           <>
             <span className="font-semibold text-primary">
-              {profile.tripSummary.completed} hoàn thành
+              {t('userDetail.userMetricCards.completed', {
+                completed: profile.tripSummary.completed,
+              })}
             </span>
             <span>•</span>
             <span className="font-semibold text-tertiary">
-              {profile.tripSummary.upcoming} sắp khởi hành
+              {t('userDetail.userMetricCards.upcoming', { upcoming: profile.tripSummary.upcoming })}
             </span>
           </>
         }
       />
       <MetricCard
-        label="Địa điểm yêu thích (Saved)"
+        label={t('userDetail.userMetricCards.favoritePlacesSaved')}
         icon="bookmark"
         iconFilled
         iconClass="bg-secondary-container/50 text-secondary"
         value={formatNumber(profile.savedPois)}
-        unit="POI đã lưu"
+        unit={t('userDetail.userMetricCards.savedPois')}
         footer={
           <>
             <Icon name="share_location" className="text-[16px] text-primary" />
@@ -87,27 +91,30 @@ export default function UserMetricCards({ profile }: { profile: UserProfile }) {
         }
       />
       <MetricCard
-        label="Đánh giá & Nhận xét"
+        label={t('userDetail.userMetricCards.ratingsReviews')}
         icon="reviews"
         iconClass="bg-tertiary-fixed/60 text-tertiary"
         value={formatNumber(profile.reviewCount)}
-        unit="Đánh giá"
+        unit={t('userDetail.userMetricCards.reviews')}
         footer={
           <>
             <Icon name="star" filled className="text-[16px] text-tertiary" />
             <span>
-              Điểm trung bình{' '}
-              <strong className="text-on-surface">{profile.avgRating.toFixed(1)} / 5.0</strong>
+              <Trans
+                i18nKey="userDetail.userMetricCards.averageScore50"
+                values={{ toFixed: profile.avgRating.toFixed(1) }}
+                components={{ c0: <strong className="text-on-surface" /> }}
+              />
             </span>
           </>
         }
       />
       <MetricCard
-        label="Chi tiêu qua hệ thống"
+        label={t('userDetail.userMetricCards.spendingPlatform')}
         icon="payments"
         iconClass="bg-surface-container text-primary"
         value={formatNumber(profile.totalSpend)}
-        unit="đ"
+        unit={t('userDetail.userMetricCards.vnd')}
         unitClass="font-bold text-primary"
         footer={
           <>

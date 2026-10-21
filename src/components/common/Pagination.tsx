@@ -1,5 +1,6 @@
-import { formatNumber } from '../../utils/format';
-import { getPageItems } from '../../utils/pagination';
+import { Trans, useTranslation } from 'react-i18next';
+import { formatNumber } from '@/utils/format';
+import { getPageItems } from '@/utils/pagination';
 import Icon from './Icon';
 
 interface PaginationProps {
@@ -22,6 +23,7 @@ export default function Pagination({
   onPageChange,
   onPageSizeChange,
 }: PaginationProps) {
+  const { t } = useTranslation();
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const start = totalItems === 0 ? 0 : (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, totalItems);
@@ -30,17 +32,18 @@ export default function Pagination({
     <div className="flex flex-col items-center justify-between gap-4 border-t border-surface-container bg-surface-container-lowest px-6 py-4 sm:flex-row">
       <div className="flex items-center gap-2">
         <span className="font-body-sm text-body-sm text-on-surface-variant">
-          Hiển thị{' '}
-          <span className="font-semibold text-on-surface">
-            {start} - {end}
-          </span>{' '}
-          trong tổng số{' '}
-          <span className="font-semibold text-on-surface">{formatNumber(totalItems)}</span>{' '}
-          {itemLabel}
+          <Trans
+            i18nKey="components.pagination.showing"
+            values={{ start, end, totalItems: formatNumber(totalItems), itemLabel }}
+            components={{
+              c0: <span className="font-semibold text-on-surface" />,
+              c1: <span className="font-semibold text-on-surface" />,
+            }}
+          />
         </span>
         <span className="text-outline-variant">•</span>
         <div className="flex items-center gap-1 text-body-sm text-on-surface-variant">
-          <span>Hiển thị mỗi trang:</span>
+          <span>{t('components.pagination.rowsPerPage')}</span>
           <select
             value={pageSize}
             onChange={(event) => onPageSizeChange(Number(event.target.value))}
@@ -63,7 +66,7 @@ export default function Pagination({
           className="flex h-9 items-center gap-1 rounded-lg px-3 font-label-md text-label-md text-on-surface-variant transition-all hover:bg-surface-container-high disabled:opacity-40"
         >
           <Icon name="chevron_left" className="text-[18px]" />
-          <span>Trước</span>
+          <span>{t('components.pagination.previous')}</span>
         </button>
 
         <div className="flex items-center gap-1 px-1">

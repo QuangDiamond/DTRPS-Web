@@ -1,20 +1,22 @@
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import Icon from '../../../components/common/Icon';
-import { ROUTES } from '../../../constants/routes';
-import type { DashboardStats } from '../../../types/admin';
-import { formatNumber, formatPercent } from '../../../utils/format';
+import { Icon } from '@/components/common';
+import { ROUTES } from '@/constants/routes';
+import type { DashboardStats } from '@/types';
+import { formatNumber, formatPercent } from '@/utils/format';
 import KpiCard from './KpiCard';
 
 const TREND_PILL_CLASS =
   'flex items-center gap-1 rounded-full px-2.5 py-1 font-label-sm text-[12px] font-bold text-primary';
 
 export default function KpiGrid({ stats }: { stats: DashboardStats }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
       <KpiCard
-        label="Tổng số người dùng"
+        label={t('dashboard.kpi.totalUsers')}
         icon="group"
         iconClassName="bg-secondary-container/60 text-primary"
         value={formatNumber(stats.totalUsers)}
@@ -25,15 +27,17 @@ export default function KpiGrid({ stats }: { stats: DashboardStats }) {
         }
         footer={
           <>
-            <span>So với 30 ngày trước</span>
-            <span className="text-outline">(≈ +{formatNumber(stats.newUsers30Days)} người)</span>
+            <span>{t('dashboard.kpi.vs30Days')}</span>
+            <span className="text-outline">
+              {t('dashboard.kpi.newUsersApprox', { count: formatNumber(stats.newUsers30Days) })}
+            </span>
           </>
         }
         onClick={() => navigate(ROUTES.USERS)}
       />
 
       <KpiCard
-        label="Tổng số đối tác"
+        label={t('dashboard.kpi.totalPartners')}
         icon="business_center"
         iconClassName="bg-surface-container-high text-primary"
         value={formatNumber(stats.totalPartners)}
@@ -44,9 +48,11 @@ export default function KpiGrid({ stats }: { stats: DashboardStats }) {
         }
         footer={
           <>
-            <span>Cơ sở mới tháng này:</span>
+            <span>{t('dashboard.kpi.newPartnersLabel')}</span>
             <span className="font-semibold text-on-surface">
-              +{formatNumber(stats.newPartnersThisMonth)} doanh nghiệp
+              {t('dashboard.kpi.newPartnersValue', {
+                count: formatNumber(stats.newPartnersThisMonth),
+              })}
             </span>
           </>
         }
@@ -54,20 +60,20 @@ export default function KpiGrid({ stats }: { stats: DashboardStats }) {
       />
 
       <KpiCard
-        label="Tổng niêm yết hệ thống"
+        label={t('dashboard.kpi.totalListings')}
         icon="store_mall_directory"
         iconClassName="bg-tertiary-fixed text-tertiary"
         value={formatNumber(stats.totalListings)}
         aside={
           <span className="rounded-full bg-surface-container-high px-2.5 py-1 font-label-sm text-[12px] font-medium text-on-surface-variant">
-            Khách sạn, F&amp;B, POI
+            {t('dashboard.kpi.listingTypes')}
           </span>
         }
         footerClassName="gap-2"
         footer={
           <>
             <span className="inline-block h-2 w-2 rounded-full bg-primary" />
-            <span>Phủ sóng tại {stats.provincesCovered}/63 tỉnh thành Việt Nam</span>
+            <span>{t('dashboard.kpi.coverage', { covered: stats.provincesCovered })}</span>
           </>
         }
         onClick={() => navigate(ROUTES.LISTINGS)}
@@ -75,7 +81,7 @@ export default function KpiGrid({ stats }: { stats: DashboardStats }) {
 
       <KpiCard
         highlight
-        label="Chờ xem xét duyệt"
+        label={t('dashboard.kpi.pendingReviews')}
         icon="pending_actions"
         iconClassName="bg-tertiary-fixed-dim/40 text-tertiary-container"
         value={formatNumber(stats.pendingReviews)}
@@ -83,7 +89,7 @@ export default function KpiGrid({ stats }: { stats: DashboardStats }) {
         valueAddon={
           stats.pendingReviews > 0 && (
             <span className="animate-pulse rounded-full bg-tertiary-fixed px-2.5 py-0.5 font-label-sm text-[11px] font-bold text-on-tertiary-fixed">
-              Cần xử lý ngay
+              {t('dashboard.kpi.needsAction')}
             </span>
           )
         }
@@ -91,44 +97,50 @@ export default function KpiGrid({ stats }: { stats: DashboardStats }) {
         footerClassName="justify-between"
         footer={
           <>
-            <span>Thời gian chờ trung bình:</span>
-            <span className="font-semibold text-tertiary">{stats.avgWaitHours} giờ</span>
+            <span>{t('dashboard.kpi.avgWait')}</span>
+            <span className="font-semibold text-tertiary">
+              {t('dashboard.kpi.hours', { count: stats.avgWaitHours })}
+            </span>
           </>
         }
         onClick={() => navigate(`${ROUTES.LISTINGS}?status=pending`)}
       />
 
       <KpiCard
-        label="Địa điểm đã duyệt"
+        label={t('dashboard.kpi.approvedListings')}
         icon="check_circle"
         iconClassName="bg-secondary-container text-on-secondary-container"
         value={formatNumber(stats.approvedListings)}
         aside={
           <div className={`${TREND_PILL_CLASS} bg-secondary-container/60`}>
-            {formatPercent(stats.approvedListings, stats.totalListings)} đạt chuẩn
+            {t('dashboard.kpi.meetsStandard', {
+              percent: formatPercent(stats.approvedListings, stats.totalListings),
+            })}
           </div>
         }
         footerClassName="gap-1.5"
         footer={
           <>
             <Icon name="verified" className="text-[16px] text-primary" />
-            <span>Đã đồng bộ lên AI Travel Agent</span>
+            <span>{t('dashboard.kpi.syncedToAi')}</span>
           </>
         }
         onClick={() => navigate(ROUTES.LISTINGS_APPROVED)}
       />
 
       <KpiCard
-        label="Niêm yết bị từ chối"
+        label={t('dashboard.kpi.rejectedListings')}
         icon="cancel"
         iconClassName="bg-error-container text-on-error-container"
         value={formatNumber(stats.rejectedListings)}
         aside={
           <span className="rounded-full bg-error-container/60 px-2.5 py-1 font-label-sm text-[12px] font-bold text-error">
-            {formatPercent(stats.rejectedListings, stats.totalListings)} tổng hồ sơ
+            {t('dashboard.kpi.ofAllSubmissions', {
+              percent: formatPercent(stats.rejectedListings, stats.totalListings),
+            })}
           </span>
         }
-        footer={<span>Lý do chính: Vi phạm tiêu chuẩn/thiếu pháp lý</span>}
+        footer={<span>{t('dashboard.kpi.mainRejectReason')}</span>}
         onClick={() => navigate(ROUTES.LISTINGS_REJECTED)}
       />
     </div>

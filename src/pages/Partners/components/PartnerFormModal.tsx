@@ -1,14 +1,15 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
-import Button from '../../../components/common/Button';
-import Modal from '../../../components/common/Modal';
-import { PARTNER_TYPE_OPTIONS, PROVINCE_OPTIONS } from '../../../constants/partner';
-import type { Partner, PartnerFormValues } from '../../../types/admin';
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
+import { type FormEvent, type ReactNode, useState } from 'react';
+import { Button, Modal } from '@/components/common';
+import { PARTNER_TYPE_OPTIONS, PROVINCE_OPTIONS } from '@/constants/partner';
+import type { Partner, PartnerFormValues } from '@/types';
 import {
   isValidEmail,
   isValidPhone,
   isValidTaxCode,
   VALIDATION_MESSAGES,
-} from '../../../utils/validation';
+} from '@/utils/validation';
 
 interface PartnerFormModalProps {
   /** null = thêm mới, có giá trị = chỉnh sửa */
@@ -44,10 +45,13 @@ function toFormValues(partner: Partner): PartnerFormValues {
 
 function validate(values: PartnerFormValues): FormErrors {
   const errors: FormErrors = {};
-  if (!values.name.trim()) errors.name = 'Vui lòng nhập tên đối tác';
-  if (!values.businessName.trim()) errors.businessName = 'Vui lòng nhập tên cơ sở';
-  if (!values.address.trim()) errors.address = 'Vui lòng nhập địa chỉ';
-  if (!values.representative.trim()) errors.representative = 'Vui lòng nhập người đại diện';
+  if (!values.name.trim()) errors.name = i18n.t('partners.partnerFormModal.pleaseEnterPartnerName');
+  if (!values.businessName.trim())
+    errors.businessName = i18n.t('partners.partnerFormModal.pleaseEnterBusinessName');
+  if (!values.address.trim())
+    errors.address = i18n.t('partners.partnerFormModal.pleaseEnterAddress');
+  if (!values.representative.trim())
+    errors.representative = i18n.t('partners.partnerFormModal.pleaseEnterRepresentative');
   if (!isValidEmail(values.email)) errors.email = VALIDATION_MESSAGES.email;
   if (!isValidPhone(values.phone)) errors.phone = VALIDATION_MESSAGES.phone;
   if (!isValidTaxCode(values.taxCode)) errors.taxCode = VALIDATION_MESSAGES.taxCode;
@@ -67,6 +71,7 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 }
 
 export default function PartnerFormModal({ partner, onClose, onSubmit }: PartnerFormModalProps) {
+  const { t } = useTranslation();
   const [values, setValues] = useState<PartnerFormValues>(
     partner ? toFormValues(partner) : EMPTY_VALUES,
   );
@@ -88,21 +93,27 @@ export default function PartnerFormModal({ partner, onClose, onSubmit }: Partner
 
   return (
     <Modal
-      title={isEdit ? 'Chỉnh sửa đối tác' : 'Thêm đối tác mới'}
+      title={
+        isEdit
+          ? t('partners.partnerFormModal.editPartner')
+          : t('partners.partnerFormModal.addNewPartner')
+      }
       description={
         isEdit
-          ? `Cập nhật thông tin hồ sơ ${partner.id}`
-          : 'Đối tác mới sẽ ở trạng thái Chờ xác minh cho đến khi được duyệt'
+          ? t('partners.partnerFormModal.updateProfileDetails', { id: partner.id })
+          : t('partners.partnerFormModal.newPartnersStayPending')
       }
       onClose={onClose}
       size="lg"
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
-            Hủy
+            {t('actions.cancel')}
           </Button>
           <Button icon={isEdit ? 'save' : 'add_business'} type="submit" form={FORM_ID}>
-            {isEdit ? 'Lưu thay đổi' : 'Thêm đối tác'}
+            {isEdit
+              ? t('partners.partnerFormModal.saveChanges')
+              : t('partners.partnerFormModal.addPartner')}
           </Button>
         </>
       }
@@ -113,7 +124,7 @@ export default function PartnerFormModal({ partner, onClose, onSubmit }: Partner
         className="grid grid-cols-1 gap-4 sm:grid-cols-2"
         noValidate
       >
-        <Field label="Tên đối tác *" error={errors.name}>
+        <Field label={t('partners.partnerFormModal.partnerName')} error={errors.name}>
           <input
             className={INPUT_CLASS}
             value={values.name}
@@ -121,7 +132,10 @@ export default function PartnerFormModal({ partner, onClose, onSubmit }: Partner
             placeholder="VD: Hoi An Hospitality"
           />
         </Field>
-        <Field label="Tên cơ sở đại diện *" error={errors.businessName}>
+        <Field
+          label={t('partners.partnerFormModal.representativeBusinessName')}
+          error={errors.businessName}
+        >
           <input
             className={INPUT_CLASS}
             value={values.businessName}
@@ -129,7 +143,7 @@ export default function PartnerFormModal({ partner, onClose, onSubmit }: Partner
             placeholder="VD: Hoi An Garden Homestay"
           />
         </Field>
-        <Field label="Loại hình kinh doanh">
+        <Field label={t('partners.partnerFormModal.businessType')}>
           <select
             className={`${INPUT_CLASS} cursor-pointer`}
             value={values.type}
@@ -145,7 +159,7 @@ export default function PartnerFormModal({ partner, onClose, onSubmit }: Partner
             ))}
           </select>
         </Field>
-        <Field label="Tỉnh / Thành phố">
+        <Field label={t('partners.partnerFormModal.provinceCity')}>
           <select
             className={`${INPUT_CLASS} cursor-pointer`}
             value={values.province}
@@ -161,20 +175,20 @@ export default function PartnerFormModal({ partner, onClose, onSubmit }: Partner
             ))}
           </select>
         </Field>
-        <Field label="Địa chỉ *" error={errors.address}>
+        <Field label={t('partners.partnerFormModal.address')} error={errors.address}>
           <input
             className={INPUT_CLASS}
             value={values.address}
             onChange={(event) => updateField('address', event.target.value)}
-            placeholder="VD: Cẩm Châu, Hội An"
+            placeholder={t('partners.partnerFormModal.eGCamChau')}
           />
         </Field>
-        <Field label="Người đại diện *" error={errors.representative}>
+        <Field label={t('partners.partnerFormModal.representative')} error={errors.representative}>
           <input
             className={INPUT_CLASS}
             value={values.representative}
             onChange={(event) => updateField('representative', event.target.value)}
-            placeholder="VD: Nguyễn Văn Hùng"
+            placeholder={t('partners.partnerFormModal.eGNguyenVan')}
           />
         </Field>
         <Field label="Email *" error={errors.email}>
@@ -186,7 +200,7 @@ export default function PartnerFormModal({ partner, onClose, onSubmit }: Partner
             placeholder="lienhe@doanhnghiep.vn"
           />
         </Field>
-        <Field label="Số điện thoại *" error={errors.phone}>
+        <Field label={t('partners.partnerFormModal.phoneNumber')} error={errors.phone}>
           <input
             className={INPUT_CLASS}
             value={values.phone}
@@ -194,12 +208,12 @@ export default function PartnerFormModal({ partner, onClose, onSubmit }: Partner
             placeholder="0905 123 456"
           />
         </Field>
-        <Field label="Mã số thuế *" error={errors.taxCode}>
+        <Field label={t('partners.partnerFormModal.taxCode')} error={errors.taxCode}>
           <input
             className={INPUT_CLASS}
             value={values.taxCode}
             onChange={(event) => updateField('taxCode', event.target.value)}
-            placeholder="10 hoặc 13 chữ số"
+            placeholder={t('partners.partnerFormModal.n10Or13Digits')}
           />
         </Field>
       </form>

@@ -1,10 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import Button from '../../../components/common/Button';
-import Modal from '../../../components/common/Modal';
-import { useToast } from '../../../hooks/useToast';
-import { copyText } from '../../../utils/clipboard';
-import { downloadTextFile } from '../../../utils/download';
-import { todayIsoDate } from '../../../utils/format';
+import { Button, Modal } from '@/components/common';
+import { useToast } from '@/hooks';
+import { copyText } from '@/utils/clipboard';
+import { downloadTextFile } from '@/utils/download';
+import { todayIsoDate } from '@/utils/format';
 
 interface BackupCodesModalProps {
   codes: string[];
@@ -19,14 +19,15 @@ export default function BackupCodesModal({
   onRegenerate,
   onClose,
 }: BackupCodesModalProps) {
+  const { t } = useTranslation();
   const { showToast } = useToast();
   const [confirmRegenerate, setConfirmRegenerate] = useState(false);
 
   const content = [
-    'Smart Travel Admin — Mã khôi phục 2FA',
-    `Tài khoản: ${accountEmail}`,
-    `Ngày tạo: ${todayIsoDate()}`,
-    'Mỗi mã chỉ dùng được một lần. Cất giữ ở nơi an toàn.',
+    t('profile.backupCodesModal.smartTravelAdmin2fa'),
+    t('profile.backupCodesModal.account', { accountEmail }),
+    t('profile.backupCodesModal.created', { value: todayIsoDate() }),
+    t('profile.backupCodesModal.eachCodeCanUsed'),
     '',
     ...codes,
   ].join('\n');
@@ -34,24 +35,26 @@ export default function BackupCodesModal({
   const copyCodes = async () => {
     const copied = await copyText(codes.join('\n'));
     showToast(
-      copied ? 'Đã sao chép mã dự phòng' : 'Không sao chép được, hãy tải file .txt',
+      copied
+        ? t('profile.backupCodesModal.backupCodesCopied')
+        : t('profile.backupCodesModal.couldNotCopyPlease'),
       copied ? 'info' : 'error',
     );
   };
 
   return (
     <Modal
-      title={`Mã khôi phục dự phòng (${codes.length})`}
-      description="Dùng khi mất thiết bị xác thực. Mỗi mã chỉ dùng được một lần."
+      title={t('profile.backupCodesModal.backupRecoveryCodes', { length: codes.length })}
+      description={t('profile.backupCodesModal.useTheseIfYou')}
       onClose={onClose}
       footer={
         confirmRegenerate ? (
           <>
             <span className="mr-auto font-body-sm text-body-sm text-error">
-              Toàn bộ mã cũ sẽ bị vô hiệu hóa.
+              {t('profile.backupCodesModal.allOldCodesWill')}
             </span>
             <Button variant="neutral" onClick={() => setConfirmRegenerate(false)}>
-              Hủy
+              {t('actions.cancel')}
             </Button>
             <Button
               variant="danger"
@@ -61,7 +64,7 @@ export default function BackupCodesModal({
                 setConfirmRegenerate(false);
               }}
             >
-              Xác nhận tạo mới
+              {t('profile.backupCodesModal.confirmRegeneration')}
             </Button>
           </>
         ) : (
@@ -72,19 +75,19 @@ export default function BackupCodesModal({
               className="mr-auto text-error hover:bg-error-container/40 hover:text-error"
               onClick={() => setConfirmRegenerate(true)}
             >
-              Tạo mã mới
+              {t('profile.backupCodesModal.generateNewCodes')}
             </Button>
             <Button variant="neutral" icon="content_copy" onClick={copyCodes}>
-              Sao chép
+              {t('profile.backupCodesModal.copy')}
             </Button>
             <Button
               icon="download"
               onClick={() => {
                 downloadTextFile(`smarttravel-backup-codes-${todayIsoDate()}.txt`, content);
-                showToast('Đã tải xuống file mã dự phòng', 'info');
+                showToast(t('profile.backupCodesModal.backupCodesFileDownloaded'), 'info');
               }}
             >
-              Tải .txt
+              {t('profile.backupCodesModal.downloadTxt')}
             </Button>
           </>
         )

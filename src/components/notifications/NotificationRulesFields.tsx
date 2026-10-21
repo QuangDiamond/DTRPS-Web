@@ -1,12 +1,12 @@
-import Icon from '../common/Icon';
-import ToggleSwitch from '../common/ToggleSwitch';
+import { useTranslation } from 'react-i18next';
+import { Icon, ToggleSwitch } from '@/components/common';
 import {
   AI_LOAD_THRESHOLD_RANGE,
   NOTIFICATION_CHANNEL_CONFIG,
   NOTIFICATION_EVENT_CONFIG,
-} from '../../constants/notification';
-import type { NotificationChannel, NotificationEvent, NotificationRules } from '../../types/admin';
-import { countEnabledChannels } from '../../utils/notificationRules';
+} from '@/constants/notification';
+import type { NotificationChannel, NotificationEvent, NotificationRules } from '@/types';
+import { countEnabledChannels } from '@/utils/notificationRules';
 
 interface NotificationRulesFieldsProps {
   rules: NotificationRules;
@@ -21,6 +21,7 @@ const SECTION_TITLE_CLASS =
  * và tab "Thông báo & Email cảnh báo" (trang Cài đặt hệ thống)
  */
 export default function NotificationRulesFields({ rules, onChange }: NotificationRulesFieldsProps) {
+  const { t } = useTranslation();
   const enabledChannels = countEnabledChannels(rules);
 
   const toggleEvent = (event: NotificationEvent, enabled: boolean) =>
@@ -32,7 +33,9 @@ export default function NotificationRulesFields({ rules, onChange }: Notificatio
   return (
     <div className="flex flex-col gap-space-lg">
       <section className="flex flex-col gap-space-sm">
-        <span className={SECTION_TITLE_CLASS}>Sự kiện tạo thông báo</span>
+        <span className={SECTION_TITLE_CLASS}>
+          {t('components.notificationRulesFields.notificationEvents')}
+        </span>
         <div className="flex flex-col divide-y divide-surface-container rounded-xl bg-surface-container-low/60">
           {(Object.keys(NOTIFICATION_EVENT_CONFIG) as NotificationEvent[]).map((event) => {
             const config = NOTIFICATION_EVENT_CONFIG[event];
@@ -65,14 +68,16 @@ export default function NotificationRulesFields({ rules, onChange }: Notificatio
 
       <section className="flex flex-col gap-space-sm">
         <div className="flex items-center justify-between">
-          <span className={SECTION_TITLE_CLASS}>Ngưỡng cảnh báo tải AI Planner</span>
+          <span className={SECTION_TITLE_CLASS}>
+            {t('components.notificationRulesFields.aiPlannerLoadAlert')}
+          </span>
           <span className="font-headline-sm text-headline-sm font-bold text-tertiary">
             {rules.aiLoadThreshold}%
           </span>
         </div>
         <input
           type="range"
-          aria-label="Ngưỡng cảnh báo tải AI"
+          aria-label={t('components.notificationRulesFields.aiLoadAlertThreshold')}
           min={AI_LOAD_THRESHOLD_RANGE.min}
           max={AI_LOAD_THRESHOLD_RANGE.max}
           step={AI_LOAD_THRESHOLD_RANGE.step}
@@ -82,19 +87,21 @@ export default function NotificationRulesFields({ rules, onChange }: Notificatio
           className="w-full cursor-pointer accent-primary disabled:cursor-not-allowed disabled:opacity-50"
         />
         <span className="font-body-sm text-body-sm text-on-surface-variant">
-          Gửi cảnh báo khẩn khi tải cụm máy chủ AI vượt ngưỡng này trong 5 phút liên tiếp.
+          {t('components.notificationRulesFields.sendUrgentAlertWhen')}
         </span>
       </section>
 
       <section className="flex flex-col gap-space-sm">
         <div className="flex items-center justify-between">
-          <span className={SECTION_TITLE_CLASS}>Kênh tiếp nhận</span>
+          <span className={SECTION_TITLE_CLASS}>
+            {t('components.notificationRulesFields.deliveryChannels')}
+          </span>
           <div className="flex items-center gap-2 font-label-md text-label-md text-on-surface">
-            Cảnh báo khẩn qua Telegram &amp; SMS
+            {t('components.notificationRulesFields.urgentAlertsViaTelegram')}
             <ToggleSwitch
               checked={rules.urgentChannelsEnabled}
               onChange={(enabled) => onChange({ ...rules, urgentChannelsEnabled: enabled })}
-              label="Cảnh báo khẩn qua Telegram và SMS"
+              label={t('components.notificationRulesFields.urgentAlertsViaTelegram2')}
             />
           </div>
         </div>
@@ -125,7 +132,8 @@ export default function NotificationRulesFields({ rules, onChange }: Notificatio
         </div>
         {enabledChannels === 0 && (
           <span className="flex items-center gap-1 font-label-sm text-label-sm text-error">
-            <Icon name="error" className="text-[14px]" /> Cần chọn ít nhất một kênh tiếp nhận
+            <Icon name="error" className="text-[14px]" />{' '}
+            {t('components.notificationRulesFields.selectAtLeastOne')}
           </span>
         )}
       </section>

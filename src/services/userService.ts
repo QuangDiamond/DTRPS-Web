@@ -1,8 +1,10 @@
-import { MOCK_USERS, USER_STATS } from '../constants/mockData';
-import type { AppUser, UserAuditEntry, UserFormValues, UserProfile } from '../types/admin';
-import type { UsersSnapshot } from '../types/api';
+import {
+  buildMockUserProfile,
+  buildMockUserSessionHistory,
+} from '@/mocks/builders/userProfileMock';
+import { MOCK_USERS, USER_STATS } from '@/mocks/data/mockData';
+import type { AppUser, UserAuditEntry, UserFormValues, UserProfile, UsersSnapshot } from '@/types';
 import { ENDPOINTS } from './endpoints';
-import { buildMockUserProfile, buildMockUserSessionHistory } from './mock/userProfileMock';
 import { createSource, peek, readRequest, writeRequest } from './request';
 
 const MOCK_SNAPSHOT: UsersSnapshot = { users: MOCK_USERS, stats: USER_STATS };

@@ -1,8 +1,10 @@
-import Icon from '../../components/common/Icon';
-import type { AuthBrandContent } from '../../types/auth';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import type { AuthBrandContent } from '@/types';
 
 /** Cột gradient thương hiệu bên trái các màn đăng nhập / khôi phục mật khẩu */
 export default function AuthBrandPanel({ content }: { content: AuthBrandContent }) {
+  const { t } = useTranslation();
   return (
     <div className="relative flex flex-col justify-between overflow-hidden bg-linear-to-br from-primary via-primary-container to-secondary p-space-xl text-on-primary lg:col-span-5">
       {/* Hiệu ứng ánh sáng trang trí */}
@@ -62,7 +64,7 @@ export default function AuthBrandPanel({ content }: { content: AuthBrandContent 
         <div className="flex items-center gap-2">
           <Icon name="hub" className="text-sm" />
           <span className="font-label-sm text-label-sm">
-            IDC Viettel Tier-3 Đạt chuẩn ISO 27001
+            {t('layout.authBrandPanel.viettelTier3Idc')}
           </span>
         </div>
         <span className="font-label-sm text-label-sm font-semibold text-secondary-fixed">

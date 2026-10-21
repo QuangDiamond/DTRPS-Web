@@ -1,9 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import Button from '../../../components/common/Button';
-import Icon from '../../../components/common/Icon';
-import Modal from '../../../components/common/Modal';
-import { HIDE_REASONS } from '../../../constants/listing';
-import type { Listing } from '../../../types/admin';
+import { Button, Icon, Modal } from '@/components/common';
+import { HIDE_REASONS } from '@/constants/listing';
+import type { Listing } from '@/types';
 
 interface HideListingModalProps {
   /** Các địa điểm sẽ bị tạm ẩn (1 hoặc nhiều) */
@@ -13,23 +12,31 @@ interface HideListingModalProps {
 }
 
 export default function HideListingModal({ targets, onConfirm, onClose }: HideListingModalProps) {
+  const { t } = useTranslation();
   const [reason, setReason] = useState('');
   const trimmed = reason.trim();
   const single = targets.length === 1 ? targets[0] : null;
 
   return (
     <Modal
-      title={single ? 'Tạm ẩn địa điểm' : `Tạm ẩn đồng loạt ${targets.length} địa điểm`}
+      title={
+        single
+          ? t('approvedListings.hideListingModal.hidePlace')
+          : t('approvedListings.hideListingModal.hidePlaces', { count: targets.length })
+      }
       description={
         single
-          ? `${single.name} (${single.id}) sẽ ngừng hiển thị trên ứng dụng du khách`
-          : 'Các địa điểm đã chọn sẽ ngừng hiển thị trên ứng dụng du khách'
+          ? t('approvedListings.hideListingModal.willNoLongerAppear', {
+              name: single.name,
+              id: single.id,
+            })
+          : t('approvedListings.hideListingModal.theSelectedPlacesWill')
       }
       onClose={onClose}
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
-            Hủy
+            {t('actions.cancel')}
           </Button>
           <button
             type="button"
@@ -37,7 +44,8 @@ export default function HideListingModal({ targets, onConfirm, onClose }: HideLi
             onClick={() => onConfirm(trimmed)}
             className="flex items-center gap-2 rounded-full bg-error px-5 py-2.5 font-label-md text-label-md font-semibold text-on-error shadow-sm transition-all hover:bg-on-error-container disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Icon name="visibility_off" className="text-[18px]" /> Xác nhận tạm ẩn
+            <Icon name="visibility_off" className="text-[18px]" />{' '}
+            {t('approvedListings.hideListingModal.confirmHide')}
           </button>
         </>
       }
@@ -57,13 +65,13 @@ export default function HideListingModal({ targets, onConfirm, onClose }: HideLi
         )}
         <label className="flex flex-col gap-1.5">
           <span className="font-label-sm text-label-sm font-semibold text-on-surface-variant">
-            Lý do tạm ẩn *
+            {t('approvedListings.hideListingModal.reasonHiding')}
           </span>
           <input
             autoFocus
             value={reason}
             onChange={(event) => setReason(event.target.value)}
-            placeholder="VD: Sửa chữa mặt bằng"
+            placeholder={t('approvedListings.hideListingModal.eGPremisesRenovation')}
             className="h-10 w-full rounded-xl bg-surface-container-low px-3 font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary focus:outline-none"
           />
         </label>
@@ -72,10 +80,10 @@ export default function HideListingModal({ targets, onConfirm, onClose }: HideLi
             <button
               key={quickReason}
               type="button"
-              onClick={() => setReason(quickReason)}
+              onClick={() => setReason(t(quickReason))}
               className="rounded-full bg-surface-container px-2.5 py-1 font-label-sm text-label-sm text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
             >
-              {quickReason}
+              {t(quickReason)}
             </button>
           ))}
         </div>

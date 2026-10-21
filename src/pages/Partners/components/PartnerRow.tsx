@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import type { MouseEvent } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { Partner, PartnerStatus } from '../../../types/admin';
-import { formatDate } from '../../../utils/format';
-import { getListingSummary, getPartnerAvatarClass } from '../partnerUtils';
+import { Icon } from '@/components/common';
+import { getListingSummary, getPartnerAvatarClass } from '@/pages/Partners/partnerUtils';
+import type { Partner, PartnerStatus } from '@/types';
+import { formatDate } from '@/utils/format';
 import PartnerStatusBadge from './PartnerStatusBadge';
 import PartnerTypeBadge from './PartnerTypeBadge';
 
@@ -16,9 +18,27 @@ interface PartnerRowProps {
 
 /** Nút đầu tiên của cột Thao tác thay đổi theo trạng thái hồ sơ */
 const PRIMARY_ACTION: Record<PartnerStatus, { icon: string; title: string; iconClass: string }> = {
-  active: { icon: 'visibility', title: 'Xem chi tiết đối tác', iconClass: '' },
-  pending: { icon: 'rule', title: 'Xác minh hồ sơ đối tác', iconClass: 'text-tertiary' },
-  suspended: { icon: 'lock_open', title: 'Mở khóa tài khoản', iconClass: 'text-primary' },
+  active: {
+    icon: 'visibility',
+    get title() {
+      return i18n.t('partners.partnerRow.viewPartnerDetails');
+    },
+    iconClass: '',
+  },
+  pending: {
+    icon: 'rule',
+    get title() {
+      return i18n.t('partners.partnerRow.verifyPartnerProfile');
+    },
+    iconClass: 'text-tertiary',
+  },
+  suspended: {
+    icon: 'lock_open',
+    get title() {
+      return i18n.t('partners.partnerRow.unlockAccount');
+    },
+    iconClass: 'text-primary',
+  },
 };
 
 const ROUND_BUTTON_CLASS =
@@ -31,6 +51,7 @@ export default function PartnerRow({
   onViewListings,
   onOpenMenu,
 }: PartnerRowProps) {
+  const { t } = useTranslation();
   const listingSummary = getListingSummary(partner.listings);
   const primaryAction = PRIMARY_ACTION[partner.status];
   const isSuspended = partner.status === 'suspended';
@@ -67,7 +88,7 @@ export default function PartnerRow({
               {partner.businessName} • {partner.address}
             </span>
             <span className="mt-0.5 font-label-sm text-label-sm text-outline">
-              Đại diện: {partner.representative}
+              {t('partners.partnerRow.representative', { representative: partner.representative })}
             </span>
           </div>
         </div>
@@ -138,7 +159,7 @@ export default function PartnerRow({
             type="button"
             onClick={() => onViewListings(partner)}
             className={`${ROUND_BUTTON_CLASS} hover:bg-surface-container hover:text-primary`}
-            title="Danh sách địa điểm"
+            title={t('partners.partnerRow.placeList')}
           >
             <Icon name="map" className="text-[19px]" />
           </button>
@@ -150,7 +171,11 @@ export default function PartnerRow({
                 ? 'hover:bg-surface-container hover:text-on-surface'
                 : 'hover:bg-error-container/40 hover:text-error'
             }`}
-            title={isSuspended ? 'Tùy chọn khác' : 'Khóa / Cài đặt'}
+            title={
+              isSuspended
+                ? t('partners.partnerRow.moreOptions')
+                : t('partners.partnerRow.lockSettings')
+            }
           >
             <Icon name="more_vert" className="text-[19px]" />
           </button>

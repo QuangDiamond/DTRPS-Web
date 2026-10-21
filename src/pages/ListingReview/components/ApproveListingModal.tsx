@@ -1,7 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import { useEffect, useRef, useState } from 'react';
-import Icon from '../../../components/common/Icon';
-import { PARTNER_TIER_CONFIG } from '../../../constants/listing';
-import type { Listing, ListingDetail } from '../../../types/admin';
+import { Icon } from '@/components/common';
+import { PARTNER_TIER_CONFIG } from '@/constants/listing';
+import type { Listing, ListingDetail } from '@/types';
 
 interface ApproveListingModalProps {
   listing: Listing;
@@ -27,6 +28,7 @@ export default function ApproveListingModal({
   onConfirm,
   onClose,
 }: ApproveListingModalProps) {
+  const { t } = useTranslation();
   const [note, setNote] = useState(initialNote.slice(0, REVIEW_NOTE_MAX_LENGTH));
   const [phase, setPhase] = useState<Phase>('idle');
   const timers = useRef<number[]>([]);
@@ -68,7 +70,7 @@ export default function ApproveListingModal({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Xác nhận phê duyệt địa điểm"
+        aria-label={t('listingReview.approveListingModal.confirmPlaceApproval')}
         className="relative z-10 flex w-full max-w-2xl animate-[fadeIn_0.2s_ease-out] flex-col overflow-hidden rounded-3xl bg-surface-container-lowest shadow-[0_24px_64px_-12px_rgba(0,104,95,0.22)]"
       >
         {/* Dải màu trang trí */}
@@ -82,21 +84,20 @@ export default function ApproveListingModal({
           <div className="flex flex-1 flex-col">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-headline-lg text-headline-lg font-bold tracking-tight text-on-surface">
-                Xác nhận Phê duyệt địa điểm này?
+                {t('listingReview.approveListingModal.approveThisPlace')}
               </h2>
               <button
                 type="button"
                 onClick={onClose}
                 disabled={isBusy}
-                title="Đóng modal"
+                title={t('listingReview.approveListingModal.closeDialog')}
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-outline transition-colors hover:bg-surface-container-high hover:text-on-surface disabled:opacity-40"
               >
                 <Icon name="close" className="text-[20px]" />
               </button>
             </div>
             <p className="mt-1.5 font-body-md text-body-md leading-relaxed text-on-surface-variant">
-              Thao tác này sẽ xác nhận toàn bộ hồ sơ kinh doanh và kích hoạt phân phối thông tin địa
-              điểm tới du khách.
+              {t('listingReview.approveListingModal.thisConfirmsEntireBusiness')}
             </p>
           </div>
         </div>
@@ -106,7 +107,7 @@ export default function ApproveListingModal({
           <div className="flex flex-col gap-3.5 rounded-2xl bg-surface-container-low p-5 shadow-sm">
             <div className="flex items-center justify-between gap-3 rounded-xl bg-surface-container-lowest/60 px-4 py-2.5">
               <span className="font-label-sm text-label-sm font-semibold tracking-wider text-outline uppercase">
-                Tên địa điểm
+                {t('listingReview.approveListingModal.placeName')}
               </span>
               <div className="flex min-w-0 items-center gap-2">
                 <span className="truncate font-title-md text-title-md font-bold text-on-surface">
@@ -120,7 +121,9 @@ export default function ApproveListingModal({
 
             <div className="grid grid-cols-1 gap-3 font-body-sm text-body-sm md:grid-cols-2">
               <div className="flex flex-col gap-1 px-2">
-                <span className="text-on-surface-variant">Đối tác chủ quản:</span>
+                <span className="text-on-surface-variant">
+                  {t('listingReview.approveListingModal.managingPartner')}
+                </span>
                 <span className="flex flex-wrap items-center gap-1.5 font-semibold text-on-surface">
                   <Icon name="workspace_premium" className="text-[16px] text-tertiary" />
                   {listing.partnerName}
@@ -130,7 +133,9 @@ export default function ApproveListingModal({
                 </span>
               </div>
               <div className="flex flex-col gap-1 px-2">
-                <span className="text-on-surface-variant">Danh mục niêm yết:</span>
+                <span className="text-on-surface-variant">
+                  {t('listingReview.approveListingModal.listingCategory')}
+                </span>
                 <span className="flex items-center gap-1.5 font-semibold text-primary">
                   <Icon name={listing.categoryIcon} className="text-[16px]" />
                   {listing.categoryLabel}
@@ -140,7 +145,7 @@ export default function ApproveListingModal({
 
             <div className="flex flex-col gap-1 px-2 pt-1">
               <span className="font-body-sm text-body-sm text-on-surface-variant">
-                Địa chỉ cơ sở:
+                {t('listingReview.approveListingModal.businessAddress')}
               </span>
               <span className="flex items-start gap-1.5 font-body-md text-body-md font-semibold text-on-surface">
                 <Icon name="place" className="mt-0.5 shrink-0 text-[18px] text-primary" />
@@ -154,12 +159,10 @@ export default function ApproveListingModal({
             <Icon name="info" filled className="mt-0.5 shrink-0 text-[22px] text-primary" />
             <div className="flex flex-col gap-1">
               <span className="font-label-md text-label-md font-bold text-on-surface">
-                Lưu ý tác động hệ thống
+                {t('listingReview.approveListingModal.systemImpactNotice')}
               </span>
               <p className="font-body-sm text-body-sm leading-relaxed text-on-surface-variant">
-                Sau khi phê duyệt, địa điểm này sẽ chính thức được kích hoạt và xuất hiện trên toàn
-                bộ ứng dụng du khách Smart Travel Vietnam. Thông báo chúc mừng kèm đường dẫn quản lý
-                sẽ tự động gửi đến đối tác.
+                {t('listingReview.approveListingModal.onceApprovedThisPlace')}
               </p>
             </div>
           </div>
@@ -170,9 +173,12 @@ export default function ApproveListingModal({
               htmlFor="reviewNotes"
               className="flex items-center justify-between font-label-md text-label-md font-semibold text-on-surface"
             >
-              <span>Ghi chú duyệt nội bộ (không bắt buộc)</span>
+              <span>{t('listingReview.approveListingModal.internalApprovalNoteOptional')}</span>
               <span className="font-label-sm text-label-sm font-normal text-outline">
-                {note.length} / {REVIEW_NOTE_MAX_LENGTH} ký tự
+                {t('listingReview.approveListingModal.characters', {
+                  length: note.length,
+                  REVIEW_NOTE_MAX_LENGTH,
+                })}
               </span>
             </label>
             <textarea
@@ -182,7 +188,7 @@ export default function ApproveListingModal({
               value={note}
               disabled={isBusy}
               onChange={(event) => setNote(event.target.value)}
-              placeholder="Nhập lời nhắn hoặc ghi chú lưu trữ nội bộ... (ví dụ: Hồ sơ đầy đủ, đối chiếu bản gốc hợp lệ qua video call)"
+              placeholder={t('listingReview.approveListingModal.enterMessageOrInternal')}
               className="w-full resize-none rounded-xl bg-surface-container-low p-3.5 font-body-md text-body-md text-on-surface shadow-sm transition-all placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none disabled:opacity-70"
             />
           </div>
@@ -196,7 +202,7 @@ export default function ApproveListingModal({
             disabled={isBusy}
             className="flex items-center gap-2 rounded-full bg-surface-container-lowest px-6 py-3 font-label-md text-label-md font-semibold text-on-surface-variant shadow-sm transition-all hover:bg-surface-container-high hover:text-on-surface disabled:opacity-50"
           >
-            Hủy
+            {t('actions.cancel')}
           </button>
           <button
             type="button"
@@ -209,19 +215,19 @@ export default function ApproveListingModal({
             {phase === 'idle' && (
               <>
                 <Icon name="check_circle" filled className="text-[20px]" />
-                Xác nhận phê duyệt
+                {t('listingReview.approveListingModal.confirmApproval')}
               </>
             )}
             {phase === 'activating' && (
               <>
                 <Icon name="progress_activity" className="animate-spin text-[20px]" />
-                Đang kích hoạt...
+                {t('listingReview.approveListingModal.activating')}
               </>
             )}
             {phase === 'done' && (
               <>
                 <Icon name="check" className="text-[20px]" />
-                Đã phê duyệt thành công!
+                {t('listingReview.approveListingModal.approvedSuccessfully')}
               </>
             )}
           </button>

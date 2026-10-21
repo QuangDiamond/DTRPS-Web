@@ -13,9 +13,9 @@ export const ROUTES = {
   LISTINGS_APPROVED: '/admin/listings/approved',
   LISTINGS_REJECTED: '/admin/listings/rejected',
   LISTING_REVIEW: '/admin/listings/:id',
-  LOCATIONS: '/admin/locations',
-  LOCATION_NEW: '/admin/locations/new',
-  LOCATION_EDIT: '/admin/locations/:id/edit',
+  POIS: '/admin/locations',
+  POI_NEW: '/admin/locations/new',
+  POI_EDIT: '/admin/locations/:id/edit',
   REPORTS: '/admin/reports',
   NOTIFICATIONS: '/admin/notifications',
   SETTINGS: '/admin/settings',
@@ -32,4 +32,4 @@ export const partnerDetailPath = (id: string): string => `${ROUTES.PARTNERS}/${i
 export const listingReviewPath = (id: string): string => `${ROUTES.LISTINGS}/${id}`;
 
 /** Đường dẫn màn Chỉnh sửa điểm đến POI */
-export const poiEditPath = (id: string): string => `${ROUTES.LOCATIONS}/${id}/edit`;
+export const poiEditPath = (id: string): string => `${ROUTES.POIS}/${id}/edit`;

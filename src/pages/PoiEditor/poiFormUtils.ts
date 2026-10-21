@@ -1,10 +1,6 @@
-import type { Poi, PoiFormValues, PoiPhoto } from '../../types/admin';
-import {
-  isValidEmail,
-  isValidPhone,
-  isValidUrl,
-  VALIDATION_MESSAGES,
-} from '../../utils/validation';
+import i18n from 'i18next';
+import type { Poi, PoiFormValues, PoiPhoto } from '@/types';
+import { isValidEmail, isValidPhone, isValidUrl, VALIDATION_MESSAGES } from '@/utils/validation';
 
 export type PoiFieldChange = <K extends keyof PoiFormValues>(
   key: K,
@@ -24,7 +20,7 @@ export function isSamePoiValues(a: PoiFormValues, b: PoiFormValues): boolean {
 
 export function validatePoi(values: PoiFormValues): PoiFormErrors {
   const errors: PoiFormErrors = {};
-  if (!values.name.trim()) errors.name = 'Vui lòng nhập tên điểm đến POI';
+  if (!values.name.trim()) errors.name = i18n.t('poiEditor.utils.pleaseEnterPoiDestination');
   if (values.hotline.trim() && !isValidPhone(values.hotline)) {
     errors.hotline = VALIDATION_MESSAGES.phone;
   }
@@ -72,14 +68,6 @@ export function openStreetMapEmbedUrl(latitude: number, longitude: number): stri
   return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik`;
 }
 
-export function priorityNote(score: number, city: string): string {
-  const place = city ? ` khi đến ${city}` : '';
-  if (score >= 90) return `★ Địa điểm bắt buộc ghé thăm${place}.`;
-  if (score >= 70) return `Địa điểm nên ghé thăm${place}.`;
-  if (score >= 40) return 'Điểm tham quan bổ sung khi lịch trình còn trống.';
-  return 'Ít được ưu tiên trong lộ trình gợi ý.';
-}
-
 export function totalPhotos(values: Pick<PoiFormValues, 'cover' | 'gallery'>): number {
   return (values.cover ? 1 : 0) + values.gallery.length;
 }
@@ -101,14 +89,19 @@ export function readPhotoFile(
         id: `upload-${Date.now()}-${photoSeq}`,
         url,
         caption: file.name,
-        meta: `${image.naturalWidth} × ${image.naturalHeight} px • ${sizeMb} MB • Tải lên bởi ${uploader}`,
+        meta: i18n.t('poiEditor.utils.pxMbUploadedBy', {
+          naturalWidth: image.naturalWidth,
+          naturalHeight: image.naturalHeight,
+          sizeMb,
+          uploader,
+        }),
         width: image.naturalWidth,
         height: image.naturalHeight,
       });
     };
     image.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new Error(`Không đọc được ảnh "${file.name}"`));
+      reject(new Error(i18n.t('poiEditor.utils.cannotReadImage', { name: file.name })));
     };
     image.src = url;
   });
@@ -120,5 +113,5 @@ export function captionFromFileName(fileName: string): string {
     .replace(/\.[^.]+$/, '')
     .replace(/[_-]+/g, ' ')
     .trim();
-  return base.length > 18 ? `${base.slice(0, 16)}…` : base || 'Ảnh mới';
+  return base.length > 18 ? `${base.slice(0, 16)}…` : base || i18n.t('poiEditor.utils.newPhoto');
 }

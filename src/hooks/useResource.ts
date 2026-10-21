@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { LoadStatus } from '../types/api';
-import { getErrorMessage } from '../utils/error';
+import type { LoadStatus } from '@/types';
+import { getErrorMessage } from '@/utils/error';
 
 export interface ResourceState<T> {
   data: T | undefined;

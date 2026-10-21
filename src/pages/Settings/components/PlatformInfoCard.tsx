@@ -1,9 +1,10 @@
-import Icon from '../../../components/common/Icon';
-import { PLATFORM_INFO, TIMEZONE_OPTIONS } from '../../../constants/settings';
-import { useToast } from '../../../hooks/useToast';
-import type { SystemSettings } from '../../../types/admin';
-import { formatNumber, formatPercent } from '../../../utils/format';
-import type { SettingsFieldChange } from '../settingsUtils';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { PLATFORM_INFO, TIMEZONE_OPTIONS } from '@/constants/settings';
+import { useToast } from '@/hooks';
+import type { SettingsFieldChange } from '@/pages/Settings/settingsUtils';
+import type { SystemSettings } from '@/types';
+import { formatNumber, formatPercent } from '@/utils/format';
 import SettingsCard from './SettingsCard';
 
 const INPUT_CLASS =
@@ -17,18 +18,19 @@ interface PlatformInfoCardProps {
 }
 
 export default function PlatformInfoCard({ values, nameError, onChange }: PlatformInfoCardProps) {
+  const { t } = useTranslation();
   const { showToast } = useToast();
   const storagePercent = (PLATFORM_INFO.storageUsedGb / PLATFORM_INFO.storageTotalGb) * 100;
 
   return (
     <SettingsCard
       icon="hub"
-      title="Thông tin nền tảng Smart Travel"
-      description="Thông số nhận diện và định danh hạt nhân cốt lõi"
+      title={t('settings.platformInfoCard.smartTravelPlatformInformation')}
+      description={t('settings.platformInfoCard.corePlatformIdentitySettings')}
       aside={
         <button
           type="button"
-          title="Thông tin phiên bản"
+          title={t('settings.platformInfoCard.versionInformation')}
           onClick={() =>
             showToast(
               `${values.platformName} • ${PLATFORM_INFO.releaseCode} • ${PLATFORM_INFO.dataCenter}`,
@@ -43,7 +45,9 @@ export default function PlatformInfoCard({ values, nameError, onChange }: Platfo
     >
       <div className="space-y-space-md">
         <div>
-          <label className={LABEL_CLASS}>Tên hiển thị hệ thống toàn quốc</label>
+          <label className={LABEL_CLASS}>
+            {t('settings.platformInfoCard.nationwideSystemDisplayName')}
+          </label>
           <div className="relative">
             <input
               type="text"
@@ -63,14 +67,16 @@ export default function PlatformInfoCard({ values, nameError, onChange }: Platfo
 
         <div className="grid grid-cols-1 gap-space-md sm:grid-cols-2">
           <div>
-            <label className={LABEL_CLASS}>Mã phiên bản phát hành</label>
+            <label className={LABEL_CLASS}>{t('settings.platformInfoCard.releaseVersion')}</label>
             <div className="flex h-11 items-center justify-between rounded-xl bg-surface-container-low px-space-md font-body-md text-body-md text-on-surface">
               <span className="font-semibold text-primary">{PLATFORM_INFO.releaseCode}</span>
               <Icon name="verified_user" className="text-[18px] text-primary" />
             </div>
           </div>
           <div>
-            <label className={LABEL_CLASS}>Múi giờ vận hành</label>
+            <label className={LABEL_CLASS}>
+              {t('settings.platformInfoCard.operatingTimeZone')}
+            </label>
             <div className="relative">
               <select
                 value={values.timezone}
@@ -97,10 +103,12 @@ export default function PlatformInfoCard({ values, nameError, onChange }: Platfo
         </div>
 
         <div>
-          <label className={LABEL_CLASS}>Ngôn ngữ mặc định &amp; dự phòng</label>
+          <label className={LABEL_CLASS}>
+            {t('settings.platformInfoCard.defaultFallbackLanguages')}
+          </label>
           <div className="grid grid-cols-1 gap-space-sm sm:grid-cols-2">
             <div
-              title="Ngôn ngữ chính của hệ thống, không thể tắt"
+              title={t('settings.platformInfoCard.thePrimarySystemLanguage')}
               className="flex items-center justify-between rounded-xl bg-surface-container-low p-space-sm"
             >
               <div className="flex items-center gap-space-sm">
@@ -108,7 +116,7 @@ export default function PlatformInfoCard({ values, nameError, onChange }: Platfo
                   VN
                 </span>
                 <span className="font-label-md text-label-md font-semibold text-on-surface">
-                  Tiếng Việt (Chính)
+                  {t('settings.platformInfoCard.tiengVietPrimary')}
                 </span>
               </div>
               <Icon name="check_circle" className="text-[18px] text-primary" />
@@ -126,7 +134,7 @@ export default function PlatformInfoCard({ values, nameError, onChange }: Platfo
                 <span
                   className={`font-label-md text-label-md font-semibold ${values.englishFallback ? 'text-on-surface' : 'text-outline'}`}
                 >
-                  English (Dự phòng)
+                  {t('settings.platformInfoCard.englishFallback')}
                 </span>
               </div>
               <Icon
@@ -139,7 +147,7 @@ export default function PlatformInfoCard({ values, nameError, onChange }: Platfo
 
         <div className="flex flex-col gap-2 rounded-xl bg-surface-container-low/70 p-space-md">
           <div className="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
-            <span>Dung lượng lưu trữ Cache POI &amp; Assets CDN</span>
+            <span>{t('settings.platformInfoCard.poiCacheCdnAsset')}</span>
             <span className="font-semibold text-on-surface">
               {formatNumber(PLATFORM_INFO.storageUsedGb)} GB /{' '}
               {formatNumber(PLATFORM_INFO.storageTotalGb)} GB (

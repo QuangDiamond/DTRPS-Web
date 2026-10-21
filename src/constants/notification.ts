@@ -1,26 +1,62 @@
+import i18n from 'i18next';
 import type {
   NotificationChannel,
   NotificationEvent,
   NotificationPriority,
   NotificationRules,
   NotificationTab,
-} from '../types/admin';
+} from '@/types';
 
 export const NOTIFICATION_TABS: { id: NotificationTab; label: string }[] = [
-  { id: 'all', label: 'Tất cả' },
-  { id: 'listings', label: 'Niêm yết & Đối tác' },
-  { id: 'users', label: 'Người dùng & Báo cáo' },
-  { id: 'system', label: 'Cảnh báo kỹ thuật & AI' },
+  {
+    id: 'all',
+    get label() {
+      return i18n.t('notifications.constants.all');
+    },
+  },
+  {
+    id: 'listings',
+    get label() {
+      return i18n.t('notifications.constants.listingsPartners');
+    },
+  },
+  {
+    id: 'users',
+    get label() {
+      return i18n.t('notifications.constants.usersReports');
+    },
+  },
+  {
+    id: 'system',
+    get label() {
+      return i18n.t('notifications.constants.technicalAiAlerts');
+    },
+  },
 ];
 
 export const NOTIFICATION_PRIORITY_CONFIG: Record<
   NotificationPriority,
   { label: string; dotClass: string }
 > = {
-  urgent: { label: 'Khẩn cấp', dotClass: 'bg-error' },
+  urgent: {
+    get label() {
+      return i18n.t('notifications.constants.urgent');
+    },
+    dotClass: 'bg-error',
+  },
   high: { label: 'Cao', dotClass: 'bg-tertiary' },
-  normal: { label: 'Bình thường', dotClass: 'bg-primary' },
-  low: { label: 'Thấp', dotClass: 'bg-outline' },
+  normal: {
+    get label() {
+      return i18n.t('notifications.constants.normal');
+    },
+    dotClass: 'bg-primary',
+  },
+  low: {
+    get label() {
+      return i18n.t('notifications.constants.low');
+    },
+    dotClass: 'bg-outline',
+  },
 };
 
 export const NOTIFICATION_PRIORITIES: NotificationPriority[] = ['urgent', 'high', 'normal', 'low'];
@@ -29,7 +65,12 @@ export const NOTIFICATION_CHANNEL_CONFIG: Record<
   NotificationChannel,
   { label: string; icon: string }
 > = {
-  app: { label: 'Trong ứng dụng quản trị', icon: 'notifications' },
+  app: {
+    get label() {
+      return i18n.t('notifications.constants.inAdminApp');
+    },
+    icon: 'notifications',
+  },
   email: { label: 'Email', icon: 'mail' },
   telegram: { label: 'Telegram', icon: 'send' },
   sms: { label: 'SMS', icon: 'sms' },
@@ -40,33 +81,57 @@ export const NOTIFICATION_EVENT_CONFIG: Record<
   { label: string; description: string; icon: string }
 > = {
   newListing: {
-    label: 'Hồ sơ niêm yết mới / bổ sung',
-    description: 'Khi đối tác gửi hồ sơ mới hoặc tải lên giấy tờ bổ sung',
+    get label() {
+      return i18n.t('notifications.constants.newUpdatedListingSubmissions');
+    },
+    get description() {
+      return i18n.t('notifications.constants.whenPartnerSubmitsNew');
+    },
     icon: 'assignment',
   },
   newPartner: {
-    label: 'Đăng ký đối tác mới',
-    description: 'Khi doanh nghiệp hoàn tất đăng ký và ký quỹ bảo chứng',
+    get label() {
+      return i18n.t('notifications.constants.newPartnerRegistrations');
+    },
+    get description() {
+      return i18n.t('notifications.constants.whenBusinessCompletesRegistration');
+    },
     icon: 'corporate_fare',
   },
   complaint: {
-    label: 'Khiếu nại & phản ánh của du khách',
-    description: 'Phản ánh sai lệch giá, chất lượng dịch vụ, gian lận',
+    get label() {
+      return i18n.t('notifications.constants.travelerComplaintsFeedback');
+    },
+    get description() {
+      return i18n.t('notifications.constants.reportsPriceDiscrepanciesService');
+    },
     icon: 'flag',
   },
   aiLoad: {
-    label: 'Tải trọng AI vượt ngưỡng',
-    description: 'Theo dõi tần suất yêu cầu AI Planner theo cụm máy chủ',
+    get label() {
+      return i18n.t('notifications.constants.aiLoadOverThreshold');
+    },
+    get description() {
+      return i18n.t('notifications.constants.trackAiPlannerRequest');
+    },
     icon: 'smart_toy',
   },
   dataSync: {
-    label: 'Đồng bộ dữ liệu POI & GPS',
-    description: 'Kết quả đồng bộ dữ liệu quốc gia và độ trễ GPS',
+    get label() {
+      return i18n.t('notifications.constants.poiGpsDataSync');
+    },
+    get description() {
+      return i18n.t('notifications.constants.nationalDataSyncResults');
+    },
     icon: 'sync_saved_locally',
   },
   security: {
-    label: 'Bảo mật & tài khoản',
-    description: 'Khóa tài khoản, đăng nhập bất thường, vi phạm chính sách',
+    get label() {
+      return i18n.t('notifications.constants.securityAccounts');
+    },
+    get description() {
+      return i18n.t('notifications.constants.accountLocksUnusualSign');
+    },
     icon: 'shield',
   },
 };

@@ -1,5 +1,6 @@
-import Icon from '../../../components/common/Icon';
-import type { ListingDetail, ListingFact } from '../../../types/admin';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import type { ListingDetail, ListingFact } from '@/types';
 import ReviewSection, { FieldLabel } from './ReviewSection';
 
 const FACT_TONE_CLASS: Record<ListingFact['tone'], string> = {
@@ -8,14 +9,15 @@ const FACT_TONE_CLASS: Record<ListingFact['tone'], string> = {
 };
 
 export default function BusinessInfoSection({ detail }: { detail: ListingDetail }) {
+  const { t } = useTranslation();
   const { business } = detail;
   const isEmpty = business.facts.length === 0 && business.amenities.length === 0;
 
   return (
     <ReviewSection
       number="04"
-      title="Thông tin kinh doanh chuyên sâu"
-      subtitle="Quy mô cơ sở lưu trú, tiện nghi và chính sách phòng"
+      title={t('listingReview.businessInfoSection.inDepthBusinessInformation')}
+      subtitle={t('listingReview.businessInfoSection.propertySizeAmenitiesRoom')}
       badge={
         <span className="rounded-full border border-surface-container-high bg-surface-container px-3 py-1 text-[11.5px] font-bold text-on-surface">
           {business.scaleBadge}
@@ -26,7 +28,7 @@ export default function BusinessInfoSection({ detail }: { detail: ListingDetail 
         <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-outline-variant py-8 text-outline">
           <Icon name="inventory_2" className="text-[30px]" />
           <span className="text-[12.5px] font-medium">
-            Đối tác chưa khai báo thông tin kinh doanh chi tiết
+            {t('listingReview.businessInfoSection.thePartnerHasNot')}
           </span>
         </div>
       ) : (
@@ -53,7 +55,7 @@ export default function BusinessInfoSection({ detail }: { detail: ListingDetail 
 
           {business.amenities.length > 0 && (
             <div className="md:col-span-2">
-              <FieldLabel>Hệ thống tiện ích phục vụ khách du lịch</FieldLabel>
+              <FieldLabel>{t('listingReview.businessInfoSection.amenitiesTravelers')}</FieldLabel>
               <div className="flex flex-wrap gap-2.5">
                 {business.amenities.map((amenity) => (
                   <span

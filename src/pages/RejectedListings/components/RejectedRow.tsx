@@ -1,9 +1,14 @@
-import Icon from '../../../components/common/Icon';
-import ListingThumb from '../../../components/listings/ListingThumb';
-import { RESUBMISSION_CONFIG } from '../../../constants/listing';
-import type { Listing } from '../../../types/admin';
-import { formatDateWithPeriod } from '../../../utils/format';
-import { getRejectionReason, getResubmissionLabel, getResubmissionStatus } from '../rejectedUtils';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import ListingThumb from '@/components/listings/ListingThumb';
+import { RESUBMISSION_CONFIG } from '@/constants/listing';
+import {
+  getRejectionReason,
+  getResubmissionLabel,
+  getResubmissionStatus,
+} from '@/pages/RejectedListings/rejectedUtils';
+import type { Listing } from '@/types';
+import { formatDateWithPeriod } from '@/utils/format';
 
 interface RejectedRowProps {
   listing: Listing;
@@ -22,6 +27,7 @@ export default function RejectedRow({
   onReReview,
   onShowReason,
 }: RejectedRowProps) {
+  const { t } = useTranslation();
   const status = getResubmissionStatus(listing);
   const statusConfig = RESUBMISSION_CONFIG[status];
   const reason = getRejectionReason(listing);
@@ -37,7 +43,7 @@ export default function RejectedRow({
           type="checkbox"
           checked={selected}
           onChange={() => onToggleSelect(listing.id)}
-          aria-label={`Chọn ${listing.name}`}
+          aria-label={t('rejectedListings.rejectedRow.select', { name: listing.name })}
           className="h-4 w-4 cursor-pointer rounded accent-primary"
         />
       </td>
@@ -135,7 +141,7 @@ export default function RejectedRow({
             className="ml-auto flex h-9 items-center justify-center gap-1 rounded-full bg-primary px-3.5 font-label-sm text-label-sm font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
           >
             <Icon name="visibility" className="text-[16px]" />
-            <span>Xem xét lại</span>
+            <span>{t('rejectedListings.rejectedRow.reReview')}</span>
           </button>
         ) : (
           <button
@@ -144,7 +150,7 @@ export default function RejectedRow({
             className="ml-auto flex h-9 items-center justify-center gap-1 rounded-full bg-surface-container px-3 font-label-sm text-label-sm font-medium text-on-surface-variant transition-all hover:bg-surface-container-high hover:text-on-surface"
           >
             <Icon name="info" className="text-[16px]" />
-            <span>Xem lý do</span>
+            <span>{t('rejectedListings.rejectedRow.viewReason')}</span>
           </button>
         )}
       </td>

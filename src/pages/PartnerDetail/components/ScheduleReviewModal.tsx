@@ -1,7 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import Button from '../../../components/common/Button';
-import Modal from '../../../components/common/Modal';
-import { todayIsoDate } from '../../../utils/format';
+import { Button, Modal } from '@/components/common';
+import { todayIsoDate } from '@/utils/format';
 
 interface ScheduleReviewModalProps {
   currentDate: string;
@@ -14,29 +14,30 @@ export default function ScheduleReviewModal({
   onConfirm,
   onClose,
 }: ScheduleReviewModalProps) {
+  const { t } = useTranslation();
   const today = todayIsoDate();
   const [date, setDate] = useState(currentDate < today ? today : currentDate);
   const isValid = date >= today;
 
   return (
     <Modal
-      title="Lên lịch tái thẩm định"
-      description="Chọn ngày kiểm định chất lượng dịch vụ kỳ tiếp theo"
+      title={t('partnerDetail.scheduleReviewModal.scheduleReAssessment')}
+      description={t('partnerDetail.scheduleReviewModal.pickDateNextService')}
       onClose={onClose}
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
-            Hủy
+            {t('actions.cancel')}
           </Button>
           <Button icon="event_available" disabled={!isValid} onClick={() => onConfirm(date)}>
-            Lưu lịch
+            {t('partnerDetail.scheduleReviewModal.saveSchedule')}
           </Button>
         </>
       }
     >
       <label className="flex flex-col gap-1.5">
         <span className="font-label-sm text-label-sm font-semibold text-on-surface-variant">
-          Ngày tái thẩm định
+          {t('partnerDetail.scheduleReviewModal.reAssessmentDate')}
         </span>
         <input
           type="date"

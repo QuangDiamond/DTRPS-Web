@@ -1,8 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import Icon from '../../../components/common/Icon';
-import { CIDR_PATTERN } from '../../../constants/settings';
-import { useToast } from '../../../hooks/useToast';
-import type { IpWhitelistEntry } from '../../../types/admin';
+import { Icon } from '@/components/common';
+import { CIDR_PATTERN } from '@/constants/settings';
+import { useToast } from '@/hooks';
+import type { IpWhitelistEntry } from '@/types';
 
 interface IpWhitelistFieldProps {
   entries: IpWhitelistEntry[];
@@ -16,6 +17,7 @@ let entrySeq = 0;
 
 /** Danh sách dải IP được phép truy cập cổng quản trị */
 export default function IpWhitelistField({ entries, onChange }: IpWhitelistFieldProps) {
+  const { t } = useTranslation();
   const { showToast } = useToast();
   const [adding, setAdding] = useState(false);
   const [cidr, setCidr] = useState('');
@@ -32,32 +34,36 @@ export default function IpWhitelistField({ entries, onChange }: IpWhitelistField
   const addEntry = () => {
     const value = cidr.trim();
     if (!CIDR_PATTERN.test(value)) {
-      setError('Dải IP phải đúng định dạng CIDR, ví dụ 118.70.192.0/24');
+      setError(t('settings.ipWhitelistField.theIpRangeMust'));
       return;
     }
     if (entries.some((entry) => entry.cidr === value)) {
-      setError('Dải IP này đã có trong danh sách');
+      setError(t('settings.ipWhitelistField.thisIpRangeAlready'));
       return;
     }
     entrySeq += 1;
     onChange([
       ...entries,
-      { id: `ip-${Date.now()}-${entrySeq}`, cidr: value, label: label.trim() || 'Văn phòng mới' },
+      {
+        id: `ip-${Date.now()}-${entrySeq}`,
+        cidr: value,
+        label: label.trim() || t('settings.ipWhitelistField.newOffice'),
+      },
     ]);
-    showToast(`Đã thêm dải IP ${value} (chưa lưu)`, 'info');
+    showToast(t('settings.ipWhitelistField.addedIpRangeNot', { value }), 'info');
     closeForm();
   };
 
   const removeEntry = (entry: IpWhitelistEntry) => {
     onChange(entries.filter((item) => item.id !== entry.id));
-    showToast(`Đã gỡ dải IP ${entry.cidr} (chưa lưu)`, 'info');
+    showToast(t('settings.ipWhitelistField.removedIpRangeNot', { cidr: entry.cidr }), 'info');
   };
 
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between">
         <span className="font-label-md text-label-md text-on-surface-variant">
-          Giới hạn dải IP truy cập văn phòng điều hành
+          {t('settings.ipWhitelistField.restrictAccessOperationsOffice')}
         </span>
         {!adding && (
           <button
@@ -65,7 +71,7 @@ export default function IpWhitelistField({ entries, onChange }: IpWhitelistField
             onClick={() => setAdding(true)}
             className="font-label-sm text-label-sm font-semibold text-primary hover:underline"
           >
-            + Thêm IP CIDR
+            {t('settings.ipWhitelistField.addCidrIp')}
           </button>
         )}
       </div>
@@ -86,7 +92,7 @@ export default function IpWhitelistField({ entries, onChange }: IpWhitelistField
             </div>
             <button
               type="button"
-              title="Gỡ dải IP"
+              title={t('settings.ipWhitelistField.removeIpRange')}
               onClick={() => removeEntry(entry)}
               className="text-outline transition-colors hover:text-error"
             >
@@ -98,7 +104,7 @@ export default function IpWhitelistField({ entries, onChange }: IpWhitelistField
         {entries.length === 0 && !adding && (
           <div className="flex items-center gap-2 px-space-sm py-1.5 font-body-sm text-body-sm text-tertiary">
             <Icon name="warning_amber" className="text-[16px]" />
-            Chưa giới hạn IP — mọi địa chỉ đều truy cập được cổng quản trị
+            {t('settings.ipWhitelistField.noIpRestrictionAny')}
           </div>
         )}
 
@@ -123,7 +129,7 @@ export default function IpWhitelistField({ entries, onChange }: IpWhitelistField
               <input
                 type="text"
                 value={label}
-                placeholder="Ghi chú (văn phòng, chi nhánh...)"
+                placeholder={t('settings.ipWhitelistField.noteOfficeBranch')}
                 onChange={(event) => setLabel(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') addEntry();
@@ -136,14 +142,14 @@ export default function IpWhitelistField({ entries, onChange }: IpWhitelistField
                 onClick={addEntry}
                 className="h-9 rounded-lg bg-primary px-space-sm font-label-sm text-label-sm font-semibold text-on-primary"
               >
-                Thêm
+                {t('settings.ipWhitelistField.add')}
               </button>
               <button
                 type="button"
                 onClick={closeForm}
                 className="h-9 rounded-lg px-space-sm font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-container-high"
               >
-                Hủy
+                {t('actions.cancel')}
               </button>
             </div>
             {error && (

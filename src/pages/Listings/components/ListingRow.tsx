@@ -1,9 +1,10 @@
-import Icon from '../../../components/common/Icon';
-import ListingStatusBadge from '../../../components/listings/ListingStatusBadge';
-import ListingThumb from '../../../components/listings/ListingThumb';
-import { LISTING_CATEGORY_CONFIG, PARTNER_TIER_CONFIG } from '../../../constants/listing';
-import type { Listing, ListingHighlight } from '../../../types/admin';
-import { getWaitDisplay, isOverdue } from '../listingUtils';
+import { useTranslation } from 'react-i18next';
+import { AiMatchBadge, Icon, VectorIndexBadge } from '@/components/common';
+import ListingStatusBadge from '@/components/listings/ListingStatusBadge';
+import ListingThumb from '@/components/listings/ListingThumb';
+import { LISTING_CATEGORY_CONFIG, PARTNER_TIER_CONFIG } from '@/constants/listing';
+import { getWaitDisplay, isOverdue } from '@/pages/Listings/listingUtils';
+import type { Listing, ListingHighlight } from '@/types';
 
 interface ListingRowProps {
   listing: Listing;
@@ -12,6 +13,8 @@ interface ListingRowProps {
   onReview: (listing: Listing) => void;
   onShowReason: (listing: Listing) => void;
   onOpenMap: (listing: Listing) => void;
+  /** Độ tương đồng AI (%) khi đang dùng tìm kiếm AI */
+  matchScore?: number;
 }
 
 const HIGHLIGHT_TONE_CLASS: Record<ListingHighlight['tone'], string> = {
@@ -27,12 +30,14 @@ const ICON_BUTTON_CLASS =
 
 export default function ListingRow({
   listing,
+  matchScore,
   selected,
   onToggleSelect,
   onReview,
   onShowReason,
   onOpenMap,
 }: ListingRowProps) {
+  const { t } = useTranslation();
   const overdue = isOverdue(listing);
   const wait = getWaitDisplay(listing);
   const tier = PARTNER_TIER_CONFIG[listing.partnerTier];
@@ -48,7 +53,7 @@ export default function ListingRow({
           type="checkbox"
           checked={selected}
           onChange={() => onToggleSelect(listing.id)}
-          aria-label={`Chọn ${listing.name}`}
+          aria-label={t('listings.listingRow.select', { name: listing.name })}
           className="h-4 w-4 cursor-pointer rounded accent-primary"
         />
       </td>
@@ -66,9 +71,11 @@ export default function ListingRow({
               >
                 {listing.name}
               </button>
+              {matchScore !== undefined && <AiMatchBadge score={matchScore} />}
+              <VectorIndexBadge indexed={listing.vectorEmbedded} />
               {overdue && (
                 <span className="shrink-0 rounded bg-error-container px-2 py-0.5 font-label-sm text-label-sm font-bold text-on-error-container">
-                  Quá 24h
+                  {t('listings.listingRow.over24h')}
                 </span>
               )}
             </div>
@@ -153,16 +160,16 @@ export default function ListingRow({
                 type="button"
                 onClick={() => onReview(listing)}
                 className={`${ACTION_BUTTON_CLASS} bg-brand text-on-primary shadow-sm hover:bg-primary-container`}
-                title="Chuyển sang màn hình thẩm định chi tiết"
+                title={t('listings.listingRow.openDetailedReviewScreen')}
               >
                 <Icon name="rate_review" className="text-[16px]" />
-                <span>Xem xét &amp; Duyệt</span>
+                <span>{t('listings.listingRow.reviewApprove')}</span>
               </button>
               <button
                 type="button"
                 onClick={() => onReview(listing)}
                 className={ICON_BUTTON_CLASS}
-                title="Xem chi tiết"
+                title={t('actions.viewDetail')}
               >
                 <Icon name="visibility" className="text-[18px]" />
               </button>
@@ -175,16 +182,16 @@ export default function ListingRow({
                 type="button"
                 onClick={() => onReview(listing)}
                 className={`${ACTION_BUTTON_CLASS} bg-surface-container-high text-primary hover:bg-surface-container-highest`}
-                title="Xem chi tiết hồ sơ"
+                title={t('listings.listingRow.viewSubmissionDetails')}
               >
                 <Icon name="info" className="text-[16px]" />
-                <span>Xem chi tiết</span>
+                <span>{t('actions.viewDetail')}</span>
               </button>
               <button
                 type="button"
                 onClick={() => onOpenMap(listing)}
                 className={ICON_BUTTON_CLASS}
-                title="Xem trên bản đồ"
+                title={t('actions.viewOnMap')}
               >
                 <Icon name="visibility" className="text-[18px]" />
               </button>
@@ -197,16 +204,16 @@ export default function ListingRow({
                 type="button"
                 onClick={() => onShowReason(listing)}
                 className={`${ACTION_BUTTON_CLASS} bg-error-container/60 text-error hover:bg-error-container`}
-                title="Xem lý do từ chối hồ sơ"
+                title={t('listings.listingRow.viewRejectionReason')}
               >
                 <Icon name="error_outline" className="text-[16px]" />
-                <span>Xem lý do</span>
+                <span>{t('listings.listingRow.viewReason')}</span>
               </button>
               <button
                 type="button"
                 onClick={() => onReview(listing)}
                 className={ICON_BUTTON_CLASS}
-                title="Xem chi tiết"
+                title={t('actions.viewDetail')}
               >
                 <Icon name="visibility" className="text-[18px]" />
               </button>

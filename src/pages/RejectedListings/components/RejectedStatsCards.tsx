@@ -1,7 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { ListingStats } from '../../../types/admin';
-import { formatNumber } from '../../../utils/format';
+import { Icon } from '@/components/common';
+import type { ListingStats } from '@/types';
+import { formatNumber } from '@/utils/format';
 
 interface CardConfig {
   label: string;
@@ -18,21 +19,22 @@ const CARD_CLASS =
   'group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-surface-container-lowest p-5 shadow-[0_4px_20px_-2px_rgba(15,118,110,0.06)]';
 
 export default function RejectedStatsCards({ stats }: { stats: ListingStats }) {
+  const { t } = useTranslation();
   const unresolved = Math.max(0, stats.rejected - stats.resubmitted - stats.locked);
 
   const cards: CardConfig[] = [
     {
-      label: 'Tổng từ chối',
+      label: t('rejectedListings.rejectedStatsCards.totalRejected'),
       value: stats.rejected,
       valueClass: 'text-on-surface',
       icon: 'cancel',
       iconBoxClass: 'bg-error-container text-error',
       glowClass: 'bg-error-container/40',
-      tag: 'Vi phạm / Thiếu giấy tờ',
+      tag: t('rejectedListings.rejectedStatsCards.violationsMissingDocuments'),
       tagClass: 'bg-error-container text-on-error-container font-semibold',
     },
     {
-      label: 'Chờ thẩm định lại',
+      label: t('rejectedListings.rejectedStatsCards.awaitingReReview'),
       value: stats.resubmitted,
       valueClass: 'text-tertiary',
       icon: 'published_with_changes',
@@ -41,29 +43,29 @@ export default function RejectedStatsCards({ stats }: { stats: ListingStats }) {
       tag: (
         <>
           <span className="h-1.5 w-1.5 animate-ping rounded-full bg-tertiary" />
-          Cần xử lý gấp
+          {t('rejectedListings.rejectedStatsCards.urgent')}
         </>
       ),
       tagClass: 'flex items-center gap-1 bg-tertiary-fixed text-on-tertiary-fixed font-semibold',
     },
     {
-      label: 'Chưa khắc phục',
+      label: t('rejectedListings.rejectedStatsCards.notYetFixed'),
       value: unresolved,
       valueClass: 'text-on-surface',
       icon: 'pending_actions',
       iconBoxClass: 'bg-surface-container text-outline',
       glowClass: 'bg-surface-container-high/60',
-      tag: 'Đang chờ đối tác bổ sung',
+      tag: t('rejectedListings.rejectedStatsCards.waitingPartnerUpdate'),
       tagClass: 'bg-surface-container-high text-on-surface-variant font-medium',
     },
     {
-      label: 'Đóng vĩnh viễn',
+      label: t('rejectedListings.rejectedStatsCards.permanentlyClosed'),
       value: stats.locked,
       valueClass: 'text-on-surface',
       icon: 'block',
       iconBoxClass: 'bg-surface-variant text-on-surface-variant',
       glowClass: 'bg-surface-variant/50',
-      tag: 'Spam / Gian lận thông tin',
+      tag: t('rejectedListings.rejectedStatsCards.spamFraudulentInformation'),
       tagClass: 'bg-surface-variant text-on-surface-variant font-semibold',
     },
   ];

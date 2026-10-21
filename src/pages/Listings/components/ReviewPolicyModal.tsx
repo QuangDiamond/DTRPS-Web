@@ -1,12 +1,13 @@
-import Icon from '../../../components/common/Icon';
-import Modal from '../../../components/common/Modal';
-import { REVIEW_POLICIES } from '../../../constants/listing';
+import { useTranslation } from 'react-i18next';
+import { Icon, Modal } from '@/components/common';
+import { REVIEW_POLICIES } from '@/constants/listing';
 
 export default function ReviewPolicyModal({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
   return (
     <Modal
-      title="Quy chế kiểm duyệt niêm yết"
-      description="Tiêu chuẩn áp dụng khi thẩm định hồ sơ trước khi công bố lên ứng dụng"
+      title={t('listings.reviewPolicyModal.listingModerationPolicy')}
+      description={t('listings.reviewPolicyModal.standardsAppliedWhenReviewing')}
       onClose={onClose}
       size="lg"
     >

@@ -1,4 +1,5 @@
-import { useRef, useState, type ClipboardEvent, type KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { type ClipboardEvent, type KeyboardEvent, useRef, useState } from 'react';
 
 interface OtpInputProps {
   digits: string[];
@@ -8,6 +9,7 @@ interface OtpInputProps {
 
 /** 6 ô nhập OTP: tự nhảy ô, Backspace lùi ô, hỗ trợ dán cả mã */
 export default function OtpInput({ digits, onChange, disabled = false }: OtpInputProps) {
+  const { t } = useTranslation();
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
 
@@ -74,7 +76,7 @@ export default function OtpInput({ digits, onChange, disabled = false }: OtpInpu
               maxLength={1}
               value={digit}
               disabled={disabled}
-              aria-label={`Chữ số thứ ${index + 1}`}
+              aria-label={t('components.otpInput.digit', { value: index + 1 })}
               onChange={(event) => handleInput(index, event.target.value)}
               onKeyDown={(event) => handleKeyDown(index, event)}
               onPaste={handlePaste}

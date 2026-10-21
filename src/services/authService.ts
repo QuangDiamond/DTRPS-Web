@@ -1,10 +1,10 @@
+import i18n from 'i18next';
 /**
  * Service xác thực — chạy giả lập (mock) hoặc gọi API thật tùy cờ USE_MOCK_API.
  * Chữ ký hàm giữ nguyên ở cả hai chế độ nên AuthProvider và các màn đăng nhập không cần sửa.
  */
-import { MOCK_ADMIN_ACCOUNTS, MOCK_OTP_CODE } from '../constants/mockData';
-import type { AdminProfile } from '../types/admin';
-import type { AdminAccount } from '../types/auth';
+import { MOCK_ADMIN_ACCOUNTS, MOCK_OTP_CODE } from '@/mocks/data/mockData';
+import type { AdminAccount, AdminProfile } from '@/types';
 import { USE_MOCK_API } from './config';
 import { ENDPOINTS } from './endpoints';
 import { apiRequest } from './httpClient';
@@ -51,7 +51,7 @@ export async function login(
   await delay();
   const account = findAccount(email);
   if (!account || account.password !== password) {
-    throw new Error('Email hoặc mật khẩu không chính xác');
+    throw new Error(i18n.t('auth.errors.invalidCredentials'));
   }
   return account.profile;
 }
@@ -75,7 +75,7 @@ export async function sendPasswordResetOtp(email: string): Promise<void> {
   }
   await delay();
   if (!findAccount(email)) {
-    throw new Error('Email không tồn tại trong hệ thống quản trị');
+    throw new Error(i18n.t('auth.errors.unknownEmail'));
   }
 }
 
@@ -102,7 +102,7 @@ export async function resetPassword(email: string, newPassword: string): Promise
   await delay();
   const account = findAccount(email);
   if (!account) {
-    throw new Error('Email không tồn tại trong hệ thống quản trị');
+    throw new Error(i18n.t('auth.errors.unknownEmail'));
   }
   account.password = newPassword;
 }
@@ -123,10 +123,10 @@ export async function changePassword(
   await delay(800);
   const account = findAccount(email);
   if (!account) {
-    throw new Error('Không tìm thấy tài khoản quản trị');
+    throw new Error(i18n.t('auth.errors.accountNotFound'));
   }
   if (account.password !== currentPassword) {
-    throw new Error('Mật khẩu hiện tại không chính xác');
+    throw new Error(i18n.t('auth.errors.wrongCurrentPassword'));
   }
   account.password = newPassword;
 }

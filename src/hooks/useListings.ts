@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { ListingsContext, type ListingsContextValue } from '../contexts/listings';
+import { ListingsContext, type ListingsContextValue } from '@/contexts/listings/listingsContext';
 
 export function useListings(): ListingsContextValue {
   const context = useContext(ListingsContext);

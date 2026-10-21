@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { PoisContext, type PoisContextValue } from '../contexts/pois';
+import { PoisContext, type PoisContextValue } from '@/contexts/pois/poisContext';
 
 export function usePois(): PoisContextValue {
   const context = useContext(PoisContext);

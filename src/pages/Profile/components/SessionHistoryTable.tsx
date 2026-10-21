@@ -1,7 +1,8 @@
-import Icon from '../../../components/common/Icon';
-import { SESSION_STATUS_LABELS } from '../../../constants/adminProfile';
-import type { AdminSession } from '../../../types/admin';
-import { formatDayTime } from '../../../utils/format';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { SESSION_STATUS_LABELS } from '@/constants/adminProfile';
+import type { AdminSession } from '@/types';
+import { formatDayTime } from '@/utils/format';
 
 interface SessionHistoryTableProps {
   sessions: AdminSession[];
@@ -14,29 +15,40 @@ export default function SessionHistoryTable({
   sessions,
   onRevokeOthers,
 }: SessionHistoryTableProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-space-sm pt-space-xs">
       <div className="flex items-center justify-between">
         <span className="font-label-md text-label-md font-semibold text-on-surface">
-          Lịch sử {MAX_ROWS} phiên đăng nhập gần nhất
+          {t('profile.sessionHistoryTable.lastSignSessions', { MAX_ROWS })}
         </span>
         <button
           type="button"
           onClick={onRevokeOthers}
           className="font-label-sm text-label-sm font-semibold text-error hover:underline"
         >
-          Đăng xuất khỏi tất cả thiết bị khác
+          {t('profile.sessionHistoryTable.signOutAllOther')}
         </button>
       </div>
-      <div className="overflow-x-auto rounded-xl bg-surface-container-low">
+      <div className="table-scroll overflow-x-auto rounded-xl bg-surface-container-low">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="font-label-sm text-label-sm text-on-surface-variant">
-              <th className="px-space-md py-2.5 font-semibold">Thiết bị &amp; Trình duyệt</th>
-              <th className="px-space-md py-2.5 font-semibold">Địa chỉ IP</th>
-              <th className="px-space-md py-2.5 font-semibold">Vị trí địa lý</th>
-              <th className="px-space-md py-2.5 font-semibold">Thời gian</th>
-              <th className="px-space-md py-2.5 text-right font-semibold">Trạng thái</th>
+              <th className="px-space-md py-2.5 font-semibold">
+                {t('profile.sessionHistoryTable.deviceBrowser')}
+              </th>
+              <th className="px-space-md py-2.5 font-semibold">
+                {t('profile.sessionHistoryTable.ipAddress')}
+              </th>
+              <th className="px-space-md py-2.5 font-semibold">
+                {t('profile.sessionHistoryTable.location')}
+              </th>
+              <th className="px-space-md py-2.5 font-semibold">
+                {t('profile.sessionHistoryTable.time')}
+              </th>
+              <th className="px-space-md py-2.5 text-right font-semibold">
+                {t('profile.sessionHistoryTable.status')}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-surface-container font-body-sm text-body-sm">
@@ -60,13 +72,15 @@ export default function SessionHistoryTable({
                   <td
                     className={`px-space-md py-2.5 whitespace-nowrap ${isCurrent ? 'text-on-surface' : 'text-on-surface-variant'}`}
                   >
-                    {isCurrent ? 'Đang hoạt động' : formatDayTime(session.signedInAt)}
+                    {isCurrent
+                      ? t('profile.sessionHistoryTable.active')
+                      : formatDayTime(session.signedInAt)}
                   </td>
                   <td className="px-space-md py-2.5 text-right whitespace-nowrap">
                     {isCurrent ? (
                       <span className="inline-flex items-center gap-1 font-label-sm text-label-sm font-bold text-primary">
                         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-                        Phiên này
+                        {t('profile.sessionHistoryTable.thisSession')}
                       </span>
                     ) : (
                       <span

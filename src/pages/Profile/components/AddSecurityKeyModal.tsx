@@ -1,8 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import Button from '../../../components/common/Button';
-import Icon from '../../../components/common/Icon';
-import Modal from '../../../components/common/Modal';
-import { MAX_SECURITY_KEYS } from '../../../constants/adminProfile';
+import { Button, Icon, Modal } from '@/components/common';
+import { MAX_SECURITY_KEYS } from '@/constants/adminProfile';
 
 const TOUCH_WAIT_MS = 1800;
 
@@ -18,31 +17,30 @@ export default function AddSecurityKeyModal({
   onAdd,
   onClose,
 }: AddSecurityKeyModalProps) {
-  const [name, setName] = useState(`YubiKey dự phòng #${keyCount}`);
+  const { t } = useTranslation();
+  const [name, setName] = useState(t('profile.addSecurityKeyModal.backupYubikey', { keyCount }));
   const [waiting, setWaiting] = useState(false);
+  const deviceName = name.trim() || t('profile.addSecurityKeyModal.backupFido2Key');
   const isFull = keyCount >= MAX_SECURITY_KEYS;
 
   useEffect(() => {
     if (!waiting) return;
-    const timer = window.setTimeout(
-      () => onAdd(name.trim() || 'Khóa FIDO2 dự phòng'),
-      TOUCH_WAIT_MS,
-    );
+    const timer = window.setTimeout(() => onAdd(deviceName), TOUCH_WAIT_MS);
     return () => window.clearTimeout(timer);
-  }, [waiting, name, onAdd]);
+  }, [waiting, deviceName, onAdd]);
 
   return (
     <Modal
-      title="Thêm khóa bảo mật dự phòng"
-      description="Cắm khóa FIDO2 qua USB-C hoặc chạm NFC, sau đó chạm vào khóa khi được yêu cầu"
+      title={t('profile.addSecurityKeyModal.addBackupSecurityKey')}
+      description={t('profile.addSecurityKeyModal.plugFido2KeyVia')}
       onClose={onClose}
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
-            Hủy
+            {t('actions.cancel')}
           </Button>
           <Button icon="usb" disabled={waiting || isFull} onClick={() => setWaiting(true)}>
-            Bắt đầu liên kết
+            {t('profile.addSecurityKeyModal.startLinking')}
           </Button>
         </>
       }
@@ -54,16 +52,16 @@ export default function AddSecurityKeyModal({
             <Icon name="fingerprint" className="text-[44px] text-primary" />
           </span>
           <span className="font-title-md text-title-md text-on-surface">
-            Chạm vào khóa bảo mật...
+            {t('profile.addSecurityKeyModal.touchYourSecurityKey')}
           </span>
           <span className="font-body-sm text-body-sm text-on-surface-variant">
-            Đang chờ xác nhận từ thiết bị "{name.trim() || 'Khóa FIDO2 dự phòng'}"
+            {t('profile.addSecurityKeyModal.waitingConfirmationFrom', { deviceName })}
           </span>
         </div>
       ) : (
         <div className="flex flex-col gap-space-sm">
           <label className="font-label-sm text-label-sm font-semibold text-on-surface-variant">
-            Tên gợi nhớ của khóa
+            {t('profile.addSecurityKeyModal.keyNickname')}
           </label>
           <input
             type="text"
@@ -74,13 +72,12 @@ export default function AddSecurityKeyModal({
           />
           {isFull ? (
             <span className="flex items-center gap-1 font-label-sm text-label-sm text-error">
-              <Icon name="error" className="text-[14px]" /> Đã đạt tối đa {MAX_SECURITY_KEYS} khóa
-              cho một tài khoản
+              <Icon name="error" className="text-[14px]" />{' '}
+              {t('profile.addSecurityKeyModal.reachedLimitKeysPer', { MAX_SECURITY_KEYS })}
             </span>
           ) : (
             <span className="font-body-sm text-body-sm text-outline">
-              Đang có {keyCount}/{MAX_SECURITY_KEYS} khóa liên kết. Nên có ít nhất 1 khóa dự phòng
-              cất ở nơi an toàn.
+              {t('profile.addSecurityKeyModal.keysLinkedKeepAt', { keyCount, MAX_SECURITY_KEYS })}
             </span>
           )}
         </div>

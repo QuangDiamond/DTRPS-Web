@@ -1,6 +1,7 @@
-import Icon from '../../../components/common/Icon';
-import { formatDayTime } from '../../../utils/format';
-import type { ReviewLogEntry } from '../reviewUtils';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import type { ReviewLogEntry } from '@/types';
+import { formatDayTime } from '@/utils/format';
 
 const DOT_CLASS: Record<ReviewLogEntry['tone'], string> = {
   primary: 'bg-primary ring-primary-fixed/60',
@@ -9,11 +10,12 @@ const DOT_CLASS: Record<ReviewLogEntry['tone'], string> = {
 };
 
 export default function ReviewLogCard({ logs }: { logs: ReviewLogEntry[] }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-2xl border border-surface-container-high/90 bg-surface-container-lowest p-5 shadow-sm">
       <h3 className="mb-3 flex items-center gap-2 text-[13px] font-bold text-on-surface">
         <Icon name="history" className="text-[18px] text-on-surface-variant" />
-        <span>Nhật ký thẩm định hệ thống</span>
+        <span>{t('listingReview.reviewLogCard.systemReviewLog')}</span>
       </h3>
       <div className="relative space-y-3.5 pl-5 before:absolute before:top-2 before:bottom-2 before:left-2 before:w-[2px] before:bg-surface-container-high">
         {logs.map((log) => (

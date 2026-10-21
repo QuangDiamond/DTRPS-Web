@@ -1,6 +1,7 @@
-import Icon from '../../../components/common/Icon';
-import type { Listing, ListingDetail } from '../../../types/admin';
-import { getMapsUrl } from '../reviewUtils';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { getMapsUrl } from '@/pages/ListingReview/reviewUtils';
+import type { Listing, ListingDetail } from '@/types';
 import ReviewSection from './ReviewSection';
 
 interface LocationSectionProps {
@@ -9,17 +10,21 @@ interface LocationSectionProps {
 }
 
 export default function LocationSection({ listing, detail }: LocationSectionProps) {
+  const { t } = useTranslation();
   const { coordinates, mapImageUrl, areaNote, accuracy } = detail.location;
 
   return (
     <ReviewSection
       number="02"
-      title="Vị trí & Tọa độ bản đồ"
+      title={t('listingReview.locationSection.locationMapCoordinates')}
       subtitle={
         <span className="font-mono">
           {coordinates
-            ? `Tọa độ: ${coordinates.lat}° N, ${coordinates.lng}° E`
-            : 'Đối tác chưa ghim tọa độ GPS'}
+            ? t('listingReview.locationSection.coordinatesNE', {
+                latitude: coordinates.lat,
+                longitude: coordinates.lng,
+              })
+            : t('listingReview.locationSection.thePartnerHasNot')}
         </span>
       }
       action={
@@ -57,7 +62,7 @@ export default function LocationSection({ listing, detail }: LocationSectionProp
           </div>
           {accuracy && (
             <div className="shrink-0 rounded-md border border-surface-container-high bg-surface-container-lowest/95 px-2.5 py-1 font-mono text-[11px] font-medium text-on-surface-variant shadow-xs backdrop-blur-md">
-              Độ chính xác: {accuracy}
+              {t('listingReview.locationSection.accuracy', { accuracy })}
             </div>
           )}
         </div>

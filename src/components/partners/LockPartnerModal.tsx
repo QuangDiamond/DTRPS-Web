@@ -1,7 +1,8 @@
+import { Trans, useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { PARTNER_LOCK_REASONS } from '../../constants/partner';
-import type { Partner } from '../../types/admin';
-import Icon from '../common/Icon';
+import { Icon } from '@/components/common';
+import { PARTNER_LOCK_OTHER_REASON, PARTNER_LOCK_REASONS } from '@/constants/partner';
+import type { Partner } from '@/types';
 
 interface LockPartnerModalProps {
   partner: Partner;
@@ -18,9 +19,12 @@ export default function LockPartnerModal({
   onConfirm,
   onClose,
 }: LockPartnerModalProps) {
-  const [reason, setReason] = useState(PARTNER_LOCK_REASONS[0]);
+  const { t } = useTranslation();
+  const [reason, setReason] = useState<(typeof PARTNER_LOCK_REASONS)[number]>(
+    PARTNER_LOCK_REASONS[0],
+  );
   const [note, setNote] = useState('');
-  const needsNote = reason === PARTNER_LOCK_REASONS[PARTNER_LOCK_REASONS.length - 1];
+  const needsNote = reason === PARTNER_LOCK_OTHER_REASON;
   const canConfirm = !needsNote || note.trim().length > 0;
 
   useEffect(() => {
@@ -39,7 +43,7 @@ export default function LockPartnerModal({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Xác nhận tạm khóa tài khoản đối tác"
+        aria-label={t('components.lockPartnerModal.confirmPartnerAccountSuspension')}
         onClick={(event) => event.stopPropagation()}
         className="w-full max-w-lg rounded-2xl bg-surface-container-lowest p-6 shadow-2xl"
       >
@@ -49,20 +53,25 @@ export default function LockPartnerModal({
           </div>
           <div className="flex flex-col">
             <h3 className="font-headline-sm text-headline-sm text-on-surface">
-              Xác nhận tạm khóa tài khoản đối tác?
+              {t('components.lockPartnerModal.suspendThisPartnerAccount')}
             </h3>
             <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
-              Hành động này sẽ tạm dừng hoạt động hiển thị của{' '}
-              <strong>
-                {partner.name} ({partner.id})
-              </strong>
+              <Trans
+                i18nKey="components.lockPartnerModal.thisWillPauseVisibility"
+                values={{ name: partner.name, id: partner.id }}
+                components={{ c0: <strong /> }}
+              />
               {affectedListings > 0 ? (
                 <>
                   {' '}
-                  và cả <strong>{affectedListings} địa điểm niêm yết liên quan</strong>
+                  <Trans
+                    i18nKey="components.lockPartnerModal.andItsRelatedListed"
+                    values={{ affectedListings }}
+                    components={{ c0: <strong /> }}
+                  />
                 </>
               ) : null}{' '}
-              trên ứng dụng Smart Travel Vietnam.
+              {t('components.lockPartnerModal.onSmartTravelVietnam')}
             </p>
           </div>
         </div>
@@ -72,17 +81,20 @@ export default function LockPartnerModal({
             htmlFor="lock-reason"
             className="font-label-sm text-label-sm font-semibold tracking-wider text-outline uppercase"
           >
-            Lý do khóa tài khoản
+            {t('components.lockPartnerModal.reasonLockingAccount')}
           </label>
           <select
             id="lock-reason"
             value={reason}
-            onChange={(event) => setReason(event.target.value)}
+            onChange={(event) => {
+              const next = PARTNER_LOCK_REASONS.find((item) => item === event.target.value);
+              if (next) setReason(next);
+            }}
             className="h-10 w-full cursor-pointer rounded-lg bg-surface-container-lowest px-3 font-body-sm text-body-sm text-on-surface shadow-sm focus:ring-2 focus:ring-error focus:outline-none"
           >
             {PARTNER_LOCK_REASONS.map((item) => (
               <option key={item} value={item}>
-                {item}
+                {t(item)}
               </option>
             ))}
           </select>
@@ -92,8 +104,8 @@ export default function LockPartnerModal({
             onChange={(event) => setNote(event.target.value)}
             placeholder={
               needsNote
-                ? 'Bắt buộc ghi chú chi tiết khi chọn "Khác"...'
-                : 'Ghi chú thêm cho bộ phận CSKH và đối tác...'
+                ? t('components.lockPartnerModal.aDetailedNoteRequired')
+                : t('components.lockPartnerModal.additionalNotesCustomerSupport')
             }
             className="w-full rounded-lg bg-surface-container-lowest p-2.5 font-body-sm text-body-sm text-on-surface shadow-sm placeholder:text-outline focus:ring-2 focus:ring-error focus:outline-none"
           />
@@ -105,18 +117,18 @@ export default function LockPartnerModal({
             onClick={onClose}
             className="rounded-full bg-surface-container px-5 py-2.5 font-label-md text-label-md font-semibold text-on-surface transition-all hover:bg-surface-container-high"
           >
-            Hủy bỏ
+            {t('components.lockPartnerModal.cancel')}
           </button>
           <button
             type="button"
             disabled={!canConfirm}
             onClick={() =>
-              onConfirm(needsNote ? note.trim() : reason, needsNote ? '' : note.trim())
+              onConfirm(needsNote ? note.trim() : t(reason), needsNote ? '' : note.trim())
             }
             className="flex items-center gap-2 rounded-full bg-error px-6 py-2.5 font-label-md text-label-md font-semibold text-on-error shadow-md transition-all hover:bg-on-error-container disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Icon name="lock" className="text-[18px]" />
-            <span>Xác nhận khóa</span>
+            <span>{t('components.lockPartnerModal.confirmLock')}</span>
           </button>
         </div>
       </div>

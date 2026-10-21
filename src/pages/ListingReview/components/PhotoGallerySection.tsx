@@ -1,10 +1,12 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { ListingDetail } from '../../../types/admin';
+import { Icon } from '@/components/common';
+import type { ListingDetail } from '@/types';
 import PhotoLightbox from './PhotoLightbox';
 import ReviewSection from './ReviewSection';
 
 export default function PhotoGallerySection({ detail }: { detail: ListingDetail }) {
+  const { t } = useTranslation();
   const [viewingIndex, setViewingIndex] = useState<number | null>(null);
   const [cover, ...others] = detail.photos;
   const uploaded = detail.photos.length;
@@ -13,8 +15,8 @@ export default function PhotoGallerySection({ detail }: { detail: ListingDetail 
   return (
     <ReviewSection
       number="03"
-      title="Hình ảnh do đối tác tải lên"
-      subtitle="Kiểm định chất lượng hiển thị, góc chụp thực tế, không dính watermark"
+      title={t('listingReview.photoGallerySection.photosUploadedByPartner')}
+      subtitle={t('listingReview.photoGallerySection.checkDisplayQualityReal')}
       badge={
         <span
           className={`rounded-full border px-3 py-1 text-[11.5px] font-bold ${
@@ -23,7 +25,10 @@ export default function PhotoGallerySection({ detail }: { detail: ListingDetail 
               : 'border-tertiary-fixed bg-tertiary-fixed/30 text-on-tertiary-fixed-variant'
           }`}
         >
-          Đã tải lên {uploaded}/{detail.requiredPhotoCount} ảnh tiêu chuẩn
+          {t('listingReview.photoGallerySection.uploadedStandardPhotos', {
+            uploaded,
+            requiredPhotoCount: detail.requiredPhotoCount,
+          })}
         </span>
       }
     >
@@ -43,15 +48,18 @@ export default function PhotoGallerySection({ detail }: { detail: ListingDetail 
             <div className="absolute inset-0 bg-linear-to-t from-inverse-surface/85 via-inverse-surface/20 to-transparent" />
             <div className="absolute top-2.5 left-2.5">
               <span className="rounded-full bg-primary px-2.5 py-1 text-[10.5px] font-bold tracking-wider text-on-primary uppercase shadow-sm">
-                Ảnh bìa đại diện
+                {t('listingReview.photoGallerySection.coverPhoto')}
               </span>
             </div>
             <div className="absolute right-3 bottom-2.5 left-3 text-on-primary">
               <div className="truncate text-[13px] font-bold">{cover.caption}</div>
               <div className="mt-0.5 flex items-center justify-between font-mono text-[11px] text-outline-variant">
-                <span>{cover.meta ?? 'Ảnh đối tác tải lên'}</span>
+                <span>
+                  {cover.meta ?? t('listingReview.photoGallerySection.partnerUploadedPhoto')}
+                </span>
                 <span className="flex items-center gap-0.5 font-bold text-secondary-fixed-dim">
-                  <Icon name="check_circle" className="text-[13px]" /> Hợp lệ
+                  <Icon name="check_circle" className="text-[13px]" />{' '}
+                  {t('listingReview.photoGallerySection.valid')}
                 </span>
               </div>
             </div>
@@ -79,7 +87,7 @@ export default function PhotoGallerySection({ detail }: { detail: ListingDetail 
             ))}
             {others.length === 0 && (
               <div className="col-span-3 flex h-full min-h-[106px] items-center justify-center rounded-xl border border-dashed border-outline-variant text-[12px] text-outline">
-                Đối tác chưa tải ảnh chi tiết
+                {t('listingReview.photoGallerySection.thePartnerHasNot')}
               </div>
             )}
           </div>
@@ -87,7 +95,9 @@ export default function PhotoGallerySection({ detail }: { detail: ListingDetail 
       ) : (
         <div className="flex h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-outline-variant text-outline">
           <Icon name="hide_image" className="text-[32px]" />
-          <span className="text-[12.5px] font-medium">Đối tác chưa tải lên hình ảnh nào</span>
+          <span className="text-[12.5px] font-medium">
+            {t('listingReview.photoGallerySection.thePartnerHasNot2')}
+          </span>
         </div>
       )}
 

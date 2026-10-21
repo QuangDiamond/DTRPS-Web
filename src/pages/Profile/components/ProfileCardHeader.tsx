@@ -1,4 +1,4 @@
-import Icon from '../../../components/common/Icon';
+import { Icon } from '@/components/common';
 
 export const PROFILE_CARD_CLASS =
   'flex flex-col gap-space-md rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm';

@@ -1,8 +1,13 @@
-import Icon from '../../../components/common/Icon';
-import { POI_CLUSTER_RADIUS, POI_PROVINCE_OPTIONS } from '../../../constants/poi';
-import { useToast } from '../../../hooks/useToast';
-import type { PoiFormValues } from '../../../types/admin';
-import { googleMapsUrl, openStreetMapEmbedUrl, type PoiFieldChange } from '../poiFormUtils';
+import { Trans, useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { POI_CLUSTER_RADIUS, POI_PROVINCE_OPTIONS } from '@/constants/poi';
+import { useToast } from '@/hooks';
+import {
+  googleMapsUrl,
+  openStreetMapEmbedUrl,
+  type PoiFieldChange,
+} from '@/pages/PoiEditor/poiFormUtils';
+import type { PoiFormValues } from '@/types';
 import PoiCoordinateInput from './PoiCoordinateInput';
 import PoiRangeBar from './PoiRangeBar';
 import PoiSectionCard from './PoiSectionCard';
@@ -14,6 +19,7 @@ interface PoiLocationSectionProps {
 }
 
 export default function PoiLocationSection({ poiCode, values, onChange }: PoiLocationSectionProps) {
+  const { t } = useTranslation();
   const { showToast } = useToast();
   const { latitude, longitude, mapImageUrl, clusterRadius, clusterPois } = values;
 
@@ -27,12 +33,12 @@ export default function PoiLocationSection({ poiCode, values, onChange }: PoiLoc
     <PoiSectionCard
       compact
       icon="explore"
-      title="4. Tọa độ địa lý & Bản đồ số"
-      description="Định vị chính xác vị trí điểm đến trên bản đồ"
+      title={t('poiEditor.poiLocationSection.n4GeographicCoordinatesDigital')}
+      description={t('poiEditor.poiLocationSection.pinpointExactDestinationLocation')}
     >
       <div className="flex flex-col gap-1">
         <span className="font-label-md text-label-md font-semibold text-on-surface">
-          Tỉnh / Thành phố
+          {t('poiEditor.poiLocationSection.provinceCity')}
         </span>
         <div className="relative">
           <select
@@ -60,14 +66,14 @@ export default function PoiLocationSection({ poiCode, values, onChange }: PoiLoc
 
       <div className="flex flex-col gap-1">
         <span className="font-label-md text-label-md font-semibold text-on-surface">
-          Địa chỉ chi tiết
+          {t('poiEditor.poiLocationSection.detailedAddress')}
         </span>
         <label className="flex items-start gap-2 rounded-lg bg-surface-container-low p-space-sm font-body-md text-body-md text-on-surface focus-within:ring-2 focus-within:ring-primary/30">
           <Icon name="place" className="mt-0.5 shrink-0 text-[20px] text-primary" />
           <textarea
             rows={2}
             value={values.address}
-            placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành"
+            placeholder={t('poiEditor.poiLocationSection.houseNumberStreetWard')}
             onChange={(event) => onChange('address', event.target.value)}
             className="w-full resize-none bg-transparent placeholder:text-outline focus:outline-none"
           />
@@ -76,14 +82,14 @@ export default function PoiLocationSection({ poiCode, values, onChange }: PoiLoc
 
       <div className="grid grid-cols-2 gap-space-sm">
         <PoiCoordinateInput
-          label="Vĩ độ (Latitude)"
+          label={t('poiEditor.poiLocationSection.latitude')}
           axis="lat"
           value={latitude}
           onChange={(value) => changeCoordinate('latitude', value)}
           onInvalid={(message) => showToast(message, 'error')}
         />
         <PoiCoordinateInput
-          label="Kinh độ (Longitude)"
+          label={t('poiEditor.poiLocationSection.longitude')}
           axis="lng"
           value={longitude}
           onChange={(value) => changeCoordinate('longitude', value)}
@@ -100,7 +106,7 @@ export default function PoiLocationSection({ poiCode, values, onChange }: PoiLoc
           />
         ) : (
           <iframe
-            title={`Bản đồ ${poiCode}`}
+            title={t('poiEditor.poiLocationSection.map', { poiCode })}
             src={openStreetMapEmbedUrl(latitude, longitude)}
             loading="lazy"
             className="pointer-events-none h-full w-full border-0"
@@ -127,16 +133,20 @@ export default function PoiLocationSection({ poiCode, values, onChange }: PoiLoc
         className="flex w-full items-center justify-center gap-2 rounded-lg bg-surface-container-low py-2.5 font-label-md text-label-md font-semibold text-primary transition-colors hover:bg-surface-container"
       >
         <Icon name="map" className="text-[18px]" />
-        <span>Kiểm tra tọa độ trên Google Maps</span>
+        <span>{t('poiEditor.poiLocationSection.checkCoordinatesGoogleMaps')}</span>
       </a>
 
       <div className="flex flex-col gap-1.5 rounded-lg bg-surface-container-low p-space-md">
         <div className="flex items-center justify-between font-label-sm text-label-sm">
-          <span className="font-semibold text-on-surface">Bán kính cụm kết nối xung quanh</span>
-          <span className="font-bold text-secondary">{clusterRadius} mét</span>
+          <span className="font-semibold text-on-surface">
+            {t('poiEditor.poiLocationSection.surroundingClusterRadius')}
+          </span>
+          <span className="font-bold text-secondary">
+            {t('poiEditor.poiLocationSection.meters', { clusterRadius })}
+          </span>
         </div>
         <PoiRangeBar
-          label="Bán kính cụm kết nối"
+          label={t('poiEditor.poiLocationSection.clusterRadius')}
           heightClass="h-1.5"
           value={clusterRadius}
           min={POI_CLUSTER_RADIUS.min}
@@ -147,11 +157,14 @@ export default function PoiLocationSection({ poiCode, values, onChange }: PoiLoc
         <p className="mt-1 font-body-sm text-body-sm leading-snug text-outline">
           {clusterPois.length > 0 ? (
             <>
-              Tự động liên kết cụm:{' '}
-              <span className="font-medium text-on-surface">{clusterPois.join(', ')}</span>.
+              <Trans
+                i18nKey="poiEditor.poiLocationSection.autoLinkedCluster"
+                values={{ join: clusterPois.join(', ') }}
+                components={{ c0: <span className="font-medium text-on-surface" /> }}
+              />
             </>
           ) : (
-            'Chưa có điểm đến nào được liên kết trong bán kính này.'
+            t('poiEditor.poiLocationSection.noDestinationsLinkedWithin')
           )}
         </p>
       </div>

@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { DashboardRange, DateRange } from '../../../types/admin';
-import { formatDateRange, RANGE_OPTIONS } from '../dashboardUtils';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import { formatDateRange, RANGE_OPTIONS } from '@/pages/Dashboard/dashboardUtils';
+import type { DashboardRange, DateRange } from '@/types';
 
 interface DashboardActionsProps {
   range: DashboardRange;
@@ -24,6 +25,7 @@ export default function DashboardActions({
   onCustomRangeApply,
   onExport,
 }: DashboardActionsProps) {
+  const { t } = useTranslation();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [draft, setDraft] = useState<DateRange>(dateRange);
   const isDraftValid = Boolean(draft.from && draft.to) && draft.from <= draft.to;
@@ -73,10 +75,10 @@ export default function DashboardActions({
             <div className="fixed inset-0 z-30" onClick={() => setPickerOpen(false)} />
             <div className="absolute right-0 z-40 mt-2 flex w-72 flex-col gap-3 rounded-2xl bg-surface-container-lowest p-4 shadow-lg ring-1 ring-surface-container">
               <span className="font-label-md text-label-md text-on-surface">
-                Chọn khoảng thời gian
+                {t('dashboard.picker.title')}
               </span>
               <label className="flex flex-col gap-1 font-label-sm text-label-sm text-on-surface-variant">
-                Từ ngày
+                {t('dashboard.picker.from')}
                 <input
                   type="date"
                   value={draft.from}
@@ -88,7 +90,7 @@ export default function DashboardActions({
                 />
               </label>
               <label className="flex flex-col gap-1 font-label-sm text-label-sm text-on-surface-variant">
-                Đến ngày
+                {t('dashboard.picker.to')}
                 <input
                   type="date"
                   value={draft.to}
@@ -108,7 +110,7 @@ export default function DashboardActions({
                 }}
                 className="h-10 rounded-full bg-primary font-label-md text-label-md font-semibold text-on-primary transition-all hover:bg-primary-container disabled:opacity-50"
               >
-                Áp dụng
+                {t('dashboard.picker.apply')}
               </button>
             </div>
           </>
@@ -121,7 +123,7 @@ export default function DashboardActions({
         className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 font-label-md text-[13px] font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-container"
       >
         <Icon name="file_download" className="text-[18px]" />
-        <span>Xuất dữ liệu Excel/PDF</span>
+        <span>{t('dashboard.exportButton')}</span>
       </button>
     </>
   );

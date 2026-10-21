@@ -1,11 +1,7 @@
-import Icon from '../../../components/common/Icon';
-import Modal from '../../../components/common/Modal';
-import {
-  PERMISSION_LEVEL_CONFIG,
-  PERMISSION_MATRIX,
-  PERMISSION_ROLES,
-} from '../../../constants/settings';
-import type { PermissionLevel } from '../../../types/admin';
+import { useTranslation } from 'react-i18next';
+import { Icon, Modal } from '@/components/common';
+import { PERMISSION_LEVEL_CONFIG, PERMISSION_MATRIX, PERMISSION_ROLES } from '@/constants/settings';
+import type { PermissionLevel } from '@/types';
 
 function PermissionBadge({ level }: { level: PermissionLevel }) {
   const config = PERMISSION_LEVEL_CONFIG[level];
@@ -21,18 +17,21 @@ function PermissionBadge({ level }: { level: PermissionLevel }) {
 
 /** Ma trận phân quyền theo vai trò quản trị (chỉ xem) */
 export default function PermissionMatrixModal({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
   return (
     <Modal
-      title="Ma trận phân quyền quản trị"
-      description="Quyền truy cập từng phân hệ theo vai trò. Chỉ Super Admin được thay đổi phân quyền."
+      title={t('settings.permissionMatrixModal.adminPermissionMatrix')}
+      description={t('settings.permissionMatrixModal.accessEachModuleBy')}
       size="lg"
       onClose={onClose}
     >
-      <div className="overflow-x-auto">
+      <div className="table-scroll overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="font-label-sm text-label-sm tracking-wider text-on-surface-variant uppercase">
-              <th className="py-2 pr-3 font-semibold">Phân hệ</th>
+              <th className="py-2 pr-3 font-semibold">
+                {t('settings.permissionMatrixModal.module')}
+              </th>
               {PERMISSION_ROLES.map((role) => (
                 <th key={role.key} className="px-2 py-2 font-semibold whitespace-nowrap">
                   {role.label}

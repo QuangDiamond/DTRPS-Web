@@ -1,10 +1,11 @@
-import Icon from '../../../components/common/Icon';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
 import {
   REJECTED_PROVINCE_OPTIONS,
   REJECTION_REASON_FILTER_OPTIONS,
   RESUBMISSION_FILTER_OPTIONS,
-} from '../../../constants/listing';
-import type { RejectedListingFilters, SelectOption } from '../../../types/admin';
+} from '@/constants/listing';
+import type { RejectedListingFilters, SelectOption } from '@/types';
 
 interface RejectedFilterBarProps {
   filters: RejectedListingFilters;
@@ -53,6 +54,7 @@ function FilterSelect<T extends string>({
 }
 
 export default function RejectedFilterBar({ filters, onChange, onReset }: RejectedFilterBarProps) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-2xl bg-surface-container-lowest p-4 shadow-[0_4px_20px_-2px_rgba(15,118,110,0.04)]">
       <div className="flex flex-col items-stretch gap-3 lg:flex-row lg:items-center">
@@ -65,28 +67,28 @@ export default function RejectedFilterBar({ filters, onChange, onReset }: Reject
             type="text"
             value={filters.keyword}
             onChange={(event) => onChange({ keyword: event.target.value })}
-            placeholder="Tìm theo tên cơ sở, mã POI-xxxxx, tên đối tác PTN..."
+            placeholder={t('rejectedListings.rejectedFilterBar.searchByBusinessName')}
             className="h-11 w-full rounded-xl bg-surface-container-low pr-4 pl-11 font-body-md text-body-md text-on-surface shadow-sm transition-all placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 sm:flex-nowrap">
           <FilterSelect
-            ariaLabel="Lý do từ chối"
+            ariaLabel={t('rejectedListings.rejectedFilterBar.rejectionReason')}
             widthClass="min-w-[200px]"
             value={filters.reasonCode}
             options={REJECTION_REASON_FILTER_OPTIONS}
             onChange={(reasonCode) => onChange({ reasonCode })}
           />
           <FilterSelect
-            ariaLabel="Trạng thái gửi lại"
+            ariaLabel={t('rejectedListings.rejectedFilterBar.resubmissionStatus')}
             widthClass="min-w-[180px]"
             value={filters.resubmission}
             options={RESUBMISSION_FILTER_OPTIONS}
             onChange={(resubmission) => onChange({ resubmission })}
           />
           <FilterSelect
-            ariaLabel="Tỉnh/Thành phố"
+            ariaLabel={t('rejectedListings.rejectedFilterBar.provinceCity')}
             widthClass="min-w-[150px]"
             value={filters.province}
             options={REJECTED_PROVINCE_OPTIONS}
@@ -95,11 +97,13 @@ export default function RejectedFilterBar({ filters, onChange, onReset }: Reject
           <button
             type="button"
             onClick={onReset}
-            title="Đặt lại bộ lọc"
+            title={t('rejectedListings.rejectedFilterBar.resetFilters')}
             className="flex h-11 shrink-0 items-center gap-1.5 rounded-xl bg-surface-container px-3.5 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
           >
             <Icon name="restart_alt" className="text-[18px]" />
-            <span className="hidden sm:inline">Đặt lại</span>
+            <span className="hidden sm:inline">
+              {t('rejectedListings.rejectedFilterBar.reset')}
+            </span>
           </button>
         </div>
       </div>

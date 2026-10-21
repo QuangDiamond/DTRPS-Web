@@ -1,31 +1,31 @@
-import { lazy, Suspense, type ReactNode } from 'react';
+import { lazy, type ReactNode, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { GuestOnly, RequireAuth } from '../components/auth/RouteGuards';
-import PageLoader from '../components/common/PageLoader';
-import { ROUTES } from '../constants/routes';
-import AdminLayout from '../layouts/AdminLayout';
+import { PageLoader } from '@/components/common';
+import { ROUTES } from '@/constants/routes';
+import AdminLayout from '@/layouts/AdminLayout';
+import { GuestOnly, RequireAuth } from './RouteGuards';
 
 // Mỗi trang là một chunk riêng — chỉ tải khi người dùng mở trang đó
-const LoginPage = lazy(() => import('../pages/Auth/Login'));
-const ForgotPasswordPage = lazy(() => import('../pages/Auth/ForgotPassword'));
-const VerifyOtpPage = lazy(() => import('../pages/Auth/VerifyOtp'));
-const ResetPasswordPage = lazy(() => import('../pages/Auth/ResetPassword'));
-const DashboardPage = lazy(() => import('../pages/Dashboard'));
-const UsersPage = lazy(() => import('../pages/Users'));
-const UserDetailPage = lazy(() => import('../pages/UserDetail'));
-const PartnersPage = lazy(() => import('../pages/Partners'));
-const PartnerDetailPage = lazy(() => import('../pages/PartnerDetail'));
-const ListingsPage = lazy(() => import('../pages/Listings'));
-const ApprovedListingsPage = lazy(() => import('../pages/ApprovedListings'));
-const RejectedListingsPage = lazy(() => import('../pages/RejectedListings'));
-const ListingReviewPage = lazy(() => import('../pages/ListingReview'));
-const LocationsPage = lazy(() => import('../pages/Locations'));
-const PoiEditorPage = lazy(() => import('../pages/PoiEditor'));
-const ReportsPage = lazy(() => import('../pages/Reports'));
-const NotificationsPage = lazy(() => import('../pages/Notifications'));
-const SettingsPage = lazy(() => import('../pages/Settings'));
-const ProfilePage = lazy(() => import('../pages/Profile'));
-const NotFoundPage = lazy(() => import('../pages/NotFound'));
+const LoginPage = lazy(() => import('@/pages/Auth/Login/LoginPage'));
+const ForgotPasswordPage = lazy(() => import('@/pages/Auth/ForgotPassword/ForgotPasswordPage'));
+const VerifyOtpPage = lazy(() => import('@/pages/Auth/VerifyOtp/VerifyOtpPage'));
+const ResetPasswordPage = lazy(() => import('@/pages/Auth/ResetPassword/ResetPasswordPage'));
+const DashboardPage = lazy(() => import('@/pages/Dashboard/DashboardPage'));
+const UsersPage = lazy(() => import('@/pages/Users/UsersPage'));
+const UserDetailPage = lazy(() => import('@/pages/UserDetail/UserDetailPage'));
+const PartnersPage = lazy(() => import('@/pages/Partners/PartnersPage'));
+const PartnerDetailPage = lazy(() => import('@/pages/PartnerDetail/PartnerDetailPage'));
+const ListingsPage = lazy(() => import('@/pages/Listings/ListingsPage'));
+const ApprovedListingsPage = lazy(() => import('@/pages/ApprovedListings/ApprovedListingsPage'));
+const RejectedListingsPage = lazy(() => import('@/pages/RejectedListings/RejectedListingsPage'));
+const ListingReviewPage = lazy(() => import('@/pages/ListingReview/ListingReviewPage'));
+const PoisPage = lazy(() => import('@/pages/Pois/PoisPage'));
+const PoiEditorPage = lazy(() => import('@/pages/PoiEditor/PoiEditorPage'));
+const ReportsPage = lazy(() => import('@/pages/Reports/ReportsPage'));
+const NotificationsPage = lazy(() => import('@/pages/Notifications/NotificationsPage'));
+const SettingsPage = lazy(() => import('@/pages/Settings/SettingsPage'));
+const ProfilePage = lazy(() => import('@/pages/Profile/ProfilePage'));
+const NotFoundPage = lazy(() => import('@/pages/NotFound/NotFoundPage'));
 
 /** Trang toàn màn hình (đăng nhập, 404) cần Suspense riêng vì không nằm trong AdminLayout */
 const fullScreen = (page: ReactNode) => (
@@ -64,9 +64,9 @@ export const router = createBrowserRouter([
           { path: ROUTES.LISTINGS_APPROVED, element: <ApprovedListingsPage /> },
           { path: ROUTES.LISTINGS_REJECTED, element: <RejectedListingsPage /> },
           { path: ROUTES.LISTING_REVIEW, element: <ListingReviewPage /> },
-          { path: ROUTES.LOCATIONS, element: <LocationsPage /> },
-          { path: ROUTES.LOCATION_NEW, element: <PoiEditorPage /> },
-          { path: ROUTES.LOCATION_EDIT, element: <PoiEditorPage /> },
+          { path: ROUTES.POIS, element: <PoisPage /> },
+          { path: ROUTES.POI_NEW, element: <PoiEditorPage /> },
+          { path: ROUTES.POI_EDIT, element: <PoiEditorPage /> },
           { path: ROUTES.REPORTS, element: <ReportsPage /> },
           { path: ROUTES.NOTIFICATIONS, element: <NotificationsPage /> },
           { path: ROUTES.SETTINGS, element: <SettingsPage /> },

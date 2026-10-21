@@ -1,11 +1,8 @@
-import {
-  REJECTION_REASONS,
-  RESUBMIT_WINDOW_DAYS,
-  type RejectionReason,
-} from '../../constants/listing';
-import type { Listing, RejectedListingFilters, ResubmissionStatus } from '../../types/admin';
-import { formatRelativeTime } from '../../utils/format';
-import { normalizeText } from '../../utils/string';
+import i18n from 'i18next';
+import { REJECTION_REASONS, RESUBMIT_WINDOW_DAYS } from '@/constants/listing';
+import type { Listing, RejectedListingFilters, RejectionReason, ResubmissionStatus } from '@/types';
+import { formatRelativeTime } from '@/utils/format';
+import { normalizeText } from '@/utils/string';
 
 const DAY_MS = 86_400_000;
 
@@ -34,21 +31,21 @@ export function getResubmissionLabel(listing: Listing, now: Date = new Date()): 
         hours < 24
           ? formatRelativeTime(listing.resubmittedAt ?? '', now)
           : hours < 48
-            ? 'Hôm qua'
-            : `${Math.floor(hours / 24)} ngày trước`;
-      return `Đã gửi lại (${when})`;
+            ? i18n.t('rejectedListings.utils.yesterday')
+            : i18n.t('rejectedListings.utils.daysAgo', { count: Math.floor(hours / 24) });
+      return i18n.t('rejectedListings.utils.resubmitted', { when });
     }
     case 'waiting': {
       const deadline = getResubmitDeadline(listing);
       const daysLeft = deadline
         ? Math.max(1, Math.ceil((deadline.getTime() - now.getTime()) / DAY_MS))
         : 0;
-      return `Chưa gửi (Còn ${daysLeft} ngày)`;
+      return i18n.t('rejectedListings.utils.notResubmittedDaysLeft', { count: daysLeft });
     }
     case 'overdue':
-      return 'Quá hạn (Tự động lưu trữ)';
+      return i18n.t('rejectedListings.utils.overdueAutoArchived');
     case 'locked':
-      return 'Đã đóng vĩnh viễn';
+      return i18n.t('rejectedListings.utils.permanentlyClosed');
   }
 }
 

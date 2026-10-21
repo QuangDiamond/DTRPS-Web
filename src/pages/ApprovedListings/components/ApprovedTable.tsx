@@ -1,6 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
-import type { Listing } from '../../../types/admin';
+import { Icon } from '@/components/common';
+import type { Listing, TranslationKey } from '@/types';
 import ApprovedRow from './ApprovedRow';
 
 interface ApprovedTableProps {
@@ -18,12 +19,12 @@ interface ApprovedTableProps {
   footer: ReactNode;
 }
 
-const COLUMNS = [
-  'Địa điểm & Mã POI',
-  'Đối tác sở hữu',
-  'Phân loại',
-  'Thời gian phê duyệt',
-  'Trạng thái hiển thị',
+const COLUMNS: TranslationKey[] = [
+  'table.approved.place',
+  'table.approved.owner',
+  'table.approved.category',
+  'table.approved.approvedAt',
+  'table.approved.visibility',
 ];
 
 const BULK_BUTTON_CLASS =
@@ -43,6 +44,7 @@ export default function ApprovedTable({
   onShow,
   footer,
 }: ApprovedTableProps) {
+  const { t } = useTranslation();
   const selectedOnPage = listings.filter((listing) => selectedIds.has(listing.id)).length;
   const allSelected = listings.length > 0 && selectedOnPage === listings.length;
   const partiallySelected = selectedOnPage > 0 && !allSelected;
@@ -54,19 +56,19 @@ export default function ApprovedTable({
         <div className="flex items-center justify-between bg-primary/10 px-space-lg py-2.5">
           <div className="flex items-center gap-3">
             <span className="font-label-md text-label-md font-semibold text-primary">
-              {selectedIds.size} mục đã chọn
+              {t('approvedListings.approvedTable.itemsSelected', { count: selectedIds.size })}
             </span>
             <button type="button" onClick={onBulkHide} className={BULK_BUTTON_CLASS}>
-              Tạm ẩn đồng loạt
+              {t('approvedListings.approvedTable.hideSelected')}
             </button>
             <button type="button" onClick={onBulkAssignCategory} className={BULK_BUTTON_CLASS}>
-              Gán danh mục
+              {t('approvedListings.approvedTable.assignCategory')}
             </button>
           </div>
           <button
             type="button"
             onClick={onClearSelection}
-            title="Bỏ chọn"
+            title={t('approvedListings.approvedTable.clearSelection')}
             className="text-on-surface-variant hover:text-error"
           >
             <Icon name="close" className="text-[18px]" />
@@ -74,7 +76,7 @@ export default function ApprovedTable({
         </div>
       )}
 
-      <div className="w-full overflow-x-auto">
+      <div className="w-full table-scroll overflow-x-auto">
         <table className="w-full min-w-[1040px] border-collapse text-left">
           <thead>
             <tr className="bg-surface-container-low/70 font-label-sm text-label-sm tracking-wider text-on-surface-variant uppercase">
@@ -86,16 +88,18 @@ export default function ApprovedTable({
                     if (element) element.indeterminate = partiallySelected;
                   }}
                   onChange={(event) => onToggleSelectAll(event.target.checked)}
-                  aria-label="Chọn tất cả trên trang"
+                  aria-label={t('table.selectAllOnPage')}
                   className="h-4 w-4 cursor-pointer rounded accent-primary"
                 />
               </th>
               {COLUMNS.map((column) => (
                 <th key={column} className="px-4 py-3.5 font-semibold">
-                  {column}
+                  {t(column)}
                 </th>
               ))}
-              <th className="px-4 py-3.5 pr-6 text-right font-semibold">Thao tác</th>
+              <th className="px-4 py-3.5 pr-6 text-right font-semibold">
+                {t('table.approved.actions')}
+              </th>
             </tr>
           </thead>
           <tbody className="font-body-sm text-body-sm text-on-surface">
@@ -104,8 +108,12 @@ export default function ApprovedTable({
                 <td colSpan={COLUMNS.length + 2} className="px-6 py-16 text-center">
                   <div className="flex flex-col items-center gap-2 text-on-surface-variant">
                     <Icon name="search_off" className="text-[40px] text-outline" />
-                    <span className="font-title-md text-title-md">Không có địa điểm phù hợp</span>
-                    <span className="font-body-sm text-body-sm">Thử đổi từ khóa hoặc bộ lọc.</span>
+                    <span className="font-title-md text-title-md">
+                      {t('approvedListings.approvedTable.noMatchingPlaces')}
+                    </span>
+                    <span className="font-body-sm text-body-sm">
+                      {t('approvedListings.approvedTable.tryDifferentKeywordOr')}
+                    </span>
                   </div>
                 </td>
               </tr>

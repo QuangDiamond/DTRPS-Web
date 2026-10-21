@@ -1,9 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
-import SortableHeader from '../../../components/common/SortableHeader';
-import type { AppUser } from '../../../types/admin';
-import type { SortState } from '../../../utils/sort';
-import type { UserSortKey } from '../userUtils';
+import { Icon, SortableHeader } from '@/components/common';
+import type { UserSortKey } from '@/pages/Users/userUtils';
+import type { AppUser, TranslationKey } from '@/types';
+import type { SortState } from '@/utils/sort';
 import UserRow from './UserRow';
 
 interface UserTableProps {
@@ -22,13 +22,13 @@ interface UserTableProps {
   footer: ReactNode;
 }
 
-const COLUMNS: { label: string; sortKey?: UserSortKey }[] = [
-  { label: 'Người dùng', sortKey: 'name' },
-  { label: 'Email', sortKey: 'email' },
-  { label: 'Số điện thoại' },
-  { label: 'Ngày đăng ký', sortKey: 'joinedAt' },
-  { label: 'Chuyến đi đã lưu', sortKey: 'tripCount' },
-  { label: 'Trạng thái tài khoản', sortKey: 'status' },
+const COLUMNS: { labelKey: TranslationKey; sortKey?: UserSortKey }[] = [
+  { labelKey: 'table.users.user', sortKey: 'name' },
+  { labelKey: 'table.users.email', sortKey: 'email' },
+  { labelKey: 'table.users.phone' },
+  { labelKey: 'table.users.joinedAt', sortKey: 'joinedAt' },
+  { labelKey: 'table.users.savedTrips', sortKey: 'tripCount' },
+  { labelKey: 'table.users.status', sortKey: 'status' },
 ];
 
 const BULK_BUTTON_CLASS =
@@ -49,6 +49,7 @@ export default function UserTable({
   onSort,
   footer,
 }: UserTableProps) {
+  const { t } = useTranslation();
   const selectedOnPage = users.filter((user) => selectedIds.has(user.id)).length;
   const allSelected = users.length > 0 && selectedOnPage === users.length;
 
@@ -58,19 +59,19 @@ export default function UserTable({
         <div className="flex items-center justify-between bg-primary/10 px-space-lg py-2.5">
           <div className="flex items-center gap-3">
             <span className="font-label-md text-label-md font-semibold text-primary">
-              {selectedIds.size} người dùng đã chọn
+              {t('users.userTable.usersSelected', { count: selectedIds.size })}
             </span>
             <button type="button" onClick={onBulkLock} className={BULK_BUTTON_CLASS}>
-              Khóa đồng loạt
+              {t('users.userTable.lockSelected')}
             </button>
             <button type="button" onClick={onBulkUnlock} className={BULK_BUTTON_CLASS}>
-              Mở khóa đồng loạt
+              {t('users.userTable.unlockSelected')}
             </button>
           </div>
           <button
             type="button"
             onClick={onClearSelection}
-            title="Bỏ chọn"
+            title={t('users.userTable.clearSelection')}
             className="text-on-surface-variant hover:text-error"
           >
             <Icon name="close" className="text-[18px]" />
@@ -78,7 +79,7 @@ export default function UserTable({
         </div>
       )}
 
-      <div className="overflow-x-auto">
+      <div className="table-scroll overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="bg-surface-container-low font-label-md text-label-md tracking-wider text-on-surface-variant uppercase">
@@ -90,27 +91,29 @@ export default function UserTable({
                     if (element) element.indeterminate = selectedOnPage > 0 && !allSelected;
                   }}
                   onChange={(event) => onToggleSelectAll(event.target.checked)}
-                  aria-label="Chọn tất cả trên trang"
+                  aria-label={t('table.selectAllOnPage')}
                   className="h-4 w-4 cursor-pointer rounded accent-primary"
                 />
               </th>
               {COLUMNS.map((column) =>
                 column.sortKey ? (
                   <SortableHeader
-                    key={column.label}
-                    label={column.label}
+                    key={column.labelKey}
+                    label={t(column.labelKey)}
                     sortKey={column.sortKey}
                     sort={sort}
                     onSort={onSort}
                     className="px-space-md py-3.5"
                   />
                 ) : (
-                  <th key={column.label} className="px-space-md py-3.5">
-                    {column.label}
+                  <th key={column.labelKey} className="px-space-md py-3.5">
+                    {t(column.labelKey)}
                   </th>
                 ),
               )}
-              <th className="py-3.5 pr-space-lg pl-space-md text-right">Hành động</th>
+              <th className="py-3.5 pr-space-lg pl-space-md text-right">
+                {t('table.users.actions')}
+              </th>
             </tr>
           </thead>
           <tbody className="font-body-md text-body-md text-on-surface">
@@ -120,9 +123,11 @@ export default function UserTable({
                   <div className="flex flex-col items-center gap-2 text-on-surface-variant">
                     <Icon name="person_search" className="text-[40px] text-outline" />
                     <span className="font-title-md text-title-md">
-                      Không tìm thấy người dùng phù hợp
+                      {t('users.userTable.noMatchingUsersFound')}
                     </span>
-                    <span className="font-body-sm text-body-sm">Thử đổi từ khóa hoặc bộ lọc.</span>
+                    <span className="font-body-sm text-body-sm">
+                      {t('users.userTable.tryDifferentKeywordOr')}
+                    </span>
                   </div>
                 </td>
               </tr>

@@ -1,4 +1,4 @@
-import type { NotificationRules, SettingsTab, SystemSettings } from '../../types/admin';
+import type { NotificationRules, SettingsTab, SystemSettings } from '@/types';
 
 export type SettingsFieldChange = <K extends keyof SystemSettings>(
   key: K,
@@ -14,9 +14,9 @@ const FIELD_TABS: Record<keyof SystemSettings, Exclude<SettingsTab, 'notificatio
   requireLegalDocs: 'listing',
   gpsDuplicateCheck: 'listing',
   autoEmailPartnerResult: 'listing',
-  poiTrustThreshold: 'ai',
+  minSimilarity: 'ai',
   mapSyncFrequency: 'ai',
-  maxPoiPerDay: 'ai',
+  searchTopK: 'ai',
   twoFactorRequired: 'security',
   sessionTimeoutMinutes: 'security',
   ipWhitelist: 'security',

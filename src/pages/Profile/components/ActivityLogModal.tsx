@@ -1,7 +1,7 @@
-import Icon from '../../../components/common/Icon';
-import Modal from '../../../components/common/Modal';
-import type { AdminActivity } from '../../../types/admin';
-import { formatDayTime } from '../../../utils/format';
+import { useTranslation } from 'react-i18next';
+import { Icon, Modal } from '@/components/common';
+import type { AdminActivity } from '@/types';
+import { formatDayTime } from '@/utils/format';
 
 interface ActivityLogModalProps {
   activities: AdminActivity[];
@@ -10,10 +10,11 @@ interface ActivityLogModalProps {
 }
 
 export default function ActivityLogModal({ activities, onExport, onClose }: ActivityLogModalProps) {
+  const { t } = useTranslation();
   return (
     <Modal
-      title="Nhật ký hoạt động"
-      description="Các thao tác quản trị của tài khoản này, lưu trữ chống sửa đổi 365 ngày"
+      title={t('profile.activityLogModal.activityLog')}
+      description={t('profile.activityLogModal.thisAccountSAdmin')}
       size="lg"
       onClose={onClose}
       footer={
@@ -22,7 +23,7 @@ export default function ActivityLogModal({ activities, onExport, onClose }: Acti
           onClick={onExport}
           className="flex items-center gap-2 rounded-full bg-surface-container-low px-4 py-2.5 font-label-md text-label-md font-semibold text-primary transition-all hover:bg-surface-container-high"
         >
-          <Icon name="file_download" className="text-[18px]" /> Xuất CSV
+          <Icon name="file_download" className="text-[18px]" /> {t('actions.exportCsv')}
         </button>
       }
     >

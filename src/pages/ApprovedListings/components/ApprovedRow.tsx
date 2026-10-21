@@ -1,9 +1,10 @@
-import Icon from '../../../components/common/Icon';
-import ListingThumb from '../../../components/listings/ListingThumb';
-import { LISTING_CATEGORY_CONFIG, PARTNER_TIER_BADGE } from '../../../constants/listing';
-import type { Listing } from '../../../types/admin';
-import { formatNumber } from '../../../utils/format';
-import { formatApprovedAt, isHidden } from '../approvedUtils';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/common';
+import ListingThumb from '@/components/listings/ListingThumb';
+import { LISTING_CATEGORY_CONFIG, PARTNER_TIER_BADGE } from '@/constants/listing';
+import { formatApprovedAt, isHidden } from '@/pages/ApprovedListings/approvedUtils';
+import type { Listing } from '@/types';
+import { formatNumber } from '@/utils/format';
 
 interface ApprovedRowProps {
   listing: Listing;
@@ -26,6 +27,7 @@ export default function ApprovedRow({
   onHide,
   onShow,
 }: ApprovedRowProps) {
+  const { t } = useTranslation();
   const hidden = isHidden(listing);
   const badge = PARTNER_TIER_BADGE[listing.partnerTier];
   const approvedAt = formatApprovedAt(listing.reviewedAt);
@@ -42,7 +44,7 @@ export default function ApprovedRow({
           type="checkbox"
           checked={selected}
           onChange={() => onToggleSelect(listing.id)}
-          aria-label={`Chọn ${listing.name}`}
+          aria-label={t('approvedListings.approvedRow.select', { name: listing.name })}
           className="h-4 w-4 cursor-pointer rounded accent-primary"
         />
       </td>
@@ -84,7 +86,9 @@ export default function ApprovedRow({
                   </span>
                 </div>
               ) : (
-                <span className="text-[11px] text-outline">Chưa có đánh giá</span>
+                <span className="text-[11px] text-outline">
+                  {t('approvedListings.approvedRow.noReviewsYet')}
+                </span>
               )}
             </div>
           </div>
@@ -139,7 +143,7 @@ export default function ApprovedRow({
           <div className="inline-flex flex-col">
             <div className="inline-flex w-max items-center gap-1.5 rounded-full bg-surface-container-high px-3 py-1 font-label-sm text-label-sm font-semibold text-on-surface-variant">
               <span className="h-2 w-2 rounded-full bg-outline" />
-              <span>Tạm ẩn</span>
+              <span>{t('approvedListings.approvedRow.hidden')}</span>
             </div>
             {listing.hiddenReason && (
               <span className="mt-1 font-body-sm text-[11px] text-outline">
@@ -150,7 +154,7 @@ export default function ApprovedRow({
         ) : (
           <div className="inline-flex items-center gap-2 rounded-full bg-secondary-container px-3 py-1 font-label-sm text-label-sm font-semibold text-on-secondary-container">
             <span className="h-2 w-2 animate-ping rounded-full bg-primary" />
-            <span>Đang hiển thị</span>
+            <span>{t('approvedListings.approvedRow.visible')}</span>
           </div>
         )}
       </td>
@@ -161,7 +165,7 @@ export default function ApprovedRow({
           <button
             type="button"
             onClick={() => onOpenDetail(listing)}
-            title="Xem chi tiết trên ứng dụng"
+            title={t('approvedListings.approvedRow.viewApp')}
             className={`${ICON_BUTTON_CLASS} text-on-surface-variant hover:bg-surface-container hover:text-primary`}
           >
             <Icon name="open_in_new" className="text-[18px]" />
@@ -169,7 +173,7 @@ export default function ApprovedRow({
           <button
             type="button"
             onClick={() => onEdit(listing)}
-            title="Chỉnh sửa thông tin"
+            title={t('approvedListings.approvedRow.editDetails')}
             className={`${ICON_BUTTON_CLASS} text-on-surface-variant hover:bg-surface-container hover:text-primary`}
           >
             <Icon name="edit" className="text-[18px]" />
@@ -178,7 +182,7 @@ export default function ApprovedRow({
             <button
               type="button"
               onClick={() => onShow(listing)}
-              title="Mở hiển thị lại"
+              title={t('approvedListings.approvedRow.makeVisibleAgain')}
               className={`${ICON_BUTTON_CLASS} text-primary hover:bg-primary/10`}
             >
               <Icon name="visibility" className="text-[18px]" />
@@ -187,7 +191,7 @@ export default function ApprovedRow({
             <button
               type="button"
               onClick={() => onHide(listing)}
-              title="Tạm ẩn địa điểm"
+              title={t('approvedListings.approvedRow.hidePlace')}
               className={`${ICON_BUTTON_CLASS} text-on-surface-variant hover:bg-error-container/40 hover:text-error`}
             >
               <Icon name="visibility_off" className="text-[18px]" />

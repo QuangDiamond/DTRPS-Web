@@ -1,9 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
-import Icon from '../../../components/common/Icon';
-import Modal from '../../../components/common/Modal';
-import { POI_CATEGORY_CONFIG } from '../../../constants/poi';
-import type { PoiFormValues } from '../../../types/admin';
-import { shortPoiName } from '../../../utils/poi';
+import { Icon, Modal } from '@/components/common';
+import { POI_CATEGORY_CONFIG } from '@/constants/poi';
+import type { PoiFormValues } from '@/types';
+import { shortPoiName } from '@/utils/poi';
 
 interface PoiMobilePreviewModalProps {
   values: PoiFormValues;
@@ -24,25 +24,47 @@ const toPlainText = (markdown: string): string =>
 /** Mô phỏng màn chi tiết điểm đến trên App Mobile, dùng dữ liệu đang chỉnh sửa */
 export default function PoiMobilePreviewModal({
   values,
-  title = 'Xem thử hiển thị App Mobile',
-  description = 'Bản xem trước dựa trên dữ liệu đang chỉnh sửa (chưa lưu)',
+  title,
+  description,
   footer,
   onClose,
 }: PoiMobilePreviewModalProps) {
+  const { t } = useTranslation();
   const category = POI_CATEGORY_CONFIG[values.category];
   const tags = values.tags
     .split(',')
     .map((tag) => tag.trim())
     .filter(Boolean);
   const infoRows = [
-    { icon: 'schedule', label: 'Giờ mở cửa', value: values.openingHours },
-    { icon: 'payments', label: 'Giá vé', value: values.price },
-    { icon: 'timer', label: 'Thời gian gợi ý', value: values.suggestedDuration },
-    { icon: 'sunny', label: 'Mùa đẹp nhất', value: values.peakSeason },
+    {
+      icon: 'schedule',
+      label: t('poiEditor.poiMobilePreviewModal.openingHours'),
+      value: values.openingHours,
+    },
+    {
+      icon: 'payments',
+      label: t('poiEditor.poiMobilePreviewModal.admission'),
+      value: values.price,
+    },
+    {
+      icon: 'timer',
+      label: t('poiEditor.poiMobilePreviewModal.suggestedDuration'),
+      value: values.suggestedDuration,
+    },
+    {
+      icon: 'sunny',
+      label: t('poiEditor.poiMobilePreviewModal.bestSeason'),
+      value: values.peakSeason,
+    },
   ].filter((row) => row.value.trim());
 
   return (
-    <Modal title={title} description={description} footer={footer} onClose={onClose}>
+    <Modal
+      title={title ?? t('poiEditor.poiMobilePreviewModal.previewMobileApp')}
+      description={description ?? t('poiEditor.poiMobilePreviewModal.previewBasedDataBeing')}
+      footer={footer}
+      onClose={onClose}
+    >
       <div className="mx-auto w-[300px] overflow-hidden rounded-[2.5rem] border-[10px] border-inverse-surface bg-surface shadow-xl">
         <div className="relative h-[560px] overflow-y-auto">
           {/* Ảnh bìa */}
@@ -75,7 +97,7 @@ export default function PoiMobilePreviewModal({
               <Icon name={category.icon} className="text-[12px]" /> {category.label}
             </span>
             <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface">
-              {shortPoiName(values.name) || 'Tên điểm đến'}
+              {shortPoiName(values.name) || t('poiEditor.poiMobilePreviewModal.destinationName')}
             </h3>
             {values.address && (
               <p className="flex items-start gap-1 text-[12px] text-on-surface-variant">
@@ -103,7 +125,9 @@ export default function PoiMobilePreviewModal({
 
             {values.description && (
               <div className="flex flex-col gap-1">
-                <span className="text-[12px] font-bold text-on-surface">Giới thiệu</span>
+                <span className="text-[12px] font-bold text-on-surface">
+                  {t('poiEditor.poiMobilePreviewModal.overview')}
+                </span>
                 <p className="text-[12px] leading-relaxed whitespace-pre-line text-on-surface-variant">
                   {toPlainText(values.description)}
                 </p>
@@ -112,7 +136,9 @@ export default function PoiMobilePreviewModal({
 
             {values.gallery.length > 0 && (
               <div className="flex flex-col gap-1">
-                <span className="text-[12px] font-bold text-on-surface">Thư viện ảnh</span>
+                <span className="text-[12px] font-bold text-on-surface">
+                  {t('poiEditor.poiMobilePreviewModal.gallery')}
+                </span>
                 <div className="flex gap-2 overflow-x-auto">
                   {values.gallery.map((photo) => (
                     <img
@@ -140,7 +166,8 @@ export default function PoiMobilePreviewModal({
             )}
 
             <span className="mt-1 flex items-center justify-center gap-1 rounded-full bg-primary py-2.5 text-[12px] font-semibold text-on-primary">
-              <Icon name="add_location_alt" className="text-[16px]" /> Thêm vào lịch trình AI
+              <Icon name="add_location_alt" className="text-[16px]" />{' '}
+              {t('poiEditor.poiMobilePreviewModal.findSimilarAi')}
             </span>
           </div>
         </div>

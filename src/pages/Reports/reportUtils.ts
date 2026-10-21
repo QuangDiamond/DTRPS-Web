@@ -197,6 +197,14 @@ export function exportReportCsv(
     [i18n.t('reports.utils.monthlyActiveUsersMau'), report.kpis.monthlyActiveUsers, ''],
     [i18n.t('reports.utils.tripsCreated'), report.kpis.tripsCreated, ''],
     [
+      i18n.t('reports.utils.aiQueries'),
+      report.kpis.aiQueries,
+      i18n.t('reports.utils.aiQueriesNote', {
+        rate: report.kpis.aiHitRate,
+        similarity: report.kpis.aiAvgSimilarity,
+      }),
+    ],
+    [
       i18n.t('reports.utils.businessPartners'),
       totals.partners,
       formatSigned(report.kpis.partnerGrowthQoQ) + ' Q/Q',

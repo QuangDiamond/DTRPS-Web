@@ -1,4 +1,21 @@
 import i18n from 'i18next';
+import type { Poi } from '@/types';
+
+/**
+ * Nội dung POI theo ngôn ngữ đang chọn: tiếng Việt dùng bản gốc, ngôn ngữ khác dùng bản dịch server trả về.
+ * Không có bản dịch → trả `fallback` (nhãn danh mục đã dịch) thay vì hiện tiếng Việt.
+ */
+export function localizePoiText(
+  poi: Pick<Poi, 'subCategory' | 'highlight' | 'translations'>,
+  field: 'subCategory' | 'highlight',
+  fallback: string,
+): string {
+  const language = i18n.resolvedLanguage;
+  if (language === 'vi' || !language) return poi[field] || fallback;
+  const translated =
+    poi.translations?.[language as keyof NonNullable<Poi['translations']>]?.[field];
+  return translated || fallback;
+}
 /** "Phố cổ Hội An (Hoi An Ancient Town)" → "Phố cổ Hội An" */
 export function shortPoiName(name: string): string {
   return name.replace(/\s*\(.*\)\s*$/, '').trim() || name;

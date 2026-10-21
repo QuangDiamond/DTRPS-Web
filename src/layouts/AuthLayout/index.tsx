@@ -49,7 +49,7 @@ export default function AuthLayout({ brand, children }: AuthLayoutProps) {
                     Smart <span className="text-brand">Travel</span>
                   </span>
                   <span className="mt-1 block font-label-sm text-label-sm font-semibold tracking-wider text-on-surface-variant uppercase">
-                    VIETNAM AI ADMIN
+                    VIETNAM TRAVEL ADMIN
                   </span>
                 </div>
               </div>

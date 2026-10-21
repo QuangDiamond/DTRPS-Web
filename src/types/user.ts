@@ -1,4 +1,5 @@
 /** Người dùng (khách du lịch) */
+import type { SemanticTarget } from './search';
 
 export type UserStatus = 'active' | 'suspended';
 
@@ -85,6 +86,8 @@ export interface UserProfile {
   totalSpend: number;
   spendNote: string;
   trips: UserTrip[];
+  /** Các lượt tìm kiếm AI gần nhất */
+  aiSearches: UserAiSearch[];
 }
 
 export interface UserAuditEntry {
@@ -93,4 +96,18 @@ export interface UserAuditEntry {
   time: string;
   icon: string;
   text: string;
+}
+
+/** Một lượt tìm kiếm ngữ nghĩa AI (pgvector) của người dùng */
+export interface UserAiSearch {
+  id: string;
+  /** Câu truy vấn người dùng nhập — dữ liệu, không dịch */
+  query: string;
+  target: SemanticTarget;
+  resultCount: number;
+  topMatch?: string;
+  /** Độ tương đồng AI (%) của kết quả đứng đầu */
+  topScore?: number;
+  /** ISO datetime */
+  searchedAt: string;
 }

@@ -1,8 +1,13 @@
 import { DEFAULT_NOTIFICATION_RULES } from '@/constants/notification';
 import { MOCK_NOTIFICATIONS, NOTIFICATION_BASE_STATS } from '@/mocks/data/mockNotifications';
-import type { NotificationRules, NotificationsSnapshot } from '@/types';
+import type {
+  BroadcastPayload,
+  BroadcastResult,
+  NotificationRules,
+  NotificationsSnapshot,
+} from '@/types';
 import { ENDPOINTS } from './endpoints';
-import { createSource, writeRequest } from './request';
+import { createSource, writeRequest, writeRequestWithResult } from './request';
 
 const MOCK_SNAPSHOT: NotificationsSnapshot = {
   notifications: MOCK_NOTIFICATIONS,
@@ -18,4 +23,16 @@ export const notificationService = {
   markAllRead: () => writeRequest(ENDPOINTS.notifications.markAllRead, 'POST'),
   saveRules: (rules: NotificationRules) =>
     writeRequest(ENDPOINTS.notifications.rules, 'PUT', rules),
+  /** Gửi thông báo hàng loạt; mock dùng số người nhận ước tính ở client */
+  broadcast: (payload: BroadcastPayload, estimatedRecipients: number) =>
+    writeRequestWithResult<BroadcastResult>(
+      ENDPOINTS.notifications.broadcast,
+      'POST',
+      payload,
+      () => ({
+        id: `BC-${Date.now().toString(36).toUpperCase()}`,
+        recipients: estimatedRecipients,
+        sentAt: new Date().toISOString(),
+      }),
+    ),
 };

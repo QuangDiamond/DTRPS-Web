@@ -19,6 +19,12 @@ export const MOCK_POIS: Poi[] = [
     category: 'heritage',
     subCategory: 'Di sản văn hóa UNESCO',
     highlight: 'Khu bảo tồn di sản cấp quốc tế',
+    translations: {
+      en: {
+        subCategory: 'UNESCO cultural heritage',
+        highlight: 'International heritage conservation site',
+      },
+    },
     highlightIcon: 'workspace_premium',
     highlightIconClass: 'text-tertiary',
     tags: 'Đi bộ, Phố đèn lồng, Check-in, Lịch sử, Ẩm thực ven sông',
@@ -84,6 +90,12 @@ export const MOCK_POIS: Poi[] = [
     category: 'nature',
     subCategory: 'Bãi biển & Thiên nhiên',
     highlight: 'Một trong 6 bãi biển đẹp nhất hành tinh',
+    translations: {
+      en: {
+        subCategory: 'Beach & Nature',
+        highlight: "One of the planet's 6 most beautiful beaches",
+      },
+    },
     highlightIcon: 'waves',
     highlightIconClass: 'text-primary',
     tags: 'Biển, Tắm biển, Bình minh, Thể thao nước',
@@ -114,7 +126,7 @@ export const MOCK_POIS: Poi[] = [
     personas: ['Gia đình', 'Cặp đôi', 'Khách quốc tế'],
     status: 'active',
     vectorEmbedded: true,
-    source: 'ai',
+    source: 'openData',
     rating: 4.8,
     reviewCount: 9820,
     updatedAt: minutesAgo(45),
@@ -126,6 +138,12 @@ export const MOCK_POIS: Poi[] = [
     category: 'heritage',
     subCategory: 'Kỳ quan thiên nhiên',
     highlight: 'Kỳ quan thiên nhiên thế giới',
+    translations: {
+      en: {
+        subCategory: 'Natural wonder',
+        highlight: 'World natural wonder',
+      },
+    },
     highlightIcon: 'public',
     highlightIconClass: 'text-tertiary',
     tags: 'Du thuyền, Hang động, Chèo kayak, UNESCO',
@@ -169,6 +187,12 @@ export const MOCK_POIS: Poi[] = [
     category: 'food',
     subCategory: 'Ẩm thực truyền thống',
     highlight: 'Món ăn thuần vị Bắc truyền thống',
+    translations: {
+      en: {
+        subCategory: 'Traditional cuisine',
+        highlight: 'Authentic traditional Northern flavors',
+      },
+    },
     highlightIcon: 'soup_kitchen',
     highlightIconClass: 'text-tertiary',
     tags: 'Ẩm thực, Cơm niêu, Món Bắc, Gia đình',
@@ -211,6 +235,12 @@ export const MOCK_POIS: Poi[] = [
     category: 'nature',
     subCategory: 'Danh thắng tâm linh',
     highlight: 'Điểm tâm linh & Sinh thái biển',
+    translations: {
+      en: {
+        subCategory: 'Spiritual landmark',
+        highlight: 'Spiritual site & marine ecosystem',
+      },
+    },
     highlightIcon: 'temple_buddhist',
     highlightIconClass: 'text-primary',
     tags: 'Thiên nhiên, Voọc chà vá, Tâm linh, Ngắm biển, Phượt',
@@ -253,6 +283,12 @@ export const MOCK_POIS: Poi[] = [
     category: 'craft',
     subCategory: 'Làng nghề & Văn hóa',
     highlight: 'Làng nghề gốm hơn 500 năm tuổi',
+    translations: {
+      en: {
+        subCategory: 'Craft village & Culture',
+        highlight: 'Pottery village over 500 years old',
+      },
+    },
     highlightIcon: 'architecture',
     highlightIconClass: 'text-outline',
     tags: 'Làng nghề, Gốm, Trải nghiệm, Văn hóa',
@@ -296,6 +332,12 @@ export const MOCK_POIS: Poi[] = [
     category: 'heritage',
     subCategory: 'Di tích lịch sử quốc gia',
     highlight: 'Trái tim của thủ đô Hà Nội',
+    translations: {
+      en: {
+        subCategory: 'National historic site',
+        highlight: 'The heart of Hanoi',
+      },
+    },
     highlightIcon: 'favorite',
     highlightIconClass: 'text-error',
     tags: 'Đi bộ, Lịch sử, Phố cổ, Check-in',
@@ -332,6 +374,12 @@ export const MOCK_POIS: Poi[] = [
     category: 'food',
     subCategory: 'Chợ truyền thống',
     highlight: 'Biểu tượng thương mại Sài Gòn',
+    translations: {
+      en: {
+        subCategory: 'Traditional market',
+        highlight: "Saigon's trading landmark",
+      },
+    },
     highlightIcon: 'storefront',
     highlightIconClass: 'text-tertiary',
     tags: 'Ẩm thực, Mua sắm, Đặc sản, Chợ đêm',
@@ -368,6 +416,12 @@ export const MOCK_POIS: Poi[] = [
     category: 'resort',
     subCategory: 'Bãi biển nghỉ dưỡng',
     highlight: 'Bãi cát trắng mịn nhất đảo Ngọc',
+    translations: {
+      en: {
+        subCategory: 'Resort beach',
+        highlight: 'The finest white sand on the Pearl Island',
+      },
+    },
     highlightIcon: 'beach_access',
     highlightIconClass: 'text-primary',
     tags: 'Biển, Tắm biển, Nghỉ dưỡng',
@@ -391,7 +445,7 @@ export const MOCK_POIS: Poi[] = [
     personas: ['Cặp đôi', 'Gia đình'],
     status: 'paused',
     vectorEmbedded: true,
-    source: 'ai',
+    source: 'openData',
     rating: 4.5,
     reviewCount: 3870,
     updatedAt: minutesAgo(60 * 24 * 6),
@@ -403,6 +457,12 @@ export const MOCK_POIS: Poi[] = [
     category: 'stay',
     subCategory: 'Resort & Homestay',
     highlight: 'Nghỉ dưỡng giữa ruộng bậc thang',
+    translations: {
+      en: {
+        subCategory: 'Resort & Homestay',
+        highlight: 'A retreat among the rice terraces',
+      },
+    },
     highlightIcon: 'hotel',
     highlightIconClass: 'text-primary',
     tags: 'Lưu trú, Homestay, Ruộng bậc thang, Săn mây',
@@ -439,6 +499,12 @@ export const MOCK_POIS: Poi[] = [
     category: 'tour',
     subCategory: 'Trải nghiệm văn hóa',
     highlight: 'Nghe Ca Huế trên sông Hương về đêm',
+    translations: {
+      en: {
+        subCategory: 'Cultural experience',
+        highlight: 'Hue royal music on the Perfume River at night',
+      },
+    },
     highlightIcon: 'sailing',
     highlightIconClass: 'text-secondary',
     tags: 'Tour, Ca Huế, Thuyền rồng, Buổi tối',
@@ -463,7 +529,7 @@ export const MOCK_POIS: Poi[] = [
     personas: ['Cặp đôi', 'Khách quốc tế'],
     status: 'active',
     vectorEmbedded: true,
-    source: 'ai',
+    source: 'openData',
     rating: 4.6,
     reviewCount: 2970,
     updatedAt: minutesAgo(60 * 12),

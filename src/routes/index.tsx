@@ -61,6 +61,10 @@ export const router = createBrowserRouter([
           { path: ROUTES.PARTNERS, element: <PartnersPage /> },
           { path: ROUTES.PARTNER_DETAIL, element: <PartnerDetailPage /> },
           { path: ROUTES.LISTINGS, element: <ListingsPage /> },
+          {
+            path: ROUTES.LISTINGS_PENDING,
+            element: <Navigate to={`${ROUTES.LISTINGS}?status=pending`} replace />,
+          },
           { path: ROUTES.LISTINGS_APPROVED, element: <ApprovedListingsPage /> },
           { path: ROUTES.LISTINGS_REJECTED, element: <RejectedListingsPage /> },
           { path: ROUTES.LISTING_REVIEW, element: <ListingReviewPage /> },

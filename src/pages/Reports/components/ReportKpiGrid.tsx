@@ -92,6 +92,34 @@ export default function ReportKpiGrid({ kpis, totals, tripsPerYear }: ReportKpiG
       progress: 84,
     },
     {
+      label: t('reports.reportKpiGrid.aiQueries'),
+      icon: 'manage_search',
+      iconClass: 'bg-primary/10 text-primary',
+      value: formatNumber(kpis.aiQueries),
+      note: (
+        <div className="mt-1 flex items-center gap-1 text-primary">
+          <span className="font-body-sm text-[12px] font-semibold">
+            {t('reports.reportKpiGrid.aiHitRate', { rate: kpis.aiHitRate })}
+          </span>
+        </div>
+      ),
+      barClass: 'bg-primary',
+      progress: kpis.aiHitRate,
+    },
+    {
+      label: t('reports.reportKpiGrid.aiAvgSimilarity'),
+      icon: 'hub',
+      iconClass: 'bg-secondary-container text-on-secondary-container',
+      value: `${kpis.aiAvgSimilarity}%`,
+      note: (
+        <div className="mt-1 flex items-center gap-1 text-on-surface-variant">
+          <span className="font-body-sm text-[12px]">{t('reports.reportKpiGrid.aiTop1Note')}</span>
+        </div>
+      ),
+      barClass: 'bg-secondary',
+      progress: kpis.aiAvgSimilarity,
+    },
+    {
       label: t('reports.reportKpiGrid.businessPartners'),
       icon: 'handshake',
       iconClass: 'bg-primary-fixed text-on-primary-fixed',
@@ -142,7 +170,7 @@ export default function ReportKpiGrid({ kpis, totals, tripsPerYear }: ReportKpiG
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       {cards.map((card) => (
         <div
           key={card.label}

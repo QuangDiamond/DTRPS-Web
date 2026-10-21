@@ -22,7 +22,7 @@ export default function AuthBrandPanel({ content }: { content: AuthBrandContent 
               Smart <span className="text-secondary-fixed">Travel</span>
             </span>
             <span className="font-label-sm text-label-sm font-semibold tracking-wider text-secondary-fixed uppercase">
-              VIETNAM AI ADMIN
+              VIETNAM TRAVEL ADMIN
             </span>
           </div>
         </div>

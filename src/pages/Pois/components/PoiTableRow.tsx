@@ -4,7 +4,13 @@ import { AiMatchBadge, Icon, VectorIndexBadge } from '@/components/common';
 import { POI_CATEGORY_CONFIG, POI_SOURCE_CONFIG, POI_STATUS_CONFIG } from '@/constants/poi';
 import type { Poi } from '@/types';
 import { formatNumber } from '@/utils/format';
-import { isFreePrice, priceSummary, shortLocation, shortPoiName } from '@/utils/poi';
+import {
+  isFreePrice,
+  localizePoiText,
+  priceSummary,
+  shortLocation,
+  shortPoiName,
+} from '@/utils/poi';
 
 interface PoiTableRowProps {
   poi: Poi;
@@ -18,7 +24,7 @@ const ACTION_BUTTON_CLASS =
   'rounded-lg p-1.5 text-on-surface-variant transition-all hover:bg-surface-container hover:text-primary';
 
 export default function PoiTableRow({ poi, matchScore, onEdit, onView }: PoiTableRowProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [imageFailed, setImageFailed] = useState(false);
   const category = POI_CATEGORY_CONFIG[poi.category];
   const source = POI_SOURCE_CONFIG[poi.source];
@@ -61,7 +67,7 @@ export default function PoiTableRow({ poi, matchScore, onEdit, onView }: PoiTabl
                 name={poi.highlightIcon ?? category.icon}
                 className={`text-[14px] ${poi.highlightIconClass ?? 'text-outline'}`}
               />
-              {poi.highlight || category.label}
+              {localizePoiText(poi, 'highlight', category.label)}
             </span>
           </div>
         </div>
@@ -75,8 +81,7 @@ export default function PoiTableRow({ poi, matchScore, onEdit, onView }: PoiTabl
         <span
           className={`inline-flex items-center rounded-full px-2.5 py-1 font-label-sm text-label-sm font-medium whitespace-nowrap ${category.badgeClass}`}
         >
-          {/* Nhãn phụ do admin nhập bằng tiếng Việt — ngôn ngữ khác hiển thị tên danh mục đã dịch */}
-          {(i18n.resolvedLanguage === 'vi' && poi.subCategory) || category.shortLabel}
+          {localizePoiText(poi, 'subCategory', category.shortLabel)}
         </span>
       </td>
       <td className="px-space-md py-3">

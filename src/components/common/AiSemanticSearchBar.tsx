@@ -106,6 +106,7 @@ export function VectorIndexBadge({ indexed }: { indexed: boolean }) {
   const { t } = useTranslation();
   return (
     <span
+      title={indexed ? t('pois.vector.indexedTooltip') : t('pois.vector.notIndexedTooltip')}
       className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-label-sm text-[11px] font-semibold whitespace-nowrap ${
         indexed
           ? 'bg-secondary-container/70 text-on-secondary-container'

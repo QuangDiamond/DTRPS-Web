@@ -23,6 +23,12 @@ export interface ReportKpis {
   /** Người dùng hoạt động trong tháng */
   monthlyActiveUsers: number;
   tripsCreated: number;
+  /** Số truy vấn tìm kiếm ngữ nghĩa AI (pgvector) trong kỳ */
+  aiQueries: number;
+  /** % truy vấn AI trả về ít nhất 1 kết quả vượt ngưỡng tương đồng */
+  aiHitRate: number;
+  /** Độ tương đồng trung bình của kết quả top-1 (0 - 100) */
+  aiAvgSimilarity: number;
   /** % tăng trưởng đối tác so với quý trước */
   partnerGrowthQoQ: number;
   provincesCovered: number;

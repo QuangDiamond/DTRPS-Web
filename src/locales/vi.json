@@ -281,7 +281,7 @@
       "rating": "Đánh giá",
       "status": "Trạng thái",
       "actions": "Hành động",
-      "vector": "Vector (pgvector)"
+      "vector": "Tìm kiếm AI"
     },
     "dashboardPending": {
       "place": "Tên địa điểm / Cơ sở",
@@ -379,7 +379,7 @@
       "hours": "{{count}} giờ",
       "approvedListings": "Địa điểm đã duyệt",
       "meetsStandard": "{{percent}} đạt chuẩn",
-      "syncedToAi": "Đã index vector cho tìm kiếm AI (pgvector)",
+      "syncedToAi": "Đã có trong tìm kiếm AI",
       "rejectedListings": "Niêm yết bị từ chối",
       "ofAllSubmissions": "{{percent}} tổng hồ sơ",
       "mainRejectReason": "Lý do chính: Vi phạm tiêu chuẩn/thiếu pháp lý"
@@ -649,7 +649,8 @@
       "verifiedExperienceReviews_other": "{{count}} Đánh giá đã xác thực trải nghiệm",
       "accountInterventionPolicy": "Quy chuẩn can thiệp tài khoản",
       "everyLockPermissionChange": "Mọi thao tác Khóa, Thay đổi quyền hạn hoặc Đặt lại mật khẩu của người dùng đều được ghi nhận trực tiếp vào Hệ thống Nhật ký Kiểm toán Quản trị viên Cấp cao.",
-      "permissionsSuperAdminFull": "Quyền hạn: <c0>Super Admin (toàn quyền)</c0>"
+      "permissionsSuperAdminFull": "Quyền hạn: <c0>Super Admin (toàn quyền)</c0>",
+      "aiSearchHistoryTab": "Lịch sử tìm kiếm AI ({{count}})"
     },
     "utils": {
       "upcoming": "Sắp diễn ra",
@@ -659,6 +660,15 @@
       "monthsWithUs_other": "{{count}} tháng đồng hành",
       "yearsWithUs_other": "{{count}} năm đồng hành",
       "vnd": "{{toLocaleString}} đ"
+    },
+    "aiSearchTab": {
+      "title": "Lịch sử tìm kiếm AI (pgvector)",
+      "showing_other": "{{shown}} / {{count}} lượt gần nhất",
+      "empty": "Người dùng chưa thực hiện tìm kiếm AI nào.",
+      "targetPois": "Điểm đến POI",
+      "targetListings": "Niêm yết",
+      "results_other": "{{count}} kết quả",
+      "topMatch": "Khớp nhất"
     }
   },
   "partners": {
@@ -881,11 +891,7 @@
       "verificationDocuments": "Hồ sơ xác thực:",
       "aPreviewWillAvailable": "Bản xem trước {{name}} sẽ có khi kết nối kho tài liệu",
       "fineGrainedPermissionsPartner": "Phân quyền chi tiết cho tài khoản đối tác đang được phát triển",
-      "contractCommissionDetailedDesign": "Hợp đồng {{contractCode}} • Hoa hồng {{commission}}%. Giao diện chi tiết tab này đang chờ thiết kế từ Stitch.",
-      "adjustCommission": "Điều chỉnh chiết khấu",
-      "thisTabSDesign": "Giao diện tab này đang chờ thiết kế từ Stitch. Trong lúc chờ, bạn có thể xem các địa điểm niêm yết của đối tác.",
       "viewPartnerSPlaces": "Xem địa điểm của đối tác",
-      "tierAverageRating5": "Hạng {{tierLabel}} • Đánh giá trung bình {{value}}/5 • Tín nhiệm AI {{trustScore}}/100. Giao diện chi tiết đang chờ thiết kế từ Stitch.",
       "accountInterventionPolicyEvery": "Quy chuẩn can thiệp tài khoản: Mọi thao tác chỉnh sửa hoặc khóa đối tác đều được tự động ghi nhận vào Audit Log hệ thống Smart Travel Vietnam.",
       "inspectionSessionId": "Mã phiên kiểm tra: {{sessionCode}}",
       "printProfileExtract": "In trích lục hồ sơ",
@@ -902,6 +908,53 @@
       "safe": "An toàn",
       "watch": "Cần theo dõi",
       "highRisk": "Rủi ro cao"
+    },
+    "contractTab": {
+      "agreement": "Thỏa thuận hợp tác",
+      "commissionRate": "hoa hồng hệ thống",
+      "contractCode": "Mã hợp đồng",
+      "contractType": "Loại hợp đồng",
+      "activatedOn": "Ngày kích hoạt",
+      "renewOn": "Ngày gia hạn",
+      "paymentCycle": "Chu kỳ thanh toán",
+      "deposit": "Tiền ký quỹ",
+      "adjustCommission": "Điều chỉnh hoa hồng",
+      "limits": "Hạn mức hợp đồng",
+      "limitsDescription": "Mức sử dụng hiện tại so với hạn mức đã ký trong hợp đồng.",
+      "creditLimit": "Hạn mức tín dụng",
+      "monthlyBookings": "Lượt đặt chỗ trong tháng",
+      "activeListings": "Niêm yết đang hoạt động"
+    },
+    "historyTab": {
+      "title": "Lịch sử hợp tác & Giao dịch",
+      "description": "10 giao dịch gần nhất: đặt chỗ, hoa hồng, chi trả và hoàn tiền.",
+      "bookingRevenue": "Doanh thu đặt chỗ (đã hoàn tất)",
+      "paidOut": "Đã chi trả cho đối tác",
+      "types": {
+        "booking": "Đặt chỗ",
+        "commission": "Hoa hồng",
+        "payout": "Chi trả",
+        "refund": "Hoàn tiền"
+      },
+      "statuses": {
+        "completed": "Hoàn tất",
+        "pending": "Đang xử lý",
+        "failed": "Thất bại"
+      },
+      "columns": {
+        "transaction": "Giao dịch",
+        "time": "Thời gian",
+        "reference": "Tham chiếu",
+        "amount": "Số tiền",
+        "status": "Trạng thái"
+      }
+    },
+    "ratingsTab": {
+      "overview": "Tổng quan đánh giá",
+      "reviewCount_other": "{{count}} lượt đánh giá",
+      "tier": "Hạng đối tác",
+      "aiTrust": "Điểm tin cậy AI",
+      "recentReviews": "Đánh giá gần đây"
     }
   },
   "components": {
@@ -994,7 +1047,7 @@
     "pois": {
       "couldNotSaveNew": "Không lưu được điểm đến mới",
       "couldNotSaveDestination": "Không lưu được thay đổi điểm đến",
-      "couldNotReindex": "Không index được vector cho POI"
+      "couldNotReindex": "Không cập nhật được tìm kiếm AI cho POI"
     },
     "notifications": {
       "couldNotUpdateNotification": "Không cập nhật được trạng thái thông báo",
@@ -1580,10 +1633,10 @@
       "systemAdministration": "Quản trị hệ thống",
       "poiDestinations": "Quản lý điểm đến POI",
       "travelDestinationDataHub": "Kho Dữ liệu Điểm đến Du lịch (POI)",
-      "syncing": "Đang index...",
-      "aiEngineSync": "pgvector Engine",
-      "nationwideDatabaseLandmarksHeritage": "Cơ sở dữ liệu các danh lam thắng cảnh, di sản, ẩm thực, lưu trú và điểm tham quan toàn quốc phục vụ Tìm kiếm ngữ nghĩa AI (pgvector).",
-      "syncPoiData": "Index vector POI",
+      "syncing": "Đang cập nhật...",
+      "aiEngineSync": "Tìm kiếm AI",
+      "nationwideDatabaseLandmarksHeritage": "Cơ sở dữ liệu các danh lam thắng cảnh, di sản, ẩm thực, lưu trú và điểm tham quan toàn quốc, giúp du khách tìm điểm đến bằng câu mô tả tự nhiên.",
+      "syncPoiData": "Cập nhật tìm kiếm AI",
       "exportPoiCatalog": "Xuất danh mục POI",
       "addNewPoi": "Thêm POI mới"
     },
@@ -1628,9 +1681,9 @@
       "destinationsNationwide": "điểm đến toàn quốc",
       "shownMobileApp": "{{id}} • Hiển thị trên App Mobile",
       "editPoi": "Chỉnh sửa POI",
-      "vectorIndexed": "Index vector",
-      "indexedPois_other": "Đã index {{count}} POI vào CSDL vector (pgvector)",
-      "allPoisIndexed": "Toàn bộ POI đã được index vector"
+      "vectorIndexed": "Tìm kiếm AI",
+      "indexedPois_other": "Đã đưa {{count}} POI vào tìm kiếm AI",
+      "allPoisIndexed": "Tất cả POI đã có trong tìm kiếm AI"
     },
     "constants": {
       "all": "Tất cả",
@@ -1644,8 +1697,6 @@
       "accommodationHotels": "Lưu trú & Khách sạn",
       "toursExperiences": "Tour & Trải nghiệm",
       "nationalTourismAdministration": "Tổng cục Du lịch",
-      "verifiedByAi": "AI đã xác minh",
-      "aiDataCollection": "Thu thập dữ liệu AI",
       "managementBoard": "Ban quản lý",
       "heritageSiteLocalManagement": "Ban quản lý di tích / địa phương",
       "partnerSubmission": "Đối tác gửi duyệt",
@@ -1658,11 +1709,15 @@
       "hoChiMinhCity": "TP. Hồ Chí Minh",
       "laoCaiSaPa": "Lào Cai (Sa Pa)",
       "thuaThienHue": "Thừa Thiên Huế",
-      "kienGiangPhuQuoc": "Kiên Giang (Phú Quốc)"
+      "kienGiangPhuQuoc": "Kiên Giang (Phú Quốc)",
+      "openDataOsm": "Dữ liệu mở (OSM)",
+      "openDataOpenStreetMap": "Dữ liệu mở (OpenStreetMap)"
     },
     "vector": {
-      "indexed": "Đã index Vector",
-      "notIndexed": "Chưa index"
+      "indexed": "Có trong tìm kiếm AI",
+      "notIndexed": "Chưa có trong tìm kiếm AI",
+      "indexedTooltip": "Du khách tìm thấy địa điểm này khi mô tả bằng câu tự nhiên trong ô tìm kiếm AI.",
+      "notIndexedTooltip": "Du khách chưa tìm thấy địa điểm này bằng tìm kiếm AI. Địa điểm sẽ tự được thêm khi được duyệt, hoặc bấm \"Cập nhật tìm kiếm AI\" sau khi sửa nội dung."
     }
   },
   "poiEditor": {
@@ -1833,14 +1888,14 @@
       "cannotReadImage": "Không đọc được ảnh \"{{name}}\""
     },
     "aiSearchSection": {
-      "title": "5. Tìm kiếm ngữ nghĩa AI (pgvector)",
-      "description": "Ngữ cảnh dùng để sinh embedding giúp du khách tìm thấy điểm đến bằng câu tự nhiên",
-      "indexStatus": "Trạng thái index vector",
-      "indexedHint": "Embedding đã cập nhật — điểm đến xuất hiện trong kết quả tìm kiếm AI.",
-      "notIndexedHint": "Nội dung đã thay đổi hoặc chưa index — chưa thể tìm thấy bằng tìm kiếm AI.",
-      "reindex": "Index lại vector",
-      "reindexing": "Đang sinh embedding...",
-      "reindexed": "Đã index lại vector cho điểm đến"
+      "title": "5. Tìm kiếm AI",
+      "description": "Nội dung AI dựa vào để du khách tìm thấy điểm đến khi họ mô tả bằng câu tự nhiên",
+      "indexStatus": "Trạng thái tìm kiếm AI",
+      "indexedHint": "Đã cập nhật — du khách có thể tìm thấy điểm đến này bằng tìm kiếm AI.",
+      "notIndexedHint": "Nội dung vừa thay đổi hoặc chưa được cập nhật — du khách chưa tìm thấy điểm đến này bằng tìm kiếm AI.",
+      "reindex": "Cập nhật tìm kiếm AI",
+      "reindexing": "Đang cập nhật...",
+      "reindexed": "Đã cập nhật tìm kiếm AI cho điểm đến"
     }
   },
   "reports": {
@@ -1875,7 +1930,11 @@
       "totalPoiPlaces": "Tổng địa điểm POI",
       "provincesCities": "{{provincesCovered}} tỉnh thành phố",
       "listingApprovalRate": "Tỷ lệ duyệt niêm yết",
-      "avgReviewHrs": "TB duyệt: {{avgApprovalHours}} giờ"
+      "avgReviewHrs": "TB duyệt: {{avgApprovalHours}} giờ",
+      "aiQueries": "Truy vấn AI (pgvector)",
+      "aiHitRate": "{{rate}}% có kết quả phù hợp",
+      "aiAvgSimilarity": "Độ tương đồng AI trung bình",
+      "aiTop1Note": "Tính trên kết quả top-1"
     },
     "reportsFilterBar": {
       "selectReportPeriod": "Chọn khoảng thời gian báo cáo",
@@ -1973,7 +2032,9 @@
       "partner": "ĐỐI TÁC",
       "bookings": "Lượt đặt",
       "revenueVnd": "Doanh thu (VNĐ)",
-      "item": "Mục"
+      "item": "Mục",
+      "aiQueries": "Truy vấn AI (pgvector)",
+      "aiQueriesNote": "{{rate}}% có kết quả • tương đồng TB {{similarity}}%"
     }
   },
   "notifications": {
@@ -2035,7 +2096,6 @@
       "notifications": "Thông báo",
       "systemNotificationCenter": "Trung tâm thông báo hệ thống",
       "adminNotificationCenter": "Trung tâm Thông báo Quản trị",
-      "liveAiMonitoring": "Giám sát AI trực tiếp",
       "stayTopEveryData": "Cập nhật kịp thời mọi biến động dữ liệu, yêu cầu niêm yết mới và cảnh báo an ninh vận hành hệ thống toàn quốc.",
       "markAllAsRead": "Đánh dấu tất cả đã đọc",
       "ruleSettings": "Cài đặt quy tắc",
@@ -2071,6 +2131,33 @@
       "nationalDataSyncResults": "Kết quả đồng bộ dữ liệu quốc gia và độ trễ GPS",
       "securityAccounts": "Bảo mật & tài khoản",
       "accountLocksUnusualSign": "Khóa tài khoản, đăng nhập bất thường, vi phạm chính sách"
+    },
+    "broadcast": {
+      "open": "Gửi thông báo broadcast",
+      "title": "Gửi thông báo broadcast",
+      "description": "Gửi một thông báo tới toàn bộ nhóm người nhận đã chọn.",
+      "audience": "Nhóm người nhận",
+      "audiences": {
+        "allUsers": "Tất cả người dùng",
+        "vipUsers": "Người dùng VIP",
+        "partners": "Đối tác doanh nghiệp",
+        "admins": "Quản trị viên"
+      },
+      "recipients_other": "{{formatted}} người nhận",
+      "channelsLabel": "Kênh gửi",
+      "channels": {
+        "push": "Thông báo đẩy",
+        "email": "Email",
+        "inApp": "Hộp thư trong ứng dụng"
+      },
+      "titleLabel": "Tiêu đề",
+      "titlePlaceholder": "Ví dụ: Bảo trì hệ thống lúc 23:00 tối nay",
+      "messageLabel": "Nội dung",
+      "messagePlaceholder": "Nhập nội dung thông báo…",
+      "sendTo_other": "Gửi tới {{formatted}} người",
+      "sending": "Đang gửi…",
+      "sent_other": "Đã gửi \"{{title}}\" tới {{formatted}} người nhận",
+      "failed": "Gửi broadcast thất bại, vui lòng thử lại."
     }
   },
   "settings": {

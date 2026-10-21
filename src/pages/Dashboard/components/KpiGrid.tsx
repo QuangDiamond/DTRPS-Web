@@ -103,7 +103,7 @@ export default function KpiGrid({ stats }: { stats: DashboardStats }) {
             </span>
           </>
         }
-        onClick={() => navigate(`${ROUTES.LISTINGS}?status=pending`)}
+        onClick={() => navigate(ROUTES.LISTINGS_PENDING)}
       />
 
       <KpiCard

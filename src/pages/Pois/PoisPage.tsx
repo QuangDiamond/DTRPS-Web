@@ -16,7 +16,7 @@ import PoiMobilePreviewModal from '@/pages/PoiEditor/components/PoiMobilePreview
 import type { Poi, PoiCategoryTab, PoiFilters } from '@/types';
 import { downloadCsv } from '@/utils/exportCsv';
 import { todayIsoDate } from '@/utils/format';
-import { priceSummary, shortPoiName } from '@/utils/poi';
+import { localizePoiText, priceSummary, shortPoiName } from '@/utils/poi';
 import { sortItems } from '@/utils/sort';
 import PoiCategoryTabs from './components/PoiCategoryTabs';
 import PoiFilterBar from './components/PoiFilterBar';
@@ -58,6 +58,8 @@ export default function PoisPage() {
           POI_CATEGORY_CONFIG[poi.category].label,
           poi.tags,
           poi.highlight,
+          poi.translations?.en?.subCategory,
+          poi.translations?.en?.highlight,
           poi.description,
           poi.address,
           poi.personas.join(' '),
@@ -141,7 +143,7 @@ export default function PoisPage() {
       filtered.map((poi) => [
         poi.id,
         poi.name,
-        poi.subCategory || POI_CATEGORY_CONFIG[poi.category].label,
+        localizePoiText(poi, 'subCategory', POI_CATEGORY_CONFIG[poi.category].label),
         POI_PROVINCE_LABELS[poi.province],
         poi.address,
         priceSummary(poi.price),

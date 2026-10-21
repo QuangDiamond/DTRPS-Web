@@ -185,7 +185,7 @@ function DashboardContent({ overview }: { overview: DashboardOverview }) {
           previewLimit={PREVIEW_LIMIT}
           onApprove={handleApprove}
           onView={(listing) => navigate(listingReviewPath(listing.id))}
-          onViewAll={() => navigate(`${ROUTES.LISTINGS}?status=pending`)}
+          onViewAll={() => navigate(ROUTES.LISTINGS_PENDING)}
         />
         <ActivityFeed activities={activities} refreshing={refreshing} onRefresh={handleRefresh} />
       </div>

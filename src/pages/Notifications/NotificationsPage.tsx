@@ -3,19 +3,24 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import {
+  BROADCAST_ADMIN_COUNT,
   NOTIFICATION_PAGE_SIZE,
   NOTIFICATION_PRIORITIES,
   NOTIFICATION_TABS,
 } from '@/constants/notification';
 import { ROUTES } from '@/constants/routes';
-import { useListings, useNotifications, useToast } from '@/hooks';
+import { useListings, useNotifications, usePartners, useToast, useUsers } from '@/hooks';
+import { notificationService } from '@/services/notificationService';
 import type {
   AdminNotification,
+  BroadcastAudience,
+  BroadcastPayload,
   NotificationPriority,
   NotificationRules,
   NotificationTab,
 } from '@/types';
 import { formatNumber } from '@/utils/format';
+import BroadcastModal from './components/BroadcastModal';
 import NotificationGroup from './components/NotificationGroup';
 import NotificationPagination from './components/NotificationPagination';
 import NotificationRulesModal from './components/NotificationRulesModal';
@@ -42,6 +47,20 @@ export default function NotificationsPage() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [rulesOpen, setRulesOpen] = useState(false);
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const [broadcasting, setBroadcasting] = useState(false);
+  const { users } = useUsers();
+  const { partners } = usePartners();
+
+  const audienceCounts = useMemo<Record<BroadcastAudience, number>>(() => {
+    const activeUsers = users.filter((user) => user.status === 'active');
+    return {
+      allUsers: activeUsers.length,
+      vipUsers: activeUsers.filter((user) => user.accountType === 'vip').length,
+      partners: partners.filter((partner) => partner.status === 'active').length,
+      admins: BROADCAST_ADMIN_COUNT,
+    };
+  }, [users, partners]);
 
   const filtered = useMemo(
     () => filterNotifications(notifications, tab, priority, search),
@@ -105,6 +124,25 @@ export default function NotificationsPage() {
     );
   };
 
+  const sendBroadcast = async (payload: BroadcastPayload) => {
+    setBroadcasting(true);
+    try {
+      const result = await notificationService.broadcast(payload, audienceCounts[payload.audience]);
+      setBroadcastOpen(false);
+      showToast(
+        t('notifications.broadcast.sent', {
+          title: payload.title,
+          count: result.recipients,
+          formatted: formatNumber(result.recipients),
+        }),
+      );
+    } catch {
+      showToast(t('notifications.broadcast.failed'), 'error');
+    } finally {
+      setBroadcasting(false);
+    }
+  };
+
   const saveRules = (next: NotificationRules) => {
     updateRules(next);
     setRulesOpen(false);
@@ -136,15 +174,9 @@ export default function NotificationsPage() {
       {/* Header */}
       <div className="flex flex-col justify-between gap-space-md lg:flex-row lg:items-center">
         <div className="flex min-w-0 flex-col">
-          <div className="flex flex-wrap items-center gap-space-sm">
-            <h1 className="font-display-sm text-display-sm tracking-tight text-on-surface">
-              {t('notifications.page.adminNotificationCenter')}
-            </h1>
-            <span className="flex items-center gap-1 rounded-full bg-primary-fixed px-space-sm py-0.5 font-label-sm text-label-sm font-bold text-on-primary-fixed">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-              {t('notifications.page.liveAiMonitoring')}
-            </span>
-          </div>
+          <h1 className="font-display-sm text-display-sm tracking-tight text-on-surface">
+            {t('notifications.page.adminNotificationCenter')}
+          </h1>
           <p className="mt-1 max-w-3xl font-body-md text-body-md text-on-surface-variant">
             {t('notifications.page.stayTopEveryData')}
           </p>
@@ -167,6 +199,14 @@ export default function NotificationsPage() {
               setPage(1);
             }}
           />
+          <button
+            type="button"
+            onClick={() => setBroadcastOpen(true)}
+            className={`${HEADER_BUTTON_CLASS} bg-primary text-on-primary shadow-sm hover:bg-primary-container`}
+          >
+            <Icon name="campaign" className="text-[19px]" />
+            <span>{t('notifications.broadcast.open')}</span>
+          </button>
           <button
             type="button"
             onClick={() => setRulesOpen(true)}
@@ -276,6 +316,14 @@ export default function NotificationsPage() {
         />
       </div>
 
+      {broadcastOpen && (
+        <BroadcastModal
+          audienceCounts={audienceCounts}
+          sending={broadcasting}
+          onSend={sendBroadcast}
+          onClose={() => setBroadcastOpen(false)}
+        />
+      )}
       {rulesOpen && (
         <NotificationRulesModal
           rules={rules}

@@ -235,14 +235,14 @@ export const POI_SOURCE_CONFIG: Record<
     textClass: 'font-semibold text-primary',
     iconClass: '',
   },
-  ai: {
+  openData: {
     get label() {
-      return i18n.t('pois.constants.verifiedByAi');
+      return i18n.t('pois.constants.openDataOsm');
     },
     get filterLabel() {
-      return i18n.t('pois.constants.aiDataCollection');
+      return i18n.t('pois.constants.openDataOpenStreetMap');
     },
-    icon: 'auto_awesome',
+    icon: 'public',
     textClass: 'font-semibold text-secondary',
     iconClass: '',
   },
@@ -282,7 +282,7 @@ export const POI_SOURCE_CONFIG: Record<
 };
 
 export const POI_SOURCE_OPTIONS: SelectOption<PoiSource>[] = (
-  ['system', 'partner', 'ai', 'gov', 'authority'] as PoiSource[]
+  ['system', 'partner', 'openData', 'gov', 'authority'] as PoiSource[]
 ).map((source) => ({ value: source, label: POI_SOURCE_CONFIG[source].filterLabel }));
 
 export const POI_PROVINCE_LABELS: Record<PoiProvince, string> = {

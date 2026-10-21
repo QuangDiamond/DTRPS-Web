@@ -1,3 +1,4 @@
+import { buildUserAiSearches } from './detailExtrasMock';
 import { MOCK_USER_PROFILES, MOCK_USER_SESSIONS } from '@/mocks/data/mockUserProfiles';
 import type { AppUser, UserAuditEntry, UserProfile } from '@/types';
 
@@ -9,7 +10,7 @@ function getTrustTitle(score: number): string {
 }
 
 /** Hồ sơ dựng tự động cho người dùng chưa có dữ liệu chi tiết */
-function buildFallbackProfile(user: AppUser): UserProfile {
+function buildFallbackProfile(user: AppUser): Omit<UserProfile, 'aiSearches'> {
   const suspended = user.status === 'suspended';
   const trustScore = suspended ? 32 : user.accountType === 'vip' ? 92 : 84;
   const completed = Math.round(user.tripCount * 0.6);
@@ -48,7 +49,8 @@ function buildFallbackProfile(user: AppUser): UserProfile {
 }
 
 export function buildMockUserProfile(user: AppUser): UserProfile {
-  return MOCK_USER_PROFILES[user.id] ?? buildFallbackProfile(user);
+  const base = MOCK_USER_PROFILES[user.id] ?? buildFallbackProfile(user);
+  return { ...base, aiSearches: buildUserAiSearches(user) };
 }
 
 /** Lịch sử phiên & bảo mật có sẵn trên server + mốc đăng ký tài khoản */

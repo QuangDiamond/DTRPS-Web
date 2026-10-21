@@ -19,10 +19,12 @@ import type {
 import { formatDate } from '@/utils/format';
 import AuditLogTab from './components/AuditLogTab';
 import CommissionModal from './components/CommissionModal';
+import ContractTab from './components/ContractTab';
 import LegalTab from './components/LegalTab';
 import PartnerProfileCard from './components/PartnerProfileCard';
+import RatingsTab from './components/RatingsTab';
 import ScheduleReviewModal from './components/ScheduleReviewModal';
-import TabPlaceholder from './components/TabPlaceholder';
+import TransactionHistoryTab from './components/TransactionHistoryTab';
 import { applyProfileOverrides, mergeAuditLog } from './partnerProfileUtils';
 
 const PARTNER_MESSAGE_CHANNELS: MessageChannel[] = [
@@ -443,52 +445,15 @@ function PartnerDetailContent({ partner, loadedProfile, auditHistory }: PartnerD
         />
       )}
       {tab === 'contract' && (
-        <TabPlaceholder
-          icon="description"
-          title={t('partnerDetail.page.contractLimits')}
-          description={t('partnerDetail.page.contractCommissionDetailedDesign', {
-            contractCode: profile.agreement.contractCode,
-            commission: profile.agreement.commission,
-          })}
-          action={
-            <button
-              type="button"
-              onClick={() => setModal('commission')}
-              className="rounded-full bg-primary px-4 py-2 font-label-md text-label-md text-on-primary hover:bg-primary-container"
-            >
-              {t('partnerDetail.page.adjustCommission')}
-            </button>
-          }
-        />
+        <ContractTab profile={profile} onAdjustCommission={() => setModal('commission')} />
       )}
       {tab === 'history' && (
-        <TabPlaceholder
-          icon="receipt_long"
-          title={t('partnerDetail.page.partnershipTransactionHistory')}
-          description={t('partnerDetail.page.thisTabSDesign')}
-          action={
-            <button
-              type="button"
-              onClick={() => navigate(`${ROUTES.LISTINGS}?partner=${partner.id}`)}
-              className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 font-label-md text-label-md text-on-primary hover:bg-primary-container"
-            >
-              <Icon name="map" className="text-[18px]" />{' '}
-              {t('partnerDetail.page.viewPartnerSPlaces')}
-            </button>
-          }
+        <TransactionHistoryTab
+          transactions={profile.transactions}
+          onViewListings={() => navigate(`${ROUTES.LISTINGS}?partner=${partner.id}`)}
         />
       )}
-      {tab === 'ratings' && (
-        <TabPlaceholder
-          icon="military_tech"
-          title={t('partnerDetail.page.partnerReviewsRanking')}
-          description={t('partnerDetail.page.tierAverageRating5', {
-            tierLabel: profile.tierLabel,
-            value: partner.rating > 0 ? partner.rating.toFixed(1) : '—',
-            trustScore: profile.trustScore,
-          })}
-        />
-      )}
+      {tab === 'ratings' && <RatingsTab profile={profile} />}
       {tab === 'audit' && <AuditLogTab entries={auditEntries} />}
 
       {/* Ghi chú bảo mật */}

@@ -43,7 +43,7 @@ export default function Sidebar() {
               Smart<span className="text-brand">Travel</span>
             </span>
             <span className="mt-0.5 block text-[10px] font-bold tracking-wider text-outline uppercase">
-              VIETNAM AI ADMIN
+              VIETNAM TRAVEL ADMIN
             </span>
           </div>
         </div>

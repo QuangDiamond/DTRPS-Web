@@ -1,7 +1,11 @@
 import type { PartnerAuditEntry, PartnerProfile } from '@/types';
 
 /** Hồ sơ chi tiết theo mã đối tác. Đối tác không có ở đây sẽ dùng hồ sơ dựng tự động. */
-export const MOCK_PARTNER_PROFILES: Record<string, PartnerProfile> = {
+/** Hồ sơ gốc — hạn mức, giao dịch, đánh giá được builder bổ sung */
+export const MOCK_PARTNER_PROFILES: Record<
+  string,
+  Omit<PartnerProfile, 'contractLimits' | 'transactions' | 'ratings'>
+> = {
   'PTN-0891': {
     tierLabel: 'Gold',
     trustScore: 98,

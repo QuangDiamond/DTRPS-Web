@@ -69,3 +69,22 @@ export interface NotificationStats {
   avgResponseMinutes: number;
   byTab: Record<NotificationTab, number>;
 }
+
+/** Nhóm người nhận thông báo broadcast */
+export type BroadcastAudience = 'allUsers' | 'vipUsers' | 'partners' | 'admins';
+
+export type BroadcastChannel = 'push' | 'email' | 'inApp';
+
+export interface BroadcastPayload {
+  audience: BroadcastAudience;
+  channels: BroadcastChannel[];
+  title: string;
+  message: string;
+}
+
+export interface BroadcastResult {
+  id: string;
+  /** Số người nhận dự kiến (server đếm theo nhóm) */
+  recipients: number;
+  sentAt: string;
+}

@@ -71,6 +71,9 @@ export function buildMockReport(filters: ReportFilters, now: Date = new Date()):
         MOCK_REPORT_BASE.monthlyActiveUsers * REGION_SHARE[filters.region],
       ),
       tripsCreated: Math.round(tripsYear * scope * timeShare),
+      aiQueries: Math.round(MOCK_REPORT_BASE.aiQueriesYear * scope * timeShare),
+      aiHitRate: MOCK_REPORT_BASE.aiHitRate,
+      aiAvgSimilarity: MOCK_REPORT_BASE.aiAvgSimilarity,
       partnerGrowthQoQ: MOCK_REPORT_BASE.partnerGrowthQoQ,
       provincesCovered:
         filters.region === 'all'

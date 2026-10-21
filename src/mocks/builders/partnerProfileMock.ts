@@ -1,3 +1,8 @@
+import {
+  buildPartnerContractLimits,
+  buildPartnerRatings,
+  buildPartnerTransactions,
+} from './detailExtrasMock';
 import { PROVINCE_LABELS, PROVINCE_NAMES } from '@/constants/partner';
 import { MOCK_PARTNER_AUDIT, MOCK_PARTNER_PROFILES } from '@/mocks/data/mockPartnerProfiles';
 import type { Partner, PartnerAuditEntry, PartnerProfile } from '@/types';
@@ -17,7 +22,9 @@ function addYears(isoDate: string, years: number): string {
 }
 
 /** Hồ sơ dựng tự động cho đối tác chưa có dữ liệu chi tiết */
-function buildFallbackProfile(partner: Partner): PartnerProfile {
+function buildFallbackProfile(
+  partner: Partner,
+): Omit<PartnerProfile, 'contractLimits' | 'transactions' | 'ratings'> {
   const trustScore = partner.status === 'active' ? 86 : partner.status === 'pending' ? 62 : 35;
   const nextReview = new Date();
   nextReview.setMonth(nextReview.getMonth() + 6);
@@ -79,7 +86,13 @@ function buildFallbackProfile(partner: Partner): PartnerProfile {
 }
 
 export function buildMockPartnerProfile(partner: Partner): PartnerProfile {
-  return MOCK_PARTNER_PROFILES[partner.id] ?? buildFallbackProfile(partner);
+  const base = MOCK_PARTNER_PROFILES[partner.id] ?? buildFallbackProfile(partner);
+  return {
+    ...base,
+    contractLimits: buildPartnerContractLimits(partner),
+    transactions: buildPartnerTransactions(partner),
+    ratings: buildPartnerRatings(partner),
+  };
 }
 
 /** Lịch sử kiểm toán có sẵn trên server + mốc đăng ký tài khoản */

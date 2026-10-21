@@ -281,7 +281,7 @@
       "rating": "Rating",
       "status": "Status",
       "actions": "Actions",
-      "vector": "Vector (pgvector)"
+      "vector": "AI search"
     },
     "dashboardPending": {
       "place": "Place / Business name",
@@ -382,7 +382,7 @@
       "hours": "{{count}} hrs",
       "approvedListings": "Approved places",
       "meetsStandard": "{{percent}} meet standards",
-      "syncedToAi": "Vector indexed for AI search (pgvector)",
+      "syncedToAi": "Available in AI search",
       "rejectedListings": "Rejected listings",
       "ofAllSubmissions": "{{percent}} of all submissions",
       "mainRejectReason": "Main reason: standards violations / missing legal documents"
@@ -661,7 +661,8 @@
       "verifiedExperienceReviews_other": "{{count}} verified experience reviews",
       "accountInterventionPolicy": "Account intervention policy",
       "everyLockPermissionChange": "Every Lock, Permission change or Password reset on a user account is recorded directly in the Senior Administrator Audit Log.",
-      "permissionsSuperAdminFull": "Permissions: <c0>Super Admin (full access)</c0>"
+      "permissionsSuperAdminFull": "Permissions: <c0>Super Admin (full access)</c0>",
+      "aiSearchHistoryTab": "AI search history ({{count}})"
     },
     "utils": {
       "upcoming": "Upcoming",
@@ -673,6 +674,17 @@
       "yearsWithUs_one": "{{count}} year with us",
       "yearsWithUs_other": "{{count}} years with us",
       "vnd": "{{toLocaleString}} VND"
+    },
+    "aiSearchTab": {
+      "title": "AI search history (pgvector)",
+      "showing_one": "{{shown}} of {{count}} search",
+      "showing_other": "Latest {{shown}} of {{count}} searches",
+      "empty": "This user has not run any AI searches yet.",
+      "targetPois": "POIs",
+      "targetListings": "Listings",
+      "results_one": "{{count}} result",
+      "results_other": "{{count}} results",
+      "topMatch": "Top match"
     }
   },
   "partners": {
@@ -901,11 +913,7 @@
       "verificationDocuments": "Verification documents:",
       "aPreviewWillAvailable": "A preview of {{name}} will be available once the document store is connected",
       "fineGrainedPermissionsPartner": "Fine-grained permissions for partner accounts are under development",
-      "contractCommissionDetailedDesign": "Contract {{contractCode}} • Commission {{commission}}%. The detailed design for this tab is pending from Stitch.",
-      "adjustCommission": "Adjust commission",
-      "thisTabSDesign": "This tab's design is pending from Stitch. Meanwhile, you can view the partner's listed places.",
       "viewPartnerSPlaces": "View partner's places",
-      "tierAverageRating5": "Tier {{tierLabel}} • Average rating {{value}}/5 • AI trust {{trustScore}}/100. The detailed design is pending from Stitch.",
       "accountInterventionPolicyEvery": "Account intervention policy: every edit or lock on a partner is automatically recorded in the Smart Travel Vietnam Audit Log.",
       "inspectionSessionId": "Inspection session ID: {{sessionCode}}",
       "printProfileExtract": "Print profile extract",
@@ -924,6 +932,54 @@
       "safe": "Safe",
       "watch": "Needs monitoring",
       "highRisk": "High risk"
+    },
+    "contractTab": {
+      "agreement": "Partnership agreement",
+      "commissionRate": "platform commission",
+      "contractCode": "Contract code",
+      "contractType": "Contract type",
+      "activatedOn": "Activated on",
+      "renewOn": "Renewal date",
+      "paymentCycle": "Payment cycle",
+      "deposit": "Security deposit",
+      "adjustCommission": "Adjust commission",
+      "limits": "Contract limits",
+      "limitsDescription": "Current usage against the limits signed in the contract.",
+      "creditLimit": "Credit limit",
+      "monthlyBookings": "Bookings this month",
+      "activeListings": "Active listings"
+    },
+    "historyTab": {
+      "title": "Partnership & transaction history",
+      "description": "The 10 most recent transactions: bookings, commissions, payouts and refunds.",
+      "bookingRevenue": "Booking revenue (completed)",
+      "paidOut": "Paid out to partner",
+      "types": {
+        "booking": "Booking",
+        "commission": "Commission",
+        "payout": "Payout",
+        "refund": "Refund"
+      },
+      "statuses": {
+        "completed": "Completed",
+        "pending": "Pending",
+        "failed": "Failed"
+      },
+      "columns": {
+        "transaction": "Transaction",
+        "time": "Time",
+        "reference": "Reference",
+        "amount": "Amount",
+        "status": "Status"
+      }
+    },
+    "ratingsTab": {
+      "overview": "Rating overview",
+      "reviewCount_one": "{{count}} review",
+      "reviewCount_other": "{{count}} reviews",
+      "tier": "Partner tier",
+      "aiTrust": "AI trust score",
+      "recentReviews": "Recent reviews"
     }
   },
   "components": {
@@ -1016,7 +1072,7 @@
     "pois": {
       "couldNotSaveNew": "Could not save the new destination",
       "couldNotSaveDestination": "Could not save the destination changes",
-      "couldNotReindex": "Could not index POI vectors"
+      "couldNotReindex": "Could not update AI search for POIs"
     },
     "notifications": {
       "couldNotUpdateNotification": "Could not update the notification status",
@@ -1624,10 +1680,10 @@
       "systemAdministration": "System administration",
       "poiDestinations": "POI destinations",
       "travelDestinationDataHub": "Travel Destination Data Hub (POI)",
-      "syncing": "Indexing...",
-      "aiEngineSync": "pgvector Engine",
-      "nationwideDatabaseLandmarksHeritage": "Nationwide database of landmarks, heritage sites, food, accommodation and attractions powering AI semantic search (pgvector).",
-      "syncPoiData": "Index POI vectors",
+      "syncing": "Updating...",
+      "aiEngineSync": "AI search",
+      "nationwideDatabaseLandmarksHeritage": "Nationwide database of landmarks, heritage sites, food, accommodation and attractions that travelers can find by describing what they want.",
+      "syncPoiData": "Update AI search",
       "exportPoiCatalog": "Export POI catalog",
       "addNewPoi": "Add new POI"
     },
@@ -1674,10 +1730,10 @@
       "destinationsNationwide": "destinations nationwide",
       "shownMobileApp": "{{id}} • Shown on the Mobile App",
       "editPoi": "Edit POI",
-      "vectorIndexed": "Vector index",
-      "indexedPois_one": "Indexed {{count}} POI into the vector database (pgvector)",
-      "indexedPois_other": "Indexed {{count}} POIs into the vector database (pgvector)",
-      "allPoisIndexed": "All POIs are already vector indexed"
+      "vectorIndexed": "AI search",
+      "indexedPois_one": "Added {{count}} POI to AI search",
+      "indexedPois_other": "Added {{count}} POIs to AI search",
+      "allPoisIndexed": "All POIs are already in AI search"
     },
     "constants": {
       "all": "All",
@@ -1691,8 +1747,6 @@
       "accommodationHotels": "Accommodation & Hotels",
       "toursExperiences": "Tours & Experiences",
       "nationalTourismAdministration": "National Tourism Administration",
-      "verifiedByAi": "Verified by AI",
-      "aiDataCollection": "AI data collection",
       "managementBoard": "Management board",
       "heritageSiteLocalManagement": "Heritage site / local management board",
       "partnerSubmission": "Partner submission",
@@ -1705,11 +1759,15 @@
       "hoChiMinhCity": "Ho Chi Minh City",
       "laoCaiSaPa": "Lao Cai (Sa Pa)",
       "thuaThienHue": "Thua Thien Hue",
-      "kienGiangPhuQuoc": "Kien Giang (Phu Quoc)"
+      "kienGiangPhuQuoc": "Kien Giang (Phu Quoc)",
+      "openDataOsm": "Open data (OSM)",
+      "openDataOpenStreetMap": "Open data (OpenStreetMap)"
     },
     "vector": {
-      "indexed": "Vector Indexed",
-      "notIndexed": "Not indexed"
+      "indexed": "In AI search",
+      "notIndexed": "Not in AI search yet",
+      "indexedTooltip": "Travelers can find this place by describing it in the AI search box.",
+      "notIndexedTooltip": "Travelers cannot find this place with AI search yet. It is added automatically once approved, or click \"Update AI search\" after editing its content."
     }
   },
   "poiEditor": {
@@ -1883,14 +1941,14 @@
       "cannotReadImage": "Could not read the image \"{{name}}\""
     },
     "aiSearchSection": {
-      "title": "5. AI semantic search (pgvector)",
-      "description": "Context used to build the embedding so travelers can find this place in plain language",
-      "indexStatus": "Vector index status",
-      "indexedHint": "Embedding is up to date — this destination appears in AI search results.",
-      "notIndexedHint": "The content changed or has not been indexed — it cannot be found by AI search yet.",
-      "reindex": "Re-index vector",
-      "reindexing": "Generating embedding...",
-      "reindexed": "Destination vector re-indexed"
+      "title": "5. AI search",
+      "description": "What AI relies on so travelers can find this place when they describe it in their own words",
+      "indexStatus": "AI search status",
+      "indexedHint": "Up to date — travelers can find this place with AI search.",
+      "notIndexedHint": "The content changed or has not been updated — travelers cannot find this place with AI search yet.",
+      "reindex": "Update AI search",
+      "reindexing": "Updating...",
+      "reindexed": "AI search updated for this destination"
     }
   },
   "reports": {
@@ -1925,7 +1983,11 @@
       "totalPoiPlaces": "Total POI places",
       "provincesCities": "{{provincesCovered}} provinces & cities",
       "listingApprovalRate": "Listing approval rate",
-      "avgReviewHrs": "Avg. review: {{avgApprovalHours}} hrs"
+      "avgReviewHrs": "Avg. review: {{avgApprovalHours}} hrs",
+      "aiQueries": "AI queries (pgvector)",
+      "aiHitRate": "{{rate}}% returned a match",
+      "aiAvgSimilarity": "Avg. AI match score",
+      "aiTop1Note": "Based on top-1 results"
     },
     "reportsFilterBar": {
       "selectReportPeriod": "Select the report period",
@@ -2023,7 +2085,9 @@
       "partner": "PARTNER",
       "bookings": "Bookings",
       "revenueVnd": "Revenue (VND)",
-      "item": "Item"
+      "item": "Item",
+      "aiQueries": "AI queries (pgvector)",
+      "aiQueriesNote": "{{rate}}% matched • avg. similarity {{similarity}}%"
     }
   },
   "notifications": {
@@ -2087,7 +2151,6 @@
       "notifications": "Notifications",
       "systemNotificationCenter": "System notification center",
       "adminNotificationCenter": "Admin Notification Center",
-      "liveAiMonitoring": "Live AI monitoring",
       "stayTopEveryData": "Stay on top of every data change, new listing request and operational security alert nationwide.",
       "markAllAsRead": "Mark all as read",
       "ruleSettings": "Rule settings",
@@ -2126,6 +2189,36 @@
       "nationalDataSyncResults": "National data sync results and GPS latency",
       "securityAccounts": "Security & accounts",
       "accountLocksUnusualSign": "Account locks, unusual sign-ins, policy violations"
+    },
+    "broadcast": {
+      "open": "Send broadcast",
+      "title": "Send a broadcast notification",
+      "description": "Send one notification to every recipient in the selected group.",
+      "audience": "Audience",
+      "audiences": {
+        "allUsers": "All users",
+        "vipUsers": "VIP users",
+        "partners": "Business partners",
+        "admins": "Administrators"
+      },
+      "recipients_one": "{{formatted}} recipient",
+      "recipients_other": "{{formatted}} recipients",
+      "channelsLabel": "Delivery channels",
+      "channels": {
+        "push": "Push notification",
+        "email": "Email",
+        "inApp": "In-app inbox"
+      },
+      "titleLabel": "Title",
+      "titlePlaceholder": "E.g. System maintenance tonight at 23:00",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Write your announcement…",
+      "sendTo_one": "Send to {{formatted}} recipient",
+      "sendTo_other": "Send to {{formatted}} recipients",
+      "sending": "Sending…",
+      "sent_one": "Sent \"{{title}}\" to {{formatted}} recipient",
+      "sent_other": "Sent \"{{title}}\" to {{formatted}} recipients",
+      "failed": "Broadcast failed, please try again."
     }
   },
   "settings": {

@@ -17,6 +17,7 @@ import type {
 } from '@/types';
 import { downloadCsv } from '@/utils/exportCsv';
 import { formatDate } from '@/utils/format';
+import AiSearchHistoryTab from './components/AiSearchHistoryTab';
 import LockAccountDialog from './components/LockAccountDialog';
 import SessionLogTab from './components/SessionLogTab';
 import SummaryTab from './components/SummaryTab';
@@ -26,7 +27,7 @@ import UserMetricCards from './components/UserMetricCards';
 import UserProfileCard from './components/UserProfileCard';
 import { formatVnd, mergeSessionLog, TRIP_STATUS_CONFIG } from './userProfileUtils';
 
-type DetailTab = 'trips' | 'saved' | 'reviews' | 'audit';
+type DetailTab = 'trips' | 'aiSearch' | 'saved' | 'reviews' | 'audit';
 type ModalName = 'lock' | 'email' | 'edit' | null;
 
 const EMAIL_TEMPLATES: MessageTemplate[] = [
@@ -139,6 +140,11 @@ function UserDetailContent({ user, loadedProfile, sessionHistory }: UserDetailCo
       id: 'trips',
       label: t('userDetail.page.itinerariesTrips', { total: profile.tripSummary.total }),
       icon: 'explore',
+    },
+    {
+      id: 'aiSearch',
+      label: t('userDetail.page.aiSearchHistoryTab', { count: user.aiSearchCount }),
+      icon: 'manage_search',
     },
     {
       id: 'saved',
@@ -318,6 +324,9 @@ function UserDetailContent({ user, loadedProfile, sessionHistory }: UserDetailCo
             onDownload={handleDownloadTrip}
             onViewTrip={setViewingTrip}
           />
+        )}
+        {tab === 'aiSearch' && (
+          <AiSearchHistoryTab searches={profile.aiSearches} total={user.aiSearchCount} />
         )}
         {tab === 'saved' && (
           <SummaryTab

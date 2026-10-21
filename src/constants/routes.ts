@@ -10,6 +10,7 @@ export const ROUTES = {
   PARTNERS: '/admin/partners',
   PARTNER_DETAIL: '/admin/partners/:id',
   LISTINGS: '/admin/listings',
+  LISTINGS_PENDING: '/admin/listings/pending',
   LISTINGS_APPROVED: '/admin/listings/approved',
   LISTINGS_REJECTED: '/admin/listings/rejected',
   LISTING_REVIEW: '/admin/listings/:id',

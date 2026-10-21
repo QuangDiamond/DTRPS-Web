@@ -1,4 +1,11 @@
 /** Điểm đến POI */
+import type { Language } from './common';
+
+/** Nội dung POI đã dịch sang một ngôn ngữ khác */
+export interface PoiTranslation {
+  subCategory?: string;
+  highlight?: string;
+}
 
 export type PoiCategory = 'heritage' | 'nature' | 'food' | 'resort' | 'stay' | 'craft' | 'tour';
 
@@ -10,7 +17,7 @@ export type PoiKpiGroup = 'sights' | 'food' | 'stay' | 'tour';
 
 export type PoiStatus = 'active' | 'maintenance' | 'paused' | 'draft';
 
-export type PoiSource = 'gov' | 'ai' | 'authority' | 'partner' | 'system';
+export type PoiSource = 'gov' | 'openData' | 'authority' | 'partner' | 'system';
 
 export type PoiProvince =
   | 'quang-nam'
@@ -41,6 +48,8 @@ export interface Poi {
   highlightIcon?: string;
   /** Màu icon điểm nhấn, ví dụ "text-tertiary" */
   highlightIconClass?: string;
+  /** Bản dịch nội dung hiển thị theo ngôn ngữ (tiếng Việt là bản gốc ở các trường trên) */
+  translations?: Partial<Record<Exclude<Language, 'vi'>, PoiTranslation>>;
   /** Danh mục phụ / tag gợi ý AI, phân tách bằng dấu phẩy */
   tags: string;
   description: string;

@@ -1,7 +1,8 @@
 import type { UserAuditEntry, UserProfile } from '@/types';
 
 /** Hồ sơ chi tiết theo UID. Người dùng không có ở đây sẽ dùng hồ sơ dựng tự động. */
-export const MOCK_USER_PROFILES: Record<string, UserProfile> = {
+/** Hồ sơ gốc — lịch sử tìm kiếm AI được builder bổ sung */
+export const MOCK_USER_PROFILES: Record<string, Omit<UserProfile, 'aiSearches'>> = {
   'USR-8291': {
     tierLabel: 'Khách nội địa ưu tiên',
     address: 'Quận Hải Châu, TP. Đà Nẵng',

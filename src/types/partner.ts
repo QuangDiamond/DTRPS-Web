@@ -109,6 +109,9 @@ export interface PartnerProfile {
     escrow: boolean;
   };
   certifications: PartnerCertification[];
+  contractLimits: PartnerContractLimits;
+  transactions: PartnerTransaction[];
+  ratings: PartnerRatingSummary;
   /** ISO date */
   nextReviewDate: string;
   agreement: {
@@ -138,4 +141,50 @@ export interface PartnerAuditEntry {
 export interface PartnerProfileOverrides {
   nextReviewDate?: string;
   commission?: number;
+}
+
+export type PartnerTransactionType = 'booking' | 'commission' | 'payout' | 'refund';
+export type PartnerTransactionStatus = 'completed' | 'pending' | 'failed';
+
+/** Giao dịch phát sinh giữa nền tảng và đối tác */
+export interface PartnerTransaction {
+  id: string;
+  /** ISO datetime */
+  date: string;
+  type: PartnerTransactionType;
+  amountVnd: number;
+  status: PartnerTransactionStatus;
+  /** Mã đặt chỗ hoặc tài khoản nhận tiền */
+  reference: string;
+}
+
+/** Hạn mức theo hợp đồng hợp tác */
+export interface PartnerContractLimits {
+  creditLimitVnd: number;
+  creditUsedVnd: number;
+  /** Số lượt đặt tối đa mỗi tháng */
+  monthlyBookingCap: number;
+  monthlyBookings: number;
+  maxActiveListings: number;
+  activeListings: number;
+  /** Tiền ký quỹ bảo chứng */
+  depositVnd: number;
+}
+
+export interface PartnerReview {
+  id: string;
+  author: string;
+  rating: number;
+  /** Nội dung do du khách viết — dữ liệu, không dịch */
+  comment: string;
+  /** ISO datetime */
+  date: string;
+  listingName: string;
+}
+
+export interface PartnerRatingSummary {
+  average: number;
+  total: number;
+  distribution: Record<1 | 2 | 3 | 4 | 5, number>;
+  recent: PartnerReview[];
 }

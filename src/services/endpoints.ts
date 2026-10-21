@@ -66,6 +66,7 @@ export const ENDPOINTS = {
     markRead: (notificationId: string) => `/notifications/${id(notificationId)}/read`,
     markAllRead: '/notifications/read-all',
     rules: '/notifications/rules',
+    broadcast: '/notifications/broadcast',
   },
   settings: {
     snapshot: '/settings',

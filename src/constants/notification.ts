@@ -1,10 +1,13 @@
 import i18n from 'i18next';
 import type {
+  BroadcastAudience,
+  BroadcastChannel,
   NotificationChannel,
   NotificationEvent,
   NotificationPriority,
   NotificationRules,
   NotificationTab,
+  TranslationKey,
 } from '@/types';
 
 export const NOTIFICATION_TABS: { id: NotificationTab; label: string }[] = [
@@ -152,3 +155,38 @@ export const DEFAULT_NOTIFICATION_RULES: NotificationRules = {
 
 export const NOTIFICATION_PAGE_SIZE = 7;
 export const AI_LOAD_THRESHOLD_RANGE = { min: 50, max: 100, step: 5 };
+
+/** Nhóm người nhận của thông báo broadcast */
+export const BROADCAST_AUDIENCES: {
+  id: BroadcastAudience;
+  labelKey: TranslationKey;
+  icon: string;
+}[] = [
+  { id: 'allUsers', labelKey: 'notifications.broadcast.audiences.allUsers', icon: 'groups' },
+  {
+    id: 'vipUsers',
+    labelKey: 'notifications.broadcast.audiences.vipUsers',
+    icon: 'workspace_premium',
+  },
+  { id: 'partners', labelKey: 'notifications.broadcast.audiences.partners', icon: 'handshake' },
+  {
+    id: 'admins',
+    labelKey: 'notifications.broadcast.audiences.admins',
+    icon: 'admin_panel_settings',
+  },
+];
+
+export const BROADCAST_CHANNELS: {
+  id: BroadcastChannel;
+  labelKey: TranslationKey;
+  icon: string;
+}[] = [
+  { id: 'push', labelKey: 'notifications.broadcast.channels.push', icon: 'notifications_active' },
+  { id: 'email', labelKey: 'notifications.broadcast.channels.email', icon: 'mail' },
+  { id: 'inApp', labelKey: 'notifications.broadcast.channels.inApp', icon: 'inbox' },
+];
+
+/** Số tài khoản quản trị nhận broadcast nội bộ */
+export const BROADCAST_ADMIN_COUNT = 6;
+
+export const BROADCAST_LIMITS = { title: 80, message: 500 } as const;

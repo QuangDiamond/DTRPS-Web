@@ -34,6 +34,10 @@ export const MOCK_REPORT_BASE = {
   partnerGrowthQoQ: 18.5,
   provincesCovered: 63,
   avgApprovalHours: 3.5,
+  /** Truy vấn AI pgvector / năm (toàn hệ thống) */
+  aiQueriesYear: 386_400,
+  aiHitRate: 91.4,
+  aiAvgSimilarity: 86.2,
 };
 
 export const MOCK_TRIP_INSIGHTS: TripInsights = {

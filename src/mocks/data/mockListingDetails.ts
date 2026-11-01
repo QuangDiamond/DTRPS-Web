@@ -5,21 +5,9 @@ const STITCH_IMAGE_BASE = 'https://lh3.googleusercontent.com/aida-public/';
 /** Hồ sơ chi tiết theo mã POI. Niêm yết không có ở đây sẽ dùng hồ sơ dựng tự động. */
 export const MOCK_LISTING_DETAILS: Record<string, ListingDetail> = {
   'POI-94812': {
-    categoryDetail: 'Khách sạn & Homestay (Lưu trú sinh thái)',
     reviewLevel: 'Khắt khe (Cấp 1)',
     areaLabel: 'Hội An, Quảng Nam',
     completeness: 96,
-    description:
-      'Hoi An Garden Homestay mang đến trải nghiệm nghỉ dưỡng giữa không gian xanh mướt với vườn cây ăn quả hữu cơ, hồ bơi nước mặn lọc cát sinh học thân thiện với môi trường. Khách lưu trú được thưởng thức bữa sáng ẩm thực truyền thống Quảng Nam (Mì Quảng, Cao Lầu) chế biến từ nông sản tươi mỗi sáng. Chỉ cách phố cổ 5 phút đạp xe.',
-    fullAddress: '128 Nguyễn Tri Phương, Cẩm Châu, TP. Hội An, Tỉnh Quảng Nam',
-    hotline: '0905 123 456',
-    email: 'booking@hoiangarden.com',
-    website: 'hoiangardenhomestay.vn',
-    schedule: { label: 'Khung giờ nhận / trả phòng', value: 'Check-in: 14:00 • Check-out: 12:00' },
-    price: {
-      range: '650,000 VNĐ - 1,450,000 VNĐ / đêm',
-      note: 'Phù hợp phân khúc Homestay Boutique',
-    },
     photos: [
       {
         url: `${STITCH_IMAGE_BASE}AB6AXuBeD4ilfz8xzNjKbQlonvU4SKhsJLUQUVKG2ycKaP7SZ9tJCOmiyEuVglQZjoC-VtPBC-TafI9MxSnibrctmA0QFk6VhiHb8oQL75R6QdkZHIiHNDYYhP5EQRrdOiUL1Qv3e1G8MZtIavB81OO07-JDWO9r_e757CQ9mhvKFyvKGuzAlR3L-FQa2ZSpLrbEE-ELy9vk-YuKJ-r4OI4IAL0XjDhA1Dlw9_O-0BtfJE_Yyzu3F5ntMFHLig`,
@@ -52,36 +40,6 @@ export const MOCK_LISTING_DETAILS: Record<string, ListingDetail> = {
       },
     ],
     requiredPhotoCount: 7,
-    business: {
-      scaleBadge: 'Quy mô: 12 Phòng',
-      facts: [
-        {
-          icon: 'bed',
-          label: 'Quy mô buồng phòng',
-          value: '12 Phòng nghỉ sinh thái',
-          note: '4 King Suite, 6 Double Garden, 2 Family Twin',
-          tone: 'teal',
-        },
-        {
-          icon: 'policy',
-          label: 'Chính sách hủy đặt phòng',
-          value: 'Hủy miễn phí trước 48h',
-          note: 'Phí 50% cọc nếu hủy trong vòng 24h',
-          tone: 'amber',
-        },
-      ],
-      amenities: [
-        { icon: 'pool', label: 'Hồ bơi nước mặn ngoài trời' },
-        { icon: 'pedal_bike', label: 'Cho thuê xe đạp miễn phí' },
-        { icon: 'restaurant', label: 'Bữa sáng món Quảng truyền thống' },
-        { icon: 'wifi', label: 'Wi-Fi tốc độ cao Mesh 300Mbps' },
-        { icon: 'airport_shuttle', label: 'Đưa đón sân bay Đà Nẵng' },
-      ],
-      policyNote: {
-        title: 'Chính sách trẻ em & Giường phụ:',
-        text: 'Trẻ em dưới 6 tuổi lưu trú miễn phí khi dùng chung giường với bố mẹ (tối đa 1 trẻ/phòng). Trẻ từ 6-11 tuổi phụ thu 150.000 VNĐ/đêm đã gồm bữa sáng. Giường phụ (Extra bed) tính 300.000 VNĐ/đêm khi có yêu cầu trước.',
-      },
-    },
     partner: {
       code: 'PTN-0891',
       representative: 'Nguyễn Văn Hùng',

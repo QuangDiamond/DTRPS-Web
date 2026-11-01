@@ -5,6 +5,7 @@ import ListingThumb from '@/components/listings/ListingThumb';
 import { LISTING_CATEGORY_CONFIG, PARTNER_TIER_CONFIG } from '@/constants/listing';
 import { getWaitDisplay, isOverdue } from '@/pages/Listings/listingUtils';
 import type { Listing, ListingHighlight } from '@/types';
+import { getListingSubTypeIcon, getListingSubTypeLabel } from '@/constants/listingMap';
 
 interface ListingRowProps {
   listing: Listing;
@@ -122,7 +123,8 @@ export default function ListingRow({
             LISTING_CATEGORY_CONFIG[listing.category].pillClass
           }`}
         >
-          <Icon name={listing.categoryIcon} className="text-[14px]" /> {listing.categoryLabel}
+          <Icon name={getListingSubTypeIcon(listing)} className="text-[14px]" />{' '}
+          {getListingSubTypeLabel(listing)}
         </span>
       </td>
 

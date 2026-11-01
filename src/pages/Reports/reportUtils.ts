@@ -69,9 +69,9 @@ export const REPORT_SERVICE_OPTIONS: SelectOption<ReportService>[] = [
     },
   },
   {
-    value: 'experience',
+    value: 'shopping',
     get label() {
-      return i18n.t('reports.utils.localExperiences');
+      return i18n.t('reports.utils.shoppingSpecialties');
     },
   },
 ];
@@ -258,13 +258,13 @@ export function exportReportCsv(
     ['', '', ''],
     [
       i18n.t('reports.utils.partner'),
-      i18n.t('reports.utils.bookings'),
-      i18n.t('reports.utils.revenueVnd'),
+      i18n.t('reports.utils.mapViews'),
+      i18n.t('reports.utils.aiSearchHits'),
     ],
     ...report.topPartners.map((partner) => [
       `${partner.name} (${PARTNER_TYPE_CONFIG[partner.type].label} • ${PROVINCE_NAMES[partner.province]})`,
-      partner.bookings,
-      partner.revenueVnd,
+      partner.views,
+      partner.aiSearchHits,
     ]),
   ];
   downloadCsv(

@@ -8,8 +8,8 @@ export const POI_BASE_STATS: PoiStats = {
   total: 6420,
   newThisMonth: 124,
   available: 6150,
-  byGroup: { sights: 1284, food: 1798, stay: 2696, tour: 642 },
-  byTab: { all: 6420, heritage: 1284, food: 1798, stay: 2696, nature: 912, craft: 415 },
+  byGroup: { attraction: 1926, fnb: 1798, hotel: 2281, shopping: 415 },
+  byTab: { all: 6420, attraction: 1926, fnb: 1798, hotel: 2281, shopping: 415 },
 };
 
 export const MOCK_POIS: Poi[] = [
@@ -371,7 +371,7 @@ export const MOCK_POIS: Poi[] = [
   {
     id: 'POI-VN-0258',
     name: 'Chợ Bến Thành',
-    category: 'food',
+    category: 'craft',
     subCategory: 'Chợ truyền thống',
     highlight: 'Biểu tượng thương mại Sài Gòn',
     translations: {
@@ -496,7 +496,7 @@ export const MOCK_POIS: Poi[] = [
   {
     id: 'POI-VN-0342',
     name: 'Tour thuyền rồng sông Hương & Ca Huế',
-    category: 'tour',
+    category: 'heritage',
     subCategory: 'Trải nghiệm văn hóa',
     highlight: 'Nghe Ca Huế trên sông Hương về đêm',
     translations: {

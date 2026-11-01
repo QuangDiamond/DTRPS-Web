@@ -2,71 +2,86 @@ import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Button, Icon, Modal } from '@/components/common';
 import { LISTING_CATEGORY_CONFIG } from '@/constants/listing';
-import type { ListingCategory } from '@/types';
+import {
+  getSubTypeLabel,
+  LISTING_SUBTYPE_CONFIG,
+  LISTING_SUBTYPES_BY_CATEGORY,
+} from '@/constants/listingMap';
+import type { ListingCategory, ListingSubType } from '@/types';
 
 interface AssignCategoryModalProps {
   count: number;
-  onConfirm: (category: ListingCategory) => void;
+  onConfirm: (subType: ListingSubType) => void;
   onClose: () => void;
 }
 
-const CATEGORIES = Object.keys(LISTING_CATEGORY_CONFIG) as ListingCategory[];
+const CATEGORIES = Object.keys(LISTING_SUBTYPES_BY_CATEGORY) as ListingCategory[];
 
+/** Gán nhóm & loại hình con cho nhiều địa điểm đã chọn */
 export default function AssignCategoryModal({
   count,
   onConfirm,
   onClose,
 }: AssignCategoryModalProps) {
   const { t } = useTranslation();
-  const [category, setCategory] = useState<ListingCategory | null>(null);
+  const [subType, setSubType] = useState<ListingSubType | null>(null);
 
   return (
     <Modal
       title={t('approvedListings.assignCategoryModal.assignCategory')}
       description={t('approvedListings.assignCategoryModal.applyNewCategorySelected', { count })}
       onClose={onClose}
+      size="lg"
       footer={
         <>
           <Button variant="neutral" onClick={onClose}>
             {t('actions.cancel')}
           </Button>
-          <Button
-            icon="category"
-            disabled={!category}
-            onClick={() => category && onConfirm(category)}
-          >
+          <Button icon="category" disabled={!subType} onClick={() => subType && onConfirm(subType)}>
             {t('approvedListings.assignCategoryModal.assignCategory')}
           </Button>
         </>
       }
     >
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {CATEGORIES.map((item) => {
-          const config = LISTING_CATEGORY_CONFIG[item];
-          const active = item === category;
+      <div className="flex flex-col gap-4">
+        {CATEGORIES.map((category) => {
+          const config = LISTING_CATEGORY_CONFIG[category];
           return (
-            <button
-              key={item}
-              type="button"
-              onClick={() => setCategory(item)}
-              className={`flex items-center gap-3 rounded-xl border p-3 text-left transition-all ${
-                active
-                  ? 'border-primary bg-primary/5'
-                  : 'border-surface-container hover:bg-surface-container-low'
-              }`}
-            >
-              <span
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${config.iconBoxClass}`}
-              >
-                <Icon name={config.defaultIcon} className="text-[20px]" />
+            <div key={category} className="flex flex-col gap-2">
+              <span className="flex items-center gap-2 font-label-md text-label-md font-semibold text-on-surface">
+                <span
+                  className={`flex h-7 w-7 items-center justify-center rounded-lg ${config.iconBoxClass}`}
+                >
+                  <Icon name={config.defaultIcon} className="text-[17px]" />
+                </span>
+                {config.label}
               </span>
-              <span className="font-label-md text-label-md text-on-surface">
-                {config.filterLabel}
-              </span>
-              {active && (
-                <Icon name="check_circle" filled className="ml-auto text-[20px] text-primary" />
-              )}
-            </button>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {LISTING_SUBTYPES_BY_CATEGORY[category].map((item) => {
+                  const active = item === subType;
+                  return (
+                    <button
+                      key={item}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => setSubType(item)}
+                      className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-left font-label-md text-label-md transition-all ${
+                        active
+                          ? 'border-primary bg-primary/5 font-semibold text-primary'
+                          : 'border-surface-container text-on-surface hover:bg-surface-container-low'
+                      }`}
+                    >
+                      <Icon
+                        name={active ? 'check_circle' : LISTING_SUBTYPE_CONFIG[item].icon}
+                        filled={active}
+                        className="shrink-0 text-[18px]"
+                      />
+                      <span className="truncate">{getSubTypeLabel(item)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           );
         })}
       </div>

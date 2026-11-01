@@ -4,7 +4,7 @@ import type { PartnerType, ProvinceCode } from './partner';
 
 export type ReportRegion = 'all' | 'north' | 'central' | 'south';
 
-export type ReportService = 'all' | 'hotel' | 'fnb' | 'attraction' | 'experience';
+export type ReportService = 'all' | 'hotel' | 'fnb' | 'attraction' | 'shopping';
 
 export type ReportPeriod = '7days' | '30days' | 'quarter' | 'year' | 'custom';
 
@@ -73,7 +73,7 @@ export interface DestinationRank {
   highlights: string[];
 }
 
-export type ReportCategoryId = Exclude<ReportService, 'all'> | 'shopping';
+export type ReportCategoryId = Exclude<ReportService, 'all'>;
 
 export interface PoiCategoryStat {
   id: ReportCategoryId;
@@ -87,9 +87,10 @@ export interface PartnerPerformance {
   name: string;
   type: PartnerType;
   province: ProvinceCode;
-  bookings: number;
-  /** Doanh thu đặt chỗ qua nền tảng (VNĐ) */
-  revenueVnd: number;
+  /** Lượt du khách mở địa điểm của đối tác trên bản đồ */
+  views: number;
+  /** Lượt địa điểm xuất hiện trong kết quả tìm kiếm AI */
+  aiSearchHits: number;
   rating: number;
   growthPercent: number;
 }

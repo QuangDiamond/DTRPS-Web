@@ -10,18 +10,11 @@ export function buildMockListingDetail(listing: Listing, allListings: Listing[])
 
   const reviewed = listing.status === 'approved';
   return {
-    categoryDetail: listing.categoryLabel,
     reviewLevel: listing.partnerTier === 'gold' ? 'Ưu tiên (Cấp 2)' : 'Khắt khe (Cấp 1)',
     areaLabel: PROVINCE_NAMES[listing.province],
     completeness: listing.imageUrl ? 78 : 64,
-    description: `Đối tác ${listing.partnerName} đăng ký niêm yết "${listing.name}" thuộc nhóm ${listing.categoryLabel}. Mô tả chi tiết đang được đối tác bổ sung.`,
-    fullAddress: listing.address,
-    hotline: 'Đang cập nhật',
-    email: 'Đang cập nhật',
-    schedule: { label: 'Giờ hoạt động', value: 'Đang cập nhật' },
     photos: listing.imageUrl ? [{ url: listing.imageUrl, caption: listing.name }] : [],
     requiredPhotoCount: 7,
-    business: { scaleBadge: listing.categoryLabel, facts: [], amenities: [] },
     partner: {
       code: listing.partnerId ?? 'Chưa liên kết',
       representative: 'Đang cập nhật',

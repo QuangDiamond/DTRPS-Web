@@ -3,7 +3,7 @@ import type {
   ActivityItem,
   DataStatus,
   Listing,
-  ListingCategory,
+  ListingSubType,
   ListingFormValues,
   ListingStats,
   ListingVisibility,
@@ -27,7 +27,8 @@ export interface ListingsContextValue {
   /** Ẩn / hiện niêm yết đã duyệt, trả về số niêm yết thay đổi */
   setListingsVisibility: (ids: string[], visibility: ListingVisibility, reason?: string) => number;
   updateListing: (id: string, values: ListingFormValues) => void;
-  assignCategory: (ids: string[], category: ListingCategory) => void;
+  /** Gán loại hình con (kéo theo nhóm địa điểm) cho nhiều niêm yết */
+  assignCategory: (ids: string[], subType: ListingSubType) => void;
   /** Admin thêm thủ công một địa điểm (được duyệt ngay) */
   addListing: (values: ListingFormValues) => Listing;
 }

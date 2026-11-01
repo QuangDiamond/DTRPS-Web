@@ -1,18 +1,8 @@
 /**
- * Dữ liệu mẫu bổ sung cho màn chi tiết: hạn mức hợp đồng, giao dịch, đánh giá đối tác
+ * Dữ liệu mẫu bổ sung cho màn chi tiết: đánh giá đối tác
  * và lịch sử tìm kiếm AI của người dùng. Sinh ổn định theo id (mỗi lần mở cho cùng kết quả).
  */
-import type {
-  AppUser,
-  Partner,
-  PartnerContractLimits,
-  PartnerRatingSummary,
-  PartnerReview,
-  PartnerTransaction,
-  PartnerTransactionStatus,
-  PartnerTransactionType,
-  UserAiSearch,
-} from '@/types';
+import type { AppUser, Partner, PartnerRatingSummary, PartnerReview, UserAiSearch } from '@/types';
 
 /** Bộ sinh số giả ngẫu nhiên có hạt giống theo chuỗi */
 function seededRandom(seed: string): () => number {
@@ -31,54 +21,6 @@ const daysAgo = (days: number, hour = 9): string => {
 };
 
 // ---------------------------------------------------------------- Đối tác
-export function buildPartnerContractLimits(partner: Partner): PartnerContractLimits {
-  const random = seededRandom(`${partner.id}-limits`);
-  const creditLimitVnd = (200 + Math.round(random() * 6) * 100) * 1_000_000;
-  const maxActiveListings = partner.type === 'hotel' ? 20 : 12;
-  return {
-    creditLimitVnd,
-    creditUsedVnd: Math.round(creditLimitVnd * (0.25 + random() * 0.6)),
-    monthlyBookingCap: 1500 + Math.round(random() * 10) * 250,
-    monthlyBookings: 600 + Math.round(random() * 900),
-    maxActiveListings,
-    activeListings: Math.min(maxActiveListings, partner.listings.approved),
-    depositVnd: 50_000_000 + Math.round(random() * 4) * 25_000_000,
-  };
-}
-
-const TRANSACTION_TYPES: PartnerTransactionType[] = [
-  'booking',
-  'booking',
-  'commission',
-  'payout',
-  'booking',
-  'refund',
-];
-
-export function buildPartnerTransactions(partner: Partner): PartnerTransaction[] {
-  const random = seededRandom(`${partner.id}-transactions`);
-  return Array.from({ length: 10 }, (_, index) => {
-    const type = TRANSACTION_TYPES[Math.floor(random() * TRANSACTION_TYPES.length)];
-    const base =
-      type === 'payout'
-        ? 40 + random() * 120
-        : type === 'commission'
-          ? 2 + random() * 15
-          : 1 + random() * 25;
-    const status: PartnerTransactionStatus =
-      index === 0 ? 'pending' : random() > 0.93 ? 'failed' : 'completed';
-    return {
-      id: `TXN-${partner.id.slice(-4)}-${String(980 - index * 7).padStart(4, '0')}`,
-      date: daysAgo(index * 3 + Math.floor(random() * 3), 8 + Math.floor(random() * 10)),
-      type,
-      amountVnd: Math.round((base * 1_000_000) / 1000) * 1000,
-      status,
-      reference:
-        type === 'payout' ? 'Vietcombank ****8821' : `BK-${Math.floor(100000 + random() * 899999)}`,
-    };
-  });
-}
-
 const REVIEWERS = [
   'Nguyễn Minh Anh',
   'Trần Quốc Huy',

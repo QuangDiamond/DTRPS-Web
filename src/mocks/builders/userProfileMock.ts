@@ -42,8 +42,6 @@ function buildFallbackProfile(user: AppUser): Omit<UserProfile, 'aiSearches'> {
     reviewCount: Math.floor(user.tripCount * 1.5),
     avgRating: 4.5,
     reviewsNote: 'Đánh giá được xác thực qua lịch sử đặt chỗ trên ứng dụng.',
-    totalSpend: user.tripCount * 1_200_000,
-    spendNote: 'Đặt dịch vụ qua Smart Travel',
     trips: [],
   };
 }

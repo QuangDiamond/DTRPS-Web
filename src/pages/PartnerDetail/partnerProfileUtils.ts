@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import type { PartnerAuditEntry, PartnerProfile, PartnerProfileOverrides } from '@/types';
 
-/** Áp các giá trị admin vừa chỉnh trong phiên (kỳ tái thẩm định, hoa hồng) lên hồ sơ từ server */
+/** Áp các giá trị admin vừa chỉnh trong phiên (kỳ tái thẩm định) lên hồ sơ từ server */
 export function applyProfileOverrides(
   base: PartnerProfile,
   overrides: PartnerProfileOverrides = {},
@@ -9,10 +9,6 @@ export function applyProfileOverrides(
   return {
     ...base,
     nextReviewDate: overrides.nextReviewDate ?? base.nextReviewDate,
-    agreement: {
-      ...base.agreement,
-      commission: overrides.commission ?? base.agreement.commission,
-    },
   };
 }
 

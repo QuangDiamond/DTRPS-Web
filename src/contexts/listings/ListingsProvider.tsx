@@ -1,12 +1,13 @@
 import i18n from 'i18next';
+import { LISTING_SUBTYPE_CONFIG } from '@/constants/listingMap';
 import { type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
-import { LISTING_CATEGORY_CONFIG } from '@/constants/listing';
 import { useAuth, useInitialData, usePersist } from '@/hooks';
 import { listingService, listingsSource } from '@/services/listingService';
 import type {
   ActivityItem,
   Listing,
   ListingFormValues,
+  ListingSubType,
   ListingStats,
   ListingVisibility,
   RejectOptions,
@@ -265,14 +266,7 @@ export default function ListingsProvider({ children }: { children: ReactNode }) 
       setListings((current) =>
         current.map((listing) => {
           if (listing.id !== id) return listing;
-          const categoryChanged = listing.category !== values.category;
-          return {
-            ...listing,
-            ...values,
-            categoryIcon: categoryChanged
-              ? LISTING_CATEGORY_CONFIG[values.category].defaultIcon
-              : listing.categoryIcon,
-          };
+          return { ...listing, ...values };
         }),
       );
       persist(listingService.update(id, values), i18n.t('stores.listings.couldNotSavePlace'));
@@ -281,22 +275,21 @@ export default function ListingsProvider({ children }: { children: ReactNode }) 
   );
 
   const assignCategory = useCallback(
-    (ids: string[], category: Listing['category']) => {
-      const config = LISTING_CATEGORY_CONFIG[category];
+    (ids: string[], subType: ListingSubType) => {
+      const { category } = LISTING_SUBTYPE_CONFIG[subType];
       setListings((current) =>
         current.map((listing) =>
           ids.includes(listing.id)
             ? {
                 ...listing,
                 category,
-                categoryLabel: config.filterLabel,
-                categoryIcon: config.defaultIcon,
+                subType,
               }
             : listing,
         ),
       );
       persist(
-        listingService.assignCategory(ids, category),
+        listingService.assignCategory(ids, subType),
         i18n.t('stores.listings.couldNotAssignCategory'),
       );
     },
@@ -306,12 +299,11 @@ export default function ListingsProvider({ children }: { children: ReactNode }) 
   const addListing = useCallback(
     (values: ListingFormValues) => {
       const now = new Date().toISOString();
-      const icon = LISTING_CATEGORY_CONFIG[values.category].defaultIcon;
+      const icon = LISTING_SUBTYPE_CONFIG[values.subType].icon;
       const listing: Listing = {
         ...values,
         id: `POI-M${String(nextManualId.current++).padStart(4, '0')}`,
         icon,
-        categoryIcon: icon,
         // Địa điểm thêm thủ công cần được index vector trước khi xuất hiện trong tìm kiếm AI
         vectorEmbedded: false,
         partnerTier: 'verified',

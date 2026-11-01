@@ -1,8 +1,4 @@
-import {
-  buildPartnerContractLimits,
-  buildPartnerRatings,
-  buildPartnerTransactions,
-} from './detailExtrasMock';
+import { buildPartnerRatings } from './detailExtrasMock';
 import { PROVINCE_LABELS, PROVINCE_NAMES } from '@/constants/partner';
 import { MOCK_PARTNER_AUDIT, MOCK_PARTNER_PROFILES } from '@/mocks/data/mockPartnerProfiles';
 import type { Partner, PartnerAuditEntry, PartnerProfile } from '@/types';
@@ -22,9 +18,7 @@ function addYears(isoDate: string, years: number): string {
 }
 
 /** Hồ sơ dựng tự động cho đối tác chưa có dữ liệu chi tiết */
-function buildFallbackProfile(
-  partner: Partner,
-): Omit<PartnerProfile, 'contractLimits' | 'transactions' | 'ratings'> {
+function buildFallbackProfile(partner: Partner): Omit<PartnerProfile, 'ratings'> {
   const trustScore = partner.status === 'active' ? 86 : partner.status === 'pending' ? 62 : 35;
   const nextReview = new Date();
   nextReview.setMonth(nextReview.getMonth() + 6);
@@ -52,7 +46,6 @@ function buildFallbackProfile(
       email: partner.email,
       otpPhone: partner.phone,
       twoFactor: partner.status === 'active',
-      escrow: false,
     },
     certifications: [
       {
@@ -75,11 +68,8 @@ function buildFallbackProfile(
     nextReviewDate: toIsoDate(nextReview),
     agreement: {
       type: 'Hợp tác tiêu chuẩn',
-      commission: 10,
       activatedAt: partner.joinedAt,
       renewAt: addYears(partner.joinedAt, 2),
-      paymentCycle: 'Thanh toán ngày 05 hàng tháng',
-      paymentMode: 'Chuyển khoản',
       contractCode: `HD-${partner.joinedAt.slice(0, 4)}/STV-${partner.id}`,
     },
   };
@@ -89,8 +79,6 @@ export function buildMockPartnerProfile(partner: Partner): PartnerProfile {
   const base = MOCK_PARTNER_PROFILES[partner.id] ?? buildFallbackProfile(partner);
   return {
     ...base,
-    contractLimits: buildPartnerContractLimits(partner),
-    transactions: buildPartnerTransactions(partner),
     ratings: buildPartnerRatings(partner),
   };
 }

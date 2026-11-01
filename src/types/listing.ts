@@ -1,8 +1,73 @@
 /** Niêm yết */
 import type { PartnerType, ProvinceCode } from './partner';
 
-/** Danh mục niêm yết = loại hình đối tác + mua sắm đặc sản */
-export type ListingCategory = PartnerType | 'shopping';
+/** Nhóm địa điểm (trùng loại hình đối tác): Lưu trú / Ẩm thực / Vui chơi & Tham quan / Mua sắm & Đặc sản */
+export type ListingCategory = PartnerType;
+
+/** Loại hình con trong từng nhóm */
+export type ListingSubType =
+  // Ẩm thực
+  | 'restaurant'
+  | 'cafe'
+  | 'localEatery'
+  | 'barPub'
+  // Lưu trú
+  | 'hotel'
+  | 'resort'
+  | 'homestay'
+  | 'villa'
+  // Vui chơi & Tham quan
+  | 'amusementPark'
+  | 'park'
+  | 'scenicSpot'
+  | 'checkinSpot'
+  // Mua sắm & Đặc sản
+  | 'nightMarket'
+  | 'specialtyStore'
+  | 'souvenirShop'
+  | 'craftVillage';
+
+/** Tiện ích hiển thị trên bản đồ (Ẩm thực, Lưu trú) */
+export type ListingAmenity =
+  | 'parking'
+  | 'airConditioning'
+  | 'bankTransfer'
+  | 'wifi'
+  | 'outdoorSeating'
+  | 'pool'
+  | 'petFriendly'
+  | 'breakfast';
+
+/** Dịch vụ của điểm mua sắm */
+export type ShoppingService = 'giftWrapping' | 'delivery';
+
+/**
+ * Thông tin hiển thị trên bản đồ (kiểu Google Maps) — mỗi nhóm địa điểm dùng một bộ trường riêng,
+ * xem LISTING_MAP_FIELDS. Giá trị do đối tác / admin nhập nên giữ nguyên văn.
+ */
+export interface ListingMapInfo {
+  /** Giới thiệu ngắn (nhãn theo nhóm: giới thiệu quán / nơi lưu trú / điểm đến / cửa hàng) */
+  description?: string;
+  /** Số điện thoại liên hệ */
+  phone?: string;
+  website?: string;
+  /** Giờ mở / đóng cửa (Ẩm thực, Vui chơi & Tham quan, Mua sắm) */
+  openingHours?: string;
+  /** Giờ nhận / trả phòng (Lưu trú) */
+  checkInOut?: string;
+  /** Khoảng giá / tầm giá mỗi đêm / giá vé vào cổng — tùy nhóm */
+  priceRange?: string;
+  /** Menu & món nổi bật (Ẩm thực) hoặc sản phẩm chủ đạo (Mua sắm) */
+  highlights?: string;
+  amenities?: ListingAmenity[];
+  /** Link đặt phòng bên ngoài: Booking, Agoda, website riêng… (Lưu trú) */
+  externalBooking?: string;
+  /** Quy định: trang phục, độ tuổi… (Vui chơi & Tham quan) */
+  visitRules?: string;
+  /** Thời điểm đẹp nhất trong ngày (Vui chơi & Tham quan) */
+  bestTime?: string;
+  services?: ShoppingService[];
+}
 
 export type ListingStatus = 'pending' | 'approved' | 'rejected';
 
@@ -32,9 +97,8 @@ export interface Listing {
   partnerName: string;
   partnerTier: PartnerTier;
   category: ListingCategory;
-  /** Nhãn chi tiết hiển thị trên badge, ví dụ "Nghỉ dưỡng ven biển" */
-  categoryLabel: string;
-  categoryIcon: string;
+  subType: ListingSubType;
+  mapInfo: ListingMapInfo;
   address: string;
   province: ProvinceCode;
   /** ISO datetime */
@@ -87,14 +151,6 @@ export interface ListingChecklistItem {
   passed: boolean;
 }
 
-export interface ListingFact {
-  icon: string;
-  label: string;
-  value: string;
-  note: string;
-  tone: 'teal' | 'amber';
-}
-
 export interface ListingDetailLog {
   /** Số phút sau thời điểm nộp hồ sơ */
   minutesAfterSubmit: number;
@@ -102,28 +158,13 @@ export interface ListingDetailLog {
 }
 
 export interface ListingDetail {
-  /** Nhãn danh mục chi tiết, ví dụ "Khách sạn & Homestay (Lưu trú sinh thái)" */
-  categoryDetail: string;
   reviewLevel: string;
   areaLabel: string;
   /** Độ hoàn thiện hồ sơ (%) */
   completeness: number;
-  description: string;
-  fullAddress: string;
-  hotline: string;
-  email: string;
-  website?: string;
-  schedule: { label: string; value: string };
-  price?: { range: string; note: string };
   /** Ảnh đầu tiên là ảnh bìa */
   photos: ListingPhoto[];
   requiredPhotoCount: number;
-  business: {
-    scaleBadge: string;
-    facts: ListingFact[];
-    amenities: { icon: string; label: string }[];
-    policyNote?: { title: string; text: string };
-  };
   partner: {
     code: string;
     representative: string;
@@ -202,9 +243,10 @@ export interface ListingFormValues {
   name: string;
   partnerName: string;
   category: ListingCategory;
-  categoryLabel: string;
+  subType: ListingSubType;
   address: string;
   province: ProvinceCode;
+  mapInfo: ListingMapInfo;
 }
 
 export interface RejectOptions {

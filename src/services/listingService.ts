@@ -8,7 +8,7 @@ import {
 } from '@/mocks/data/mockData';
 import type {
   Listing,
-  ListingCategory,
+  ListingSubType,
   ListingDetail,
   ListingFormValues,
   ListingsSnapshot,
@@ -56,6 +56,6 @@ export const listingService = {
   lock: (ids: string[]) => writeRequest(ENDPOINTS.listings.lock, 'POST', { ids }),
   setVisibility: (ids: string[], visibility: ListingVisibility, reason?: string) =>
     writeRequest(ENDPOINTS.listings.visibility, 'POST', { ids, visibility, reason }),
-  assignCategory: (ids: string[], category: ListingCategory) =>
-    writeRequest(ENDPOINTS.listings.category, 'POST', { ids, category }),
+  assignCategory: (ids: string[], subType: ListingSubType) =>
+    writeRequest(ENDPOINTS.listings.category, 'POST', { ids, subType }),
 };

@@ -1,7 +1,7 @@
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ErrorState, PageHeader, PageLoader } from '@/components/common';
+import { ConfirmModal, ErrorState, PageHeader, PageLoader } from '@/components/common';
 import { LISTING_CATEGORY_CONFIG } from '@/constants/listing';
 import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
 import { PROVINCE_NAMES } from '@/constants/partner';
@@ -62,6 +62,7 @@ function DashboardContent({ overview }: { overview: DashboardOverview }) {
   const [range, setRange] = useState<DashboardRange>('7days');
   const [dateRange, setDateRange] = useState<DateRange>(() => getPresetRange('7days'));
   const [refreshing, setRefreshing] = useState(false);
+  const [approving, setApproving] = useState<Listing | null>(null);
 
   // Người dùng / đối tác / niêm yết lấy từ store chung → thao tác ở trang nào cũng cập nhật ở đây
   const stats: DashboardStats = {
@@ -94,10 +95,12 @@ function DashboardContent({ overview }: { overview: DashboardOverview }) {
     showToast(t('dashboard.toast.filtered', { range: formatDateRange(next) }), 'info');
   };
 
-  // ===== Duyệt nhanh =====
-  const handleApprove = (listing: Listing) => {
-    approveListings([listing.id]);
-    showToast(t('dashboard.toast.approved', { name: listing.name }));
+  // ===== Duyệt nhanh (cần xác nhận) =====
+  const confirmApprove = () => {
+    if (!approving) return;
+    approveListings([approving.id]);
+    showToast(t('dashboard.toast.approved', { name: approving.name }));
+    setApproving(null);
   };
 
   // ===== Khác =====
@@ -183,12 +186,31 @@ function DashboardContent({ overview }: { overview: DashboardOverview }) {
           listings={pendingListings}
           totalPending={stats.pendingReviews}
           previewLimit={PREVIEW_LIMIT}
-          onApprove={handleApprove}
+          onApprove={setApproving}
           onView={(listing) => navigate(listingReviewPath(listing.id))}
           onViewAll={() => navigate(ROUTES.LISTINGS_PENDING)}
         />
         <ActivityFeed activities={activities} refreshing={refreshing} onRefresh={handleRefresh} />
       </div>
+
+      {approving && (
+        <ConfirmModal
+          title={t('dashboard.approveConfirm.title')}
+          confirmLabel={t('dashboard.approveConfirm.confirm')}
+          confirmIcon="verified"
+          onConfirm={confirmApprove}
+          onClose={() => setApproving(null)}
+        >
+          <Trans
+            i18nKey="dashboard.approveConfirm.message"
+            values={{ name: approving.name, partner: approving.partnerName }}
+            components={{ c0: <strong className="text-on-surface" /> }}
+          />
+          <span className="mt-2 block font-body-sm text-body-sm text-outline">
+            {t('dashboard.approveConfirm.note')}
+          </span>
+        </ConfirmModal>
+      )}
     </div>
   );
 }

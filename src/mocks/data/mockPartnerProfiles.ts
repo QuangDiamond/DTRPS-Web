@@ -2,10 +2,7 @@ import type { PartnerAuditEntry, PartnerProfile } from '@/types';
 
 /** Hồ sơ chi tiết theo mã đối tác. Đối tác không có ở đây sẽ dùng hồ sơ dựng tự động. */
 /** Hồ sơ gốc — hạn mức, giao dịch, đánh giá được builder bổ sung */
-export const MOCK_PARTNER_PROFILES: Record<
-  string,
-  Omit<PartnerProfile, 'contractLimits' | 'transactions' | 'ratings'>
-> = {
+export const MOCK_PARTNER_PROFILES: Record<string, Omit<PartnerProfile, 'ratings'>> = {
   'PTN-0891': {
     tierLabel: 'Gold',
     trustScore: 98,
@@ -29,8 +26,6 @@ export const MOCK_PARTNER_PROFILES: Record<
       email: 'contact@hoianhospitality.vn',
       otpPhone: '0905 123 456',
       twoFactor: true,
-      bank: { name: 'Vietcombank - CN Hội An', account: '1018 9988 2231', currency: 'VND' },
-      escrow: true,
     },
     certifications: [
       {
@@ -49,7 +44,7 @@ export const MOCK_PARTNER_PROFILES: Record<
       },
       {
         icon: 'psychology',
-        title: 'Chỉ số tín nhiệm & Tuân thủ AI Escrow',
+        title: 'Chỉ số tín nhiệm & Tuân thủ',
         meta: 'Điểm đánh giá tự động: 98/100 • Không có biên bản vi phạm',
         statusLabel: 'Rất an toàn',
         tone: 'trust',
@@ -58,11 +53,8 @@ export const MOCK_PARTNER_PROFILES: Record<
     nextReviewDate: '2026-12-15',
     agreement: {
       type: 'Hợp tác chiến lược cao cấp',
-      commission: 8.5,
       activatedAt: '2024-03-15',
       renewAt: '2027-03-15',
-      paymentCycle: 'Thanh toán ngày 05 và ngày 20 hàng tháng',
-      paymentMode: 'Tự động (Escrow)',
       contractCode: 'HD-2024/STV-HAH-89',
     },
   },

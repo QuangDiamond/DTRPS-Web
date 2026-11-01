@@ -7,7 +7,7 @@ import { formatNumber, formatPercent } from '@/utils/format';
 const CARD_CLASS =
   'flex flex-col justify-between rounded-xl bg-surface-container-lowest p-space-md shadow-sm transition-all hover:shadow-md';
 
-const GROUPS: PoiKpiGroup[] = ['sights', 'food', 'stay', 'tour'];
+const GROUPS: PoiKpiGroup[] = ['attraction', 'fnb', 'hotel', 'shopping'];
 
 export default function PoiStatsCards({ stats }: { stats: PoiStats }) {
   const { t } = useTranslation();

@@ -7,11 +7,10 @@ import { useListings, useResource, useToast } from '@/hooks';
 import { listingService } from '@/services/listingService';
 import type { Listing, ListingDetail, ListingDocument, RejectionReason } from '@/types';
 import ApproveListingModal from './components/ApproveListingModal';
-import BasicInfoSection from './components/BasicInfoSection';
-import BusinessInfoSection from './components/BusinessInfoSection';
 import DocumentPreviewModal from './components/DocumentPreviewModal';
 import LegalDocumentsSection from './components/LegalDocumentsSection';
 import LocationSection from './components/LocationSection';
+import MapInfoSection from './components/MapInfoSection';
 import PartnerChecklistCard from './components/PartnerChecklistCard';
 import PhotoGallerySection from './components/PhotoGallerySection';
 import RejectListingModal from './components/RejectListingModal';
@@ -144,14 +143,13 @@ function ListingReviewContent({ listing, detail }: { listing: Listing; detail: L
       </div>
 
       <div className="grid grid-cols-12 items-start gap-6">
-        {/* Cột trái: 01 Thông tin cơ bản, 03 Hình ảnh, 04 Thông tin kinh doanh */}
+        {/* Cột trái: 01 Thông tin địa điểm (bộ trường theo loại dịch vụ), 03 Hình ảnh */}
         <div className="col-span-12 flex flex-col gap-6 lg:col-span-7">
-          <BasicInfoSection listing={listing} detail={detail} />
+          <MapInfoSection listing={listing} />
           <PhotoGallerySection detail={detail} />
-          <BusinessInfoSection detail={detail} />
         </div>
 
-        {/* Cột phải: Đối tác + Checklist, 02 Bản đồ, 05 Pháp lý, Nhật ký */}
+        {/* Cột phải: Đối tác + Checklist, 02 Vị trí, 04 Pháp lý, Nhật ký */}
         <div className="col-span-12 flex flex-col gap-6 lg:col-span-5">
           <PartnerChecklistCard
             listing={listing}
@@ -197,7 +195,6 @@ function ListingReviewContent({ listing, detail }: { listing: Listing; detail: L
       {confirmApprove && (
         <ApproveListingModal
           listing={listing}
-          detail={detail}
           initialNote={note}
           onClose={() => setConfirmApprove(false)}
           onConfirm={handleApprove}

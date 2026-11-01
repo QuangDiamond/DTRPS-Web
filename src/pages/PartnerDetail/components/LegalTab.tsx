@@ -13,7 +13,6 @@ interface LegalTabProps {
   onGrantPermissions: () => void;
   onResendActivation: () => void;
   onScheduleReview: () => void;
-  onAdjustCommission: () => void;
 }
 
 const VERIFIED_BADGE_CLASS =
@@ -32,7 +31,6 @@ export default function LegalTab({
   onGrantPermissions,
   onResendActivation,
   onScheduleReview,
-  onAdjustCommission,
 }: LegalTabProps) {
   const { t } = useTranslation();
   const { legal, contact, agreement } = profile;
@@ -202,36 +200,6 @@ export default function LegalTab({
               </div>
             </div>
           </div>
-          <div className="rounded-xl bg-surface-container-low p-3.5">
-            <span className="mb-2 block font-label-sm text-label-sm tracking-wider text-outline uppercase">
-              {t('partnerDetail.legalTab.paymentGatewayBusinessAccount')}
-            </span>
-            {contact.bank ? (
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <Icon name="account_balance" className="text-[20px] text-secondary" />
-                  <div>
-                    <div className="font-body-md text-body-md font-semibold text-on-surface">
-                      {contact.bank.name}
-                    </div>
-                    <div className="font-body-sm text-body-sm text-outline">
-                      STK: <strong className="text-on-surface">{contact.bank.account}</strong> (
-                      {contact.bank.currency})
-                    </div>
-                  </div>
-                </div>
-                {contact.escrow && (
-                  <span className="rounded-full bg-secondary-container px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-secondary-container">
-                    {t('partnerDetail.legalTab.aiEscrowDeposit')}
-                  </span>
-                )}
-              </div>
-            ) : (
-              <span className="font-body-sm text-body-sm text-on-surface-variant">
-                {t('partnerDetail.legalTab.thisPartnerHasNot')}
-              </span>
-            )}
-          </div>
         </div>
       </DetailCard>
 
@@ -288,12 +256,12 @@ export default function LegalTab({
         </div>
       </DetailCard>
 
-      {/* Khối 4: Thỏa thuận hợp tác & Chiết khấu */}
+      {/* Khối 4: Thỏa thuận hợp tác */}
       <DetailCard
         icon="handshake"
         iconBoxClass="bg-primary-container/10 text-primary"
-        title={t('partnerDetail.legalTab.partnershipAgreementCommission')}
-        subtitle={t('partnerDetail.legalTab.commissionPolicyRoomTicket')}
+        title={t('partnerDetail.legalTab.partnershipAgreement')}
+        subtitle={t('partnerDetail.legalTab.listingAgreementTerms')}
         badge={
           <span
             className={`flex items-center gap-1 rounded-full px-2.5 py-1 font-label-sm text-label-sm font-semibold ${
@@ -317,29 +285,15 @@ export default function LegalTab({
                 components={{ c0: <strong className="text-on-surface" /> }}
               />
             </span>
-            <button type="button" onClick={onAdjustCommission} className={CARD_LINK_BUTTON_CLASS}>
-              <Icon name="edit_document" className="text-[16px]" />
-              <span>{t('partnerDetail.legalTab.adjustCommission')}</span>
-            </button>
           </>
         }
       >
         <div className="space-y-3 font-body-sm text-body-sm">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-surface-container-low p-3">
-              <FieldLabel>{t('partnerDetail.legalTab.contractType')}</FieldLabel>
-              <span className="font-body-md text-body-md font-semibold text-on-surface">
-                {agreement.type}
-              </span>
-            </div>
-            <div className="rounded-xl bg-secondary-container/30 p-3">
-              <span className="mb-1 block font-label-sm text-label-sm font-semibold tracking-wider text-secondary uppercase">
-                {t('partnerDetail.legalTab.platformCommissionRate')}
-              </span>
-              <span className="font-headline-sm text-headline-sm font-bold text-secondary">
-                {agreement.commission} %
-              </span>
-            </div>
+          <div className="rounded-xl bg-surface-container-low p-3">
+            <FieldLabel>{t('partnerDetail.legalTab.contractType')}</FieldLabel>
+            <span className="font-body-md text-body-md font-semibold text-on-surface">
+              {agreement.type}
+            </span>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-surface-container-low p-3">
@@ -354,22 +308,6 @@ export default function LegalTab({
                 {formatDate(agreement.renewAt)}
               </span>
             </div>
-          </div>
-          <div className="flex items-center justify-between rounded-xl bg-surface-container-low p-3">
-            <div className="flex items-center gap-2">
-              <Icon name="payments" className="text-[18px] text-outline" />
-              <div>
-                <div className="font-body-md text-body-md font-medium text-on-surface">
-                  {t('partnerDetail.legalTab.otaSettlementCycle')}
-                </div>
-                <div className="font-label-sm text-label-sm text-outline">
-                  {agreement.paymentCycle}
-                </div>
-              </div>
-            </div>
-            <span className="font-label-sm text-label-sm font-semibold text-primary">
-              {agreement.paymentMode}
-            </span>
           </div>
         </div>
       </DetailCard>

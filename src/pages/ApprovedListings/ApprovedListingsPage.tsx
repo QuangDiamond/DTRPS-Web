@@ -4,15 +4,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Icon, Pagination } from '@/components/common';
 import {
   DEFAULT_APPROVED_FILTERS,
+  LISTING_CATEGORY_CONFIG,
   LISTING_PAGE_SIZE_OPTIONS,
   PARTNER_TIER_CONFIG,
 } from '@/constants/listing';
 import { PROVINCE_NAMES } from '@/constants/partner';
 import { listingReviewPath, ROUTES } from '@/constants/routes';
 import { useListings, useToast } from '@/hooks';
-import type { ApprovedListingFilters, Listing, ListingCategory, ListingFormValues } from '@/types';
+import type { ApprovedListingFilters, Listing, ListingFormValues, ListingSubType } from '@/types';
 import { downloadCsv } from '@/utils/exportCsv';
 import { todayIsoDate } from '@/utils/format';
+import { getListingSubTypeLabel } from '@/constants/listingMap';
 import { filterApprovedListings, formatApprovedAt } from './approvedUtils';
 import ApprovedFilterBar from './components/ApprovedFilterBar';
 import ApprovedStatsCards from './components/ApprovedStatsCards';
@@ -114,8 +116,8 @@ export default function ApprovedListingsPage() {
   };
 
   // ===== Danh mục, thêm & sửa =====
-  const confirmAssignCategory = (category: ListingCategory) => {
-    assignCategory([...selectedIds], category);
+  const confirmAssignCategory = (subType: ListingSubType) => {
+    assignCategory([...selectedIds], subType);
     showToast(t('approvedListings.page.assignedCategoryPlaces', { count: selectedIds.size }));
     setAssigningCategory(false);
     setSelectedIds(new Set());
@@ -158,7 +160,7 @@ export default function ApprovedListingsPage() {
         listing.name,
         listing.partnerName,
         PARTNER_TIER_CONFIG[listing.partnerTier].label,
-        listing.categoryLabel,
+        `${LISTING_CATEGORY_CONFIG[listing.category].label} • ${getListingSubTypeLabel(listing)}`,
         PROVINCE_NAMES[listing.province],
         listing.rating ?? '',
         listing.reviewCount ?? 0,

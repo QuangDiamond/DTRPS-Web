@@ -52,7 +52,13 @@ function MetricCard({
   );
 }
 
-export default function UserMetricCards({ profile }: { profile: UserProfile }) {
+export default function UserMetricCards({
+  profile,
+  aiSearchCount,
+}: {
+  profile: UserProfile;
+  aiSearchCount: number;
+}) {
   const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 gap-space-md sm:grid-cols-2 xl:grid-cols-4">
@@ -110,16 +116,22 @@ export default function UserMetricCards({ profile }: { profile: UserProfile }) {
         }
       />
       <MetricCard
-        label={t('userDetail.userMetricCards.spendingPlatform')}
-        icon="payments"
+        label={t('userDetail.userMetricCards.aiSearches')}
+        icon="manage_search"
         iconClass="bg-surface-container text-primary"
-        value={formatNumber(profile.totalSpend)}
-        unit={t('userDetail.userMetricCards.vnd')}
+        value={formatNumber(aiSearchCount)}
+        unit={t('userDetail.userMetricCards.searchesUnit')}
         unitClass="font-bold text-primary"
         footer={
           <>
-            <Icon name="hotel" className="text-[16px] text-primary" />
-            <span>{profile.spendNote}</span>
+            <Icon name="history" className="text-[16px] text-primary" />
+            <span className="truncate">
+              {profile.aiSearches[0]
+                ? t('userDetail.userMetricCards.latestSearch', {
+                    query: profile.aiSearches[0].query,
+                  })
+                : t('userDetail.userMetricCards.noAiSearches')}
+            </span>
           </>
         }
       />

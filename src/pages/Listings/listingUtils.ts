@@ -5,6 +5,7 @@ import type { Listing, ListingFilters, ListingStatus } from '@/types';
 import { formatDayTime, formatRelativeTime, toIsoDate } from '@/utils/format';
 import type { SortAccessors } from '@/utils/sort';
 import { normalizeText } from '@/utils/string';
+import { getListingSubTypeLabel } from '@/constants/listingMap';
 
 export type ListingTab = ListingStatus | 'all';
 
@@ -93,7 +94,7 @@ export type ListingSortKey = 'name' | 'partner' | 'category' | 'province' | 'wai
 export const LISTING_SORT_ACCESSORS: SortAccessors<Listing, ListingSortKey> = {
   name: (listing) => listing.name,
   partner: (listing) => listing.partnerName,
-  category: (listing) => listing.categoryLabel,
+  category: (listing) => getListingSubTypeLabel(listing),
   province: (listing) => PROVINCE_NAMES[listing.province],
   // Thời gian chờ tăng dần = hồ sơ gửi gần nhất trước
   wait: (listing) => -new Date(listing.submittedAt).getTime(),

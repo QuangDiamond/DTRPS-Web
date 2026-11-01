@@ -28,8 +28,8 @@ const SERVICE_SHARE: Record<ReportService, number> = {
   all: 1,
   hotel: 0.42,
   fnb: 0.28,
-  attraction: 0.18,
-  experience: 0.12,
+  attraction: 0.2,
+  shopping: 0.1,
 };
 
 const SERVICE_PARTNER_TYPES: Record<ReportService, PartnerType[] | null> = {
@@ -37,7 +37,7 @@ const SERVICE_PARTNER_TYPES: Record<ReportService, PartnerType[] | null> = {
   hotel: ['hotel'],
   fnb: ['fnb'],
   attraction: ['attraction'],
-  experience: ['tour'],
+  shopping: ['shopping'],
 };
 
 const REGION_PROVINCES: Record<Exclude<ReportRegion, 'all'>, string[]> = {
@@ -114,8 +114,8 @@ export function buildMockReport(filters: ReportFilters, now: Date = new Date()):
         (filters.region === 'all' || REGION_PROVINCES[filters.region].includes(partner.province)),
     ).map((partner) => ({
       ...partner,
-      bookings: Math.round(partner.bookings * timeShare),
-      revenueVnd: Math.round(partner.revenueVnd * timeShare),
+      views: Math.round(partner.views * timeShare),
+      aiSearchHits: Math.round(partner.aiSearchHits * timeShare),
     })),
     insights: MOCK_REPORT_INSIGHTS,
     generatedAt: now.toISOString(),

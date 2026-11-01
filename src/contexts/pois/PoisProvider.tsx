@@ -17,20 +17,13 @@ function nextPoiId(pois: Poi[]): string {
 
 /** Đếm POI theo nhóm KPI, tab danh mục và số POI đang công khai */
 function countPois(pois: Poi[]) {
-  const byGroup: Record<PoiKpiGroup, number> = { sights: 0, food: 0, stay: 0, tour: 0 };
-  const byTab: Record<PoiCategoryTab, number> = {
-    all: pois.length,
-    heritage: 0,
-    food: 0,
-    stay: 0,
-    nature: 0,
-    craft: 0,
-  };
+  const byGroup: Record<PoiKpiGroup, number> = { attraction: 0, fnb: 0, hotel: 0, shopping: 0 };
+  const byTab: Record<PoiCategoryTab, number> = { all: pois.length, ...byGroup };
   let available = 0;
   pois.forEach((poi) => {
     const config = POI_CATEGORY_CONFIG[poi.category];
-    byGroup[config.kpiGroup] += 1;
-    if (config.tab) byTab[config.tab] += 1;
+    byGroup[config.group] += 1;
+    byTab[config.group] += 1;
     if (poi.status === 'active') available += 1;
   });
   return { total: pois.length, byGroup, byTab, available };
@@ -52,8 +45,8 @@ const EMPTY_STATS: PoiStats = {
   total: 0,
   newThisMonth: 0,
   available: 0,
-  byGroup: { sights: 0, food: 0, stay: 0, tour: 0 },
-  byTab: { all: 0, heritage: 0, food: 0, stay: 0, nature: 0, craft: 0 },
+  byGroup: { attraction: 0, fnb: 0, hotel: 0, shopping: 0 },
+  byTab: { all: 0, attraction: 0, fnb: 0, hotel: 0, shopping: 0 },
 };
 
 /** Store điểm đến POI — dữ liệu tải qua poiService (mock hoặc API) */

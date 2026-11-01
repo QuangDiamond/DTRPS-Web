@@ -1,12 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { useEffect, useRef, useState } from 'react';
 import { Icon } from '@/components/common';
-import { PARTNER_TIER_CONFIG } from '@/constants/listing';
-import type { Listing, ListingDetail } from '@/types';
+import { LISTING_CATEGORY_CONFIG, PARTNER_TIER_CONFIG } from '@/constants/listing';
+import type { Listing } from '@/types';
+import { getListingSubTypeIcon, getListingSubTypeLabel } from '@/constants/listingMap';
 
 interface ApproveListingModalProps {
   listing: Listing;
-  detail: ListingDetail;
   /** Ghi chú đang nhập ở thanh hành động — điền sẵn vào ô ghi chú */
   initialNote: string;
   /** Gọi khi xác nhận xong (sau hiệu ứng "Đang kích hoạt...") */
@@ -23,7 +23,6 @@ type Phase = 'idle' | 'activating' | 'done';
 /** Modal "Xác nhận Phê duyệt địa điểm này?" */
 export default function ApproveListingModal({
   listing,
-  detail,
   initialNote,
   onConfirm,
   onClose,
@@ -137,8 +136,9 @@ export default function ApproveListingModal({
                   {t('listingReview.approveListingModal.listingCategory')}
                 </span>
                 <span className="flex items-center gap-1.5 font-semibold text-primary">
-                  <Icon name={listing.categoryIcon} className="text-[16px]" />
-                  {listing.categoryLabel}
+                  <Icon name={getListingSubTypeIcon(listing)} className="text-[16px]" />
+                  {LISTING_CATEGORY_CONFIG[listing.category].label} •{' '}
+                  {getListingSubTypeLabel(listing)}
                 </span>
               </div>
             </div>
@@ -149,7 +149,7 @@ export default function ApproveListingModal({
               </span>
               <span className="flex items-start gap-1.5 font-body-md text-body-md font-semibold text-on-surface">
                 <Icon name="place" className="mt-0.5 shrink-0 text-[18px] text-primary" />
-                {detail.fullAddress}
+                {listing.address}
               </span>
             </div>
           </div>

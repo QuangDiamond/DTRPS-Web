@@ -1,5 +1,6 @@
 /** Điểm đến POI */
 import type { Language } from './common';
+import type { ListingCategory } from './listing';
 
 /** Nội dung POI đã dịch sang một ngôn ngữ khác */
 export interface PoiTranslation {
@@ -7,13 +8,14 @@ export interface PoiTranslation {
   highlight?: string;
 }
 
-export type PoiCategory = 'heritage' | 'nature' | 'food' | 'resort' | 'stay' | 'craft' | 'tour';
+/** Danh mục chi tiết của POI — mỗi danh mục thuộc một trong 4 nhóm địa điểm (POI_CATEGORY_CONFIG.group) */
+export type PoiCategory = 'heritage' | 'nature' | 'food' | 'resort' | 'stay' | 'craft';
 
-/** Tab lọc nhanh trên màn danh sách POI */
-export type PoiCategoryTab = 'all' | 'heritage' | 'food' | 'stay' | 'nature' | 'craft';
+/** Tab lọc nhanh trên màn danh sách POI = 4 nhóm địa điểm */
+export type PoiCategoryTab = 'all' | ListingCategory;
 
-/** Nhóm thống kê trên thẻ KPI */
-export type PoiKpiGroup = 'sights' | 'food' | 'stay' | 'tour';
+/** Nhóm thống kê trên thẻ KPI = 4 nhóm địa điểm */
+export type PoiKpiGroup = ListingCategory;
 
 export type PoiStatus = 'active' | 'maintenance' | 'paused' | 'draft';
 

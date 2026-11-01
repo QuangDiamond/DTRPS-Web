@@ -190,15 +190,13 @@ export default function TripsTab({ trips, totalTrips, onDownload, onViewTrip }: 
                           {trip.poiCount} POI
                           {trip.status === 'completed'
                             ? t('userDetail.tripsTab.visited')
-                            : ' tham quan'}
+                            : t('userDetail.tripsTab.toVisit')}
                         </strong>
                       </TripMeta>
                       {trip.travelers && <TripMeta icon="group">{trip.travelers}</TripMeta>}
-                      <TripMeta icon={upcoming ? 'credit_card' : 'receipt_long'}>
-                        {upcoming
-                          ? t('userDetail.tripsTab.estimatedBudget')
-                          : t('userDetail.tripsTab.payment')}
-                        : <strong>{formatVnd(trip.amount)}</strong>
+                      <TripMeta icon="savings">
+                        {t('userDetail.tripsTab.estimatedBudget')}:{' '}
+                        <strong>{formatVnd(trip.amount)}</strong>
                       </TripMeta>
                     </div>
                   </div>

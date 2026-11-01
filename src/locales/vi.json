@@ -117,42 +117,38 @@
   "category": {
     "listing": {
       "hotel": {
-        "label": "Khách sạn",
-        "filterLabel": "Khách sạn / Homestay"
+        "label": "Lưu trú",
+        "filterLabel": "Lưu trú"
       },
       "fnb": {
         "label": "Ẩm thực",
-        "filterLabel": "Nhà hàng / Ẩm thực"
+        "filterLabel": "Ẩm thực"
       },
       "attraction": {
-        "label": "Tham quan",
-        "filterLabel": "Điểm tham quan / Di tích"
-      },
-      "tour": {
-        "label": "Tour",
-        "filterLabel": "Trải nghiệm & Tour"
+        "label": "Vui chơi & Tham quan",
+        "filterLabel": "Vui chơi & Tham quan"
       },
       "shopping": {
-        "label": "Mua sắm",
-        "filterLabel": "Mua sắm đặc sản"
+        "label": "Mua sắm & Đặc sản",
+        "filterLabel": "Mua sắm & Đặc sản"
       }
     },
     "partnerType": {
       "hotel": {
-        "label": "Khách sạn",
-        "filterLabel": "Khách sạn / Homestay"
+        "label": "Lưu trú",
+        "filterLabel": "Lưu trú"
       },
       "fnb": {
-        "label": "Nhà hàng F&B",
-        "filterLabel": "Nhà hàng / F&B"
+        "label": "Ẩm thực",
+        "filterLabel": "Ẩm thực"
       },
       "attraction": {
-        "label": "Điểm tham quan",
-        "filterLabel": "Điểm tham quan"
+        "label": "Vui chơi & Tham quan",
+        "filterLabel": "Vui chơi & Tham quan"
       },
-      "tour": {
-        "label": "Tour & Trải nghiệm",
-        "filterLabel": "Tour trải nghiệm"
+      "shopping": {
+        "label": "Mua sắm & Đặc sản",
+        "filterLabel": "Mua sắm & Đặc sản"
       }
     },
     "poi": {
@@ -165,7 +161,7 @@
         "shortLabel": "Thiên nhiên"
       },
       "food": {
-        "label": "Ẩm thực & Chợ truyền thống",
+        "label": "Ẩm thực địa phương",
         "shortLabel": "Ẩm thực truyền thống"
       },
       "resort": {
@@ -179,10 +175,6 @@
       "craft": {
         "label": "Mua sắm & Làng nghề truyền thống",
         "shortLabel": "Làng nghề & Văn hóa"
-      },
-      "tour": {
-        "label": "Tour & Trải nghiệm",
-        "shortLabel": "Tour & Trải nghiệm"
       }
     },
     "userAccountType": {
@@ -413,11 +405,10 @@
       "subtitle": "Theo danh mục kinh doanh du lịch",
       "total": "Tổng POI",
       "percentOfTotal": "{{percent}}% tổng POI",
-      "hotel": "Lưu trú / Khách sạn & Homestay",
-      "fnb": "Nhà hàng / Ẩm thực & Cafe",
-      "attraction": "Điểm tham quan & Văn hóa",
-      "tour": "Trải nghiệm & Tour trải nghiệm",
-      "shopping": "Mua sắm đặc sản"
+      "hotel": "Lưu trú",
+      "fnb": "Ẩm thực",
+      "attraction": "Vui chơi & Tham quan",
+      "shopping": "Mua sắm & Đặc sản"
     },
     "pending": {
       "title": "Yêu cầu Niêm yết Chờ Phê Duyệt",
@@ -442,6 +433,12 @@
       "published": "Đã xuất bản",
       "inQueue": "Đang trong hàng chờ",
       "reason": "Lý do: {{reason}}"
+    },
+    "approveConfirm": {
+      "title": "Xác nhận phê duyệt niêm yết",
+      "confirm": "Phê duyệt",
+      "message": "Bạn sắp phê duyệt <c0>{{name}}</c0> của đối tác <c0>{{partner}}</c0>.",
+      "note": "Sau khi duyệt, địa điểm được công khai trên ứng dụng du lịch và du khách có thể tìm thấy bằng tìm kiếm AI. Nếu chưa kiểm tra hồ sơ, hãy bấm biểu tượng con mắt để xem chi tiết trước."
     }
   },
   "users": {
@@ -536,7 +533,7 @@
     "lockReasons": {
       "spamReviews": "Vi phạm spam review",
       "inappropriateContent": "Đăng nội dung không phù hợp",
-      "promotionFraud": "Gian lận khuyến mãi / đặt chỗ ảo",
+      "promotionFraud": "Gian lận khuyến mãi / đánh giá ảo",
       "compromised": "Nghi ngờ tài khoản bị chiếm đoạt",
       "userRequest": "Theo yêu cầu của người dùng"
     }
@@ -560,8 +557,7 @@
       "departure": "Khởi hành",
       "end": "Kết thúc",
       "attractions": "Số điểm tham quan",
-      "estimatedBudget": "Kinh phí dự toán",
-      "paid": "Đã thanh toán",
+      "estimatedBudget": "Kinh phí ước tính",
       "downloadItinerary": "Tải file lịch trình"
     },
     "tripsTab": {
@@ -578,10 +574,10 @@
       "dates": "Thời gian: <c0>{{startDate}} - {{endDate}}</c0>",
       "scope": "Quy mô:",
       "visited": "đã ghé thăm",
-      "estimatedBudget": "Kinh phí dự toán",
-      "payment": "Thanh toán",
+      "estimatedBudget": "Kinh phí ước tính",
       "downloadItinerary": "Tải file lịch trình",
-      "viewTripDetails": "Xem chi tiết chuyến đi"
+      "viewTripDetails": "Xem chi tiết chuyến đi",
+      "toVisit": " tham quan"
     },
     "userMetricCards": {
       "tripsCreated": "Chuyến đi đã tạo",
@@ -593,8 +589,10 @@
       "ratingsReviews": "Đánh giá & Nhận xét",
       "reviews": "Đánh giá",
       "averageScore50": "Điểm trung bình <c0>{{toFixed}} / 5.0</c0>",
-      "spendingPlatform": "Chi tiêu qua hệ thống",
-      "vnd": "đ"
+      "aiSearches": "Lượt tìm kiếm AI",
+      "searchesUnit": "lượt",
+      "latestSearch": "Gần nhất: “{{query}}”",
+      "noAiSearches": "Chưa tìm kiếm bằng AI"
     },
     "userProfileCard": {
       "id": "Mã định danh:",
@@ -632,7 +630,6 @@
       "status": "Trạng thái",
       "time": "Thời gian",
       "attractions": "Số điểm tham quan",
-      "cost": "Chi phí",
       "downloadedItinerary": "Đã tải file lịch trình {{id}}",
       "systemAdministration": "Quản trị hệ thống",
       "userManagement": "Quản lý người dùng",
@@ -648,7 +645,8 @@
       "accountInterventionPolicy": "Quy chuẩn can thiệp tài khoản",
       "everyLockPermissionChange": "Mọi thao tác Khóa, Thay đổi quyền hạn hoặc Đặt lại mật khẩu của người dùng đều được ghi nhận trực tiếp vào Hệ thống Nhật ký Kiểm toán Quản trị viên Cấp cao.",
       "permissionsSuperAdminFull": "Quyền hạn: <c0>Super Admin (toàn quyền)</c0>",
-      "aiSearchHistoryTab": "Lịch sử tìm kiếm AI ({{count}})"
+      "aiSearchHistoryTab": "Lịch sử tìm kiếm AI ({{count}})",
+      "estimatedBudget": "Kinh phí ước tính"
     },
     "utils": {
       "upcoming": "Sắp diễn ra",
@@ -713,9 +711,9 @@
       "ecosystemShare": "Tỷ trọng hệ sinh thái",
       "totalPartners": "Tổng số đối tác",
       "joinedThisMonth": "gia nhập tháng này",
-      "accommodationHotels": "Lưu trú & Khách sạn",
-      "restaurantsDining": "Nhà hàng & Ẩm thực",
-      "attractionsTours": "Điểm tham quan & Tour"
+      "accommodationHotels": "Lưu trú",
+      "restaurantsDining": "Ẩm thực",
+      "attractionsTours": "Vui chơi, Tham quan & Mua sắm"
     },
     "partnerTable": {
       "noMatchingPartnersFound": "Không tìm thấy đối tác phù hợp",
@@ -770,13 +768,6 @@
       "everyActionPartnerAccount": "Mọi thao tác trên tài khoản đối tác được ghi nhận tự động, không thể chỉnh sửa",
       "events_other": "{{count}} sự kiện"
     },
-    "commissionModal": {
-      "adjustCommissionRate": "Điều chỉnh mức hoa hồng",
-      "currentRateAppliesTransactions": "Mức hiện tại: {{current}}% — áp dụng cho các giao dịch phát sinh sau khi lưu",
-      "saveNewRate": "Lưu mức mới",
-      "platformCommissionRate": "Mức hoa hồng hệ thống (%)",
-      "theCommissionRateMust": "Mức hoa hồng phải trong khoảng {{MIN_COMMISSION}}–{{MAX_COMMISSION}}%"
-    },
     "legalTab": {
       "legalBusinessRegistration": "Thông tin pháp lý & ĐKKD",
       "notarizedCorporateLegalDocuments": "Hồ sơ pháp nhân doanh nghiệp đã được công chứng",
@@ -792,7 +783,7 @@
       "legalRepresentative": "Người đại diện pháp luật",
       "representativeSIdNumber": "Số CCCD / CMND đại diện",
       "contactRepresentativeAdmin": "Liên hệ & Quản trị đại diện",
-      "pointContactSupportTransaction": "Đầu mối tiếp nhận hỗ trợ và xác thực giao dịch",
+      "pointContactSupportTransaction": "Đầu mối tiếp nhận hỗ trợ và xác thực tài khoản",
       "n2fa": "Khóa 2FA:",
       "on": "Bật",
       "off": "Tắt",
@@ -802,24 +793,18 @@
       "primaryAdmin": "Quản trị chính",
       "notificationEmail": "Email tiếp nhận thông báo",
       "otpPhoneNumber": "Số điện thoại nhận OTP",
-      "paymentGatewayBusinessAccount": "Cổng thanh toán & Tài khoản doanh nghiệp",
-      "aiEscrowDeposit": "Ký quỹ AI Escrow",
-      "thisPartnerHasNot": "Đối tác chưa liên kết tài khoản thanh toán",
       "assessmentsIndustryCertifications": "Thẩm định & Chứng nhận ngành",
       "periodicQualityInspectionTourism": "Kiểm định chất lượng dịch vụ du lịch & lưu trú định kỳ",
       "nextAssessmentDue": "Hạn kỳ thẩm định tiếp theo: <c0>{{nextReviewDate}}</c0>",
       "scheduleReAssessment": "Lên lịch tái thẩm định",
-      "partnershipAgreementCommission": "Thỏa thuận hợp tác & Chiết khấu",
-      "commissionPolicyRoomTicket": "Quy chế hoa hồng và điều khoản phát hành phòng/vé",
       "active": "Đang hoạt động",
       "suspended": "Tạm ngưng",
       "contract": "Hợp đồng: <c0>{{contractCode}}</c0>",
-      "adjustCommission": "Điều chỉnh chiết khấu",
       "contractType": "Loại hợp đồng",
-      "platformCommissionRate": "Mức hoa hồng hệ thống",
       "activated": "Ngày kích hoạt",
       "nextRenewalDate": "Ngày gia hạn kế tiếp",
-      "otaSettlementCycle": "Chu kỳ thanh toán đối soát OTA"
+      "partnershipAgreement": "Thỏa thuận hợp tác",
+      "listingAgreementTerms": "Điều khoản đăng và hiển thị địa điểm trên bản đồ du lịch"
     },
     "partnerProfileCard": {
       "registeredPlaces": "Địa điểm đăng ký",
@@ -849,10 +834,8 @@
       "periodicReAssessmentSchedule": "Lịch tái thẩm định định kỳ",
       "smartTravelWillCarry": "Smart Travel sẽ tiến hành tái thẩm định chất lượng dịch vụ định kỳ. Vui lòng chuẩn bị hồ sơ liên quan.",
       "partnershipPolicyUpdate": "Cập nhật chính sách hợp tác",
-      "thePartnershipCommissionPolicy": "Quy chế hợp tác & chiết khấu có điều chỉnh mới. Vui lòng xem chi tiết trên cổng đối tác.",
+      "thePartnershipCommissionPolicy": "Quy chế đăng và hiển thị địa điểm có điều chỉnh mới. Vui lòng xem chi tiết trên cổng đối tác.",
       "businessLegalInformation": "Thông tin doanh nghiệp & Pháp lý",
-      "contractLimits": "Hợp đồng & Hạn mức",
-      "partnershipTransactionHistory": "Lịch sử hợp tác & Giao dịch",
       "partnerReviewsRanking": "Đánh giá & Xếp hạng đối tác",
       "auditLog": "Nhật ký kiểm toán (Audit Log)",
       "partnerNotFound": "Không tìm thấy đối tác {{id}}",
@@ -867,8 +850,6 @@
       "notificationSent": "Đã gửi thông báo \"{{title}}\" tới {{name}}",
       "scheduledReAssessment": "Lên lịch tái thẩm định ngày {{isoDate}}",
       "reAssessmentScheduled": "Đã lên lịch tái thẩm định ngày {{isoDate}}",
-      "changedCommissionFrom": "Điều chỉnh hoa hồng từ {{commission}}% thành {{commission2}}%",
-      "commissionRateUpdated": "Đã cập nhật mức hoa hồng {{commission}}%",
       "resentActivationCode": "Gửi lại mã kích hoạt tới {{otpPhone}}",
       "activationCodeSent": "Đã gửi mã kích hoạt tới {{otpPhone}}",
       "systemAdministration": "Quản trị hệ thống",
@@ -892,7 +873,8 @@
       "accountInterventionPolicyEvery": "Quy chuẩn can thiệp tài khoản: Mọi thao tác chỉnh sửa hoặc khóa đối tác đều được tự động ghi nhận vào Audit Log hệ thống Smart Travel Vietnam.",
       "inspectionSessionId": "Mã phiên kiểm tra: {{sessionCode}}",
       "printProfileExtract": "In trích lục hồ sơ",
-      "sendNotificationPartner": "Gửi thông báo tới đối tác"
+      "sendNotificationPartner": "Gửi thông báo tới đối tác",
+      "registeredPlace": "Địa điểm đăng ký"
     },
     "utils": {
       "newlyJoined": "Mới gia nhập",
@@ -906,52 +888,17 @@
       "watch": "Cần theo dõi",
       "highRisk": "Rủi ro cao"
     },
-    "contractTab": {
-      "agreement": "Thỏa thuận hợp tác",
-      "commissionRate": "hoa hồng hệ thống",
-      "contractCode": "Mã hợp đồng",
-      "contractType": "Loại hợp đồng",
-      "activatedOn": "Ngày kích hoạt",
-      "renewOn": "Ngày gia hạn",
-      "paymentCycle": "Chu kỳ thanh toán",
-      "deposit": "Tiền ký quỹ",
-      "adjustCommission": "Điều chỉnh hoa hồng",
-      "limits": "Hạn mức hợp đồng",
-      "limitsDescription": "Mức sử dụng hiện tại so với hạn mức đã ký trong hợp đồng.",
-      "creditLimit": "Hạn mức tín dụng",
-      "monthlyBookings": "Lượt đặt chỗ trong tháng",
-      "activeListings": "Niêm yết đang hoạt động"
-    },
-    "historyTab": {
-      "title": "Lịch sử hợp tác & Giao dịch",
-      "description": "10 giao dịch gần nhất: đặt chỗ, hoa hồng, chi trả và hoàn tiền.",
-      "bookingRevenue": "Doanh thu đặt chỗ (đã hoàn tất)",
-      "paidOut": "Đã chi trả cho đối tác",
-      "types": {
-        "booking": "Đặt chỗ",
-        "commission": "Hoa hồng",
-        "payout": "Chi trả",
-        "refund": "Hoàn tiền"
-      },
-      "statuses": {
-        "completed": "Hoàn tất",
-        "pending": "Đang xử lý",
-        "failed": "Thất bại"
-      },
-      "columns": {
-        "transaction": "Giao dịch",
-        "time": "Thời gian",
-        "reference": "Tham chiếu",
-        "amount": "Số tiền",
-        "status": "Trạng thái"
-      }
-    },
     "ratingsTab": {
       "overview": "Tổng quan đánh giá",
       "reviewCount_other": "{{count}} lượt đánh giá",
       "tier": "Hạng đối tác",
       "aiTrust": "Điểm tin cậy AI",
       "recentReviews": "Đánh giá gần đây"
+    },
+    "placeTab": {
+      "emptyTitle": "Đối tác chưa đăng ký địa điểm",
+      "emptyDescription": "Khi đối tác gửi hồ sơ địa điểm, địa điểm sẽ hiện ở đây kèm thông tin du khách nhìn thấy trên bản đồ.",
+      "viewDetails": "Xem chi tiết địa điểm"
     }
   },
   "components": {
@@ -1221,7 +1168,7 @@
       "uploadNewValidNotarized": "cập nhật bản scan công chứng mới còn hiệu lực",
       "incorrectBusinessRegistrationDetails": "Sai thông tin đăng ký kinh doanh",
       "inaccurateBusinessInformationOr": "Thông tin kinh doanh không chính xác hoặc sai lệch giá niêm yết thực tế",
-      "thePublishedPriceList": "Chênh lệch bảng giá công bố và giá đặt phòng qua hệ thống du lịch.",
+      "thePublishedPriceList": "Giá niêm yết không khớp với giá thực tế tại cơ sở.",
       "theBusinessInformationListed": "thông tin kinh doanh và bảng giá niêm yết chưa khớp với thực tế",
       "reviewUpdatePriceList": "rà soát và cập nhật lại bảng giá, thông tin dịch vụ chính xác",
       "incorrectGpsCoordinates": "Tọa độ GPS sai lệch",
@@ -1285,23 +1232,6 @@
       "confirmApproval": "Xác nhận phê duyệt",
       "activating": "Đang kích hoạt...",
       "approvedSuccessfully": "Đã phê duyệt thành công!"
-    },
-    "basicInfoSection": {
-      "basicPlaceInformation": "Thông tin cơ bản địa điểm",
-      "crossCheckMarketingDetails": "Đối chiếu thông tin tiếp thị, danh mục và giấy tờ niêm yết",
-      "registeredPlaceName": "Tên địa điểm đăng ký",
-      "ownerSDetailedDescription": "Mô tả chi tiết từ chủ cơ sở",
-      "actualAddress": "Địa chỉ thực tế",
-      "bookingEmail": "Email đặt phòng",
-      "officialWebsite": "Website chính thức",
-      "notProvided": "Chưa cung cấp",
-      "referenceListingPrice": "Mức giá tham chiếu niêm yết"
-    },
-    "businessInfoSection": {
-      "inDepthBusinessInformation": "Thông tin kinh doanh chuyên sâu",
-      "propertySizeAmenitiesRoom": "Quy mô cơ sở lưu trú, tiện nghi và chính sách phòng",
-      "thePartnerHasNot": "Đối tác chưa khai báo thông tin kinh doanh chi tiết",
-      "amenitiesTravelers": "Hệ thống tiện ích phục vụ khách du lịch"
     },
     "decisionModalShell": {
       "closeWindow": "Đóng cửa sổ",
@@ -1513,7 +1443,6 @@
     "listingFormModal": {
       "pleaseEnterPlaceName": "Vui lòng nhập tên địa điểm",
       "pleaseEnterOwningPartner": "Vui lòng nhập đối tác sở hữu",
-      "pleaseEnterCategoryLabel": "Vui lòng nhập nhãn phân loại",
       "pleaseEnterAddress": "Vui lòng nhập địa chỉ",
       "editPlaceDetails": "Chỉnh sửa thông tin địa điểm",
       "addPlaceManually": "Thêm địa điểm thủ công",
@@ -1524,11 +1453,10 @@
       "placeName": "Tên địa điểm *",
       "owningPartner": "Đối tác sở hữu *",
       "category": "Danh mục",
-      "displayedCategoryLabel": "Nhãn phân loại hiển thị *",
-      "eGBeachfrontResort": "VD: Resort ven biển",
       "address": "Địa chỉ *",
       "eGCamChau": "VD: Cẩm Châu, TP. Hội An, Quảng Nam",
-      "provinceCity": "Tỉnh / Thành phố"
+      "provinceCity": "Tỉnh / Thành phố",
+      "subType": "Loại hình"
     }
   },
   "rejectedListings": {
@@ -1679,15 +1607,6 @@
     },
     "constants": {
       "all": "Tất cả",
-      "attractionsHeritageSites": "Điểm tham quan & Di tích",
-      "foodRestaurants": "Ẩm thực & Nhà hàng",
-      "accommodationHomestaysHotels": "Lưu trú & Homestay/Khách sạn",
-      "beachesNature": "Bãi biển & Thiên nhiên",
-      "shoppingTraditionalCraftVillages": "Mua sắm & Làng nghề truyền thống",
-      "sightseeingHeritage": "Tham quan & Di sản",
-      "restaurantsDining": "Nhà hàng & Ẩm thực",
-      "accommodationHotels": "Lưu trú & Khách sạn",
-      "toursExperiences": "Tour & Trải nghiệm",
       "nationalTourismAdministration": "Tổng cục Du lịch",
       "managementBoard": "Ban quản lý",
       "heritageSiteLocalManagement": "Ban quản lý di tích / địa phương",
@@ -1895,14 +1814,14 @@
     },
     "partnerPerformanceCard": {
       "partnerPerformance": "Hiệu suất đối tác",
-      "topPartnersByBookings": "Đối tác dẫn đầu theo lượt đặt",
-      "bookingRevenue": "Doanh thu đặt chỗ",
-      "vnd": "{{totalRevenue}} VNĐ",
-      "noPartnerBookingsThis": "Chưa có đối tác phát sinh lượt đặt trong phạm vi này",
       "partner": "Đối tác",
-      "bookings": "Lượt đặt",
       "reviews": "Đánh giá",
-      "growth": "Tăng trưởng"
+      "growth": "Tăng trưởng",
+      "topPartnersByViews": "Đối tác nổi bật theo lượt xem bản đồ",
+      "totalViews": "Tổng lượt xem",
+      "noPartnerViews": "Chưa có đối tác có lượt xem trong phạm vi này",
+      "mapViews": "Lượt xem",
+      "aiSearchHits": "Tìm kiếm AI"
     },
     "poiCategoryBreakdown": {
       "placesByCategory": "Phân bố Địa điểm theo Danh mục",
@@ -1962,7 +1881,7 @@
       "peakSeason": "Mùa cao điểm",
       "tripsPerMonth": "Số lượng chuyến đi theo tháng",
       "peak": "Cao điểm: {{peakFrom}}-{{peakTo}}",
-      "aTotalTripsTour": "Tổng cộng <c0>{{total}} chuyến</c0>. Tỷ lệ đặt tour kèm khách sạn tăng {{bundleGrowthPercent}}% vào mùa hè.",
+      "aTotalTripsTour": "Tổng cộng <c0>{{total}} chuyến đi</c0>. Lịch trình kết hợp lưu trú và vui chơi tăng {{bundleGrowthPercent}}% vào mùa hè.",
       "chartTripsPerMonth": "Biểu đồ số chuyến đi theo tháng",
       "trips": "{{month}}: {{trips}} chuyến đi",
       "peak2": "{{trips}} (Đỉnh {{month}})",
@@ -1984,8 +1903,7 @@
       "allServices": "Tất cả dịch vụ",
       "hotelsHomestays": "Khách sạn & Homestay",
       "foodEateries": "Ẩm thực & Quán ăn",
-      "attractionsTours": "Điểm tham quan & Tour",
-      "localExperiences": "Trải nghiệm địa phương",
+      "attractionsTours": "Vui chơi & Tham quan",
       "n7Days": "7 ngày",
       "n30Days": "30 ngày",
       "q": "Quý {{quarter}}/{{getFullYear}}",
@@ -2016,11 +1934,12 @@
       "places": "Số địa điểm",
       "share": "Tỷ trọng (%)",
       "partner": "ĐỐI TÁC",
-      "bookings": "Lượt đặt",
-      "revenueVnd": "Doanh thu (VNĐ)",
       "item": "Mục",
       "aiQueries": "Truy vấn AI (pgvector)",
-      "aiQueriesNote": "{{rate}}% có kết quả • tương đồng TB {{similarity}}%"
+      "aiQueriesNote": "{{rate}}% có kết quả • tương đồng TB {{similarity}}%",
+      "shoppingSpecialties": "Mua sắm & Đặc sản",
+      "mapViews": "Lượt xem trên bản đồ",
+      "aiSearchHits": "Lượt xuất hiện trong tìm kiếm AI"
     }
   },
   "notifications": {
@@ -2108,7 +2027,7 @@
       "newUpdatedListingSubmissions": "Hồ sơ niêm yết mới / bổ sung",
       "whenPartnerSubmitsNew": "Khi đối tác gửi hồ sơ mới hoặc tải lên giấy tờ bổ sung",
       "newPartnerRegistrations": "Đăng ký đối tác mới",
-      "whenBusinessCompletesRegistration": "Khi doanh nghiệp hoàn tất đăng ký và ký quỹ bảo chứng",
+      "whenBusinessCompletesRegistration": "Khi doanh nghiệp hoàn tất đăng ký và xác minh pháp lý",
       "travelerComplaintsFeedback": "Khiếu nại & phản ánh của du khách",
       "reportsPriceDiscrepanciesService": "Phản ánh sai lệch giá, chất lượng dịch vụ, gian lận",
       "aiLoadOverThreshold": "Tải trọng AI vượt ngưỡng",
@@ -2458,7 +2377,7 @@
       "approveTravelPartnersHotels": "Phê duyệt đối tác du lịch, khách sạn và điểm đến toàn quốc",
       "financialReportsKpis": "Báo cáo tài chính & KPI",
       "fullExportRights": "Toàn quyền xuất",
-      "accessBookingRevenueCommissions": "Truy xuất doanh thu đặt chỗ, hoa hồng và tăng trưởng người dùng",
+      "accessBookingRevenueCommissions": "Truy xuất lượt xem địa điểm, lượt tìm kiếm AI và tăng trưởng người dùng",
       "systemAiConfiguration": "Cấu hình hệ thống & AI",
       "topLevelConfigurationRights": "Quyền cấu hình tối cao",
       "tuneAiItineraryRecommendation": "Cấu hình tìm kiếm ngữ nghĩa AI (pgvector) và API Keys Gateway"
@@ -2535,7 +2454,7 @@
       "multiLayerSecurityZero": "Bảo mật đa tầng & Mã hoá Zero-Trust",
       "hardwareCertificateAuthenticationReal": "Xác thực chứng chỉ phần cứng, ghi log hoạt động chống xâm nhập thời gian thực.",
       "realTimeDataManagement": "Quản lý Dữ liệu Thời gian Thực",
-      "syncsInternationalVisitorFlows": "Đồng bộ luồng khách du lịch quốc tế, tỷ lệ phủ buồng và giao dịch tại 63 tỉnh thành.",
+      "syncsInternationalVisitorFlows": "Đồng bộ dữ liệu địa điểm và luồng khách du lịch quốc tế tại 63 tỉnh thành.",
       "automatedPartnerListingReview": "Duyệt đối tác & Niêm yết tự động",
       "aiAssistedReviewHotels": "Quy trình thẩm định khách sạn, đơn vị lữ hành và trải nghiệm ứng dụng AI phân loại.",
       "adminAccountSecurityRecovery": "Bảo mật & Khôi phục Tài khoản Quản trị",
@@ -2599,6 +2518,90 @@
     "semantic": {
       "match": "{{score}}% khớp AI",
       "matchTitle": "Độ tương đồng AI (cosine similarity, pgvector)"
+    }
+  },
+  "listingMap": {
+    "notProvided": "Chưa cung cấp",
+    "section": {
+      "title": "Thông tin địa điểm",
+      "subtitle": "Bộ thông tin riêng của nhóm {{category}} — du khách thấy khi mở địa điểm trên bản đồ",
+      "filled": "Đã điền {{filled}}/{{total}}",
+      "formHint": "Các trường thay đổi theo nhóm địa điểm và hiển thị giống hệt ở màn Xem xét & Duyệt."
+    },
+    "subTypes": {
+      "restaurant": "Nhà hàng",
+      "cafe": "Quán cafe",
+      "localEatery": "Quán ăn địa phương",
+      "barPub": "Quán Bar / Pub",
+      "hotel": "Khách sạn",
+      "resort": "Resort",
+      "homestay": "Homestay",
+      "villa": "Villa",
+      "amusementPark": "Khu vui chơi",
+      "park": "Công viên",
+      "scenicSpot": "Danh lam thắng cảnh",
+      "checkinSpot": "Điểm check-in",
+      "nightMarket": "Chợ đêm",
+      "specialtyStore": "Cửa hàng đặc sản",
+      "souvenirShop": "Quà lưu niệm",
+      "craftVillage": "Làng nghề"
+    },
+    "fields": {
+      "openingHours": "Giờ mở / đóng cửa",
+      "priceRange": "Khoảng giá",
+      "signatureDishes": "Menu & món ăn nổi bật",
+      "amenities": "Tiện ích",
+      "pricePerNight": "Tầm giá tham khảo / đêm",
+      "checkInOut": "Giờ nhận / trả phòng",
+      "externalBooking": "Link đặt phòng bên ngoài",
+      "ticketPrice": "Giá vé tham khảo vào cổng",
+      "visitRules": "Quy định điểm đến (trang phục, độ tuổi)",
+      "bestTime": "Thời điểm đẹp nhất trong ngày",
+      "mainProducts": "Sản phẩm chủ đạo",
+      "averagePrice": "Khoảng giá trung bình",
+      "services": "Dịch vụ",
+      "placeName": "Tên địa điểm",
+      "placeType": "Loại hình",
+      "address": "Địa chỉ",
+      "phone": "Số điện thoại",
+      "website": "Website / Fanpage",
+      "introFood": "Giới thiệu quán",
+      "introStay": "Giới thiệu nơi lưu trú",
+      "introAttraction": "Giới thiệu điểm đến",
+      "introShop": "Giới thiệu cửa hàng"
+    },
+    "placeholders": {
+      "openingHours": "VD: 07:00 - 22:00, mở cửa hằng ngày",
+      "foodPrice": "VD: 30.000 - 150.000 VNĐ / người",
+      "signatureDishes": "VD: Mì Quảng ếch, Cao lầu, Bánh xèo",
+      "pricePerNight": "VD: 650.000 - 1.450.000 VNĐ / đêm",
+      "checkInOut": "VD: Nhận phòng 14:00 • Trả phòng 12:00",
+      "externalBooking": "VD: https://booking.com/… hoặc website riêng",
+      "ticketPrice": "VD: Người lớn 120.000 VNĐ • Trẻ em 60.000 VNĐ",
+      "visitRules": "VD: Trang phục lịch sự, trẻ dưới 6 tuổi đi cùng người lớn",
+      "bestTime": "VD: Bình minh 05:00 - 07:00",
+      "mainProducts": "VD: Sản phẩm OCOP, bánh kẹo, đồ mỹ nghệ",
+      "averagePrice": "VD: 50.000 - 300.000 VNĐ",
+      "phone": "VD: 0905 123 456",
+      "website": "VD: facebook.com/tenquan",
+      "introFood": "VD: Quán cơm gia đình, không gian nhà gỗ, phục vụ món Quảng truyền thống",
+      "introStay": "VD: Homestay giữa vườn, cách phố cổ 5 phút đạp xe",
+      "introAttraction": "VD: Khu du lịch trên núi với cáp treo và làng Pháp",
+      "introShop": "VD: Cửa hàng đặc sản địa phương, có khu thử sản phẩm"
+    },
+    "amenities": {
+      "parking": "Bãi đỗ xe",
+      "airConditioning": "Điều hòa",
+      "bankTransfer": "Chuyển khoản / QR",
+      "wifi": "Wi-Fi",
+      "outdoorSeating": "Chỗ ngồi ngoài trời",
+      "pool": "Bể bơi",
+      "petFriendly": "Cho nuôi thú cưng",
+      "breakfast": "Bữa sáng"
+    },
+    "services": {
+      "giftWrapping": "Đóng gói quà",
+      "delivery": "Ship tận nơi"
     }
   }
 }

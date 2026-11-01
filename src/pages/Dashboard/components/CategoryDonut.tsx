@@ -12,7 +12,6 @@ const CATEGORY_COLORS: Record<ListingCategory, { stroke: string; dot: string }> 
   hotel: { stroke: 'stroke-primary', dot: 'bg-primary' },
   fnb: { stroke: 'stroke-primary-container', dot: 'bg-primary-container' },
   attraction: { stroke: 'stroke-tertiary-fixed-dim', dot: 'bg-tertiary-fixed-dim' },
-  tour: { stroke: 'stroke-surface-container-highest', dot: 'bg-surface-container-highest' },
   shopping: { stroke: 'stroke-error-container', dot: 'bg-error-container' },
 };
 

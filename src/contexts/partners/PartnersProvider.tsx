@@ -29,7 +29,7 @@ function countPartners(partners: Partner[]): Omit<PartnerStats, 'newThisMonth'> 
     lodging: partners.filter((partner) => partner.type === 'hotel').length,
     culinary: partners.filter((partner) => partner.type === 'fnb').length,
     experiences: partners.filter(
-      (partner) => partner.type === 'attraction' || partner.type === 'tour',
+      (partner) => partner.type === 'attraction' || partner.type === 'shopping',
     ).length,
   };
 }

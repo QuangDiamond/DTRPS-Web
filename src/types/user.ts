@@ -83,8 +83,6 @@ export interface UserProfile {
   reviewCount: number;
   avgRating: number;
   reviewsNote: string;
-  totalSpend: number;
-  spendNote: string;
   trips: UserTrip[];
   /** Các lượt tìm kiếm AI gần nhất */
   aiSearches: UserAiSearch[];

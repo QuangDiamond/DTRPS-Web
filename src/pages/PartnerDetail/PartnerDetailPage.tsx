@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ErrorState, Icon, NotFoundState, PageLoader, SendMessageModal } from '@/components/common';
 import LockPartnerModal from '@/components/partners/LockPartnerModal';
 import { ROUTES } from '@/constants/routes';
-import { usePartnerActions, usePartners, useResource, useToast } from '@/hooks';
+import { useListings, usePartnerActions, usePartners, useResource, useToast } from '@/hooks';
 import PartnerFormModal from '@/pages/Partners/components/PartnerFormModal';
 import { partnerService } from '@/services/partnerService';
 import type {
@@ -18,13 +18,11 @@ import type {
 } from '@/types';
 import { formatDate } from '@/utils/format';
 import AuditLogTab from './components/AuditLogTab';
-import CommissionModal from './components/CommissionModal';
-import ContractTab from './components/ContractTab';
 import LegalTab from './components/LegalTab';
+import PartnerPlaceTab from './components/PartnerPlaceTab';
 import PartnerProfileCard from './components/PartnerProfileCard';
 import RatingsTab from './components/RatingsTab';
 import ScheduleReviewModal from './components/ScheduleReviewModal';
-import TransactionHistoryTab from './components/TransactionHistoryTab';
 import { applyProfileOverrides, mergeAuditLog } from './partnerProfileUtils';
 
 const PARTNER_MESSAGE_CHANNELS: MessageChannel[] = [
@@ -66,8 +64,8 @@ const PARTNER_MESSAGE_TEMPLATES: MessageTemplate[] = [
   },
 ];
 
-type DetailTab = 'legal' | 'contract' | 'history' | 'ratings' | 'audit';
-type ModalName = 'lock' | 'notify' | 'edit' | 'schedule' | 'commission' | null;
+type DetailTab = 'legal' | 'place' | 'ratings' | 'audit';
+type ModalName = 'lock' | 'notify' | 'edit' | 'schedule' | null;
 
 const TABS: { id: DetailTab; label: string; icon: string }[] = [
   {
@@ -78,18 +76,11 @@ const TABS: { id: DetailTab; label: string; icon: string }[] = [
     icon: 'corporate_fare',
   },
   {
-    id: 'contract',
+    id: 'place',
     get label() {
-      return i18n.t('partnerDetail.page.contractLimits');
+      return i18n.t('partnerDetail.page.registeredPlace');
     },
-    icon: 'description',
-  },
-  {
-    id: 'history',
-    get label() {
-      return i18n.t('partnerDetail.page.partnershipTransactionHistory');
-    },
-    icon: 'receipt_long',
+    icon: 'location_on',
   },
   {
     id: 'ratings',
@@ -176,6 +167,7 @@ function PartnerDetailContent({ partner, loadedProfile, auditHistory }: PartnerD
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { updatePartner, profileOverrides, updateProfile, auditLogs, logAudit } = usePartners();
+  const { listings } = useListings();
   const { lockPartner, unlockPartner, approvePartner, rejectPartner, countVisibleListings } =
     usePartnerActions();
 
@@ -238,20 +230,6 @@ function PartnerDetailContent({ partner, loadedProfile, auditHistory }: PartnerD
       t('partnerDetail.page.scheduledReAssessment', { isoDate: formatDate(isoDate) }),
     );
     showToast(t('partnerDetail.page.reAssessmentScheduled', { isoDate: formatDate(isoDate) }));
-    closeModal();
-  };
-
-  const handleCommission = (commission: number) => {
-    logAudit(
-      partner.id,
-      'edit_document',
-      t('partnerDetail.page.changedCommissionFrom', {
-        commission: profile.agreement.commission,
-        commission2: commission,
-      }),
-    );
-    updateProfile(partner.id, { commission });
-    showToast(t('partnerDetail.page.commissionRateUpdated', { commission }));
     closeModal();
   };
 
@@ -441,16 +419,11 @@ function PartnerDetailContent({ partner, loadedProfile, auditHistory }: PartnerD
           }
           onResendActivation={handleResendActivation}
           onScheduleReview={() => setModal('schedule')}
-          onAdjustCommission={() => setModal('commission')}
         />
       )}
-      {tab === 'contract' && (
-        <ContractTab profile={profile} onAdjustCommission={() => setModal('commission')} />
-      )}
-      {tab === 'history' && (
-        <TransactionHistoryTab
-          transactions={profile.transactions}
-          onViewListings={() => navigate(`${ROUTES.LISTINGS}?partner=${partner.id}`)}
+      {tab === 'place' && (
+        <PartnerPlaceTab
+          listings={listings.filter((listing) => listing.partnerId === partner.id)}
         />
       )}
       {tab === 'ratings' && <RatingsTab profile={profile} />}
@@ -503,13 +476,6 @@ function PartnerDetailContent({ partner, loadedProfile, auditHistory }: PartnerD
         <ScheduleReviewModal
           currentDate={profile.nextReviewDate}
           onConfirm={handleSchedule}
-          onClose={closeModal}
-        />
-      )}
-      {modal === 'commission' && (
-        <CommissionModal
-          current={profile.agreement.commission}
-          onConfirm={handleCommission}
           onClose={closeModal}
         />
       )}

@@ -7,7 +7,7 @@ import { normalizeText } from '@/utils/string';
 export function filterPois(pois: Poi[], tab: PoiCategoryTab, filters: PoiFilters): Poi[] {
   const keyword = normalizeText(filters.search.trim());
   return pois.filter((poi) => {
-    if (tab !== 'all' && POI_CATEGORY_CONFIG[poi.category].tab !== tab) return false;
+    if (tab !== 'all' && POI_CATEGORY_CONFIG[poi.category].group !== tab) return false;
     if (filters.province !== 'all' && poi.province !== filters.province) return false;
     if (filters.status !== 'all' && poi.status !== filters.status) return false;
     if (filters.source !== 'all' && poi.source !== filters.source) return false;

@@ -194,7 +194,7 @@ function UserDetailContent({ user, loadedProfile, sessionHistory }: UserDetailCo
         [t('userDetail.page.status'), TRIP_STATUS_CONFIG[trip.status].label],
         [t('userDetail.page.time'), `${formatDate(trip.startDate)} - ${formatDate(trip.endDate)}`],
         [t('userDetail.page.attractions'), trip.poiCount],
-        [t('userDetail.page.cost'), formatVnd(trip.amount)],
+        [t('userDetail.page.estimatedBudget'), formatVnd(trip.amount)],
       ],
     );
     showToast(t('userDetail.page.downloadedItinerary', { id: trip.id }));
@@ -292,7 +292,7 @@ function UserDetailContent({ user, loadedProfile, sessionHistory }: UserDetailCo
       </div>
 
       <UserProfileCard user={user} profile={profile} />
-      <UserMetricCards profile={profile} />
+      <UserMetricCards profile={profile} aiSearchCount={user.aiSearchCount} />
 
       {/* Tabs */}
       <div className="flex flex-col gap-space-md">

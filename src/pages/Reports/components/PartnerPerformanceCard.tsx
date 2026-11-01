@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { PARTNER_TYPE_CONFIG, PROVINCE_NAMES } from '@/constants/partner';
 import { partnerDetailPath } from '@/constants/routes';
-import { formatSigned, formatVndCompact, REPORT_CARD_CLASS } from '@/pages/Reports/reportUtils';
+import { formatSigned, REPORT_CARD_CLASS } from '@/pages/Reports/reportUtils';
 import type { PartnerPerformance } from '@/types';
 import { formatNumber } from '@/utils/format';
 import { getInitials } from '@/utils/string';
@@ -14,13 +14,13 @@ interface PartnerPerformanceCardProps {
   knownPartnerIds: ReadonlySet<string>;
 }
 
-/** Bảng xếp hạng đối tác theo lượt đặt trong kỳ báo cáo */
+/** Bảng xếp hạng đối tác theo lượt xem địa điểm trên bản đồ trong kỳ báo cáo */
 export default function PartnerPerformanceCard({
   partners,
   knownPartnerIds,
 }: PartnerPerformanceCardProps) {
   const { t } = useTranslation();
-  const totalRevenue = partners.reduce((sum, partner) => sum + partner.revenueVnd, 0);
+  const totalViews = partners.reduce((sum, partner) => sum + partner.views, 0);
 
   return (
     <div className={`flex flex-col lg:col-span-7 ${REPORT_CARD_CLASS}`}>
@@ -30,17 +30,15 @@ export default function PartnerPerformanceCard({
             {t('reports.partnerPerformanceCard.partnerPerformance')}
           </span>
           <h2 className="mt-0.5 font-headline-sm text-[17px] font-bold text-on-surface">
-            {t('reports.partnerPerformanceCard.topPartnersByBookings')}
+            {t('reports.partnerPerformanceCard.topPartnersByViews')}
           </h2>
         </div>
         <div className="flex shrink-0 flex-col items-start rounded-xl border border-surface-container bg-surface-container-low px-3 py-1.5 sm:items-end">
           <span className="font-label-sm text-[11px] text-on-surface-variant">
-            {t('reports.partnerPerformanceCard.bookingRevenue')}
+            {t('reports.partnerPerformanceCard.totalViews')}
           </span>
           <span className="font-title-md text-[15px] font-bold text-primary">
-            {t('reports.partnerPerformanceCard.vnd', {
-              totalRevenue: formatVndCompact(totalRevenue),
-            })}
+            {formatNumber(totalViews)}
           </span>
         </div>
       </div>
@@ -49,7 +47,7 @@ export default function PartnerPerformanceCard({
         <div className="flex flex-1 flex-col items-center justify-center gap-2 py-10 text-center text-on-surface-variant">
           <Icon name="handshake" className="text-[36px] text-outline" />
           <span className="font-body-md text-[14px]">
-            {t('reports.partnerPerformanceCard.noPartnerBookingsThis')}
+            {t('reports.partnerPerformanceCard.noPartnerViews')}
           </span>
         </div>
       ) : (
@@ -59,9 +57,11 @@ export default function PartnerPerformanceCard({
               <tr className="border-b border-surface-container font-label-sm text-[11px] font-semibold tracking-wider whitespace-nowrap text-on-surface-variant uppercase">
                 <th className="py-2.5 pr-3">{t('reports.partnerPerformanceCard.partner')}</th>
                 <th className="px-3 py-2.5 text-right">
-                  {t('reports.partnerPerformanceCard.bookings')}
+                  {t('reports.partnerPerformanceCard.mapViews')}
                 </th>
-                <th className="px-3 py-2.5 text-right">Doanh thu</th>
+                <th className="px-3 py-2.5 text-right">
+                  {t('reports.partnerPerformanceCard.aiSearchHits')}
+                </th>
                 <th className="px-3 py-2.5 text-center">
                   {t('reports.partnerPerformanceCard.reviews')}
                 </th>
@@ -110,10 +110,10 @@ export default function PartnerPerformanceCard({
                       </div>
                     </td>
                     <td className="px-3 py-3 text-right font-label-md text-[13px] font-semibold text-on-surface">
-                      {formatNumber(partner.bookings)}
+                      {formatNumber(partner.views)}
                     </td>
                     <td className="px-3 py-3 text-right font-body-sm text-[13px] whitespace-nowrap text-on-surface-variant">
-                      {formatVndCompact(partner.revenueVnd)}
+                      {formatNumber(partner.aiSearchHits)}
                     </td>
                     <td className="px-3 py-3">
                       <span className="mx-auto flex w-fit items-center gap-1 rounded-full bg-surface-container-low px-2 py-0.5 text-tertiary">

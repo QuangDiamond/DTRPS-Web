@@ -40,7 +40,7 @@ export default function LegalDocumentsSection({
   return (
     <ReviewSection
       accent
-      number="05"
+      number="04"
       numberClassName="bg-tertiary-container"
       title={t('listingReview.legalDocumentsSection.legalDocuments')}
       subtitle={t('listingReview.legalDocumentsSection.sealedDocumentsVerifiedAgainst', {

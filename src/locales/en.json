@@ -117,42 +117,38 @@
   "category": {
     "listing": {
       "hotel": {
-        "label": "Hotel",
-        "filterLabel": "Hotel / Homestay"
+        "label": "Accommodation",
+        "filterLabel": "Accommodation"
       },
       "fnb": {
         "label": "Food & Drink",
-        "filterLabel": "Restaurant / Food & Drink"
+        "filterLabel": "Food & Drink"
       },
       "attraction": {
-        "label": "Attraction",
-        "filterLabel": "Attraction / Heritage site"
-      },
-      "tour": {
-        "label": "Tour",
-        "filterLabel": "Experiences & Tours"
+        "label": "Sightseeing & Fun",
+        "filterLabel": "Sightseeing & Fun"
       },
       "shopping": {
-        "label": "Shopping",
-        "filterLabel": "Local specialty shopping"
+        "label": "Shopping & Specialties",
+        "filterLabel": "Shopping & Specialties"
       }
     },
     "partnerType": {
       "hotel": {
-        "label": "Hotel",
-        "filterLabel": "Hotel / Homestay"
+        "label": "Accommodation",
+        "filterLabel": "Accommodation"
       },
       "fnb": {
-        "label": "F&B Restaurant",
-        "filterLabel": "Restaurant / F&B"
+        "label": "Food & Drink",
+        "filterLabel": "Food & Drink"
       },
       "attraction": {
-        "label": "Attraction",
-        "filterLabel": "Attraction"
+        "label": "Sightseeing & Fun",
+        "filterLabel": "Sightseeing & Fun"
       },
-      "tour": {
-        "label": "Tours & Experiences",
-        "filterLabel": "Experience tours"
+      "shopping": {
+        "label": "Shopping & Specialties",
+        "filterLabel": "Shopping & Specialties"
       }
     },
     "poi": {
@@ -165,7 +161,7 @@
         "shortLabel": "Nature"
       },
       "food": {
-        "label": "Cuisine & Traditional markets",
+        "label": "Local food",
         "shortLabel": "Traditional cuisine"
       },
       "resort": {
@@ -179,10 +175,6 @@
       "craft": {
         "label": "Shopping & Traditional craft villages",
         "shortLabel": "Craft villages & Culture"
-      },
-      "tour": {
-        "label": "Tours & Experiences",
-        "shortLabel": "Tours & Experiences"
       }
     },
     "userAccountType": {
@@ -416,11 +408,10 @@
       "subtitle": "By tourism business category",
       "total": "Total POIs",
       "percentOfTotal": "{{percent}}% of all POIs",
-      "hotel": "Accommodation / Hotels & Homestays",
-      "fnb": "Restaurants / Food & Cafés",
-      "attraction": "Attractions & Culture",
-      "tour": "Experiences & Tours",
-      "shopping": "Local specialty shopping"
+      "hotel": "Accommodation",
+      "fnb": "Food & Drink",
+      "attraction": "Sightseeing & Fun",
+      "shopping": "Shopping & Specialties"
     },
     "pending": {
       "title": "Listing Requests Awaiting Approval",
@@ -445,6 +436,12 @@
       "published": "Published",
       "inQueue": "In queue",
       "reason": "Reason: {{reason}}"
+    },
+    "approveConfirm": {
+      "title": "Confirm listing approval",
+      "confirm": "Approve",
+      "message": "You are about to approve <c0>{{name}}</c0> from partner <c0>{{partner}}</c0>.",
+      "note": "Once approved, the place is published on the travel app and travelers can find it with AI search. If you have not checked the submission yet, click the eye icon to review the details first."
     }
   },
   "users": {
@@ -546,7 +543,7 @@
     "lockReasons": {
       "spamReviews": "Review spam",
       "inappropriateContent": "Posting inappropriate content",
-      "promotionFraud": "Promotion fraud / fake bookings",
+      "promotionFraud": "Promotion fraud / fake reviews",
       "compromised": "Suspected account takeover",
       "userRequest": "At the user's request"
     }
@@ -571,7 +568,6 @@
       "end": "End",
       "attractions": "Attractions",
       "estimatedBudget": "Estimated budget",
-      "paid": "Paid",
       "downloadItinerary": "Download itinerary"
     },
     "tripsTab": {
@@ -589,9 +585,9 @@
       "scope": "Scope:",
       "visited": "visited",
       "estimatedBudget": "Estimated budget",
-      "payment": "Payment",
       "downloadItinerary": "Download itinerary",
-      "viewTripDetails": "View trip details"
+      "viewTripDetails": "View trip details",
+      "toVisit": " to visit"
     },
     "userMetricCards": {
       "tripsCreated": "Trips created",
@@ -603,8 +599,10 @@
       "ratingsReviews": "Ratings & Reviews",
       "reviews": "Reviews",
       "averageScore50": "Average score <c0>{{toFixed}} / 5.0</c0>",
-      "spendingPlatform": "Spending on the platform",
-      "vnd": "VND"
+      "aiSearches": "AI searches",
+      "searchesUnit": "searches",
+      "latestSearch": "Latest: “{{query}}”",
+      "noAiSearches": "No AI searches yet"
     },
     "userProfileCard": {
       "id": "ID:",
@@ -642,7 +640,6 @@
       "status": "Status",
       "time": "Time",
       "attractions": "Attractions",
-      "cost": "Cost",
       "downloadedItinerary": "Downloaded itinerary {{id}}",
       "systemAdministration": "System administration",
       "userManagement": "User management",
@@ -660,7 +657,8 @@
       "accountInterventionPolicy": "Account intervention policy",
       "everyLockPermissionChange": "Every Lock, Permission change or Password reset on a user account is recorded directly in the Senior Administrator Audit Log.",
       "permissionsSuperAdminFull": "Permissions: <c0>Super Admin (full access)</c0>",
-      "aiSearchHistoryTab": "AI search history ({{count}})"
+      "aiSearchHistoryTab": "AI search history ({{count}})",
+      "estimatedBudget": "Estimated budget"
     },
     "utils": {
       "upcoming": "Upcoming",
@@ -729,9 +727,9 @@
       "ecosystemShare": "Ecosystem share",
       "totalPartners": "Total partners",
       "joinedThisMonth": "joined this month",
-      "accommodationHotels": "Accommodation & Hotels",
-      "restaurantsDining": "Restaurants & Dining",
-      "attractionsTours": "Attractions & Tours"
+      "accommodationHotels": "Accommodation",
+      "restaurantsDining": "Food & Drink",
+      "attractionsTours": "Sightseeing, Fun & Shopping"
     },
     "partnerTable": {
       "noMatchingPartnersFound": "No matching partners found",
@@ -790,13 +788,6 @@
       "events_one": "{{count}} event",
       "events_other": "{{count}} events"
     },
-    "commissionModal": {
-      "adjustCommissionRate": "Adjust commission rate",
-      "currentRateAppliesTransactions": "Current rate: {{current}}% — applies to transactions made after saving",
-      "saveNewRate": "Save new rate",
-      "platformCommissionRate": "Platform commission rate (%)",
-      "theCommissionRateMust": "The commission rate must be between {{MIN_COMMISSION}}–{{MAX_COMMISSION}}%"
-    },
     "legalTab": {
       "legalBusinessRegistration": "Legal & Business registration",
       "notarizedCorporateLegalDocuments": "Notarized corporate legal documents",
@@ -812,7 +803,7 @@
       "legalRepresentative": "Legal representative",
       "representativeSIdNumber": "Representative's ID number",
       "contactRepresentativeAdmin": "Contact & Representative admin",
-      "pointContactSupportTransaction": "Point of contact for support and transaction verification",
+      "pointContactSupportTransaction": "Point of contact for support and account verification",
       "n2fa": "2FA:",
       "on": "On",
       "off": "Off",
@@ -822,24 +813,18 @@
       "primaryAdmin": "Primary admin",
       "notificationEmail": "Notification email",
       "otpPhoneNumber": "OTP phone number",
-      "paymentGatewayBusinessAccount": "Payment gateway & Business account",
-      "aiEscrowDeposit": "AI Escrow deposit",
-      "thisPartnerHasNot": "This partner has not linked a payment account",
       "assessmentsIndustryCertifications": "Assessments & Industry certifications",
       "periodicQualityInspectionTourism": "Periodic quality inspection of tourism & accommodation services",
       "nextAssessmentDue": "Next assessment due: <c0>{{nextReviewDate}}</c0>",
       "scheduleReAssessment": "Schedule re-assessment",
-      "partnershipAgreementCommission": "Partnership agreement & Commission",
-      "commissionPolicyRoomTicket": "Commission policy and room/ticket release terms",
       "active": "Active",
       "suspended": "Suspended",
       "contract": "Contract: <c0>{{contractCode}}</c0>",
-      "adjustCommission": "Adjust commission",
       "contractType": "Contract type",
-      "platformCommissionRate": "Platform commission rate",
       "activated": "Activated on",
       "nextRenewalDate": "Next renewal date",
-      "otaSettlementCycle": "OTA settlement cycle"
+      "partnershipAgreement": "Partnership agreement",
+      "listingAgreementTerms": "Terms for publishing and showing the place on the travel map"
     },
     "partnerProfileCard": {
       "registeredPlaces": "Registered places",
@@ -869,10 +854,8 @@
       "periodicReAssessmentSchedule": "Periodic re-assessment schedule",
       "smartTravelWillCarry": "Smart Travel will carry out a periodic service quality re-assessment. Please prepare the relevant documents.",
       "partnershipPolicyUpdate": "Partnership policy update",
-      "thePartnershipCommissionPolicy": "The partnership & commission policy has been updated. Please see the details on the partner portal.",
+      "thePartnershipCommissionPolicy": "The place listing & display policy has been updated. Please see the details on the partner portal.",
       "businessLegalInformation": "Business & Legal information",
-      "contractLimits": "Contract & Limits",
-      "partnershipTransactionHistory": "Partnership & Transaction history",
       "partnerReviewsRanking": "Partner reviews & Ranking",
       "auditLog": "Audit Log",
       "partnerNotFound": "Partner {{id}} not found",
@@ -889,8 +872,6 @@
       "notificationSent": "Notification \"{{title}}\" sent to {{name}}",
       "scheduledReAssessment": "Scheduled re-assessment for {{isoDate}}",
       "reAssessmentScheduled": "Re-assessment scheduled for {{isoDate}}",
-      "changedCommissionFrom": "Changed commission from {{commission}}% to {{commission2}}%",
-      "commissionRateUpdated": "Commission rate updated to {{commission}}%",
       "resentActivationCode": "Resent activation code to {{otpPhone}}",
       "activationCodeSent": "Activation code sent to {{otpPhone}}",
       "systemAdministration": "System administration",
@@ -914,7 +895,8 @@
       "accountInterventionPolicyEvery": "Account intervention policy: every edit or lock on a partner is automatically recorded in the Smart Travel Vietnam Audit Log.",
       "inspectionSessionId": "Inspection session ID: {{sessionCode}}",
       "printProfileExtract": "Print profile extract",
-      "sendNotificationPartner": "Send a notification to the partner"
+      "sendNotificationPartner": "Send a notification to the partner",
+      "registeredPlace": "Registered place"
     },
     "utils": {
       "newlyJoined": "Newly joined",
@@ -930,46 +912,6 @@
       "watch": "Needs monitoring",
       "highRisk": "High risk"
     },
-    "contractTab": {
-      "agreement": "Partnership agreement",
-      "commissionRate": "platform commission",
-      "contractCode": "Contract code",
-      "contractType": "Contract type",
-      "activatedOn": "Activated on",
-      "renewOn": "Renewal date",
-      "paymentCycle": "Payment cycle",
-      "deposit": "Security deposit",
-      "adjustCommission": "Adjust commission",
-      "limits": "Contract limits",
-      "limitsDescription": "Current usage against the limits signed in the contract.",
-      "creditLimit": "Credit limit",
-      "monthlyBookings": "Bookings this month",
-      "activeListings": "Active listings"
-    },
-    "historyTab": {
-      "title": "Partnership & transaction history",
-      "description": "The 10 most recent transactions: bookings, commissions, payouts and refunds.",
-      "bookingRevenue": "Booking revenue (completed)",
-      "paidOut": "Paid out to partner",
-      "types": {
-        "booking": "Booking",
-        "commission": "Commission",
-        "payout": "Payout",
-        "refund": "Refund"
-      },
-      "statuses": {
-        "completed": "Completed",
-        "pending": "Pending",
-        "failed": "Failed"
-      },
-      "columns": {
-        "transaction": "Transaction",
-        "time": "Time",
-        "reference": "Reference",
-        "amount": "Amount",
-        "status": "Status"
-      }
-    },
     "ratingsTab": {
       "overview": "Rating overview",
       "reviewCount_one": "{{count}} review",
@@ -977,6 +919,11 @@
       "tier": "Partner tier",
       "aiTrust": "AI trust score",
       "recentReviews": "Recent reviews"
+    },
+    "placeTab": {
+      "emptyTitle": "This partner has not registered a place yet",
+      "emptyDescription": "Once the partner submits a place, it appears here with the information travelers see on the map.",
+      "viewDetails": "View place details"
     }
   },
   "components": {
@@ -1252,7 +1199,7 @@
       "uploadNewValidNotarized": "upload a new, valid notarized scan",
       "incorrectBusinessRegistrationDetails": "Incorrect business registration details",
       "inaccurateBusinessInformationOr": "Inaccurate business information or listed prices that differ from reality",
-      "thePublishedPriceList": "The published price list differs from the booking prices on the travel platform.",
+      "thePublishedPriceList": "The listed prices do not match the actual prices at the venue.",
       "theBusinessInformationListed": "the business information and listed price list do not match reality",
       "reviewUpdatePriceList": "review and update the price list and service details accurately",
       "incorrectGpsCoordinates": "Incorrect GPS coordinates",
@@ -1316,23 +1263,6 @@
       "confirmApproval": "Confirm approval",
       "activating": "Activating...",
       "approvedSuccessfully": "Approved successfully!"
-    },
-    "basicInfoSection": {
-      "basicPlaceInformation": "Basic place information",
-      "crossCheckMarketingDetails": "Cross-check marketing details, category and listing documents",
-      "registeredPlaceName": "Registered place name",
-      "ownerSDetailedDescription": "Owner's detailed description",
-      "actualAddress": "Actual address",
-      "bookingEmail": "Booking email",
-      "officialWebsite": "Official website",
-      "notProvided": "Not provided",
-      "referenceListingPrice": "Reference listing price"
-    },
-    "businessInfoSection": {
-      "inDepthBusinessInformation": "In-depth business information",
-      "propertySizeAmenitiesRoom": "Property size, amenities and room policies",
-      "thePartnerHasNot": "The partner has not declared detailed business information",
-      "amenitiesTravelers": "Amenities for travelers"
     },
     "decisionModalShell": {
       "closeWindow": "Close window",
@@ -1553,7 +1483,6 @@
     "listingFormModal": {
       "pleaseEnterPlaceName": "Please enter the place name",
       "pleaseEnterOwningPartner": "Please enter the owning partner",
-      "pleaseEnterCategoryLabel": "Please enter the category label",
       "pleaseEnterAddress": "Please enter the address",
       "editPlaceDetails": "Edit place details",
       "addPlaceManually": "Add place manually",
@@ -1564,11 +1493,10 @@
       "placeName": "Place name *",
       "owningPartner": "Owning partner *",
       "category": "Category",
-      "displayedCategoryLabel": "Displayed category label *",
-      "eGBeachfrontResort": "e.g. Beachfront resort",
       "address": "Address *",
       "eGCamChau": "e.g. Cam Chau, Hoi An City, Quang Nam",
-      "provinceCity": "Province / City"
+      "provinceCity": "Province / City",
+      "subType": "Place type"
     }
   },
   "rejectedListings": {
@@ -1728,15 +1656,6 @@
     },
     "constants": {
       "all": "All",
-      "attractionsHeritageSites": "Attractions & Heritage sites",
-      "foodRestaurants": "Food & Restaurants",
-      "accommodationHomestaysHotels": "Accommodation & Homestays/Hotels",
-      "beachesNature": "Beaches & Nature",
-      "shoppingTraditionalCraftVillages": "Shopping & Traditional craft villages",
-      "sightseeingHeritage": "Sightseeing & Heritage",
-      "restaurantsDining": "Restaurants & Dining",
-      "accommodationHotels": "Accommodation & Hotels",
-      "toursExperiences": "Tours & Experiences",
       "nationalTourismAdministration": "National Tourism Administration",
       "managementBoard": "Management board",
       "heritageSiteLocalManagement": "Heritage site / local management board",
@@ -1947,14 +1866,14 @@
     },
     "partnerPerformanceCard": {
       "partnerPerformance": "Partner performance",
-      "topPartnersByBookings": "Top partners by bookings",
-      "bookingRevenue": "Booking revenue",
-      "vnd": "{{totalRevenue}} VND",
-      "noPartnerBookingsThis": "No partner bookings in this scope yet",
       "partner": "Partner",
-      "bookings": "Bookings",
       "reviews": "Reviews",
-      "growth": "Growth"
+      "growth": "Growth",
+      "topPartnersByViews": "Top partners by map views",
+      "totalViews": "Total views",
+      "noPartnerViews": "No partner views in this scope yet",
+      "mapViews": "Views",
+      "aiSearchHits": "AI search hits"
     },
     "poiCategoryBreakdown": {
       "placesByCategory": "Places by Category",
@@ -2014,7 +1933,7 @@
       "peakSeason": "Peak season",
       "tripsPerMonth": "Trips per month",
       "peak": "Peak: {{peakFrom}}-{{peakTo}}",
-      "aTotalTripsTour": "A total of <c0>{{total}} trips</c0>. Tour + hotel bookings rise {{bundleGrowthPercent}}% in summer.",
+      "aTotalTripsTour": "A total of <c0>{{total}} trips</c0>. Itineraries combining stays and activities rise {{bundleGrowthPercent}}% in summer.",
       "chartTripsPerMonth": "Chart of trips per month",
       "trips": "{{month}}: {{trips}} trips",
       "peak2": "{{trips}} (Peak {{month}})",
@@ -2036,8 +1955,7 @@
       "allServices": "All services",
       "hotelsHomestays": "Hotels & Homestays",
       "foodEateries": "Food & Eateries",
-      "attractionsTours": "Attractions & Tours",
-      "localExperiences": "Local experiences",
+      "attractionsTours": "Sightseeing & Fun",
       "n7Days": "7 days",
       "n30Days": "30 days",
       "q": "Q{{quarter}}/{{getFullYear}}",
@@ -2068,11 +1986,12 @@
       "places": "Places",
       "share": "Share (%)",
       "partner": "PARTNER",
-      "bookings": "Bookings",
-      "revenueVnd": "Revenue (VND)",
       "item": "Item",
       "aiQueries": "AI queries (pgvector)",
-      "aiQueriesNote": "{{rate}}% matched • avg. similarity {{similarity}}%"
+      "aiQueriesNote": "{{rate}}% matched • avg. similarity {{similarity}}%",
+      "shoppingSpecialties": "Shopping & Specialties",
+      "mapViews": "Map views",
+      "aiSearchHits": "AI search appearances"
     }
   },
   "notifications": {
@@ -2165,7 +2084,7 @@
       "newUpdatedListingSubmissions": "New / updated listing submissions",
       "whenPartnerSubmitsNew": "When a partner submits a new listing or uploads extra documents",
       "newPartnerRegistrations": "New partner registrations",
-      "whenBusinessCompletesRegistration": "When a business completes registration and the security deposit",
+      "whenBusinessCompletesRegistration": "When a business completes registration and legal verification",
       "travelerComplaintsFeedback": "Traveler complaints & feedback",
       "reportsPriceDiscrepanciesService": "Reports of price discrepancies, service quality issues or fraud",
       "aiLoadOverThreshold": "AI load over threshold",
@@ -2529,7 +2448,7 @@
       "approveTravelPartnersHotels": "Approve travel partners, hotels and destinations nationwide",
       "financialReportsKpis": "Financial reports & KPIs",
       "fullExportRights": "Full export rights",
-      "accessBookingRevenueCommissions": "Access booking revenue, commissions and user growth",
+      "accessBookingRevenueCommissions": "Access place views, AI searches and user growth",
       "systemAiConfiguration": "System & AI configuration",
       "topLevelConfigurationRights": "Top-level configuration rights",
       "tuneAiItineraryRecommendation": "Configure AI semantic search (pgvector) and the API Keys Gateway"
@@ -2607,7 +2526,7 @@
       "multiLayerSecurityZero": "Multi-layer security & Zero-Trust encryption",
       "hardwareCertificateAuthenticationReal": "Hardware certificate authentication and real-time intrusion-proof activity logging.",
       "realTimeDataManagement": "Real-time Data Management",
-      "syncsInternationalVisitorFlows": "Syncs international visitor flows, room occupancy and transactions across 63 provinces.",
+      "syncsInternationalVisitorFlows": "Syncs place data and international visitor flows across 63 provinces.",
       "automatedPartnerListingReview": "Automated partner & listing review",
       "aiAssistedReviewHotels": "AI-assisted review of hotels, tour operators and experiences.",
       "adminAccountSecurityRecovery": "Admin Account Security & Recovery",
@@ -2671,6 +2590,90 @@
     "semantic": {
       "match": "{{score}}% AI match",
       "matchTitle": "AI Match Score (cosine similarity, pgvector)"
+    }
+  },
+  "listingMap": {
+    "notProvided": "Not provided",
+    "section": {
+      "title": "Place information",
+      "subtitle": "The {{category}} field set — what travelers see when they open the place on the map",
+      "filled": "{{filled}}/{{total}} filled",
+      "formHint": "The fields depend on the place group and appear exactly the same on the Review & Approve screen."
+    },
+    "subTypes": {
+      "restaurant": "Restaurant",
+      "cafe": "Café",
+      "localEatery": "Local eatery",
+      "barPub": "Bar / Pub",
+      "hotel": "Hotel",
+      "resort": "Resort",
+      "homestay": "Homestay",
+      "villa": "Villa",
+      "amusementPark": "Amusement park",
+      "park": "Park",
+      "scenicSpot": "Scenic spot",
+      "checkinSpot": "Photo spot",
+      "nightMarket": "Night market",
+      "specialtyStore": "Specialty store",
+      "souvenirShop": "Souvenir shop",
+      "craftVillage": "Craft village"
+    },
+    "fields": {
+      "openingHours": "Opening hours",
+      "priceRange": "Price range",
+      "signatureDishes": "Menu & signature dishes",
+      "amenities": "Amenities",
+      "pricePerNight": "Reference price / night",
+      "checkInOut": "Check-in / check-out",
+      "externalBooking": "External booking link",
+      "ticketPrice": "Reference entrance fee",
+      "visitRules": "Visitor rules (dress code, age)",
+      "bestTime": "Best time of day",
+      "mainProducts": "Main products",
+      "averagePrice": "Average price range",
+      "services": "Services",
+      "placeName": "Place name",
+      "placeType": "Place type",
+      "address": "Address",
+      "phone": "Phone number",
+      "website": "Website / Fanpage",
+      "introFood": "About the restaurant",
+      "introStay": "About the stay",
+      "introAttraction": "About the attraction",
+      "introShop": "About the shop"
+    },
+    "placeholders": {
+      "openingHours": "E.g. 07:00 - 22:00, open daily",
+      "foodPrice": "E.g. 30,000 - 150,000 VND / person",
+      "signatureDishes": "E.g. Quang noodles with frog, Cao lau, Banh xeo",
+      "pricePerNight": "E.g. 650,000 - 1,450,000 VND / night",
+      "checkInOut": "E.g. Check-in 14:00 • Check-out 12:00",
+      "externalBooking": "E.g. https://booking.com/… or your own website",
+      "ticketPrice": "E.g. Adults 120,000 VND • Children 60,000 VND",
+      "visitRules": "E.g. Modest clothing, children under 6 with an adult",
+      "bestTime": "E.g. Sunrise 05:00 - 07:00",
+      "mainProducts": "E.g. OCOP products, sweets, handicrafts",
+      "averagePrice": "E.g. 50,000 - 300,000 VND",
+      "phone": "E.g. 0905 123 456",
+      "website": "E.g. facebook.com/yourplace",
+      "introFood": "E.g. Family eatery in a wooden house serving traditional Quang dishes",
+      "introStay": "E.g. Garden homestay, 5 minutes by bike to the old town",
+      "introAttraction": "E.g. Mountain resort with cable car and French village",
+      "introShop": "E.g. Local specialty store with a tasting corner"
+    },
+    "amenities": {
+      "parking": "Parking",
+      "airConditioning": "Air conditioning",
+      "bankTransfer": "Bank transfer / QR",
+      "wifi": "Wi-Fi",
+      "outdoorSeating": "Outdoor seating",
+      "pool": "Swimming pool",
+      "petFriendly": "Pet friendly",
+      "breakfast": "Breakfast"
+    },
+    "services": {
+      "giftWrapping": "Gift wrapping",
+      "delivery": "Home delivery"
     }
   }
 }

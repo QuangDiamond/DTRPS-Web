@@ -38,10 +38,7 @@ export default function TripDetailModal({ trip, onClose, onDownload }: TripDetai
     },
     {
       icon: 'payments',
-      label:
-        trip.status === 'upcoming'
-          ? t('userDetail.tripDetailModal.estimatedBudget')
-          : t('userDetail.tripDetailModal.paid'),
+      label: t('userDetail.tripDetailModal.estimatedBudget'),
       value: formatVnd(trip.amount),
     },
   ];

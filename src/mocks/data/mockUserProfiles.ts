@@ -25,8 +25,6 @@ export const MOCK_USER_PROFILES: Record<string, Omit<UserProfile, 'aiSearches'>>
     reviewCount: 26,
     avgRating: 4.8,
     reviewsNote: 'Tất cả đánh giá đều đính kèm hình ảnh và hóa đơn thanh toán hợp lệ qua ứng dụng.',
-    totalSpend: 18_450_000,
-    spendNote: 'Dịch vụ Khách sạn & Tour trọn gói',
     trips: [
       {
         id: 'TRIP-2041',

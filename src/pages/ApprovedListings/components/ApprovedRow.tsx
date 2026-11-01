@@ -5,6 +5,7 @@ import { LISTING_CATEGORY_CONFIG, PARTNER_TIER_BADGE } from '@/constants/listing
 import { formatApprovedAt, isHidden } from '@/pages/ApprovedListings/approvedUtils';
 import type { Listing } from '@/types';
 import { formatNumber } from '@/utils/format';
+import { getListingSubTypeIcon, getListingSubTypeLabel } from '@/constants/listingMap';
 
 interface ApprovedRowProps {
   listing: Listing;
@@ -122,8 +123,8 @@ export default function ApprovedRow({
             LISTING_CATEGORY_CONFIG[listing.category].pillClass
           }`}
         >
-          <Icon name={listing.categoryIcon} className="text-[14px]" />
-          {listing.categoryLabel}
+          <Icon name={getListingSubTypeIcon(listing)} className="text-[14px]" />
+          {getListingSubTypeLabel(listing)}
         </span>
       </td>
 

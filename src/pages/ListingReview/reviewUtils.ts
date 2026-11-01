@@ -68,6 +68,6 @@ export function formatSubmittedAt(iso: string): string {
 export function getMapsUrl(listing: Listing, detail: ListingDetail): string {
   const query = detail.location.coordinates
     ? `${detail.location.coordinates.lat},${detail.location.coordinates.lng}`
-    : `${listing.name}, ${detail.fullAddress}`;
+    : `${listing.name}, ${listing.address}`;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }

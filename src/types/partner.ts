@@ -1,6 +1,7 @@
 /** Đối tác (Partners) */
 
-export type PartnerType = 'hotel' | 'fnb' | 'attraction' | 'tour';
+/** Loại hình đối tác = nhóm địa điểm: Lưu trú / Ẩm thực / Vui chơi & Tham quan / Mua sắm & Đặc sản */
+export type PartnerType = 'hotel' | 'fnb' | 'attraction' | 'shopping';
 
 export type PartnerStatus = 'active' | 'pending' | 'suspended';
 
@@ -105,25 +106,18 @@ export interface PartnerProfile {
     email: string;
     otpPhone: string;
     twoFactor: boolean;
-    bank?: { name: string; account: string; currency: string };
-    escrow: boolean;
   };
   certifications: PartnerCertification[];
-  contractLimits: PartnerContractLimits;
-  transactions: PartnerTransaction[];
   ratings: PartnerRatingSummary;
   /** ISO date */
   nextReviewDate: string;
+  /** Thỏa thuận hợp tác đăng địa điểm (không phát sinh hoa hồng / thanh toán qua nền tảng) */
   agreement: {
     type: string;
-    /** % hoa hồng hệ thống */
-    commission: number;
     /** ISO date */
     activatedAt: string;
     /** ISO date */
     renewAt: string;
-    paymentCycle: string;
-    paymentMode: string;
     contractCode: string;
   };
 }
@@ -140,35 +134,6 @@ export interface PartnerAuditEntry {
 /** Các giá trị hồ sơ admin chỉnh được ở màn Chi tiết đối tác */
 export interface PartnerProfileOverrides {
   nextReviewDate?: string;
-  commission?: number;
-}
-
-export type PartnerTransactionType = 'booking' | 'commission' | 'payout' | 'refund';
-export type PartnerTransactionStatus = 'completed' | 'pending' | 'failed';
-
-/** Giao dịch phát sinh giữa nền tảng và đối tác */
-export interface PartnerTransaction {
-  id: string;
-  /** ISO datetime */
-  date: string;
-  type: PartnerTransactionType;
-  amountVnd: number;
-  status: PartnerTransactionStatus;
-  /** Mã đặt chỗ hoặc tài khoản nhận tiền */
-  reference: string;
-}
-
-/** Hạn mức theo hợp đồng hợp tác */
-export interface PartnerContractLimits {
-  creditLimitVnd: number;
-  creditUsedVnd: number;
-  /** Số lượt đặt tối đa mỗi tháng */
-  monthlyBookingCap: number;
-  monthlyBookings: number;
-  maxActiveListings: number;
-  activeListings: number;
-  /** Tiền ký quỹ bảo chứng */
-  depositVnd: number;
 }
 
 export interface PartnerReview {

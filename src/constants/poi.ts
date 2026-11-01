@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import type {
+  ListingCategory,
   PoiCategory,
   PoiCategoryTab,
   PoiFilters,
@@ -11,6 +12,7 @@ import type {
   SelectOption,
 } from '@/types';
 import { linkedOption, localizeConfig, localizedOption } from '@/utils/localize';
+import { LISTING_CATEGORY_CONFIG } from './listing';
 
 export const POI_CATEGORY_CONFIG: Record<
   PoiCategory,
@@ -21,8 +23,8 @@ export const POI_CATEGORY_CONFIG: Record<
     shortLabel: string;
     icon: string;
     badgeClass: string;
-    tab: Exclude<PoiCategoryTab, 'all'> | null;
-    kpiGroup: PoiKpiGroup;
+    /** Nhóm địa điểm (tab lọc + thẻ KPI) */
+    group: ListingCategory;
   }
 > = localizeConfig(
   'category.poi',
@@ -32,56 +34,42 @@ export const POI_CATEGORY_CONFIG: Record<
       shortLabel: 'Di sản văn hóa',
       icon: 'account_balance',
       badgeClass: 'bg-secondary-container/50 text-on-secondary-container',
-      tab: 'heritage',
-      kpiGroup: 'sights',
+      group: 'attraction',
     },
     nature: {
       label: 'Thiên nhiên & Danh lam thắng cảnh',
       shortLabel: 'Thiên nhiên',
       icon: 'landscape',
       badgeClass: 'bg-surface-container-highest text-primary',
-      tab: 'nature',
-      kpiGroup: 'sights',
+      group: 'attraction',
     },
     food: {
-      label: 'Ẩm thực & Chợ truyền thống',
+      label: 'Ẩm thực địa phương',
       shortLabel: 'Ẩm thực truyền thống',
       icon: 'restaurant',
       badgeClass: 'bg-tertiary-fixed/60 text-on-tertiary-fixed',
-      tab: 'food',
-      kpiGroup: 'food',
+      group: 'fnb',
     },
     resort: {
       label: 'Nghỉ dưỡng & Sinh thái biển',
       shortLabel: 'Nghỉ dưỡng biển',
       icon: 'beach_access',
       badgeClass: 'bg-surface-container-highest text-primary',
-      tab: 'nature',
-      kpiGroup: 'sights',
+      group: 'hotel',
     },
     stay: {
       label: 'Lưu trú & Homestay / Khách sạn',
       shortLabel: 'Lưu trú',
       icon: 'hotel',
       badgeClass: 'bg-primary-fixed/60 text-on-primary-fixed-variant',
-      tab: 'stay',
-      kpiGroup: 'stay',
+      group: 'hotel',
     },
     craft: {
       label: 'Mua sắm & Làng nghề truyền thống',
       shortLabel: 'Làng nghề & Văn hóa',
       icon: 'architecture',
       badgeClass: 'bg-tertiary-fixed/40 text-on-tertiary-fixed-variant',
-      tab: 'craft',
-      kpiGroup: 'sights',
-    },
-    tour: {
-      label: 'Tour & Trải nghiệm',
-      shortLabel: 'Tour & Trải nghiệm',
-      icon: 'kayaking',
-      badgeClass: 'bg-surface-container-high text-on-surface',
-      tab: null,
-      kpiGroup: 'tour',
+      group: 'shopping',
     },
   },
   ['label', 'shortLabel'],
@@ -91,6 +79,8 @@ export const POI_CATEGORY_OPTIONS: SelectOption<PoiCategory>[] = (
   Object.keys(POI_CATEGORY_CONFIG) as PoiCategory[]
 ).map((category) => linkedOption(category, () => POI_CATEGORY_CONFIG[category].label));
 
+const POI_GROUPS: ListingCategory[] = ['attraction', 'fnb', 'hotel', 'shopping'];
+
 export const POI_CATEGORY_TABS: { id: PoiCategoryTab; label: string }[] = [
   {
     id: 'all',
@@ -98,77 +88,53 @@ export const POI_CATEGORY_TABS: { id: PoiCategoryTab; label: string }[] = [
       return i18n.t('pois.constants.all');
     },
   },
-  {
-    id: 'heritage',
+  ...POI_GROUPS.map((group) => ({
+    id: group,
     get label() {
-      return i18n.t('pois.constants.attractionsHeritageSites');
+      return LISTING_CATEGORY_CONFIG[group].label;
     },
-  },
-  {
-    id: 'food',
-    get label() {
-      return i18n.t('pois.constants.foodRestaurants');
-    },
-  },
-  {
-    id: 'stay',
-    get label() {
-      return i18n.t('pois.constants.accommodationHomestaysHotels');
-    },
-  },
-  {
-    id: 'nature',
-    get label() {
-      return i18n.t('pois.constants.beachesNature');
-    },
-  },
-  {
-    id: 'craft',
-    get label() {
-      return i18n.t('pois.constants.shoppingTraditionalCraftVillages');
-    },
-  },
+  })),
 ];
 
 export const POI_KPI_GROUP_CONFIG: Record<
   PoiKpiGroup,
   { label: string; icon: string; iconBoxClass: string; barClass: string; percentClass: string }
 > = {
-  sights: {
+  attraction: {
     get label() {
-      return i18n.t('pois.constants.sightseeingHeritage');
+      return LISTING_CATEGORY_CONFIG.attraction.label;
     },
     icon: 'account_balance',
     iconBoxClass: 'bg-secondary-container/60 text-secondary',
     barClass: 'bg-secondary',
     percentClass: 'text-secondary',
   },
-  food: {
+  fnb: {
     get label() {
-      return i18n.t('pois.constants.restaurantsDining');
+      return LISTING_CATEGORY_CONFIG.fnb.label;
     },
     icon: 'restaurant',
     iconBoxClass: 'bg-tertiary-fixed/60 text-tertiary',
     barClass: 'bg-tertiary',
     percentClass: 'text-tertiary',
   },
-  stay: {
+  hotel: {
     get label() {
-      return i18n.t('pois.constants.accommodationHotels');
+      return LISTING_CATEGORY_CONFIG.hotel.label;
     },
     icon: 'hotel',
     iconBoxClass: 'bg-surface-container-highest text-primary',
     barClass: 'bg-primary-container',
     percentClass: 'text-primary',
   },
-  tour: {
+  shopping: {
     get label() {
-      return i18n.t('pois.constants.toursExperiences');
+      return LISTING_CATEGORY_CONFIG.shopping.label;
     },
-    icon: 'kayaking',
-    iconBoxClass: 'bg-surface-container-high text-on-surface',
-    barClass: 'bg-on-surface-variant',
-    percentClass: 'text-on-surface',
+    icon: 'shopping_bag',
+    iconBoxClass: 'bg-error-container/40 text-error',
+    barClass: 'bg-error',
+    percentClass: 'text-error',
   },
 };
 

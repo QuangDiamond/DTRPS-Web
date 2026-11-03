@@ -30,8 +30,10 @@
       "reportsAnalytics": "Báo cáo & Thống kê",
       "notifications": "Thông báo",
       "systemSettings": "Cài đặt hệ thống",
-      "systemAdministration": "Quản trị hệ thống"
-    }
+      "systemAdministration": "Quản trị hệ thống",
+      "placeCategories": "Loại địa điểm"
+    },
+    "placeCategories": "Loại địa điểm"
   },
   "header": {
     "searchPlaceholder": "Tìm kiếm dữ liệu, người dùng, tour, POI...",
@@ -2877,7 +2879,8 @@
       "eyebrowNote": "Dữ liệu thật",
       "title": "Quản lý điểm đến",
       "description": "Tất cả địa điểm trong hệ thống: POI do nền tảng tạo và địa điểm của đối tác. Địa điểm đối tác được thay đổi qua luồng duyệt niêm yết.",
-      "refresh": "Làm mới"
+      "refresh": "Làm mới",
+      "add": "Thêm địa điểm"
     },
     "stats": {
       "total": "Tổng địa điểm",
@@ -2941,7 +2944,7 @@
       "status": "Trạng thái"
     },
     "notice": {
-      "readOnly": "Trang này đang ở chế độ xem. Thêm / sửa POI của nền tảng sẽ có khi backend hỗ trợ; địa điểm đối tác được sửa qua đề xuất chỉnh sửa."
+      "readOnly": "Địa điểm do admin tạo được sửa trực tiếp (ảnh, giờ mở cửa, bảng giá, trạng thái). Địa điểm của đối tác chỉ thay đổi qua luồng duyệt niêm yết và bản sửa của đối tác."
     }
   },
   "userAdmin": {
@@ -3146,5 +3149,158 @@
     "description": "Cấu hình chung của nền tảng.",
     "emptyTitle": "Chưa kết nối cài đặt",
     "emptyText": "Database đã có bảng system_settings (thời hạn duyệt niêm yết, thời gian tự đăng xuất, tên nền tảng) nhưng backend chưa có API đọc / lưu. Trang này sẽ mở khi có API."
+  },
+  "placeEditor": {
+    "createTitle": "Thêm địa điểm mới",
+    "editTitle": "Sửa thông tin địa điểm",
+    "createHint": "Admin thêm địa điểm trực tiếp — không qua đối tác, không cần duyệt. Chọn \"Đang hiển thị\" để du khách thấy ngay.",
+    "editHint": "Sửa thông tin cơ bản và vị trí. Ảnh, giờ mở cửa và bảng giá chỉnh ở trang chi tiết địa điểm.",
+    "loadError": "Không tải được dữ liệu form",
+    "create": "Tạo địa điểm",
+    "save": "Lưu thay đổi",
+    "cancel": "Hủy",
+    "created": "Đã thêm địa điểm",
+    "saved": "Đã lưu thay đổi",
+    "editInfo": "Sửa thông tin",
+    "statusChanged": "Đã chuyển trạng thái sang \"{{status}}\"",
+    "partnerLocked": "Không thể sửa địa điểm của đối tác",
+    "partnerLockedHint": "Địa điểm của đối tác chỉ thay đổi qua bản sửa do đối tác gửi và Admin duyệt.",
+    "sections": {
+      "basic": "Thông tin cơ bản",
+      "location": "Vị trí",
+      "photos": "Hình ảnh",
+      "photosHint": "Tối đa 10 ảnh. Ảnh chính hiển thị đầu tiên với du khách.",
+      "hours": "Giờ mở cửa",
+      "hoursHint": "Khai báo đủ 7 ngày; bỏ chọn \"Mở cửa\" cho ngày nghỉ.",
+      "prices": "Bảng giá",
+      "pricesHint": "Giá tính bằng VND, không âm, tối đa 20 mức giá.",
+      "publish": "Hiển thị",
+      "contact": "Liên hệ"
+    },
+    "fields": {
+      "name": "Tên địa điểm",
+      "namePlaceholder": "Ví dụ: Bảo tàng Điêu khắc Chăm",
+      "group": "Nhóm dịch vụ",
+      "category": "Loại địa điểm",
+      "choose": "Chọn…",
+      "groupFirst": "Chọn nhóm trước",
+      "description": "Mô tả",
+      "descriptionPlaceholder": "Giới thiệu ngắn về địa điểm, điểm nổi bật…",
+      "province": "Tỉnh / Thành phố",
+      "address": "Địa chỉ",
+      "addressPlaceholder": "12 Trần Phú, phường Hải Châu",
+      "latitude": "Vĩ độ (latitude)",
+      "longitude": "Kinh độ (longitude)",
+      "coordinateHint": "Tự điền khi chọn trên bản đồ; có thể dán cả cặp \"vĩ độ, kinh độ\"",
+      "status": "Trạng thái",
+      "statusHint": "\"Đang hiển thị\" = du khách tìm thấy; các trạng thái khác sẽ ẩn địa điểm.",
+      "phone": "Số điện thoại",
+      "website": "Website"
+    },
+    "errors": {
+      "checkFields": "Vui lòng kiểm tra lại các ô được đánh dấu.",
+      "name": "Tên địa điểm phải có ít nhất 2 ký tự",
+      "group": "Vui lòng chọn nhóm dịch vụ",
+      "category": "Vui lòng chọn loại địa điểm",
+      "province": "Vui lòng chọn tỉnh/thành",
+      "address": "Vui lòng nhập địa chỉ",
+      "latitude": "Vui lòng chọn vị trí trên bản đồ (vĩ độ từ -90 đến 90)",
+      "longitude": "Kinh độ phải từ -180 đến 180",
+      "phone": "Số điện thoại không hợp lệ",
+      "website": "Website phải bắt đầu bằng http:// hoặc https://",
+      "hours": "{{day}}: cần giờ mở và giờ đóng khác nhau (hoặc bỏ chọn \"Mở cửa\")"
+    },
+    "hours": {
+      "declare": "Khai báo giờ mở cửa",
+      "edit": "Sửa giờ",
+      "save": "Lưu giờ mở cửa",
+      "saved": "Đã lưu giờ mở cửa",
+      "open": "Mở cửa",
+      "closed": "Đóng cửa",
+      "openAt": "Giờ mở cửa {{day}}",
+      "closeAt": "Giờ đóng cửa {{day}}",
+      "copyMonday": "Áp dụng giờ của Thứ 2 cho cả tuần"
+    },
+    "photos": {
+      "cover": "Ảnh chính",
+      "isCover": "Đang là ảnh chính",
+      "setCover": "Đặt ảnh chính",
+      "remove": "Xoá ảnh",
+      "pickFile": "Chọn ảnh từ máy",
+      "uploading": "Đang tải ảnh lên…",
+      "urlPlaceholder": "Hoặc dán đường dẫn ảnh https://…",
+      "addUrl": "Thêm bằng URL",
+      "httpsOnly": "Đường dẫn ảnh phải bắt đầu bằng https://",
+      "duplicate": "Ảnh này đã có trong danh sách",
+      "tooMany": "Chỉ thêm được {{count}} ảnh nữa (tối đa 10).",
+      "badType": "Chỉ nhận ảnh jpg, png hoặc webp",
+      "tooLarge": "Ảnh tối đa 5MB",
+      "hint": "{{count}}/{{max}} ảnh · jpg, png, webp · tối đa 5MB/ảnh"
+    },
+    "prices": {
+      "type": "Loại giá",
+      "amount": "Số tiền",
+      "note": "Ghi chú",
+      "notePlaceholder": "Ghi chú (vd. Người lớn)",
+      "save": "Lưu",
+      "add": "Thêm mức giá",
+      "edit": "Sửa mức giá",
+      "remove": "Xoá mức giá",
+      "empty": "Chưa có mức giá nào.",
+      "amountRequired": "Vui lòng nhập số tiền"
+    },
+    "priceTypes": {
+      "ROOM_NIGHT": "Giá phòng / đêm",
+      "TICKET": "Giá vé vào cổng",
+      "AVG_MEAL": "Giá món / bữa ăn",
+      "AVG_DRINK": "Giá đồ uống",
+      "OTHER": "Khác"
+    },
+    "map": {
+      "title": "Vị trí trên bản đồ",
+      "searchPlaceholder": "Tìm địa chỉ, ví dụ: 12 Trần Phú, Hội An",
+      "search": "Tìm",
+      "searching": "Đang tìm…",
+      "myLocation": "Vị trí của tôi",
+      "emptyQuery": "Nhập địa chỉ hoặc tên địa điểm để tìm",
+      "notFound": "Không tìm thấy. Thử ghi ngắn hơn hoặc bấm trực tiếp lên bản đồ.",
+      "searchFailed": "Không tìm được lúc này. Bạn có thể bấm trực tiếp lên bản đồ.",
+      "noGeolocation": "Trình duyệt không hỗ trợ lấy vị trí.",
+      "geolocationDenied": "Không lấy được vị trí. Hãy cho phép truy cập vị trí hoặc chọn trên bản đồ.",
+      "hintWithPoint": "Kéo ghim hoặc bấm chỗ khác trên bản đồ để chỉnh vị trí.",
+      "hintNoPoint": "Tìm địa chỉ rồi chọn kết quả, hoặc bấm đúng vị trí trên bản đồ."
+    }
+  },
+  "placeCategories": {
+    "title": "Loại địa điểm",
+    "description": "Các loại địa điểm thuộc 4 nhóm dịch vụ. Loại đã tắt không còn hiện khi tạo địa điểm; địa điểm đang dùng vẫn giữ nguyên.",
+    "loadError": "Không tải được loại địa điểm",
+    "add": "Thêm loại",
+    "addShort": "Thêm",
+    "addTitle": "Thêm loại địa điểm",
+    "editTitle": "Sửa loại địa điểm",
+    "edit": "Sửa loại",
+    "count": "{{count}} loại",
+    "places": "{{count}} địa điểm",
+    "empty": "Chưa có loại nào.",
+    "active": "Đang bật",
+    "inactive": "Đã tắt",
+    "created": "Đã thêm loại địa điểm",
+    "saved": "Đã lưu loại địa điểm",
+    "enabled": "Đã bật \"{{name}}\"",
+    "disabled": "Đã tắt \"{{name}}\"",
+    "fields": {
+      "group": "Nhóm dịch vụ",
+      "code": "Mã loại",
+      "codeHint": "Chữ thường không dấu, số và dấu gạch dưới, ví dụ hot_spring. Không đổi được sau khi tạo.",
+      "codeFixed": "Mã loại không đổi được sau khi tạo.",
+      "name": "Tên loại",
+      "namePlaceholder": "Ví dụ: Suối nước nóng",
+      "description": "Mô tả"
+    },
+    "errors": {
+      "code": "Mã loại 2–50 ký tự: chữ thường không dấu, số hoặc dấu gạch dưới",
+      "name": "Tên loại phải có ít nhất 2 ký tự"
+    }
   }
 }

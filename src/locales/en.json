@@ -30,8 +30,10 @@
       "reportsAnalytics": "Reports & Analytics",
       "notifications": "Notifications",
       "systemSettings": "System settings",
-      "systemAdministration": "System administration"
-    }
+      "systemAdministration": "System administration",
+      "placeCategories": "Place types"
+    },
+    "placeCategories": "Place types"
   },
   "header": {
     "searchPlaceholder": "Search data, users, tours, POIs...",
@@ -2950,7 +2952,8 @@
       "eyebrowNote": "Live data",
       "title": "Destination management",
       "description": "Every place in the system: platform POIs and partner places. Partner places change through the listing review flow.",
-      "refresh": "Refresh"
+      "refresh": "Refresh",
+      "add": "Add place"
     },
     "stats": {
       "total": "Total places",
@@ -3014,7 +3017,7 @@
       "status": "Status"
     },
     "notice": {
-      "readOnly": "This page is read-only for now. Adding / editing platform POIs comes once the backend supports it; partner places change through change requests."
+      "readOnly": "Places created by admins can be edited directly (photos, opening hours, prices, status). Partner places only change through listing review and partner change requests."
     }
   },
   "userAdmin": {
@@ -3219,5 +3222,158 @@
     "description": "Platform-wide configuration.",
     "emptyTitle": "Settings not connected yet",
     "emptyText": "The database has a system_settings table (listing review SLA, idle sign-out, platform name) but the backend has no API to read or save it yet. This page opens once it does."
+  },
+  "placeEditor": {
+    "createTitle": "Add a new place",
+    "editTitle": "Edit place details",
+    "createHint": "Admins add places directly — no partner, no review. Choose \"Active\" to show it to travellers right away.",
+    "editHint": "Edit the basic details and location. Photos, opening hours and prices are edited on the place detail page.",
+    "loadError": "Could not load the form data",
+    "create": "Create place",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "created": "Place added",
+    "saved": "Changes saved",
+    "editInfo": "Edit details",
+    "statusChanged": "Status changed to \"{{status}}\"",
+    "partnerLocked": "Partner places cannot be edited here",
+    "partnerLockedHint": "Partner places only change through change requests the partner sends and an admin approves.",
+    "sections": {
+      "basic": "Basic information",
+      "location": "Location",
+      "photos": "Photos",
+      "photosHint": "Up to 10 photos. The main photo is shown first to travellers.",
+      "hours": "Opening hours",
+      "hoursHint": "Fill in all 7 days; untick \"Open\" for days off.",
+      "prices": "Prices",
+      "pricesHint": "Prices in VND, not negative, up to 20 prices.",
+      "publish": "Visibility",
+      "contact": "Contact"
+    },
+    "fields": {
+      "name": "Place name",
+      "namePlaceholder": "E.g. Museum of Cham Sculpture",
+      "group": "Service group",
+      "category": "Place type",
+      "choose": "Choose…",
+      "groupFirst": "Choose a group first",
+      "description": "Description",
+      "descriptionPlaceholder": "A short introduction, highlights…",
+      "province": "Province / City",
+      "address": "Address",
+      "addressPlaceholder": "12 Tran Phu, Hai Chau ward",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "coordinateHint": "Filled in when you pick on the map; you can paste a \"lat, lng\" pair",
+      "status": "Status",
+      "statusHint": "\"Active\" = travellers can find it; other statuses hide the place.",
+      "phone": "Phone number",
+      "website": "Website"
+    },
+    "errors": {
+      "checkFields": "Please check the highlighted fields.",
+      "name": "The place name needs at least 2 characters",
+      "group": "Please choose a service group",
+      "category": "Please choose a place type",
+      "province": "Please choose a province/city",
+      "address": "Please enter the address",
+      "latitude": "Please pick the location on the map (latitude between -90 and 90)",
+      "longitude": "Longitude must be between -180 and 180",
+      "phone": "Invalid phone number",
+      "website": "The website must start with http:// or https://",
+      "hours": "{{day}}: needs different opening and closing times (or untick \"Open\")"
+    },
+    "hours": {
+      "declare": "Set opening hours",
+      "edit": "Edit hours",
+      "save": "Save opening hours",
+      "saved": "Opening hours saved",
+      "open": "Open",
+      "closed": "Closed",
+      "openAt": "Opening time {{day}}",
+      "closeAt": "Closing time {{day}}",
+      "copyMonday": "Apply Monday's hours to the whole week"
+    },
+    "photos": {
+      "cover": "Main photo",
+      "isCover": "Main photo",
+      "setCover": "Set as main photo",
+      "remove": "Remove photo",
+      "pickFile": "Choose from computer",
+      "uploading": "Uploading…",
+      "urlPlaceholder": "Or paste an image link https://…",
+      "addUrl": "Add by URL",
+      "httpsOnly": "The image link must start with https://",
+      "duplicate": "This photo is already in the list",
+      "tooMany": "Only {{count}} more photos can be added (max 10).",
+      "badType": "Only jpg, png or webp images",
+      "tooLarge": "Images are limited to 5MB",
+      "hint": "{{count}}/{{max}} photos · jpg, png, webp · up to 5MB each"
+    },
+    "prices": {
+      "type": "Price type",
+      "amount": "Amount",
+      "note": "Note",
+      "notePlaceholder": "Note (e.g. Adult)",
+      "save": "Save",
+      "add": "Add price",
+      "edit": "Edit price",
+      "remove": "Remove price",
+      "empty": "No prices yet.",
+      "amountRequired": "Please enter the amount"
+    },
+    "priceTypes": {
+      "ROOM_NIGHT": "Room / night",
+      "TICKET": "Entrance ticket",
+      "AVG_MEAL": "Dish / meal",
+      "AVG_DRINK": "Drink",
+      "OTHER": "Other"
+    },
+    "map": {
+      "title": "Location on the map",
+      "searchPlaceholder": "Search an address, e.g. 12 Tran Phu, Hoi An",
+      "search": "Search",
+      "searching": "Searching…",
+      "myLocation": "My location",
+      "emptyQuery": "Enter an address or place name to search",
+      "notFound": "Nothing found. Try a shorter query or click on the map.",
+      "searchFailed": "Search is unavailable right now. You can click on the map.",
+      "noGeolocation": "This browser cannot read your location.",
+      "geolocationDenied": "Could not get your location. Allow location access or pick on the map.",
+      "hintWithPoint": "Drag the pin or click elsewhere on the map to adjust.",
+      "hintNoPoint": "Search an address and pick a result, or click the exact spot on the map."
+    }
+  },
+  "placeCategories": {
+    "title": "Place types",
+    "description": "Place types under the 4 service groups. Disabled types no longer appear when creating places; places already using them keep them.",
+    "loadError": "Could not load place types",
+    "add": "Add type",
+    "addShort": "Add",
+    "addTitle": "Add place type",
+    "editTitle": "Edit place type",
+    "edit": "Edit type",
+    "count": "{{count}} types",
+    "places": "{{count}} places",
+    "empty": "No types yet.",
+    "active": "Enabled",
+    "inactive": "Disabled",
+    "created": "Place type added",
+    "saved": "Place type saved",
+    "enabled": "Enabled \"{{name}}\"",
+    "disabled": "Disabled \"{{name}}\"",
+    "fields": {
+      "group": "Service group",
+      "code": "Type code",
+      "codeHint": "Lowercase letters, digits and underscores, e.g. hot_spring. Cannot change after creation.",
+      "codeFixed": "The type code cannot change after creation.",
+      "name": "Type name",
+      "namePlaceholder": "E.g. Hot spring",
+      "description": "Description"
+    },
+    "errors": {
+      "code": "Type code: 2–50 lowercase letters, digits or underscores",
+      "name": "The type name needs at least 2 characters"
+    }
   }
 }

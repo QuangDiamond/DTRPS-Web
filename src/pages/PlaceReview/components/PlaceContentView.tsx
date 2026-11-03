@@ -51,10 +51,13 @@ function Empty({ text }: { text: string }) {
 export default function PlaceContentView({
   place,
   aside,
+  editors,
 }: {
   place: PlaceContent;
   /** Khối thêm ở cột phải (doanh nghiệp, xét duyệt…) */
   aside?: ReactNode;
+  /** Thay phần ảnh / giờ / giá chỉ xem bằng khối chỉnh sửa (địa điểm do admin tạo) */
+  editors?: { photos: ReactNode; hours: ReactNode; prices: ReactNode };
 }) {
   const { t } = useTranslation();
   const closed = t('placeReview.detail.closed');
@@ -62,9 +65,13 @@ export default function PlaceContentView({
   return (
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
       <div className="flex flex-col gap-6 xl:col-span-7">
-        <Section icon="photo_library" title={t('placeReview.detail.photos')}>
-          <PlacePhotos images={place.images} />
-        </Section>
+        {editors ? (
+          editors.photos
+        ) : (
+          <Section icon="photo_library" title={t('placeReview.detail.photos')}>
+            <PlacePhotos images={place.images} />
+          </Section>
+        )}
 
         <Section icon="description" title={t('placeReview.detail.description')}>
           {place.description ? (
@@ -76,43 +83,50 @@ export default function PlaceContentView({
           )}
         </Section>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Section icon="schedule" title={t('placeReview.detail.hours')}>
-            {place.openingHours.length === 0 ? (
-              <Empty text={t('placeReview.detail.noHours')} />
-            ) : (
-              <dl>
-                {place.openingHours.map((hour) => (
-                  <Row
-                    key={hour.dayOfWeek}
-                    label={t(DAY_KEYS[hour.dayOfWeek])}
-                    value={
-                      <span className={hour.closed ? 'text-error' : undefined}>
-                        {hourText(hour, closed)}
-                      </span>
-                    }
-                  />
-                ))}
-              </dl>
-            )}
-          </Section>
+        {editors ? (
+          <>
+            {editors.hours}
+            {editors.prices}
+          </>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <Section icon="schedule" title={t('placeReview.detail.hours')}>
+              {place.openingHours.length === 0 ? (
+                <Empty text={t('placeReview.detail.noHours')} />
+              ) : (
+                <dl>
+                  {place.openingHours.map((hour) => (
+                    <Row
+                      key={hour.dayOfWeek}
+                      label={t(DAY_KEYS[hour.dayOfWeek])}
+                      value={
+                        <span className={hour.closed ? 'text-error' : undefined}>
+                          {hourText(hour, closed)}
+                        </span>
+                      }
+                    />
+                  ))}
+                </dl>
+              )}
+            </Section>
 
-          <Section icon="payments" title={t('placeReview.detail.prices')}>
-            {place.prices.length === 0 ? (
-              <Empty text={t('placeReview.detail.noPrices')} />
-            ) : (
-              <dl>
-                {place.prices.map((price, index) => (
-                  <Row
-                    key={`${price.priceType}-${index}`}
-                    label={price.description ?? priceTypeLabel(price.priceType)}
-                    value={formatAmount(price)}
-                  />
-                ))}
-              </dl>
-            )}
-          </Section>
-        </div>
+            <Section icon="payments" title={t('placeReview.detail.prices')}>
+              {place.prices.length === 0 ? (
+                <Empty text={t('placeReview.detail.noPrices')} />
+              ) : (
+                <dl>
+                  {place.prices.map((price, index) => (
+                    <Row
+                      key={`${price.priceType}-${index}`}
+                      label={price.description ?? priceTypeLabel(price.priceType)}
+                      value={formatAmount(price)}
+                    />
+                  ))}
+                </dl>
+              )}
+            </Section>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-6 xl:col-span-5">

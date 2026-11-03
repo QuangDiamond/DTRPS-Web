@@ -22,6 +22,8 @@ const ListingReviewPage = lazy(() => import('@/pages/PlaceReview/ListingReviewPa
 const RevisionReviewPage = lazy(() => import('@/pages/PlaceReview/RevisionReviewPage'));
 const PlaceCatalogPage = lazy(() => import('@/pages/PlaceCatalog/PlaceCatalogPage'));
 const PlaceCatalogDetailPage = lazy(() => import('@/pages/PlaceCatalog/PlaceCatalogDetailPage'));
+const PlaceEditorPage = lazy(() => import('@/pages/PlaceCatalog/PlaceEditorPage'));
+const PlaceCategoriesPage = lazy(() => import('@/pages/PlaceCategories/PlaceCategoriesPage'));
 const AdminReportsPage = lazy(() => import('@/pages/AdminMisc/AdminReportsPage'));
 const AdminNotificationsPage = lazy(() => import('@/pages/AdminMisc/AdminNotificationsPage'));
 const AdminSettingsPage = lazy(() => import('@/pages/AdminMisc/AdminSettingsPage'));
@@ -80,9 +82,10 @@ export const router = createBrowserRouter([
           { path: ROUTES.LISTING_REVIEW, element: <ListingReviewPage /> },
           { path: ROUTES.POIS, element: <PlaceCatalogPage /> },
           { path: ROUTES.POI_DETAIL, element: <PlaceCatalogDetailPage /> },
-          // Thêm / sửa POI nền tảng chưa có API → về kho địa điểm
-          { path: ROUTES.POI_NEW, element: <Navigate to={ROUTES.POIS} replace /> },
-          { path: ROUTES.POI_EDIT, element: <Navigate to={ROUTES.POIS} replace /> },
+          // Admin thêm / sửa địa điểm trực tiếp (không qua đối tác)
+          { path: ROUTES.POI_NEW, element: <PlaceEditorPage /> },
+          { path: ROUTES.POI_EDIT, element: <PlaceEditorPage /> },
+          { path: ROUTES.PLACE_CATEGORIES, element: <PlaceCategoriesPage /> },
           { path: ROUTES.REPORTS, element: <AdminReportsPage /> },
           { path: ROUTES.NOTIFICATIONS, element: <AdminNotificationsPage /> },
           { path: ROUTES.SETTINGS, element: <AdminSettingsPage /> },

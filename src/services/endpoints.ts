@@ -67,7 +67,25 @@ export const ENDPOINTS = {
     list: '/admin/places',
     stats: '/admin/places/stats',
     detail: (placeId: string) => `/admin/places/${id(placeId)}`,
+    create: '/admin/places',
+    status: (placeId: string) => `/admin/places/${id(placeId)}/status`,
+    hours: (placeId: string) => `/admin/places/${id(placeId)}/opening-hours`,
+    images: (placeId: string) => `/admin/places/${id(placeId)}/images`,
+    image: (placeId: string, imageId: string) =>
+      `/admin/places/${id(placeId)}/images/${id(imageId)}`,
+    primaryImage: (placeId: string, imageId: string) =>
+      `/admin/places/${id(placeId)}/images/${id(imageId)}/primary`,
+    prices: (placeId: string) => `/admin/places/${id(placeId)}/prices`,
+    price: (placeId: string, priceId: string) =>
+      `/admin/places/${id(placeId)}/prices/${id(priceId)}`,
   },
+  // Loại địa điểm (loại con dưới 4 nhóm dịch vụ)
+  placeCategories: {
+    list: '/admin/place-categories',
+    detail: (categoryId: string) => `/admin/place-categories/${id(categoryId)}`,
+    status: (categoryId: string) => `/admin/place-categories/${id(categoryId)}/status`,
+  },
+  uploads: { image: '/uploads/images' },
   reference: {
     provinces: '/reference/provinces',
     categories: '/reference/categories',

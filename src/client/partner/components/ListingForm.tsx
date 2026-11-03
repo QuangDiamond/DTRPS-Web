@@ -1,4 +1,5 @@
 import { type FormEvent, type ReactNode, useMemo, useState } from 'react';
+import { LocationPicker } from '@/components/common';
 import { businessListingApi } from '@/client/api/businessListingApi';
 import { ClientApiError, errorMessage } from '@/client/api/http';
 import type {
@@ -9,7 +10,6 @@ import type {
   OpeningHour,
   ReferenceItem,
 } from '@/client/api/types';
-import LocationPicker from '@/client/partner/components/LocationPicker';
 import OpeningHoursEditor from '@/client/partner/components/OpeningHoursEditor';
 import PhotoEditor from '@/client/partner/components/PhotoEditor';
 import PriceEditor, { type PriceRow } from '@/client/partner/components/PriceEditor';

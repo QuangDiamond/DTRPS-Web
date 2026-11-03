@@ -13,7 +13,7 @@ import {
 } from '@/components/common';
 import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
 import { PAGE_SIZE_OPTIONS } from '@/constants/partner';
-import { placeDetailPath } from '@/constants/routes';
+import { placeDetailPath, ROUTES } from '@/constants/routes';
 import { displayDate } from '@/pages/PlaceReview/placeReviewUtils';
 import { placeCatalogService } from '@/services/placeCatalogService';
 import type {
@@ -188,9 +188,14 @@ export default function PlaceCatalogPage() {
           title={t('placeCatalog.header.title')}
           description={t('placeCatalog.header.description')}
           actions={
-            <Button variant="neutral" icon="refresh" onClick={() => setRetry((n) => n + 1)}>
-              {t('placeCatalog.header.refresh')}
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="neutral" icon="refresh" onClick={() => setRetry((n) => n + 1)}>
+                {t('placeCatalog.header.refresh')}
+              </Button>
+              <Button icon="add_location_alt" onClick={() => navigate(ROUTES.POI_NEW)}>
+                {t('placeCatalog.header.add')}
+              </Button>
+            </div>
           }
         />
       </div>

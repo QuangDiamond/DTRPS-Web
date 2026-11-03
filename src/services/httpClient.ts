@@ -20,7 +20,7 @@ type QueryValue = string | number | boolean | null | undefined;
 
 export interface RequestOptions {
   method?: HttpMethod;
-  /** Dữ liệu gửi lên — tự chuyển sang JSON */
+  /** Dữ liệu gửi lên — tự chuyển sang JSON (FormData được gửi nguyên dạng multipart) */
   body?: unknown;
   query?: Record<string, QueryValue>;
   signal?: AbortSignal;
@@ -132,7 +132,8 @@ async function send(path: string, options: RequestOptions): Promise<Response> {
     Accept: 'application/json',
     'Accept-Language': i18n.resolvedLanguage ?? 'vi',
   };
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  const multipart = body instanceof FormData;
+  if (body !== undefined && !multipart) headers['Content-Type'] = 'application/json';
   const token = getAccessToken();
   if (token) headers.Authorization = `Bearer ${token}`;
 
@@ -140,7 +141,7 @@ async function send(path: string, options: RequestOptions): Promise<Response> {
     return await fetch(buildUrl(path, query), {
       method,
       headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : multipart ? body : JSON.stringify(body),
       signal: controller.signal,
     });
   } catch (error) {

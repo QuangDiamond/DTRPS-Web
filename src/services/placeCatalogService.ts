@@ -5,14 +5,14 @@
 import type {
   CatalogPlace,
   CatalogPlaceDetail,
+  CatalogPlaceInput,
   CatalogPlaceStatus,
+  CatalogPriceInput,
   CatalogQuery,
   CatalogStats,
   CategoryGroupRef,
-  PlaceImage,
   OpeningHour,
   Paged,
-  PlacePrice,
   PlaceSource,
   RefItem,
   ReviewListingStatus,
@@ -47,9 +47,24 @@ interface ApiDetail {
   longitude: number;
   phone: string | null;
   website: string | null;
+  editable: boolean;
   openingHours: OpeningHour[] | null;
-  prices: PlacePrice[] | null;
-  images: PlaceImage[] | null;
+  prices: ApiPrice[] | null;
+  images: ApiImage[] | null;
+}
+
+interface ApiImage {
+  id: number;
+  url: string;
+  primary: boolean;
+}
+
+interface ApiPrice {
+  id: number;
+  priceType: string;
+  amount: number;
+  currency: string;
+  description: string | null;
 }
 
 interface ApiPage<T> {
@@ -107,29 +122,116 @@ export const placeCatalogService = {
 
   stats: () => apiRequest<CatalogStats>(ENDPOINTS.places.stats),
 
-  get: async (placeId: string): Promise<CatalogPlaceDetail> => {
-    const detail = await apiRequest<ApiDetail>(ENDPOINTS.places.detail(placeId));
-    const place = toPlace(detail.summary);
-    return {
-      place,
-      content: {
-        name: place.name,
-        description: detail.description,
-        address: place.address ?? '',
-        latitude: detail.latitude,
-        longitude: detail.longitude,
-        group: place.group,
-        category: place.category,
-        province: place.province,
-        phone: detail.phone,
-        website: detail.website,
-        openingHours: detail.openingHours ?? [],
-        prices: detail.prices ?? [],
-        images: detail.images ?? [],
-      },
-    };
+  get: async (placeId: string): Promise<CatalogPlaceDetail> =>
+    toDetail(await apiRequest<ApiDetail>(ENDPOINTS.places.detail(placeId))),
+
+  // ===== Địa điểm do admin tạo (địa điểm đối tác: BE trả 409) =====
+
+  create: async (input: CatalogPlaceInput): Promise<CatalogPlaceDetail> =>
+    toDetail(await apiRequest<ApiDetail>(ENDPOINTS.places.create, { method: 'POST', body: input })),
+
+  /** Danh sách để trống (undefined) thì BE giữ nguyên */
+  update: async (placeId: string, input: CatalogPlaceInput): Promise<CatalogPlaceDetail> =>
+    toDetail(
+      await apiRequest<ApiDetail>(ENDPOINTS.places.detail(placeId), { method: 'PUT', body: input }),
+    ),
+
+  changeStatus: async (placeId: string, status: CatalogPlaceStatus) =>
+    toDetail(
+      await apiRequest<ApiDetail>(ENDPOINTS.places.status(placeId), {
+        method: 'PUT',
+        body: { status: status.toUpperCase() },
+      }),
+    ),
+
+  /** Gửi đủ 7 ngày */
+  replaceHours: async (placeId: string, days: OpeningHour[]) =>
+    toDetail(
+      await apiRequest<ApiDetail>(ENDPOINTS.places.hours(placeId), {
+        method: 'PUT',
+        body: { days },
+      }),
+    ),
+
+  addImage: async (placeId: string, url: string, primary = false) =>
+    toDetail(
+      await apiRequest<ApiDetail>(ENDPOINTS.places.images(placeId), {
+        method: 'POST',
+        body: { url, primary },
+      }),
+    ),
+
+  deleteImage: async (placeId: string, imageId: string) =>
+    toDetail(
+      await apiRequest<ApiDetail>(ENDPOINTS.places.image(placeId, imageId), { method: 'DELETE' }),
+    ),
+
+  setPrimaryImage: async (placeId: string, imageId: string) =>
+    toDetail(
+      await apiRequest<ApiDetail>(ENDPOINTS.places.primaryImage(placeId, imageId), {
+        method: 'PUT',
+      }),
+    ),
+
+  addPrice: async (placeId: string, price: CatalogPriceInput) =>
+    toDetail(
+      await apiRequest<ApiDetail>(ENDPOINTS.places.prices(placeId), {
+        method: 'POST',
+        body: price,
+      }),
+    ),
+
+  updatePrice: async (placeId: string, priceId: string, price: CatalogPriceInput) =>
+    toDetail(
+      await apiRequest<ApiDetail>(ENDPOINTS.places.price(placeId, priceId), {
+        method: 'PUT',
+        body: price,
+      }),
+    ),
+
+  deletePrice: async (placeId: string, priceId: string) =>
+    toDetail(
+      await apiRequest<ApiDetail>(ENDPOINTS.places.price(placeId, priceId), { method: 'DELETE' }),
+    ),
+
+  /** Tải ảnh trong máy lên Cloudinary qua BE, trả về URL https */
+  uploadImage: async (file: File): Promise<string> => {
+    const form = new FormData();
+    form.append('file', file);
+    const result = await apiRequest<{ url: string }>(ENDPOINTS.uploads.image, {
+      method: 'POST',
+      body: form,
+    });
+    return result.url;
   },
 
   provinces: () => apiRequest<RefItem[]>(ENDPOINTS.reference.provinces),
   categories: () => apiRequest<CategoryGroupRef[]>(ENDPOINTS.reference.categories),
 };
+
+function toDetail(detail: ApiDetail): CatalogPlaceDetail {
+  const place = toPlace(detail.summary);
+  const images = (detail.images ?? []).map((image) => ({ ...image, id: String(image.id) }));
+  const prices = (detail.prices ?? []).map((price) => ({ ...price, id: String(price.id) }));
+  return {
+    place,
+    editable: detail.editable,
+    images,
+    prices,
+    content: {
+      name: place.name,
+      description: detail.description,
+      address: place.address ?? '',
+      latitude: detail.latitude,
+      longitude: detail.longitude,
+      group: place.group,
+      category: place.category,
+      province: place.province,
+      phone: detail.phone,
+      website: detail.website,
+      openingHours: detail.openingHours ?? [],
+      prices,
+      images,
+    },
+  };
+}

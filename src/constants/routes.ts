@@ -20,6 +20,7 @@ export const ROUTES = {
   POI_NEW: '/admin/locations/new',
   POI_EDIT: '/admin/locations/:id/edit',
   POI_DETAIL: '/admin/locations/:id',
+  PLACE_CATEGORIES: '/admin/place-categories',
   REPORTS: '/admin/reports',
   NOTIFICATIONS: '/admin/notifications',
   SETTINGS: '/admin/settings',

@@ -46,6 +46,14 @@ const NAV_ITEMS: (NavItem & { id: string })[] = [
     icon: 'place',
   },
   {
+    id: 'placeCategories',
+    get label() {
+      return i18n.t('nav.constants.placeCategories');
+    },
+    path: ROUTES.PLACE_CATEGORIES,
+    icon: 'category',
+  },
+  {
     id: 'reports',
     get label() {
       return i18n.t('nav.constants.reportsAnalytics');

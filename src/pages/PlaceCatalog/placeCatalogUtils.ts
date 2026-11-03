@@ -32,3 +32,7 @@ export const SOURCE_STYLE: Record<PlaceSource, { labelKey: TranslationKey; icon:
 
 /** Mã hiển thị, ví dụ PL-0001 */
 export const placeCode = (id: string): string => `PL-${id.padStart(4, '0')}`;
+
+/** Ô chọn gọn dùng trong bảng thông tin (ví dụ đổi trạng thái) */
+export const INPUT_CLASS_SELECT =
+  'rounded-lg bg-surface-container-low px-2 py-1.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50';

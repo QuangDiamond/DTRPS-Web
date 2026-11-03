@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Icon } from '@/components/common';
+import Icon from './Icon';
 
 interface SearchResult {
   lat: number;
@@ -40,7 +40,40 @@ const PIN_ICON = L.divIcon({
 
 const round = (value: number) => Math.round(value * 1e6) / 1e6;
 
+/** Chữ hiển thị — mặc định tiếng Việt; trang admin truyền bản đã dịch */
+export interface LocationPickerLabels {
+  title: string;
+  searchPlaceholder: string;
+  search: string;
+  searching: string;
+  myLocation: string;
+  emptyQuery: string;
+  notFound: string;
+  searchFailed: string;
+  noGeolocation: string;
+  geolocationDenied: string;
+  hintWithPoint: string;
+  hintNoPoint: string;
+}
+
+const DEFAULT_LABELS: LocationPickerLabels = {
+  title: 'Vị trí trên bản đồ',
+  searchPlaceholder: 'Tìm địa chỉ, ví dụ: 12 Trần Phú, Hội An',
+  search: 'Tìm',
+  searching: 'Đang tìm…',
+  myLocation: 'Vị trí của tôi',
+  emptyQuery: 'Nhập địa chỉ hoặc tên địa điểm để tìm',
+  notFound:
+    'Không tìm thấy. Thử ghi ngắn hơn (tên đường, phường, tỉnh) hoặc bấm trực tiếp lên bản đồ.',
+  searchFailed: 'Không tìm được lúc này. Bạn có thể bấm trực tiếp lên bản đồ.',
+  noGeolocation: 'Trình duyệt không hỗ trợ lấy vị trí.',
+  geolocationDenied: 'Không lấy được vị trí. Hãy cho phép truy cập vị trí hoặc chọn trên bản đồ.',
+  hintWithPoint: 'Kéo ghim hoặc bấm chỗ khác trên bản đồ để chỉnh cho đúng vị trí.',
+  hintNoPoint: 'Tìm địa chỉ rồi chọn kết quả, hoặc phóng to và bấm đúng vị trí trên bản đồ.',
+};
+
 interface LocationPickerProps {
+  labels?: Partial<LocationPickerLabels>;
   latitude: number | null;
   longitude: number | null;
   /** Gợi ý ô tìm kiếm ban đầu (địa chỉ đã nhập) */
@@ -51,14 +84,16 @@ interface LocationPickerProps {
 /**
  * Chọn vị trí địa điểm: tìm theo địa chỉ (Photon), bấm lên bản đồ hoặc kéo ghim.
  * Nền bản đồ dùng CARTO vì một số mạng ở VN không phân giải được tile.openstreetmap.org.
- * Tọa độ được điền ngược lại vào form.
+ * Tọa độ được điền ngược lại vào form. Dùng chung cho form đối tác và form admin.
  */
 export default function LocationPicker({
   latitude,
   longitude,
   address,
   onChange,
+  labels,
 }: LocationPickerProps) {
+  const text = { ...DEFAULT_LABELS, ...labels };
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
@@ -122,27 +157,24 @@ export default function LocationPicker({
   }, [latitude, longitude]);
 
   const search = async () => {
-    const text = (query || address).trim();
-    if (!text) {
-      setMessage('Nhập địa chỉ hoặc tên địa điểm để tìm');
+    const wanted = (query || address).trim();
+    if (!wanted) {
+      setMessage(text.emptyQuery);
       return;
     }
-    setQuery(text);
+    setQuery(wanted);
     setSearching(true);
     setMessage('');
     try {
-      const params = new URLSearchParams({ q: text, limit: '5', bbox: VIETNAM_BBOX });
+      const params = new URLSearchParams({ q: wanted, limit: '5', bbox: VIETNAM_BBOX });
       const response = await fetch(`https://photon.komoot.io/api/?${params}`);
       if (!response.ok) throw new Error(String(response.status));
       const data = (await response.json()) as { features: PhotonFeature[] };
       const found = data.features.map(toResult);
       setResults(found);
-      if (found.length === 0)
-        setMessage(
-          'Không tìm thấy. Thử ghi ngắn hơn (tên đường, phường, tỉnh) hoặc bấm trực tiếp lên bản đồ.',
-        );
+      if (found.length === 0) setMessage(text.notFound);
     } catch {
-      setMessage('Không tìm được lúc này. Bạn có thể bấm trực tiếp lên bản đồ.');
+      setMessage(text.searchFailed);
     } finally {
       setSearching(false);
     }
@@ -158,7 +190,7 @@ export default function LocationPicker({
 
   const useMyLocation = () => {
     if (!navigator.geolocation) {
-      setMessage('Trình duyệt không hỗ trợ lấy vị trí.');
+      setMessage(text.noGeolocation);
       return;
     }
     setMessage('');
@@ -169,14 +201,13 @@ export default function LocationPicker({
         onChange(lat, lng);
         mapRef.current?.setView([lat, lng], 17);
       },
-      () =>
-        setMessage('Không lấy được vị trí. Hãy cho phép truy cập vị trí hoặc chọn trên bản đồ.'),
+      () => setMessage(text.geolocationDenied),
     );
   };
 
   return (
     <div className="mb-4">
-      <p className="mb-2 text-[13px] font-semibold text-client-ink">Vị trí trên bản đồ</p>
+      <p className="mb-2 text-[13px] font-semibold text-client-ink">{text.title}</p>
       <div className="flex flex-wrap gap-2">
         <input
           value={query}
@@ -187,7 +218,7 @@ export default function LocationPicker({
               void search();
             }
           }}
-          placeholder={address || 'Tìm địa chỉ, ví dụ: 12 Trần Phú, Hội An'}
+          placeholder={address || text.searchPlaceholder}
           className="h-11 min-w-0 flex-1 rounded-xl border border-[#EBEDF5] bg-client-field px-3 text-[13px] text-[#18333E] placeholder:text-[#98A4AF] focus:ring-2 focus:ring-primary/40 focus:outline-none"
         />
         <button
@@ -197,14 +228,14 @@ export default function LocationPicker({
           className="flex h-11 items-center gap-1 rounded-xl bg-primary px-4 text-[13px] font-bold text-white hover:bg-primary-container disabled:opacity-60"
         >
           <Icon name="search" className="text-[18px]" />
-          {searching ? 'Đang tìm…' : 'Tìm'}
+          {searching ? text.searching : text.search}
         </button>
         <button
           type="button"
           onClick={useMyLocation}
           className="flex h-11 items-center gap-1 rounded-xl bg-[#E3F3EF] px-3 text-[13px] font-bold text-primary hover:bg-client-pale"
         >
-          <Icon name="my_location" className="text-[18px]" /> Vị trí của tôi
+          <Icon name="my_location" className="text-[18px]" /> {text.myLocation}
         </button>
       </div>
 
@@ -231,9 +262,7 @@ export default function LocationPicker({
         className="relative z-0 mt-2 h-72 w-full overflow-hidden rounded-xl border border-client-line"
       />
       <p className="mt-1 text-[11px] text-[#71838D]">
-        {hasPoint
-          ? 'Kéo ghim hoặc bấm chỗ khác trên bản đồ để chỉnh cho đúng vị trí.'
-          : 'Tìm địa chỉ rồi chọn kết quả, hoặc phóng to và bấm đúng vị trí trên bản đồ.'}
+        {hasPoint ? text.hintWithPoint : text.hintNoPoint}
       </p>
     </div>
   );

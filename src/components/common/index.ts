@@ -7,6 +7,8 @@ export { default as ErrorState } from './ErrorState';
 export { default as FilterSelect } from './FilterSelect';
 export { default as Icon } from './Icon';
 export { default as LanguageSwitcher } from './LanguageSwitcher';
+export { default as LocationPicker } from './LocationPicker';
+export type { LocationPickerLabels } from './LocationPicker';
 export { default as Modal } from './Modal';
 export { default as NotFoundState } from './NotFoundState';
 export { default as PageHeader } from './PageHeader';

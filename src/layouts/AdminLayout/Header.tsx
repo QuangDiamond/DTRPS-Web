@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Icon, LanguageSwitcher } from '@/components/common';
 import { ROUTES } from '@/constants/routes';
-import { useAuth, useNotifications, useToast } from '@/hooks';
+import { useAuth, useToast } from '@/hooks';
 
 const ICON_BUTTON_CLASS =
   'flex h-10 w-10 items-center justify-center rounded-full bg-surface-container-lowest text-on-surface-variant shadow-[0_1px_4px_rgba(0,0,0,0.02)] transition-all hover:bg-surface-container hover:text-on-surface';
@@ -12,7 +12,8 @@ export default function Header() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { admin } = useAuth();
-  const { unreadCount } = useNotifications();
+  // Chưa có API thông báo
+  const unreadCount = 0;
   const [keyword, setKeyword] = useState('');
   const { t } = useTranslation();
 

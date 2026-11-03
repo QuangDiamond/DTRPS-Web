@@ -116,6 +116,18 @@
   --color-inverse-on-surface: #eef0ff;
   --color-outline: #6d7a77;
   --color-outline-variant: #bcc9c6;
+
+  /* Khu client (du khách + đối tác) — theo bảng màu app mobile */
+  --color-client-bg: #faf8ff;
+  --color-client-ink: #131b2e;
+  --color-client-muted: #64716f;
+  --color-client-teal: #008378;
+  --color-client-pale: #e0f5ef;
+  --color-client-soft: #f2f3ff;
+  --color-client-line: #e5ecea;
+  --color-client-field: #f6f7fc;
+  --color-client-gold: #d79b00;
+  --color-client-danger: #d83a48;
 }
 
 @layer base {

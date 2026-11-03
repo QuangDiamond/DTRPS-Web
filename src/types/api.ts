@@ -2,7 +2,6 @@
 import type { ActivityItem, CategoryShare, DashboardStats, GrowthPoint } from './dashboard';
 import type { Listing, ListingStats } from './listing';
 import type { AdminNotification, NotificationRules, NotificationStats } from './notification';
-import type { Partner, PartnerStats } from './partner';
 import type { Poi, PoiStats } from './poi';
 import type { AdminAccountDetails, AdminActivity, AdminSession, SecurityKey } from './profile';
 import type { SettingsMeta, SystemSettings } from './settings';
@@ -32,11 +31,6 @@ export interface ListingsSnapshot {
   activities: ActivityItem[];
   /** Số liệu toàn hệ thống tại thời điểm tải */
   stats: ListingStats;
-}
-
-export interface PartnersSnapshot {
-  partners: Partner[];
-  stats: PartnerStats;
 }
 
 export interface UsersSnapshot {

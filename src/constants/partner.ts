@@ -1,8 +1,7 @@
-import i18n from 'i18next';
 import type {
   TranslationKey,
   PartnerFilters,
-  PartnerSortOption,
+  PartnerPlaceStatus,
   PartnerStatus,
   PartnerType,
   ProvinceCode,
@@ -89,6 +88,12 @@ export const PARTNER_STATUS_CONFIG: Record<PartnerStatus, PartnerStatusConfig> =
       badgeClass: 'bg-error-container text-on-error-container',
       dotClass: 'bg-error',
     },
+    rejected: {
+      label: 'Bị từ chối',
+      filterLabel: 'Bị từ chối',
+      badgeClass: 'bg-surface-container-high text-on-surface-variant',
+      dotClass: 'bg-outline',
+    },
   },
   ['label', 'filterLabel'],
 );
@@ -116,22 +121,9 @@ export const PROVINCE_NAMES: Record<ProvinceCode, string> = localizeLabels('prov
   thanhhoa: 'Thanh Hóa',
 });
 
-export const PARTNER_SORT_LABELS: Record<PartnerSortOption, string> = {
-  get newest() {
-    return i18n.t('partners.constants.newestSignUps');
-  },
-  get listings() {
-    return i18n.t('partners.constants.mostListedPlaces');
-  },
-  get rating() {
-    return i18n.t('partners.constants.highestRated');
-  },
-};
-
 const PARTNER_TYPES = Object.keys(PARTNER_TYPE_CONFIG) as PartnerType[];
 const PARTNER_STATUSES = Object.keys(PARTNER_STATUS_CONFIG) as PartnerStatus[];
 const PROVINCES = Object.keys(PROVINCE_LABELS) as ProvinceCode[];
-const SORT_OPTIONS = Object.keys(PARTNER_SORT_LABELS) as PartnerSortOption[];
 
 export const PARTNER_TYPE_OPTIONS: SelectOption<PartnerType>[] = PARTNER_TYPES.map((type) =>
   linkedOption(type, () => PARTNER_TYPE_CONFIG[type].filterLabel),
@@ -141,11 +133,6 @@ export const PROVINCE_OPTIONS: SelectOption<ProvinceCode>[] = PROVINCES.map((pro
   linkedOption(province, () => PROVINCE_LABELS[province]),
 );
 
-export const PARTNER_TYPE_FILTER_OPTIONS: SelectOption<PartnerFilters['type']>[] = [
-  localizedOption('all', 'filters.allPartnerTypes', 'Tất cả loại hình'),
-  ...PARTNER_TYPE_OPTIONS,
-];
-
 export const PARTNER_STATUS_FILTER_OPTIONS: SelectOption<PartnerFilters['status']>[] = [
   localizedOption('all', 'filters.allStatuses', 'Tất cả trạng thái'),
   ...PARTNER_STATUSES.map((status) =>
@@ -153,27 +140,9 @@ export const PARTNER_STATUS_FILTER_OPTIONS: SelectOption<PartnerFilters['status'
   ),
 ];
 
-export const PROVINCE_FILTER_OPTIONS: SelectOption<PartnerFilters['province']>[] = [
-  {
-    value: 'all',
-    get label() {
-      return i18n.t('partners.constants.nationwide63Provinces');
-    },
-  },
-  ...PROVINCE_OPTIONS,
-];
-
-export const PARTNER_SORT_OPTIONS: SelectOption<PartnerSortOption>[] = SORT_OPTIONS.map((sort) => ({
-  value: sort,
-  label: PARTNER_SORT_LABELS[sort],
-}));
-
 export const DEFAULT_PARTNER_FILTERS: PartnerFilters = {
   keyword: '',
-  type: 'all',
   status: 'all',
-  province: 'all',
-  sort: 'newest',
 };
 
 export const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
@@ -192,3 +161,35 @@ export const PARTNER_LOCK_OTHER_REASON = 'partners.lockReasons.other';
 
 /** Lý do tạm ẩn gắn cho các địa điểm khi đối tác bị khóa (để mở lại đúng các địa điểm này) — mã dữ liệu, không dịch */
 export const PARTNER_LOCK_HIDDEN_REASON = 'Tài khoản đối tác bị tạm khóa';
+
+/** Trạng thái địa điểm của đối tác (cột "Địa điểm" ở danh sách, thẻ hồ sơ) */
+export const PARTNER_PLACE_STATUS_CONFIG: Record<
+  PartnerPlaceStatus,
+  { labelKey: TranslationKey; icon: string; className: string }
+> = {
+  none: {
+    labelKey: 'partners.place.none',
+    icon: 'add_location_alt',
+    className: 'bg-surface-container text-on-surface-variant',
+  },
+  pending: {
+    labelKey: 'partners.place.pending',
+    icon: 'pending',
+    className: 'bg-tertiary-fixed text-on-tertiary-fixed',
+  },
+  approved: {
+    labelKey: 'partners.place.approved',
+    icon: 'check_circle',
+    className: 'bg-secondary-container text-on-secondary-container',
+  },
+  hidden: {
+    labelKey: 'partners.place.hidden',
+    icon: 'visibility_off',
+    className: 'bg-surface-container-high text-on-surface',
+  },
+  rejected: {
+    labelKey: 'partners.place.rejected',
+    icon: 'cancel',
+    className: 'bg-error-container text-on-error-container',
+  },
+};

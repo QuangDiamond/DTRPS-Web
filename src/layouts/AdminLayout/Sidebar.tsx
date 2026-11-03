@@ -3,7 +3,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { ADMIN_NAV_ITEMS } from '@/constants/navigation';
 import { ROUTES } from '@/constants/routes';
-import { useAuth, useListings, useNotifications, useToast } from '@/hooks';
+import { useAuth, useListingReview, useToast } from '@/hooks';
 import type { BadgeTone, NavBadgeSource } from '@/types';
 
 const BADGE_TONE_CLASSES: Record<BadgeTone, string> = {
@@ -12,11 +12,12 @@ const BADGE_TONE_CLASSES: Record<BadgeTone, string> = {
 };
 
 export default function Sidebar() {
-  const { unreadCount } = useNotifications();
-  const { stats: listingStats } = useListings();
+  // Địa điểm mới + bản sửa đang chờ duyệt (dữ liệu thật)
+  const { stats: reviewStats } = useListingReview();
   const badgeCounts: Record<NavBadgeSource, number> = {
-    pendingListings: listingStats.pending,
-    unreadNotifications: unreadCount,
+    pendingListings: reviewStats.pending + reviewStats.pendingRevisions,
+    // Chưa có API thông báo
+    unreadNotifications: 0,
   };
   const isProfileActive = useLocation().pathname === ROUTES.PROFILE;
   const navigate = useNavigate();

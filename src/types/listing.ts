@@ -170,7 +170,6 @@ export interface ListingDetail {
     representative: string;
     hotline: string;
     yearsActive: string;
-    approvedCount: number;
     responseRate: string;
     verified: boolean;
   };

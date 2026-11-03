@@ -45,7 +45,6 @@ export const MOCK_LISTING_DETAILS: Record<string, ListingDetail> = {
       representative: 'Nguyễn Văn Hùng',
       hotline: '0905 123 456',
       yearsActive: '1 năm',
-      approvedCount: 2,
       responseRate: '98%',
       verified: true,
     },

@@ -98,8 +98,10 @@ function DashboardContent({ overview }: { overview: DashboardOverview }) {
   // ===== Duyệt nhanh (cần xác nhận) =====
   const confirmApprove = () => {
     if (!approving) return;
-    approveListings([approving.id]);
-    showToast(t('dashboard.toast.approved', { name: approving.name }));
+    const approved = approveListings([approving.id]);
+    if (approved > 0) showToast(t('dashboard.toast.approved', { name: approving.name }));
+    else
+      showToast(t('dashboard.toast.blockedOnePlaceRule', { name: approving.partnerName }), 'error');
     setApproving(null);
   };
 

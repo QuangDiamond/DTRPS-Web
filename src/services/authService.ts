@@ -1,22 +1,25 @@
 import i18n from 'i18next';
 /**
- * Service xác thực — chạy giả lập (mock) hoặc gọi API thật tùy cờ USE_MOCK_API.
+ * Service xác thực — gọi API thật khi phân hệ "auth" bật (mặc định), ngược lại chạy giả lập (mock).
  * Chữ ký hàm giữ nguyên ở cả hai chế độ nên AuthProvider và các màn đăng nhập không cần sửa.
  */
 import { MOCK_ADMIN_ACCOUNTS, MOCK_OTP_CODE } from '@/mocks/data/mockData';
 import type { AdminAccount, AdminProfile } from '@/types';
-import { USE_MOCK_API } from './config';
+import { isLiveModule } from './config';
 import { ENDPOINTS } from './endpoints';
 import { apiRequest } from './httpClient';
-import { clearAccessToken, setAccessToken } from './tokenStore';
+import { clearAccessToken, setTokens } from './tokenStore';
+
+/** Đăng nhập admin chạy giả lập (khi tắt API thật cho phân hệ auth) */
+const MOCK_AUTH = !isLiveModule('auth');
 
 const MOCK_LATENCY_MS = 1000;
 
 /** Tài khoản & mã OTP demo — chỉ hiển thị gợi ý khi đang chạy dữ liệu mẫu */
-export const DEMO_ACCOUNT: AdminAccount | undefined = USE_MOCK_API
+export const DEMO_ACCOUNT: AdminAccount | undefined = MOCK_AUTH
   ? MOCK_ADMIN_ACCOUNTS[0]
   : undefined;
-export const DEMO_OTP_CODE: string | undefined = USE_MOCK_API ? MOCK_OTP_CODE : undefined;
+export const DEMO_OTP_CODE: string | undefined = MOCK_AUTH ? MOCK_OTP_CODE : undefined;
 
 // Bản sao có thể sửa để "đổi mật khẩu" có hiệu lực trong phiên (tải lại trang sẽ reset)
 const accounts: AdminAccount[] = MOCK_ADMIN_ACCOUNTS.map((account) => ({ ...account }));
@@ -31,8 +34,10 @@ function findAccount(email: string): AdminAccount | undefined {
 }
 
 interface LoginResponse {
-  admin: AdminProfile;
+  /** Chỉ có với tài khoản mang vai trò ADMIN */
+  admin?: AdminProfile;
   accessToken: string;
+  refreshToken: string;
 }
 
 export async function login(
@@ -40,12 +45,23 @@ export async function login(
   password: string,
   remember = true,
 ): Promise<AdminProfile> {
-  if (!USE_MOCK_API) {
+  if (!MOCK_AUTH) {
     const result = await apiRequest<LoginResponse>(ENDPOINTS.auth.login, {
       method: 'POST',
       body: { email: email.trim().toLowerCase(), password },
+      // Sai mật khẩu cũng trả 401 — không phải "phiên hết hạn"
+      silentUnauthorized: true,
     });
-    setAccessToken(result.accessToken, remember);
+    if (!result.admin) {
+      // Tài khoản du khách / đối tác không được vào trang quản trị
+      apiRequest<void>(ENDPOINTS.auth.revoke, {
+        method: 'POST',
+        body: { refreshToken: result.refreshToken },
+        silentUnauthorized: true,
+      }).catch(() => undefined);
+      throw new Error(i18n.t('auth.errors.notAdministrator'));
+    }
+    setTokens(result.accessToken, result.refreshToken, remember);
     return result.admin;
   }
   await delay();
@@ -58,7 +74,7 @@ export async function login(
 
 /** Hủy phiên trên server (nếu có) và xóa token ở trình duyệt */
 export function logout(): void {
-  if (!USE_MOCK_API) {
+  if (!MOCK_AUTH) {
     apiRequest<void>(ENDPOINTS.auth.logout, { method: 'POST', silentUnauthorized: true }).catch(
       () => {
         // Token có thể đã hết hạn — vẫn xóa phía client
@@ -69,7 +85,7 @@ export function logout(): void {
 }
 
 export async function sendPasswordResetOtp(email: string): Promise<void> {
-  if (!USE_MOCK_API) {
+  if (!MOCK_AUTH) {
     await apiRequest<void>(ENDPOINTS.auth.sendResetOtp, { method: 'POST', body: { email } });
     return;
   }
@@ -80,7 +96,7 @@ export async function sendPasswordResetOtp(email: string): Promise<void> {
 }
 
 export async function verifyPasswordResetOtp(email: string, code: string): Promise<boolean> {
-  if (!USE_MOCK_API) {
+  if (!MOCK_AUTH) {
     const result = await apiRequest<{ valid: boolean }>(ENDPOINTS.auth.verifyResetOtp, {
       method: 'POST',
       body: { email, code },
@@ -92,7 +108,7 @@ export async function verifyPasswordResetOtp(email: string, code: string): Promi
 }
 
 export async function resetPassword(email: string, newPassword: string): Promise<void> {
-  if (!USE_MOCK_API) {
+  if (!MOCK_AUTH) {
     await apiRequest<void>(ENDPOINTS.auth.resetPassword, {
       method: 'POST',
       body: { email, newPassword },
@@ -113,7 +129,7 @@ export async function changePassword(
   currentPassword: string,
   newPassword: string,
 ): Promise<void> {
-  if (!USE_MOCK_API) {
+  if (!MOCK_AUTH) {
     await apiRequest<void>(ENDPOINTS.auth.changePassword, {
       method: 'POST',
       body: { currentPassword, newPassword },

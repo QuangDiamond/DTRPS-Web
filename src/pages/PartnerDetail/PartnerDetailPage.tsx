@@ -1,115 +1,228 @@
+import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import i18n from 'i18next';
-import { useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ErrorState, Icon, NotFoundState, PageLoader, SendMessageModal } from '@/components/common';
-import LockPartnerModal from '@/components/partners/LockPartnerModal';
+import { useParams } from 'react-router-dom';
+import {
+  Button,
+  ErrorState,
+  Icon,
+  NotFoundState,
+  PageHeader,
+  PageLoader,
+} from '@/components/common';
+import { usePartnerReview } from '@/components/partners/usePartnerReview';
+import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
 import { ROUTES } from '@/constants/routes';
-import { useListings, usePartnerActions, usePartners, useResource, useToast } from '@/hooks';
-import PartnerFormModal from '@/pages/Partners/components/PartnerFormModal';
+import { usePartners } from '@/hooks';
+import PartnerStatusBadge from '@/pages/Partners/components/PartnerStatusBadge';
+import { toDisplayDate } from '@/pages/Partners/partnerUtils';
+import { ApiError } from '@/services/httpClient';
 import { partnerService } from '@/services/partnerService';
-import type {
-  MessageChannel,
-  MessageTemplate,
-  Partner,
-  PartnerAuditEntry,
-  PartnerFormValues,
-  PartnerProfile,
-} from '@/types';
-import { formatDate } from '@/utils/format';
-import AuditLogTab from './components/AuditLogTab';
-import LegalTab from './components/LegalTab';
-import PartnerPlaceTab from './components/PartnerPlaceTab';
-import PartnerProfileCard from './components/PartnerProfileCard';
-import RatingsTab from './components/RatingsTab';
-import ScheduleReviewModal from './components/ScheduleReviewModal';
-import { applyProfileOverrides, mergeAuditLog } from './partnerProfileUtils';
+import type { Partner } from '@/types';
+import { getErrorMessage } from '@/utils/error';
 
-const PARTNER_MESSAGE_CHANNELS: MessageChannel[] = [
-  { id: 'email', label: 'Email', icon: 'mail' },
-  {
-    id: 'app',
-    get label() {
-      return i18n.t('partnerDetail.page.partnerApp');
-    },
-    icon: 'notifications',
-  },
-  { id: 'sms', label: 'SMS', icon: 'sms' },
-];
+function Section({ icon, title, children }: { icon: string; title: string; children: ReactNode }) {
+  return (
+    <section className="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
+      <h2 className="mb-3 flex items-center gap-2 font-headline-sm text-headline-sm text-on-surface">
+        <Icon name={icon} className="text-[22px] text-primary" />
+        {title}
+      </h2>
+      <dl>{children}</dl>
+    </section>
+  );
+}
 
-const PARTNER_MESSAGE_TEMPLATES: MessageTemplate[] = [
-  {
-    get title() {
-      return i18n.t('partnerDetail.page.licenseRenewalReminder');
-    },
-    get body() {
-      return i18n.t('partnerDetail.page.yourBusinessFireSafety');
-    },
-  },
-  {
-    get title() {
-      return i18n.t('partnerDetail.page.periodicReAssessmentSchedule');
-    },
-    get body() {
-      return i18n.t('partnerDetail.page.smartTravelWillCarry');
-    },
-  },
-  {
-    get title() {
-      return i18n.t('partnerDetail.page.partnershipPolicyUpdate');
-    },
-    get body() {
-      return i18n.t('partnerDetail.page.thePartnershipCommissionPolicy');
-    },
-  },
-];
+function Row({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <div className="flex justify-between gap-4 border-t border-surface-container py-3 first:border-t-0">
+      <dt className="font-body-md text-body-md text-on-surface-variant">{label}</dt>
+      <dd className="text-right font-body-md text-body-md font-semibold break-all text-on-surface">
+        {value}
+      </dd>
+    </div>
+  );
+}
 
-type DetailTab = 'legal' | 'place' | 'ratings' | 'audit';
-type ModalName = 'lock' | 'notify' | 'edit' | 'schedule' | null;
+const profileCode = (partner: Partner) => `BO-${partner.id.padStart(4, '0')}`;
 
-const TABS: { id: DetailTab; label: string; icon: string }[] = [
-  {
-    id: 'legal',
-    get label() {
-      return i18n.t('partnerDetail.page.businessLegalInformation');
-    },
-    icon: 'corporate_fare',
-  },
-  {
-    id: 'place',
-    get label() {
-      return i18n.t('partnerDetail.page.registeredPlace');
-    },
-    icon: 'location_on',
-  },
-  {
-    id: 'ratings',
-    get label() {
-      return i18n.t('partnerDetail.page.partnerReviewsRanking');
-    },
-    icon: 'military_tech',
-  },
-  {
-    id: 'audit',
-    get label() {
-      return i18n.t('partnerDetail.page.auditLog');
-    },
-    icon: 'history',
-  },
-];
-
-const HEADER_BUTTON_CLASS =
-  'flex items-center gap-2 rounded-full px-4 py-2 font-label-md text-label-md shadow-sm transition-all';
-
-/** Màn Chi tiết đối tác: /admin/partners/:id */
-export default function PartnerDetailPage() {
-  // Theo dõi ngôn ngữ để nhãn trạng thái/danh mục trong trang đổi ngay khi chuyển VI / EN
+function PartnerDetailContent({
+  partner,
+  onChanged,
+}: {
+  partner: Partner;
+  onChanged: (p: Partner) => void;
+}) {
   const { t } = useTranslation();
-  const { id } = useParams();
-  const { partners } = usePartners();
-  const partner = partners.find((item) => item.id === id);
+  const review = usePartnerReview(onChanged);
 
-  if (!partner) {
+  const actions = (
+    <>
+      {partner.status === 'pending' && (
+        <>
+          <Button variant="danger" icon="block" onClick={() => review.reject(partner)}>
+            {t('partnerAdmin.actions.reject')}
+          </Button>
+          <Button icon="verified" onClick={() => review.approve(partner)}>
+            {t('partnerAdmin.actions.approve')}
+          </Button>
+        </>
+      )}
+      {partner.status === 'active' && (
+        <Button variant="danger" icon="lock" onClick={() => review.lock(partner)}>
+          {t('partnerAdmin.actions.lock')}
+        </Button>
+      )}
+      {partner.status === 'suspended' && (
+        <Button icon="lock_open" onClick={() => review.unlock(partner)}>
+          {t('partnerAdmin.actions.unlock')}
+        </Button>
+      )}
+    </>
+  );
+
+  const notice =
+    partner.status === 'pending'
+      ? {
+          tone: 'bg-tertiary-fixed/60 text-on-tertiary-fixed',
+          icon: 'pending_actions',
+          text: t('partnerAdmin.detail.pendingNotice'),
+        }
+      : partner.status === 'rejected'
+        ? {
+            tone: 'bg-surface-container-high text-on-surface',
+            icon: 'undo',
+            text: t('partnerAdmin.detail.rejectedNotice'),
+          }
+        : partner.status === 'suspended'
+          ? {
+              tone: 'bg-error-container text-on-error-container',
+              icon: 'lock',
+              text: t('partnerAdmin.detail.suspendedNotice'),
+            }
+          : null;
+
+  const reasonLabel =
+    partner.status === 'rejected'
+      ? t('partnerAdmin.detail.rejectReason')
+      : partner.status === 'suspended'
+        ? t('partnerAdmin.detail.lockReason')
+        : null;
+
+  return (
+    <div className="flex flex-col gap-6 pb-12">
+      <div className="border-b border-surface-container-high/60 pb-6">
+        <PageHeader
+          breadcrumbs={[
+            ADMIN_ROOT_CRUMB,
+            { label: t('nav.partners'), icon: 'business_center', to: ROUTES.PARTNERS },
+            { label: partner.name },
+          ]}
+          title={partner.name}
+          titleBadge={<PartnerStatusBadge status={partner.status} />}
+          description={`${t('partnerAdmin.detail.profileCode')}: ${profileCode(partner)}`}
+          actions={actions}
+        />
+      </div>
+
+      {notice && (
+        <div className={`flex items-start gap-3 rounded-2xl p-4 ${notice.tone}`}>
+          <Icon name={notice.icon} className="text-[22px]" />
+          <p className="font-body-md text-body-md">{notice.text}</p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <Section icon="corporate_fare" title={t('partnerAdmin.detail.businessInfo')}>
+          <Row label={t('partnerAdmin.detail.businessName')} value={partner.name} />
+          <Row label={t('partnerAdmin.detail.taxCode')} value={partner.taxCode || '—'} />
+          <Row label={t('partnerAdmin.detail.contactEmail')} value={partner.email || '—'} />
+          <Row label={t('partnerAdmin.detail.contactPhone')} value={partner.phone || '—'} />
+        </Section>
+
+        <div className="flex flex-col gap-6">
+          <Section icon="person" title={t('partnerAdmin.detail.ownerAccount')}>
+            <Row label={t('partnerAdmin.detail.ownerName')} value={partner.ownerName} />
+            <Row label={t('partnerAdmin.detail.ownerEmail')} value={partner.ownerEmail} />
+          </Section>
+
+          <Section icon="fact_check" title={t('partnerAdmin.detail.review')}>
+            <Row
+              label={t('partnerAdmin.table.status')}
+              value={<PartnerStatusBadge status={partner.status} />}
+            />
+            <Row
+              label={t('partnerAdmin.detail.submittedAt')}
+              value={toDisplayDate(partner.joinedAt)}
+            />
+            <Row
+              label={t('partnerAdmin.detail.approvedAt')}
+              value={
+                partner.approvedAt
+                  ? toDisplayDate(partner.approvedAt)
+                  : t('partnerAdmin.detail.notApproved')
+              }
+            />
+            <Row
+              label={t('partnerAdmin.detail.updatedAt')}
+              value={toDisplayDate(partner.updatedAt)}
+            />
+            {reasonLabel && (
+              <Row
+                label={reasonLabel}
+                value={partner.statusNote ?? t('partnerAdmin.detail.noReason')}
+              />
+            )}
+          </Section>
+        </div>
+      </div>
+
+      <section className="flex items-center gap-4 rounded-2xl border border-dashed border-outline-variant bg-surface-container-lowest p-5">
+        <Icon name="location_on" className="text-[28px] text-outline" />
+        <div>
+          <p className="font-title-md text-title-md text-on-surface">
+            {t('partnerAdmin.detail.placeTitle')}
+          </p>
+          <p className="font-body-sm text-body-sm text-on-surface-variant">
+            {t('partnerAdmin.detail.placeSoon')}
+          </p>
+        </div>
+      </section>
+
+      {review.dialogs}
+    </div>
+  );
+}
+
+/** Chi tiết đối tác: /admin/partners/:id — dữ liệu thật từ /api/admin/business-profiles/{id} */
+export default function PartnerDetailPage() {
+  const { t } = useTranslation();
+  const { id = '' } = useParams();
+  const { version } = usePartners();
+  const [partner, setPartner] = useState<Partner | null>(null);
+  const [error, setError] = useState<{ message: string; notFound: boolean } | null>(null);
+  const [retry, setRetry] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    partnerService
+      .get(id)
+      .then((next) => {
+        if (!active) return;
+        setPartner(next);
+        setError(null);
+      })
+      .catch((loadError: unknown) => {
+        if (!active) return;
+        const notFound =
+          loadError instanceof ApiError && (loadError.status === 404 || loadError.status === 400);
+        setError({ message: getErrorMessage(loadError), notFound });
+      });
+    return () => {
+      active = false;
+    };
+  }, [id, version, retry]);
+
+  if (error?.notFound) {
     return (
       <NotFoundState
         title={t('partnerDetail.page.partnerNotFound', { id })}
@@ -118,367 +231,15 @@ export default function PartnerDetailPage() {
       />
     );
   }
-
-  return <PartnerDetailLoader key={partner.id} partner={partner} />;
-}
-
-/** Tải hồ sơ pháp lý & lịch sử kiểm toán của đối tác qua partnerService */
-function PartnerDetailLoader({ partner }: { partner: Partner }) {
-  const { t } = useTranslation();
-  const profile = useResource(
-    () => partnerService.getProfile(partner),
-    () => partnerService.peekProfile(partner),
-  );
-  const history = useResource(
-    () => partnerService.getAuditHistory(partner),
-    () => partnerService.peekAuditHistory(partner),
-  );
-
-  if (profile.status === 'error' || history.status === 'error') {
+  if (error && !partner) {
     return (
       <ErrorState
         title={t('partnerDetail.page.couldNotLoadPartner')}
-        message={profile.error ?? history.error}
-        onRetry={() => {
-          if (profile.status === 'error') profile.reload();
-          if (history.status === 'error') history.reload();
-        }}
+        message={error.message}
+        onRetry={() => setRetry((n) => n + 1)}
       />
     );
   }
-  if (!profile.data || !history.data) return <PageLoader />;
-  return (
-    <PartnerDetailContent
-      partner={partner}
-      loadedProfile={profile.data}
-      auditHistory={history.data}
-    />
-  );
-}
-
-interface PartnerDetailContentProps {
-  partner: Partner;
-  loadedProfile: PartnerProfile;
-  auditHistory: PartnerAuditEntry[];
-}
-
-function PartnerDetailContent({ partner, loadedProfile, auditHistory }: PartnerDetailContentProps) {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { showToast } = useToast();
-  const { updatePartner, profileOverrides, updateProfile, auditLogs, logAudit } = usePartners();
-  const { listings } = useListings();
-  const { lockPartner, unlockPartner, approvePartner, rejectPartner, countVisibleListings } =
-    usePartnerActions();
-
-  const [tab, setTab] = useState<DetailTab>('legal');
-  const [modal, setModal] = useState<ModalName>(null);
-
-  // Chế độ mock: dựng lại hồ sơ theo trạng thái đối tác mới nhất (duyệt/khóa đổi nhãn ngay)
-  const baseProfile = partnerService.peekProfile(partner) ?? loadedProfile;
-  const profile = applyProfileOverrides(baseProfile, profileOverrides[partner.id]);
-  const auditEntries = useMemo(
-    () => mergeAuditLog(auditHistory, auditLogs[partner.id]),
-    [auditHistory, auditLogs, partner.id],
-  );
-  const sessionCode = `SEC-${partner.id}-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}`;
-  const closeModal = () => setModal(null);
-
-  // ===== Trạng thái tài khoản =====
-  const confirmLock = (reason: string, note: string) => {
-    const hidden = lockPartner(partner, reason, note || undefined);
-    showToast(
-      hidden
-        ? t('partnerDetail.page.lockedAccountHidPlaces', { name: partner.name, count: hidden })
-        : t('partnerDetail.page.lockedAccount', { name: partner.name }),
-      'error',
-    );
-    closeModal();
-  };
-
-  const handleUnlock = () => {
-    const shown = unlockPartner(partner);
-    showToast(
-      shown
-        ? t('partnerDetail.page.unlockedRestoredPlaces', { name: partner.name, count: shown })
-        : t('partnerDetail.page.unlocked', { name: partner.name }),
-    );
-  };
-
-  // ===== Thao tác khác =====
-  const handleEdit = (values: PartnerFormValues) => {
-    updatePartner(partner.id, values);
-    showToast(t('partnerDetail.page.updatedDetails', { name: values.name }));
-    closeModal();
-  };
-
-  const handleSendNotification = (title: string, channels: string[]) => {
-    logAudit(
-      partner.id,
-      'forward_to_inbox',
-      t('partnerDetail.page.sentNotificationVia', { title, join: channels.join(', ') }),
-    );
-    showToast(t('partnerDetail.page.notificationSent', { title, name: partner.name }));
-    closeModal();
-  };
-
-  const handleSchedule = (isoDate: string) => {
-    updateProfile(partner.id, { nextReviewDate: isoDate });
-    logAudit(
-      partner.id,
-      'event_available',
-      t('partnerDetail.page.scheduledReAssessment', { isoDate: formatDate(isoDate) }),
-    );
-    showToast(t('partnerDetail.page.reAssessmentScheduled', { isoDate: formatDate(isoDate) }));
-    closeModal();
-  };
-
-  const handleResendActivation = () => {
-    logAudit(
-      partner.id,
-      'key',
-      t('partnerDetail.page.resentActivationCode', { otpPhone: profile.contact.otpPhone }),
-    );
-    showToast(t('partnerDetail.page.activationCodeSent', { otpPhone: profile.contact.otpPhone }));
-  };
-
-  return (
-    <div className="flex flex-col gap-6 pb-12">
-      {/* Breadcrumb & thao tác nhanh */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <nav className="flex flex-wrap items-center gap-2 font-label-md text-label-md text-on-surface-variant">
-            <Link
-              to={ROUTES.DASHBOARD}
-              className="flex items-center gap-1 transition-colors hover:text-primary"
-            >
-              <Icon name="home" className="text-[18px]" />
-              <span>{t('partnerDetail.page.systemAdministration')}</span>
-            </Link>
-            <span className="text-outline-variant">/</span>
-            <Link
-              to={ROUTES.PARTNERS}
-              className="flex items-center gap-1 transition-colors hover:text-primary"
-            >
-              <Icon name="business_center" className="text-[18px]" />
-              <span>{t('partnerDetail.page.partnerManagement')}</span>
-            </Link>
-            <span className="text-outline-variant">/</span>
-            <span className="font-semibold text-primary">
-              {t('partnerDetail.page.partnerDetails', { name: partner.name })}
-            </span>
-            <span className="rounded-full bg-surface-container-high px-2 py-0.5 font-label-sm text-label-sm font-semibold tracking-wide text-primary">
-              {t('partnerDetail.page.code', { id: partner.id })}
-            </span>
-          </nav>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => navigate(ROUTES.PARTNERS)}
-              className="inline-flex items-center gap-1.5 rounded-full bg-surface-container px-3 py-1.5 font-label-md text-label-md text-on-surface-variant shadow-sm transition-all hover:bg-surface-container-high"
-            >
-              <Icon name="arrow_back" className="text-[18px]" />
-              <span>{t('partnerDetail.page.backList')}</span>
-            </button>
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-primary-container" />
-              <span className="font-label-sm text-label-sm tracking-wider text-outline uppercase">
-                {t('partnerDetail.page.aiCloudProfileSync')}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          {partner.status === 'active' && (
-            <button
-              type="button"
-              onClick={() => setModal('lock')}
-              className={`group bg-surface-container-lowest text-error hover:bg-error-container/30 ${HEADER_BUTTON_CLASS}`}
-            >
-              <Icon
-                name="lock"
-                className="text-[18px] transition-transform group-hover:scale-110"
-              />
-              <span>{t('partnerDetail.page.lockAccount')}</span>
-            </button>
-          )}
-          {partner.status === 'suspended' && (
-            <button
-              type="button"
-              onClick={handleUnlock}
-              className={`bg-surface-container-lowest text-primary hover:bg-primary/10 ${HEADER_BUTTON_CLASS}`}
-            >
-              <Icon name="lock_open" className="text-[18px]" />
-              <span>{t('partnerDetail.page.unlockAccount')}</span>
-            </button>
-          )}
-          {partner.status === 'pending' && (
-            <button
-              type="button"
-              onClick={() => {
-                rejectPartner(partner);
-                showToast(t('partnerDetail.page.rejectedProfile', { name: partner.name }), 'error');
-              }}
-              className={`bg-surface-container-lowest text-error hover:bg-error-container/30 ${HEADER_BUTTON_CLASS}`}
-            >
-              <Icon name="block" className="text-[18px]" />
-              <span>{t('partnerDetail.page.rejectProfile')}</span>
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={() => setModal('notify')}
-            className={`bg-surface-container-lowest text-on-surface hover:bg-surface-container ${HEADER_BUTTON_CLASS}`}
-          >
-            <Icon name="forward_to_inbox" className="text-[18px] text-primary" />
-            <span>{t('partnerDetail.page.sendNotification')}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setModal('edit')}
-            className={`px-5 shadow-md ${
-              partner.status === 'pending'
-                ? 'bg-surface-container-lowest text-on-surface hover:bg-surface-container'
-                : 'bg-primary text-on-primary hover:bg-primary-container'
-            } ${HEADER_BUTTON_CLASS}`}
-          >
-            <Icon name="edit_square" className="text-[18px]" />
-            <span>{t('partnerDetail.page.editDetails')}</span>
-          </button>
-          {partner.status === 'pending' && (
-            <button
-              type="button"
-              onClick={() => {
-                approvePartner(partner);
-                showToast(t('partnerDetail.page.approvedProfile', { name: partner.name }));
-              }}
-              className={`bg-primary px-5 text-on-primary shadow-md hover:bg-primary-container ${HEADER_BUTTON_CLASS}`}
-            >
-              <Icon name="verified" className="text-[18px]" />
-              <span>{t('partnerDetail.page.approvePartner')}</span>
-            </button>
-          )}
-        </div>
-      </div>
-
-      <PartnerProfileCard partner={partner} profile={profile} />
-
-      {/* Tabs */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 overflow-x-auto rounded-xl bg-surface-container p-1">
-          {TABS.map((item) => {
-            const active = item.id === tab;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setTab(item.id)}
-                className={`flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 font-label-md text-label-md whitespace-nowrap transition-all ${
-                  active
-                    ? 'bg-surface-container-lowest font-semibold text-primary shadow-sm'
-                    : 'font-medium text-on-surface-variant hover:text-on-surface'
-                }`}
-              >
-                <Icon name={item.icon} className="text-[18px]" />
-                <span>{item.label}</span>
-                {item.id === 'audit' && (
-                  <span className="rounded-full bg-surface-container-high px-1.5 font-label-sm text-label-sm">
-                    {auditEntries.length}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-        <div className="hidden shrink-0 items-center gap-2 xl:flex">
-          <span className="font-label-sm text-label-sm text-outline">
-            {t('partnerDetail.page.verificationDocuments')}
-          </span>
-          <span className="flex items-center gap-1 rounded-full bg-secondary-container px-2.5 py-1 font-label-sm text-label-sm font-semibold text-on-secondary-container">
-            <Icon name="verified" className="text-[14px]" />
-            {profile.verificationLevel}
-          </span>
-        </div>
-      </div>
-
-      {tab === 'legal' && (
-        <LegalTab
-          partner={partner}
-          profile={profile}
-          onViewLicense={() =>
-            showToast(
-              t('partnerDetail.page.aPreviewWillAvailable', {
-                name: profile.legal.licenseFile.name,
-              }),
-              'info',
-            )
-          }
-          onGrantPermissions={() =>
-            showToast(t('partnerDetail.page.fineGrainedPermissionsPartner'), 'info')
-          }
-          onResendActivation={handleResendActivation}
-          onScheduleReview={() => setModal('schedule')}
-        />
-      )}
-      {tab === 'place' && (
-        <PartnerPlaceTab
-          listings={listings.filter((listing) => listing.partnerId === partner.id)}
-        />
-      )}
-      {tab === 'ratings' && <RatingsTab profile={profile} />}
-      {tab === 'audit' && <AuditLogTab entries={auditEntries} />}
-
-      {/* Ghi chú bảo mật */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-surface-container-lowest p-4 px-6 font-body-sm text-body-sm text-on-surface-variant shadow-sm">
-        <div className="flex items-center gap-2">
-          <Icon name="verified_user" className="text-[18px] text-primary" />
-          <span>{t('partnerDetail.page.accountInterventionPolicyEvery')}</span>
-        </div>
-        <div className="flex items-center gap-3 font-label-sm text-label-sm">
-          <span className="text-outline">
-            {t('partnerDetail.page.inspectionSessionId', { sessionCode })}
-          </span>
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="flex items-center gap-1 font-semibold text-primary hover:underline"
-          >
-            <Icon name="print" className="text-[16px]" />
-            {t('partnerDetail.page.printProfileExtract')}
-          </button>
-        </div>
-      </div>
-
-      {modal === 'lock' && (
-        <LockPartnerModal
-          partner={partner}
-          affectedListings={countVisibleListings(partner)}
-          onConfirm={confirmLock}
-          onClose={closeModal}
-        />
-      )}
-      {modal === 'notify' && (
-        <SendMessageModal
-          title={t('partnerDetail.page.sendNotificationPartner')}
-          recipient={`${partner.name} • ${partner.email}`}
-          templates={PARTNER_MESSAGE_TEMPLATES}
-          channels={PARTNER_MESSAGE_CHANNELS}
-          defaultChannelIds={['email', 'app']}
-          onSend={handleSendNotification}
-          onClose={closeModal}
-        />
-      )}
-      {modal === 'edit' && (
-        <PartnerFormModal partner={partner} onSubmit={handleEdit} onClose={closeModal} />
-      )}
-      {modal === 'schedule' && (
-        <ScheduleReviewModal
-          currentDate={profile.nextReviewDate}
-          onConfirm={handleSchedule}
-          onClose={closeModal}
-        />
-      )}
-    </div>
-  );
+  if (!partner || partner.id !== id) return <PageLoader />;
+  return <PartnerDetailContent partner={partner} onChanged={setPartner} />;
 }

@@ -50,17 +50,17 @@ export default function NotificationsPage() {
   const [broadcastOpen, setBroadcastOpen] = useState(false);
   const [broadcasting, setBroadcasting] = useState(false);
   const { users } = useUsers();
-  const { partners } = usePartners();
+  const { stats: partnerStats } = usePartners();
 
   const audienceCounts = useMemo<Record<BroadcastAudience, number>>(() => {
     const activeUsers = users.filter((user) => user.status === 'active');
     return {
       allUsers: activeUsers.length,
       vipUsers: activeUsers.filter((user) => user.accountType === 'vip').length,
-      partners: partners.filter((partner) => partner.status === 'active').length,
+      partners: partnerStats.active,
       admins: BROADCAST_ADMIN_COUNT,
     };
-  }, [users, partners]);
+  }, [users, partnerStats.active]);
 
   const filtered = useMemo(
     () => filterNotifications(notifications, tab, priority, search),

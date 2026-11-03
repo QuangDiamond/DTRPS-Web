@@ -1,77 +1,48 @@
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type MouseEvent, type ReactNode, useEffect, useState } from 'react';
 import { Icon } from '@/components/common';
 import type { Partner, TranslationKey } from '@/types';
-import PartnerRow from './PartnerRow';
+import { toDisplayDate } from '@/pages/Partners/partnerUtils';
+import PartnerStatusBadge from './PartnerStatusBadge';
 
 interface PartnerTableProps {
   partners: Partner[];
-  /** Thanh phân trang hiển thị dưới bảng */
-  footer: ReactNode;
-  onViewDetail: (partner: Partner) => void;
-  onEdit: (partner: Partner) => void;
+  loading: boolean;
+  onView: (partner: Partner) => void;
+  onApprove: (partner: Partner) => void;
+  onReject: (partner: Partner) => void;
   onLock: (partner: Partner) => void;
   onUnlock: (partner: Partner) => void;
-  onViewListings: (partner: Partner) => void;
-}
-
-interface MenuState {
-  partner: Partner;
-  top: number;
-  right: number;
+  footer?: ReactNode;
 }
 
 const COLUMNS: { labelKey: TranslationKey; className: string }[] = [
-  { labelKey: 'table.partners.partner', className: 'px-6' },
-  { labelKey: 'table.partners.type', className: 'px-5' },
-  { labelKey: 'table.partners.contact', className: 'px-5' },
-  { labelKey: 'table.partners.listings', className: 'px-5 text-center' },
-  { labelKey: 'table.partners.joinedAt', className: 'px-5' },
-  { labelKey: 'table.partners.status', className: 'px-5 text-center' },
-  { labelKey: 'table.partners.actions', className: 'px-6 text-right' },
+  { labelKey: 'partnerAdmin.table.business', className: 'px-6' },
+  { labelKey: 'partnerAdmin.table.taxCode', className: 'px-4' },
+  { labelKey: 'partnerAdmin.table.contact', className: 'px-4' },
+  { labelKey: 'partnerAdmin.table.submitted', className: 'px-4' },
+  { labelKey: 'partnerAdmin.table.status', className: 'px-4' },
+  { labelKey: 'partnerAdmin.table.actions', className: 'px-6 text-right' },
 ];
 
-const MENU_ITEM_CLASS =
-  'flex w-full items-center gap-2 px-4 py-2 text-left font-label-md text-label-md transition-colors';
+const ACTION_CLASS =
+  'inline-flex h-8 items-center gap-1 rounded-full px-3 font-label-sm text-label-sm font-semibold transition-colors';
 
 export default function PartnerTable({
   partners,
-  footer,
-  onViewDetail,
-  onEdit,
+  loading,
+  onView,
+  onApprove,
+  onReject,
   onLock,
   onUnlock,
-  onViewListings,
+  footer,
 }: PartnerTableProps) {
   const { t } = useTranslation();
-  const [menu, setMenu] = useState<MenuState | null>(null);
-
-  // Menu dùng position: fixed nên đóng lại khi cuộn / đổi kích thước cửa sổ
-  useEffect(() => {
-    if (!menu) return;
-    const close = () => setMenu(null);
-    window.addEventListener('scroll', close, true);
-    window.addEventListener('resize', close);
-    return () => {
-      window.removeEventListener('scroll', close, true);
-      window.removeEventListener('resize', close);
-    };
-  }, [menu]);
-
-  const openMenu = (partner: Partner, event: MouseEvent<HTMLButtonElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    setMenu({ partner, top: rect.bottom + 4, right: window.innerWidth - rect.right });
-  };
-
-  const runMenuAction = (action: (partner: Partner) => void) => {
-    if (!menu) return;
-    action(menu.partner);
-    setMenu(null);
-  };
 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm">
-      <div className="w-full table-scroll overflow-x-auto">
+      <div className="table-scroll w-full overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="bg-surface-container-low/70 font-label-sm text-label-sm tracking-wider text-on-surface-variant uppercase">
@@ -82,7 +53,9 @@ export default function PartnerTable({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-surface-container">
+          <tbody
+            className={`divide-y divide-surface-container transition-opacity ${loading ? 'opacity-50' : ''}`}
+          >
             {partners.length === 0 ? (
               <tr>
                 <td colSpan={COLUMNS.length} className="px-6 py-16 text-center">
@@ -99,65 +72,103 @@ export default function PartnerTable({
               </tr>
             ) : (
               partners.map((partner) => (
-                <PartnerRow
+                <tr
                   key={partner.id}
-                  partner={partner}
-                  onViewDetail={onViewDetail}
-                  onUnlock={onUnlock}
-                  onViewListings={onViewListings}
-                  onOpenMenu={openMenu}
-                />
+                  className="group transition-colors hover:bg-surface-container-low/60"
+                >
+                  <td className="px-6 py-4">
+                    <button
+                      type="button"
+                      onClick={() => onView(partner)}
+                      className="flex items-center gap-3 text-left"
+                    >
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary-container text-on-secondary-container">
+                        <Icon name="storefront" className="text-[20px]" />
+                      </span>
+                      <span className="flex flex-col">
+                        <span className="font-title-md text-title-md text-on-surface group-hover:text-primary">
+                          {partner.name}
+                        </span>
+                        <span className="font-body-sm text-body-sm text-on-surface-variant">
+                          {t('partnerAdmin.table.owner', { name: partner.ownerName })}
+                        </span>
+                      </span>
+                    </button>
+                  </td>
+                  <td className="px-4 py-4 font-body-md text-body-md text-on-surface tabular-nums">
+                    {partner.taxCode || '—'}
+                  </td>
+                  <td className="px-4 py-4">
+                    <div className="flex flex-col font-body-sm text-body-sm">
+                      <span className="text-on-surface">{partner.email || '—'}</span>
+                      <span className="text-on-surface-variant">{partner.phone}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-4 font-body-sm text-body-sm text-on-surface-variant">
+                    {toDisplayDate(partner.joinedAt)}
+                  </td>
+                  <td className="px-4 py-4">
+                    <PartnerStatusBadge status={partner.status} />
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-end gap-1.5">
+                      {partner.status === 'pending' && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => onApprove(partner)}
+                            className={`${ACTION_CLASS} bg-primary text-on-primary hover:bg-primary-container`}
+                          >
+                            <Icon name="verified" className="text-[16px]" />
+                            {t('partnerAdmin.actions.approve')}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onReject(partner)}
+                            className={`${ACTION_CLASS} bg-error-container text-on-error-container hover:bg-error-container/70`}
+                          >
+                            {t('partnerAdmin.actions.reject')}
+                          </button>
+                        </>
+                      )}
+                      {partner.status === 'active' && (
+                        <button
+                          type="button"
+                          onClick={() => onLock(partner)}
+                          className={`${ACTION_CLASS} text-error hover:bg-error-container/50`}
+                        >
+                          <Icon name="lock" className="text-[16px]" />
+                          {t('partnerAdmin.actions.lock')}
+                        </button>
+                      )}
+                      {partner.status === 'suspended' && (
+                        <button
+                          type="button"
+                          onClick={() => onUnlock(partner)}
+                          className={`${ACTION_CLASS} text-primary hover:bg-secondary-container/60`}
+                        >
+                          <Icon name="lock_open" className="text-[16px]" />
+                          {t('partnerAdmin.actions.unlock')}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => onView(partner)}
+                        title={t('partnerAdmin.actions.view')}
+                        aria-label={t('partnerAdmin.actions.view')}
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary"
+                      >
+                        <Icon name="visibility" className="text-[18px]" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
-
       {footer}
-
-      {menu && (
-        <>
-          <div className="fixed inset-0 z-[55]" onClick={() => setMenu(null)} />
-          <div
-            className="fixed z-[56] w-52 overflow-hidden rounded-xl bg-surface-container-lowest py-1 shadow-lg ring-1 ring-surface-container"
-            style={{ top: menu.top, right: menu.right }}
-          >
-            <button
-              type="button"
-              onClick={() => runMenuAction(onViewDetail)}
-              className={`${MENU_ITEM_CLASS} text-on-surface hover:bg-surface-container-low`}
-            >
-              <Icon name="visibility" className="text-[18px]" /> {t('actions.viewDetail')}
-            </button>
-            <button
-              type="button"
-              onClick={() => runMenuAction(onEdit)}
-              className={`${MENU_ITEM_CLASS} text-on-surface hover:bg-surface-container-low`}
-            >
-              <Icon name="edit" className="text-[18px]" /> {t('partners.partnerTable.editDetails')}
-            </button>
-            {menu.partner.status === 'suspended' ? (
-              <button
-                type="button"
-                onClick={() => runMenuAction(onUnlock)}
-                className={`${MENU_ITEM_CLASS} text-primary hover:bg-surface-container-low`}
-              >
-                <Icon name="lock_open" className="text-[18px]" />{' '}
-                {t('partners.partnerTable.unlockAccount')}
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => runMenuAction(onLock)}
-                className={`${MENU_ITEM_CLASS} text-error hover:bg-error-container/40`}
-              >
-                <Icon name="lock" className="text-[18px]" />{' '}
-                {t('partners.partnerTable.lockAccount')}
-              </button>
-            )}
-          </div>
-        </>
-      )}
     </div>
   );
 }

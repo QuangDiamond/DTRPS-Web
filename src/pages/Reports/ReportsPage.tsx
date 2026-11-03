@@ -156,8 +156,8 @@ interface ReportBodyProps {
 }
 
 function ReportBody({ report, totals, filters, onOpenAi }: ReportBodyProps) {
-  const { partners } = usePartners();
-  const knownPartnerIds = useMemo(() => new Set(partners.map((partner) => partner.id)), [partners]);
+  // Bảng xếp hạng đối tác của báo cáo còn là dữ liệu mẫu — chưa liên kết sang hồ sơ đối tác thật
+  const knownPartnerIds = useMemo(() => new Set<string>(), []);
   const categories = useMemo(() => scaleCategories(report, totals.pois), [report, totals.pois]);
   const tripsYear = report.trips.reduce((sum, point) => sum + point.trips, 0);
   const firstInsight = report.insights[0];

@@ -1,7 +1,6 @@
 import i18n from 'i18next';
 import { useEffect } from 'react';
 import { useAuth } from './useAuth';
-import { useSettings } from './useSettings';
 import { useToast } from './useToast';
 
 const ACTIVITY_EVENTS: (keyof WindowEventMap)[] = [
@@ -12,12 +11,14 @@ const ACTIVITY_EVENTS: (keyof WindowEventMap)[] = [
   'touchstart',
 ];
 
-/** Tự đăng xuất khi admin không thao tác quá "Thời gian tự động đăng xuất" trong Cài đặt hệ thống */
+/** Giống system_settings.session_timeout_minutes (mặc định 30) — đọc từ API khi backend có */
+const SESSION_TIMEOUT_MINUTES = 30;
+
+/** Tự đăng xuất khi admin không thao tác quá thời gian cho phép */
 export function useIdleLogout(): void {
   const { admin, logout } = useAuth();
-  const { settings } = useSettings();
   const { showToast } = useToast();
-  const timeoutMinutes = settings.sessionTimeoutMinutes;
+  const timeoutMinutes = SESSION_TIMEOUT_MINUTES;
 
   useEffect(() => {
     if (!admin) return;

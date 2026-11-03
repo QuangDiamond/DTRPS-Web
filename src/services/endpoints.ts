@@ -12,6 +12,7 @@ export const ENDPOINTS = {
   auth: {
     login: '/auth/login',
     logout: '/auth/logout',
+    revoke: '/auth/revoke',
     sendResetOtp: '/auth/password/otp',
     verifyResetOtp: '/auth/password/otp/verify',
     resetPassword: '/auth/password/reset',
@@ -38,13 +39,47 @@ export const ENDPOINTS = {
     visibility: '/listings/visibility',
     category: '/listings/category',
   },
+  // Duyệt địa điểm mới & bản sửa của đối tác (đã có ở backend)
+  listingReview: {
+    list: '/admin/business-listings',
+    stats: '/admin/business-listings/stats',
+    detail: (listingId: string) => `/admin/business-listings/${id(listingId)}`,
+    approve: (listingId: string) => `/admin/business-listings/${id(listingId)}/approve`,
+    reject: (listingId: string) => `/admin/business-listings/${id(listingId)}/reject`,
+    revisions: '/admin/listing-revisions',
+    revision: (revisionId: string) => `/admin/listing-revisions/${id(revisionId)}`,
+    approveRevision: (revisionId: string) => `/admin/listing-revisions/${id(revisionId)}/approve`,
+    rejectRevision: (revisionId: string) => `/admin/listing-revisions/${id(revisionId)}/reject`,
+  },
+  // Tài khoản đang đăng nhập
+  me: {
+    profile: '/users/me',
+  },
+  // Quản lý người dùng (bảng users)
+  adminUsers: {
+    list: '/admin/users',
+    stats: '/admin/users/stats',
+    detail: (userId: string) => `/admin/users/${id(userId)}`,
+    status: (userId: string) => `/admin/users/${id(userId)}/status`,
+  },
+  // Kho địa điểm (bảng places): POI + địa điểm đối tác
+  places: {
+    list: '/admin/places',
+    stats: '/admin/places/stats',
+    detail: (placeId: string) => `/admin/places/${id(placeId)}`,
+  },
+  reference: {
+    provinces: '/reference/provinces',
+    categories: '/reference/categories',
+  },
+  // Đối tác = hồ sơ doanh nghiệp (đã có ở backend)
   partners: {
-    snapshot: '/partners/snapshot',
-    profile: (partnerId: string) => `/partners/${id(partnerId)}/profile`,
-    auditHistory: (partnerId: string) => `/partners/${id(partnerId)}/audit-logs`,
-    create: '/partners',
-    update: (partnerId: string) => `/partners/${id(partnerId)}`,
-    status: (partnerId: string) => `/partners/${id(partnerId)}/status`,
+    list: '/admin/business-profiles',
+    stats: '/admin/business-profiles/stats',
+    detail: (partnerId: string) => `/admin/business-profiles/${id(partnerId)}`,
+    approve: (partnerId: string) => `/admin/business-profiles/${id(partnerId)}/approve`,
+    reject: (partnerId: string) => `/admin/business-profiles/${id(partnerId)}/reject`,
+    status: (partnerId: string) => `/admin/business-profiles/${id(partnerId)}/status`,
   },
   users: {
     snapshot: '/users/snapshot',

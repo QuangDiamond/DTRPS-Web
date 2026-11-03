@@ -14,6 +14,10 @@ import type {
 } from '@/types';
 import { ListingsContext } from './listingsContext';
 
+/** Khóa định danh đối tác sở hữu niêm yết (dữ liệu mẫu) */
+const listingOwnerKey = (listing: Pick<Listing, 'partnerId' | 'partnerName'>): string =>
+  listing.partnerId ?? listing.partnerName.trim().toLowerCase();
+
 /** Phần chênh lệch so với số liệu gốc, phát sinh do thao tác trong phiên */
 interface StatsDelta {
   approved: number;
@@ -91,9 +95,17 @@ export default function ListingsProvider({ children }: { children: ReactNode }) 
   // ===== Duyệt / từ chối =====
   const approveListings = useCallback(
     (ids: string[], note?: string) => {
-      const targets = listingsRef.current.filter(
-        (listing) => ids.includes(listing.id) && listing.status === 'pending',
+      // Mỗi đối tác chỉ có 1 địa điểm được duyệt: bỏ qua hồ sơ của đối tác đã có địa điểm hoạt động
+      const owners = new Set(
+        listingsRef.current.filter((listing) => listing.status === 'approved').map(listingOwnerKey),
       );
+      const targets = listingsRef.current.filter((listing) => {
+        if (!ids.includes(listing.id) || listing.status !== 'pending') return false;
+        const owner = listingOwnerKey(listing);
+        if (owners.has(owner)) return false;
+        owners.add(owner);
+        return true;
+      });
       if (targets.length === 0) return 0;
 
       const now = new Date().toISOString();

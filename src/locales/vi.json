@@ -79,6 +79,10 @@
       "suspended": {
         "label": "Đang khóa",
         "filterLabel": "Đang khóa / Đình chỉ"
+      },
+      "rejected": {
+        "label": "Bị từ chối",
+        "filterLabel": "Bị từ chối"
       }
     },
     "user": {
@@ -233,7 +237,7 @@
       "partner": "Đối tác & Cơ sở đại diện",
       "type": "Loại hình",
       "contact": "Thông tin liên hệ",
-      "listings": "Niêm yết",
+      "listings": "Địa điểm",
       "joinedAt": "Ngày tham gia",
       "status": "Trạng thái",
       "actions": "Thao tác"
@@ -353,7 +357,8 @@
       "filtered": "Đã lọc dữ liệu từ {{range}}",
       "approved": "Đã duyệt & xuất bản {{name}}",
       "refreshed": "Đã cập nhật hoạt động mới nhất",
-      "exported": "Đã xuất dữ liệu bảng điều khiển (CSV mở bằng Excel)"
+      "exported": "Đã xuất dữ liệu bảng điều khiển (CSV mở bằng Excel)",
+      "blockedOnePlaceRule": "Không thể duyệt: {{name}} đã có địa điểm đang hoạt động (mỗi đối tác 1 địa điểm)"
     },
     "kpi": {
       "totalUsers": "Tổng số người dùng",
@@ -703,9 +708,9 @@
       "viewPartnerDetails": "Xem chi tiết đối tác",
       "unlockAccount": "Mở khóa tài khoản",
       "representative": "Đại diện: {{representative}}",
-      "placeList": "Danh sách địa điểm",
       "moreOptions": "Tùy chọn khác",
-      "lockSettings": "Khóa / Cài đặt"
+      "lockSettings": "Khóa / Cài đặt",
+      "viewPlace": "Xem địa điểm"
     },
     "partnerStatsCards": {
       "ecosystemShare": "Tỷ trọng hệ sinh thái",
@@ -736,21 +741,15 @@
       "province": "Tỉnh/TP",
       "representative": "Đại diện",
       "phone": "SĐT",
-      "listings": "Niêm yết",
+      "listings": "Địa điểm",
       "joined": "Ngày tham gia",
       "status": "Trạng thái",
       "exportedPartnersExcelFile_other": "Đã xuất {{count}} đối tác ra file Excel (CSV)",
       "addNewPartner": "+ Thêm đối tác mới",
       "partners": "đối tác"
     },
-    "utils": {
-      "paused": "{{paused}} tạm dừng",
-      "pending": "{{pending}} chờ duyệt",
-      "approved": "{{approved}} đã duyệt"
-    },
     "constants": {
       "newestSignUps": "Mới nhất đăng ký",
-      "mostListedPlaces": "Nhiều địa điểm niêm yết nhất",
       "highestRated": "Đánh giá cao nhất",
       "nationwide63Provinces": "Toàn quốc (63 Tỉnh/TP)"
     },
@@ -760,6 +759,267 @@
       "expiredLicense": "Giấy phép kinh doanh / PCCC hết hiệu lực",
       "partnerRequest": "Theo yêu cầu tạm dừng của đối tác",
       "other": "Khác (Ghi chú chi tiết)"
+    },
+    "place": {
+      "none": "Chưa đăng ký",
+      "pending": "Chờ duyệt",
+      "approved": "Đã duyệt",
+      "hidden": "Đang ẩn",
+      "rejected": "Bị từ chối"
+    }
+  },
+  "placeReview": {
+    "header": {
+      "eyebrow": "Kiểm duyệt nội dung",
+      "eyebrowNote": "Địa điểm của đối tác",
+      "title": "Duyệt địa điểm đối tác",
+      "description": "Xét duyệt địa điểm mới và các đề xuất chỉnh sửa của đối tác trước khi hiển thị với du khách."
+    },
+    "stats": {
+      "pending": "Địa điểm chờ duyệt",
+      "pendingHint": "Đăng ký mới cần xử lý",
+      "revisions": "Bản sửa chờ duyệt",
+      "revisionsHint": "Đề xuất chỉnh sửa địa điểm đã duyệt",
+      "approved": "Đang hiển thị",
+      "approvedHint": "Trên tổng {{total}} địa điểm",
+      "rejected": "Bị từ chối",
+      "rejectedHint": "Chờ đối tác sửa và gửi lại"
+    },
+    "tabs": {
+      "listings": "Địa điểm mới",
+      "revisions": "Bản sửa"
+    },
+    "filters": {
+      "searchLabel": "Tìm kiếm",
+      "searchListings": "Tìm theo tên địa điểm, doanh nghiệp hoặc địa chỉ...",
+      "searchRevisions": "Tìm theo tên địa điểm hoặc doanh nghiệp...",
+      "status": "Trạng thái",
+      "all": "Tất cả trạng thái",
+      "clear": "Xóa bộ lọc"
+    },
+    "listingStatus": {
+      "pending": "Chờ duyệt",
+      "approved": "Đang hiển thị",
+      "rejected": "Bị từ chối",
+      "suspended": "Tạm ẩn"
+    },
+    "revisionStatus": {
+      "pending": "Chờ duyệt",
+      "approved": "Đã áp dụng",
+      "rejected": "Bị từ chối",
+      "cancelled": "Đối tác đã rút"
+    },
+    "table": {
+      "place": "Địa điểm",
+      "business": "Doanh nghiệp",
+      "province": "Tỉnh/TP",
+      "submitted": "Ngày gửi",
+      "status": "Trạng thái",
+      "actions": "Thao tác",
+      "review": "Xem xét",
+      "view": "Xem",
+      "empty": "Không có hồ sơ phù hợp",
+      "emptyHint": "Thử đổi bộ lọc hoặc từ khóa.",
+      "items": "hồ sơ"
+    },
+    "detail": {
+      "backQueue": "Quay lại hàng chờ",
+      "notFound": "Không tìm thấy hồ sơ {{id}}",
+      "loadError": "Không tải được hồ sơ",
+      "listingCode": "Mã địa điểm: PL-{{id}}",
+      "photos": "Hình ảnh",
+      "noPhotos": "Đối tác chưa thêm ảnh",
+      "cover": "Ảnh bìa",
+      "description": "Mô tả",
+      "noDescription": "Chưa có mô tả",
+      "hours": "Giờ mở cửa",
+      "noHours": "Chưa khai báo giờ mở cửa",
+      "closed": "Đóng cửa",
+      "prices": "Giá tham khảo",
+      "noPrices": "Chưa khai báo giá",
+      "info": "Thông tin địa điểm",
+      "name": "Tên địa điểm",
+      "group": "Nhóm dịch vụ",
+      "category": "Loại hình",
+      "province": "Tỉnh/thành",
+      "address": "Địa chỉ",
+      "coordinates": "Tọa độ",
+      "openMap": "Mở Google Maps",
+      "phone": "Điện thoại",
+      "website": "Website",
+      "business": "Doanh nghiệp",
+      "review": "Xét duyệt",
+      "submittedAt": "Ngày gửi",
+      "approvedAt": "Ngày duyệt",
+      "updatedAt": "Cập nhật lần cuối",
+      "rejectReason": "Lý do từ chối",
+      "noReason": "Không ghi lý do",
+      "pendingNotice": "Kiểm tra vị trí trên bản đồ, hình ảnh và thông tin liên hệ trước khi duyệt. Duyệt xong địa điểm hiển thị ngay với du khách.",
+      "rejectedNotice": "Đối tác có thể sửa và gửi lại; hồ sơ sẽ quay về hàng chờ.",
+      "approvedNotice": "Địa điểm đang hiển thị. Mọi thay đổi của đối tác sẽ đến dưới dạng bản sửa.",
+      "suspendedNotice": "Địa điểm đang tạm ẩn với du khách.",
+      "previous": "Ảnh trước",
+      "next": "Ảnh sau",
+      "close": "Đóng"
+    },
+    "days": {
+      "d1": "Thứ 2",
+      "d2": "Thứ 3",
+      "d3": "Thứ 4",
+      "d4": "Thứ 5",
+      "d5": "Thứ 6",
+      "d6": "Thứ 7",
+      "d7": "Chủ nhật"
+    },
+    "actions": {
+      "approve": "Duyệt",
+      "reject": "Từ chối",
+      "approveListing": "Duyệt & công khai",
+      "approveRevision": "Áp dụng bản sửa"
+    },
+    "approve": {
+      "listingTitle": "Duyệt địa điểm?",
+      "listingMessage": "<c0>{{name}}</c0> sẽ được công khai với du khách ngay sau khi duyệt.",
+      "revisionTitle": "Áp dụng bản sửa?",
+      "revisionMessage": "Nội dung đề xuất sẽ thay thế thông tin đang công khai của <c0>{{name}}</c0>.",
+      "noteLabel": "Ghi chú nội bộ (không bắt buộc)",
+      "notePlaceholder": "Chỉ quản trị viên nhìn thấy"
+    },
+    "rejectListing": {
+      "title": "Từ chối địa điểm",
+      "description": "Lý do sẽ hiển thị cho đối tác để họ chỉnh sửa và gửi lại.",
+      "reasonLabel": "Lý do từ chối",
+      "placeholder": "Ví dụ: Tọa độ chưa đúng vị trí cửa hàng...",
+      "required": "Vui lòng nhập lý do từ chối",
+      "confirm": "Từ chối địa điểm"
+    },
+    "rejectRevision": {
+      "title": "Từ chối bản sửa",
+      "description": "Địa điểm giữ nguyên thông tin đang công khai. Đối tác sẽ thấy nhóm lý do và góp ý.",
+      "codeLabel": "Nhóm lý do",
+      "feedbackLabel": "Góp ý gửi đối tác",
+      "feedbackPlaceholder": "Nêu rõ điểm cần chỉnh để đối tác gửi lại...",
+      "feedbackRequired": "Vui lòng nhập góp ý cho đối tác",
+      "noteLabel": "Ghi chú duyệt (bắt buộc)",
+      "notePlaceholder": "Lý do từ chối để lưu hồ sơ — chỉ quản trị viên nhìn thấy",
+      "noteRequired": "Vui lòng nhập ghi chú duyệt",
+      "confirm": "Từ chối bản sửa"
+    },
+    "reasons": {
+      "pricing": "Giá chưa chính xác",
+      "location": "Vị trí / địa chỉ chưa đúng",
+      "photos": "Hình ảnh không đạt yêu cầu",
+      "duplicate": "Trùng lặp địa điểm khác",
+      "other": "Lý do khác"
+    },
+    "compare": {
+      "title": "So sánh thay đổi",
+      "field": "Thông tin",
+      "current": "Đang công khai",
+      "proposed": "Đề xuất",
+      "changed": "Thay đổi",
+      "changedCount": "{{count}} mục thay đổi",
+      "noChanges": "Bản đề xuất giống hệt thông tin đang công khai",
+      "empty": "—"
+    },
+    "revision": {
+      "title": "Bản sửa: {{name}}",
+      "code": "Mã bản sửa: RV-{{id}}",
+      "reason": "Nhóm lý do",
+      "feedback": "Góp ý đã gửi đối tác",
+      "note": "Ghi chú nội bộ",
+      "reviewedAt": "Ngày xử lý",
+      "pendingNotice": "Đối tác đề xuất thay đổi địa điểm đang công khai. Thông tin cũ vẫn hiển thị cho tới khi bạn áp dụng.",
+      "cancelledNotice": "Đối tác đã rút lại bản sửa này.",
+      "approvedNotice": "Bản sửa đã được áp dụng vào địa điểm.",
+      "rejectedNotice": "Bản sửa đã bị từ chối; địa điểm giữ nguyên thông tin cũ.",
+      "viewListing": "Xem địa điểm"
+    },
+    "toast": {
+      "listingApproved": "Đã duyệt và công khai {{name}}",
+      "listingRejected": "Đã từ chối địa điểm {{name}}",
+      "revisionApproved": "Đã áp dụng bản sửa cho {{name}}",
+      "revisionRejected": "Đã từ chối bản sửa của {{name}}",
+      "failed": "Không thực hiện được: {{message}}"
+    }
+  },
+  "partnerAdmin": {
+    "stats": {
+      "total": "Tổng số đối tác",
+      "newThisMonth": "+{{count}} hồ sơ mới tháng này",
+      "pending": "Chờ duyệt",
+      "pendingHint": "Hồ sơ cần xử lý",
+      "active": "Đang hoạt động",
+      "activeHint": "Đã được cấp quyền đối tác",
+      "suspended": "Đang khóa",
+      "rejectedHint": "{{count}} hồ sơ bị từ chối"
+    },
+    "table": {
+      "business": "Doanh nghiệp",
+      "taxCode": "Mã số thuế",
+      "contact": "Liên hệ",
+      "submitted": "Ngày gửi",
+      "status": "Trạng thái",
+      "actions": "Thao tác",
+      "owner": "Đại diện: {{name}}"
+    },
+    "filters": {
+      "searchLabel": "Tìm kiếm",
+      "search": "Tìm theo tên doanh nghiệp, mã số thuế hoặc email...",
+      "status": "Trạng thái hồ sơ",
+      "clear": "Xóa bộ lọc"
+    },
+    "actions": {
+      "view": "Xem chi tiết",
+      "approve": "Duyệt",
+      "reject": "Từ chối",
+      "lock": "Khóa",
+      "unlock": "Mở khóa",
+      "refresh": "Làm mới"
+    },
+    "toast": {
+      "approved": "Đã duyệt hồ sơ {{name}} — tài khoản được cấp quyền đối tác",
+      "rejected": "Đã từ chối hồ sơ {{name}}",
+      "locked": "Đã khóa tài khoản đối tác {{name}}",
+      "unlocked": "Đã mở khóa tài khoản đối tác {{name}}",
+      "failed": "Không thực hiện được: {{message}}"
+    },
+    "approve": {
+      "title": "Duyệt hồ sơ đối tác?",
+      "message": "Hồ sơ <c0>{{name}}</c0> sẽ được kích hoạt và tài khoản {{email}} được cấp quyền đối tác (Business Owner).",
+      "confirm": "Duyệt hồ sơ"
+    },
+    "reject": {
+      "title": "Từ chối hồ sơ đối tác",
+      "description": "Lý do sẽ hiển thị cho đối tác để họ chỉnh sửa và gửi lại hồ sơ.",
+      "reasonLabel": "Lý do từ chối",
+      "placeholder": "Ví dụ: Mã số thuế không khớp với tên doanh nghiệp...",
+      "required": "Vui lòng nhập lý do từ chối",
+      "confirm": "Từ chối hồ sơ"
+    },
+    "detail": {
+      "businessInfo": "Thông tin doanh nghiệp",
+      "ownerAccount": "Tài khoản người đại diện",
+      "review": "Xét duyệt",
+      "businessName": "Tên doanh nghiệp",
+      "taxCode": "Mã số thuế",
+      "contactEmail": "Email liên hệ",
+      "contactPhone": "Số điện thoại liên hệ",
+      "ownerName": "Người đại diện",
+      "ownerEmail": "Email tài khoản",
+      "profileCode": "Mã hồ sơ",
+      "submittedAt": "Ngày gửi hồ sơ",
+      "approvedAt": "Ngày được duyệt",
+      "updatedAt": "Cập nhật lần cuối",
+      "notApproved": "Chưa duyệt",
+      "rejectReason": "Lý do từ chối",
+      "lockReason": "Lý do khóa",
+      "noReason": "Không ghi lý do",
+      "pendingNotice": "Hồ sơ đang chờ duyệt. Kiểm tra mã số thuế và thông tin liên hệ trước khi duyệt.",
+      "rejectedNotice": "Đối tác có thể chỉnh sửa hồ sơ và gửi lại; hồ sơ sẽ quay về hàng chờ duyệt.",
+      "suspendedNotice": "Đối tác đang bị khóa và không thể chỉnh sửa hồ sơ.",
+      "placeTitle": "Địa điểm của đối tác",
+      "placeSoon": "Sẽ hiển thị khi phân hệ địa điểm được nối API."
     }
   },
   "partnerDetail": {
@@ -808,18 +1068,15 @@
     },
     "partnerProfileCard": {
       "registeredPlaces": "Địa điểm đăng ký",
-      "business": "Cơ sở",
-      "approved": "Đã phê duyệt",
-      "public": "Công khai",
-      "pendingApproval": "Đang chờ duyệt",
-      "needsAction": "Cần xử lý",
       "mainBusiness": "Cơ sở chính: {{businessName}}",
       "representative": "Đại diện: <c0>{{representative}}</c0>",
       "joined": "Gia nhập: {{joinedAt}} (<c0>{{joinedAt2}}</c0>)",
       "aiTrust": "Tín nhiệm AI",
       "averageRating": "Đánh giá trung bình",
       "aiSearchHits": "Xuất hiện trong tìm kiếm AI",
-      "hits": "Lượt"
+      "hits": "Lượt",
+      "placeLimit": "giới hạn 1 địa điểm",
+      "placeStatus": "Trạng thái địa điểm"
     },
     "scheduleReviewModal": {
       "scheduleReAssessment": "Lên lịch tái thẩm định",
@@ -1123,7 +1380,8 @@
       "submissions": "hồ sơ",
       "youAboutApprovePending": "Bạn sắp phê duyệt <c0>{{length}} hồ sơ đang chờ</c0> và công bố lên ứng dụng. Hãy chắc chắn các hồ sơ đã đáp ứng quy chế kiểm duyệt.",
       "approveSubmissions_other": "Duyệt {{count}} hồ sơ",
-      "selectedSubmissionsNotPending_other": "{{count}} hồ sơ đã chọn không ở trạng thái chờ duyệt sẽ được bỏ qua."
+      "selectedSubmissionsNotPending_other": "{{count}} hồ sơ đã chọn không ở trạng thái chờ duyệt sẽ được bỏ qua.",
+      "skippedOnePlaceRule_other": "Bỏ qua {{count}} hồ sơ vì đối tác đã có địa điểm đang hoạt động"
     },
     "utils": {
       "overdueH": "Quá hạn ({{hours}}h)"
@@ -1263,7 +1521,6 @@
     },
     "partnerChecklistCard": {
       "active": "Hoạt động",
-      "approved": "Đã duyệt",
       "response": "Phản hồi",
       "submittingOrganization": "Đơn vị gửi hồ sơ",
       "verifiedPartner": "Đối tác đã xác thực",
@@ -1272,7 +1529,11 @@
       "partnerHotline": "Hotline đối tác",
       "standardInspectionChecklist": "Checklist kiểm định chuẩn",
       "passed": "{{passedCount}} / {{length}} Đạt chuẩn",
-      "clickMarkAsPassed": "Bấm để đánh dấu đạt / chưa đạt"
+      "clickMarkAsPassed": "Bấm để đánh dấu đạt / chưa đạt",
+      "onePlaceRule": "Quy tắc 1 địa điểm",
+      "ruleOk": "Hợp lệ",
+      "ruleViolated": "Vi phạm",
+      "ruleViolationNote": "Đối tác đã có địa điểm <c0>{{name}}</c0> ({{id}}). Mỗi đối tác chỉ được đăng ký 1 địa điểm."
     },
     "photoGallerySection": {
       "photosUploadedByPartner": "Hình ảnh do đối tác tải lên",
@@ -1339,7 +1600,8 @@
       "approvedPlaceNowLive": "Đã phê duyệt {{name}}! Địa điểm đã chính thức hoạt động và thông báo đã gửi tới {{partnerName}}.",
       "rejectedListingEmailNotification": "Đã từ chối niêm yết {{id}}. Email và thông báo đã được gửi đến {{partnerName}}.",
       "preparingZipDocuments_other": "Đang chuẩn bị file ZIP {{count}} tài liệu của {{id}}",
-      "cannotApproveYet": "Chưa thể phê duyệt: {{approveBlockedReason}}"
+      "cannotApproveYet": "Chưa thể phê duyệt: {{approveBlockedReason}}",
+      "partnerAlreadyHasPlace": "đối tác đã có địa điểm đang hoạt động ({{name}})"
     },
     "utils": {
       "partnerSubmittedNewListing": "Đối tác {{partnerName}} nộp hồ sơ niêm yết mới.",
@@ -1456,7 +1718,8 @@
       "address": "Địa chỉ *",
       "eGCamChau": "VD: Cẩm Châu, TP. Hội An, Quảng Nam",
       "provinceCity": "Tỉnh / Thành phố",
-      "subType": "Loại hình"
+      "subType": "Loại hình",
+      "partnerAlreadyHasPlace": "Đối tác này đã đăng ký địa điểm \"{{name}}\" — mỗi đối tác chỉ được 1 địa điểm"
     }
   },
   "rejectedListings": {
@@ -2468,6 +2731,7 @@
     },
     "errors": {
       "invalidCredentials": "Email hoặc mật khẩu không chính xác",
+      "notAdministrator": "Tài khoản này không có quyền truy cập trang quản trị",
       "unknownEmail": "Email không tồn tại trong hệ thống quản trị",
       "accountNotFound": "Không tìm thấy tài khoản quản trị",
       "wrongCurrentPassword": "Mật khẩu hiện tại không chính xác",
@@ -2603,5 +2867,281 @@
       "giftWrapping": "Đóng gói quà",
       "delivery": "Ship tận nơi"
     }
+  },
+  "placeCatalog": {
+    "header": {
+      "eyebrow": "Kho địa điểm",
+      "eyebrowNote": "Dữ liệu thật",
+      "title": "Quản lý điểm đến",
+      "description": "Tất cả địa điểm trong hệ thống: POI do nền tảng tạo và địa điểm của đối tác. Địa điểm đối tác được thay đổi qua luồng duyệt niêm yết.",
+      "refresh": "Làm mới"
+    },
+    "stats": {
+      "total": "Tổng địa điểm",
+      "totalHint": "{{count}} địa điểm mới trong tháng",
+      "active": "Đang hiển thị",
+      "activeHint": "Du khách tìm thấy được",
+      "draft": "Chưa công khai",
+      "draftHint": "Địa điểm mới chờ Admin duyệt niêm yết",
+      "sources": "Nguồn dữ liệu",
+      "sourcesHint": "{{partner}} đối tác · {{admin}} POI nền tảng"
+    },
+    "tabs": {
+      "all": "Tất cả"
+    },
+    "filters": {
+      "searchLabel": "Tìm kiếm",
+      "searchPlaceholder": "Tên hoặc địa chỉ địa điểm…",
+      "province": "Tỉnh / thành",
+      "status": "Trạng thái",
+      "source": "Nguồn",
+      "all": "Tất cả"
+    },
+    "status": {
+      "draft": "Chưa công khai",
+      "active": "Đang hiển thị",
+      "maintenance": "Bảo trì",
+      "paused": "Tạm ngưng"
+    },
+    "source": {
+      "partner": "Đối tác",
+      "admin": "POI nền tảng"
+    },
+    "table": {
+      "place": "Địa điểm",
+      "source": "Nguồn",
+      "province": "Tỉnh / thành",
+      "status": "Trạng thái",
+      "rating": "Đánh giá",
+      "updated": "Cập nhật",
+      "actions": "Thao tác",
+      "view": "Xem",
+      "empty": "Chưa có địa điểm nào",
+      "emptyHint": "Thử đổi bộ lọc hoặc từ khóa tìm kiếm.",
+      "items": "địa điểm",
+      "noRating": "Chưa có",
+      "reviews": "{{count}} đánh giá",
+      "photos": "{{count}} ảnh"
+    },
+    "detail": {
+      "back": "Kho địa điểm",
+      "loadError": "Không tải được địa điểm",
+      "sourceTitle": "Nguồn & trạng thái",
+      "business": "Doanh nghiệp",
+      "listingStatus": "Niêm yết",
+      "openReview": "Mở trang duyệt niêm yết",
+      "adminPoi": "POI do nền tảng tạo — chưa có đối tác quản lý.",
+      "placeCode": "Mã địa điểm",
+      "created": "Ngày tạo",
+      "updated": "Cập nhật lần cuối",
+      "rating": "Đánh giá",
+      "status": "Trạng thái"
+    },
+    "notice": {
+      "readOnly": "Trang này đang ở chế độ xem. Thêm / sửa POI của nền tảng sẽ có khi backend hỗ trợ; địa điểm đối tác được sửa qua đề xuất chỉnh sửa."
+    }
+  },
+  "userAdmin": {
+    "header": {
+      "eyebrow": "Tài khoản",
+      "eyebrowNote": "Dữ liệu thật",
+      "title": "Quản lý người dùng",
+      "description": "Tất cả tài khoản đăng ký trên SmartTravel. Admin chỉ xem, khóa và mở khóa — không tạo hay sửa thông tin người dùng.",
+      "refresh": "Làm mới"
+    },
+    "stats": {
+      "total": "Tổng tài khoản",
+      "totalHint": "{{count}} tài khoản mới trong tháng",
+      "travellers": "Du khách",
+      "travellersHint": "Tài khoản có vai trò du khách",
+      "owners": "Đối tác",
+      "ownersHint": "Chủ doanh nghiệp đã được duyệt",
+      "suspended": "Đang bị khóa",
+      "suspendedHint": "Không đăng nhập được"
+    },
+    "filters": {
+      "searchLabel": "Tìm kiếm",
+      "searchPlaceholder": "Tên, email hoặc số điện thoại…",
+      "role": "Vai trò",
+      "status": "Trạng thái",
+      "all": "Tất cả"
+    },
+    "role": {
+      "traveller": "Du khách",
+      "business_owner": "Đối tác",
+      "admin": "Quản trị viên"
+    },
+    "status": {
+      "active": "Hoạt động",
+      "suspended": "Bị khóa"
+    },
+    "table": {
+      "user": "Người dùng",
+      "phone": "Điện thoại",
+      "roles": "Vai trò",
+      "joined": "Ngày tham gia",
+      "status": "Trạng thái",
+      "actions": "Thao tác",
+      "view": "Xem",
+      "lock": "Khóa",
+      "unlock": "Mở khóa",
+      "empty": "Không có tài khoản nào",
+      "emptyHint": "Thử đổi bộ lọc hoặc từ khóa tìm kiếm.",
+      "items": "tài khoản"
+    },
+    "detail": {
+      "back": "Quản lý người dùng",
+      "loadError": "Không tải được người dùng",
+      "code": "Mã tài khoản: {{code}}",
+      "info": "Thông tin tài khoản",
+      "email": "Email",
+      "phone": "Điện thoại",
+      "dateOfBirth": "Ngày sinh",
+      "joined": "Ngày tham gia",
+      "roles": "Vai trò",
+      "status": "Trạng thái",
+      "lockReason": "Lý do khóa",
+      "noReason": "Không ghi lý do",
+      "ownerNote": "Tài khoản này là chủ doanh nghiệp — xem hồ sơ ở Quản lý đối tác.",
+      "openPartners": "Mở Quản lý đối tác",
+      "lockedNotice": "Tài khoản đang bị khóa và không thể đăng nhập.",
+      "notProvided": "Chưa cập nhật"
+    },
+    "lock": {
+      "title": "Khóa tài khoản",
+      "description": "Người dùng bị đăng xuất khỏi mọi thiết bị và không đăng nhập lại được cho đến khi mở khóa.",
+      "reasonLabel": "Lý do khóa (chỉ quản trị viên thấy)",
+      "reasonPlaceholder": "Ví dụ: Spam đánh giá, vi phạm điều khoản…",
+      "required": "Vui lòng nhập lý do khóa",
+      "confirm": "Khóa tài khoản"
+    },
+    "unlock": {
+      "title": "Mở khóa tài khoản",
+      "description": "Người dùng có thể đăng nhập lại ngay.",
+      "confirm": "Mở khóa"
+    },
+    "toast": {
+      "locked": "Đã khóa tài khoản {{name}}",
+      "unlocked": "Đã mở khóa tài khoản {{name}}",
+      "failed": "Không thực hiện được: {{message}}"
+    }
+  },
+  "adminDashboard": {
+    "header": {
+      "eyebrow": "Tổng quan",
+      "eyebrowNote": "Dữ liệu thật",
+      "title": "Bảng điều khiển",
+      "description": "Tình hình hệ thống và những việc đang chờ quản trị viên xử lý.",
+      "refresh": "Làm mới"
+    },
+    "kpi": {
+      "users": "Người dùng",
+      "usersHint": "+{{count}} trong tháng",
+      "partners": "Đối tác hoạt động",
+      "partnersHint": "{{count}} hồ sơ chờ duyệt",
+      "places": "Địa điểm hiển thị",
+      "placesHint": "Trên tổng {{total}} địa điểm",
+      "pending": "Việc chờ xử lý",
+      "pendingHint": "Hồ sơ, địa điểm và bản sửa"
+    },
+    "todo": {
+      "title": "Cần xử lý",
+      "partners": "Hồ sơ đối tác chờ duyệt",
+      "listings": "Địa điểm mới chờ duyệt",
+      "revisions": "Bản sửa địa điểm chờ duyệt",
+      "open": "Mở",
+      "allDone": "Không còn việc nào đang chờ."
+    },
+    "recentListings": {
+      "title": "Địa điểm chờ duyệt gần đây",
+      "viewAll": "Xem tất cả",
+      "empty": "Không có địa điểm nào đang chờ duyệt."
+    },
+    "groups": {
+      "title": "Địa điểm theo nhóm dịch vụ",
+      "empty": "Chưa có địa điểm nào."
+    },
+    "recentUsers": {
+      "title": "Tài khoản mới",
+      "viewAll": "Xem tất cả",
+      "empty": "Chưa có tài khoản nào."
+    }
+  },
+  "adminNotifications": {
+    "eyebrow": "Hộp thư",
+    "title": "Thông báo",
+    "description": "Thông báo hệ thống gửi tới quản trị viên.",
+    "emptyTitle": "Chưa có thông báo nào",
+    "emptyText": "Backend chưa có API thông báo. Khi có, các sự kiện như đối tác gửi hồ sơ, địa điểm hoặc bản sửa mới sẽ hiện ở đây.",
+    "goReview": "Xem việc chờ duyệt"
+  },
+  "adminReports": {
+    "eyebrow": "Thống kê",
+    "eyebrowNote": "Dữ liệu thật",
+    "title": "Báo cáo & Thống kê",
+    "description": "Số liệu tổng hợp hiện tại của người dùng, đối tác và địa điểm.",
+    "refresh": "Làm mới",
+    "users": "Người dùng theo vai trò",
+    "userStatus": "Trạng thái tài khoản",
+    "partners": "Đối tác theo trạng thái",
+    "listings": "Niêm yết địa điểm",
+    "placeGroups": "Địa điểm theo nhóm dịch vụ",
+    "placeStatus": "Địa điểm theo trạng thái",
+    "placeSources": "Nguồn địa điểm",
+    "total": "Tổng",
+    "note": "Biểu đồ theo thời gian (tăng trưởng, mùa du lịch…) sẽ có khi backend lưu dữ liệu theo ngày.",
+    "label": {
+      "travellers": "Du khách",
+      "owners": "Đối tác",
+      "admins": "Quản trị viên",
+      "active": "Hoạt động",
+      "locked": "Bị khóa",
+      "pending": "Chờ duyệt",
+      "rejected": "Bị từ chối",
+      "suspended": "Tạm khóa",
+      "approved": "Đã duyệt",
+      "hidden": "Tạm ẩn",
+      "revisions": "Bản sửa chờ duyệt",
+      "visible": "Đang hiển thị",
+      "draft": "Chưa công khai",
+      "paused": "Tạm ngưng",
+      "partnerPlaces": "Của đối tác",
+      "adminPlaces": "POI nền tảng"
+    }
+  },
+  "adminProfile": {
+    "eyebrow": "Tài khoản",
+    "title": "Hồ sơ quản trị viên",
+    "description": "Thông tin tài khoản đang đăng nhập.",
+    "loadError": "Không tải được hồ sơ",
+    "info": "Thông tin cá nhân",
+    "name": "Họ tên",
+    "email": "Email",
+    "emailHint": "Email đăng nhập không đổi được.",
+    "phone": "Số điện thoại",
+    "phoneInvalid": "Số điện thoại không hợp lệ",
+    "nameInvalid": "Họ tên phải có từ 2 ký tự",
+    "save": "Lưu thay đổi",
+    "saved": "Đã lưu hồ sơ",
+    "password": "Đổi mật khẩu",
+    "currentPassword": "Mật khẩu hiện tại",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Nhập lại mật khẩu mới",
+    "passwordHint": "Tối thiểu 8 ký tự, có chữ hoa, chữ thường và số.",
+    "passwordMismatch": "Mật khẩu nhập lại không khớp",
+    "passwordRequired": "Vui lòng nhập đủ các ô mật khẩu",
+    "changePassword": "Đổi mật khẩu",
+    "passwordChanged": "Đã đổi mật khẩu",
+    "sessions": "Phiên đăng nhập",
+    "sessionsText": "Đăng xuất khỏi mọi thiết bị đang dùng tài khoản này, kể cả thiết bị hiện tại.",
+    "logoutAll": "Đăng xuất mọi thiết bị",
+    "failed": "Không thực hiện được: {{message}}"
+  },
+  "adminSettings": {
+    "eyebrow": "Hệ thống",
+    "title": "Cài đặt hệ thống",
+    "description": "Cấu hình chung của nền tảng.",
+    "emptyTitle": "Chưa kết nối cài đặt",
+    "emptyText": "Database đã có bảng system_settings (thời hạn duyệt niêm yết, thời gian tự đăng xuất, tên nền tảng) nhưng backend chưa có API đọc / lưu. Trang này sẽ mở khi có API."
   }
 }

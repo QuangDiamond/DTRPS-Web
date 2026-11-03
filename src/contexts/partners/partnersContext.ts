@@ -1,28 +1,17 @@
 import { createContext } from 'react';
-import type {
-  DataStatus,
-  Partner,
-  PartnerAuditEntry,
-  PartnerFormValues,
-  PartnerProfileOverrides,
-  PartnerStats,
-  PartnerStatus,
-} from '@/types';
+import type { DataStatus, Partner, PartnerStats } from '@/types';
 
 export interface PartnersContextValue {
-  partners: Partner[];
-  /** Số liệu toàn hệ thống, cập nhật theo thao tác trong phiên */
+  /** Số liệu toàn hệ thống (GET /admin/business-profiles/stats) */
   stats: PartnerStats;
-  /** Trạng thái tải dữ liệu từ server */
+  /** Trạng thái tải số liệu */
   dataStatus: DataStatus;
-  createPartner: (values: PartnerFormValues) => Partner;
-  updatePartner: (id: string, values: PartnerFormValues) => void;
-  setPartnerStatus: (id: string, status: PartnerStatus, statusNote?: string) => void;
-  profileOverrides: Record<string, PartnerProfileOverrides>;
-  updateProfile: (id: string, changes: PartnerProfileOverrides) => void;
-  /** Nhật ký phát sinh trong phiên (mới nhất trước) */
-  auditLogs: Record<string, PartnerAuditEntry[]>;
-  logAudit: (partnerId: string, icon: string, text: string) => void;
+  /** Tăng sau mỗi thao tác ghi — các trang danh sách / chi tiết dựa vào đây để tải lại */
+  version: number;
+  approve: (id: string) => Promise<Partner>;
+  reject: (id: string, reason: string) => Promise<Partner>;
+  lock: (id: string, reason: string) => Promise<Partner>;
+  unlock: (id: string) => Promise<Partner>;
 }
 
 export const PartnersContext = createContext<PartnersContextValue | null>(null);

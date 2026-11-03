@@ -11,6 +11,24 @@ export const API_URL: string = (
  */
 export const USE_MOCK_API: boolean = import.meta.env.VITE_USE_MOCK !== 'false';
 
+/** Các phân hệ đã có API thật ở backend */
+export type LiveModule = 'auth' | 'partners' | 'listings';
+
+/**
+ * Phân hệ chạy bằng API thật kể cả khi các phần khác còn mock.
+ * Đặt VITE_LIVE_MODULES (phân tách bằng dấu phẩy) để đổi; mặc định: auth,partners,listings.
+ */
+const LIVE_MODULES = new Set(
+  (import.meta.env.VITE_LIVE_MODULES ?? 'auth,partners,listings')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean),
+);
+
+export function isLiveModule(module: LiveModule): boolean {
+  return !USE_MOCK_API || LIVE_MODULES.has(module);
+}
+
 /** Thời gian chờ tối đa cho một request */
 export const REQUEST_TIMEOUT_MS = 15_000;
 

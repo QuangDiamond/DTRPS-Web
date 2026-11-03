@@ -4,7 +4,7 @@ import { MOCK_LISTING_DETAILS } from '@/mocks/data/mockListingDetails';
 import type { Listing, ListingDetail } from '@/types';
 
 /** Hồ sơ chi tiết giả lập: lấy từ mock, nếu chưa có thì dựng tự động từ thông tin niêm yết */
-export function buildMockListingDetail(listing: Listing, allListings: Listing[]): ListingDetail {
+export function buildMockListingDetail(listing: Listing): ListingDetail {
   const mock = MOCK_LISTING_DETAILS[listing.id];
   if (mock) return mock;
 
@@ -20,9 +20,6 @@ export function buildMockListingDetail(listing: Listing, allListings: Listing[])
       representative: 'Đang cập nhật',
       hotline: '—',
       yearsActive: PARTNER_TIER_CONFIG[listing.partnerTier].label,
-      approvedCount: allListings.filter(
-        (item) => item.partnerName === listing.partnerName && item.status === 'approved',
-      ).length,
       responseRate: '—',
       verified: listing.partnerTier !== 'new',
     },

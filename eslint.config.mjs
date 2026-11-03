@@ -24,6 +24,11 @@ export default tseslint.config(
           patterns: [
             { group: ['../*'], message: 'Dùng alias @/ thay cho đường dẫn ../' },
             { group: ['@/mocks/*'], message: 'Chỉ lớp services/ được đọc dữ liệu mock' },
+            {
+              group: ['@/client/*', '!@/client/routes'],
+              message:
+                'Khu admin không dùng code của khu client (chỉ router gốc được gắn clientRoutes)',
+            },
           ],
         },
       ],
@@ -40,6 +45,38 @@ export default tseslint.config(
       'no-restricted-imports': [
         'error',
         { patterns: [{ group: ['../*'], message: 'Dùng alias @/ thay cho đường dẫn ../' }] },
+      ],
+    },
+  },
+  // Khu client (du khách + đối tác) tách khỏi admin: chỉ dùng chung component cơ bản, cấu hình và tiện ích
+  {
+    files: ['src/client/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { group: ['../*'], message: 'Dùng alias @/ thay cho đường dẫn ../' },
+            {
+              group: [
+                '@/mocks/*',
+                '@/pages/*',
+                '@/layouts/*',
+                '@/contexts/*',
+                '@/routes/*',
+                '@/constants/*',
+                '@/hooks',
+                '@/hooks/*',
+                '@/types',
+                '@/types/*',
+                '@/services/*',
+                '!@/services/config',
+              ],
+              message:
+                'Khu client không dùng code riêng của admin — chỉ được dùng @/components/common, @/services/config, @/utils và @/client',
+            },
+          ],
+        },
       ],
     },
   },

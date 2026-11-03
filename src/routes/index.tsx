@@ -1,5 +1,6 @@
 import { lazy, type ReactNode, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { clientRoutes } from '@/client/routes';
 import { PageLoader } from '@/components/common';
 import { ROUTES } from '@/constants/routes';
 import AdminLayout from '@/layouts/AdminLayout';
@@ -10,21 +11,21 @@ const LoginPage = lazy(() => import('@/pages/Auth/Login/LoginPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/Auth/ForgotPassword/ForgotPasswordPage'));
 const VerifyOtpPage = lazy(() => import('@/pages/Auth/VerifyOtp/VerifyOtpPage'));
 const ResetPasswordPage = lazy(() => import('@/pages/Auth/ResetPassword/ResetPasswordPage'));
-const DashboardPage = lazy(() => import('@/pages/Dashboard/DashboardPage'));
-const UsersPage = lazy(() => import('@/pages/Users/UsersPage'));
-const UserDetailPage = lazy(() => import('@/pages/UserDetail/UserDetailPage'));
+const AdminDashboardPage = lazy(() => import('@/pages/AdminDashboard/AdminDashboardPage'));
+const UserListPage = lazy(() => import('@/pages/UserAdmin/UserListPage'));
+const UserAdminDetailPage = lazy(() => import('@/pages/UserAdmin/UserAdminDetailPage'));
 const PartnersPage = lazy(() => import('@/pages/Partners/PartnersPage'));
 const PartnerDetailPage = lazy(() => import('@/pages/PartnerDetail/PartnerDetailPage'));
-const ListingsPage = lazy(() => import('@/pages/Listings/ListingsPage'));
-const ApprovedListingsPage = lazy(() => import('@/pages/ApprovedListings/ApprovedListingsPage'));
-const RejectedListingsPage = lazy(() => import('@/pages/RejectedListings/RejectedListingsPage'));
-const ListingReviewPage = lazy(() => import('@/pages/ListingReview/ListingReviewPage'));
-const PoisPage = lazy(() => import('@/pages/Pois/PoisPage'));
-const PoiEditorPage = lazy(() => import('@/pages/PoiEditor/PoiEditorPage'));
-const ReportsPage = lazy(() => import('@/pages/Reports/ReportsPage'));
-const NotificationsPage = lazy(() => import('@/pages/Notifications/NotificationsPage'));
-const SettingsPage = lazy(() => import('@/pages/Settings/SettingsPage'));
-const ProfilePage = lazy(() => import('@/pages/Profile/ProfilePage'));
+// Duyệt địa điểm của đối tác (dữ liệu thật)
+const PlaceReviewQueuePage = lazy(() => import('@/pages/PlaceReview/PlaceReviewQueuePage'));
+const ListingReviewPage = lazy(() => import('@/pages/PlaceReview/ListingReviewPage'));
+const RevisionReviewPage = lazy(() => import('@/pages/PlaceReview/RevisionReviewPage'));
+const PlaceCatalogPage = lazy(() => import('@/pages/PlaceCatalog/PlaceCatalogPage'));
+const PlaceCatalogDetailPage = lazy(() => import('@/pages/PlaceCatalog/PlaceCatalogDetailPage'));
+const AdminReportsPage = lazy(() => import('@/pages/AdminMisc/AdminReportsPage'));
+const AdminNotificationsPage = lazy(() => import('@/pages/AdminMisc/AdminNotificationsPage'));
+const AdminSettingsPage = lazy(() => import('@/pages/AdminMisc/AdminSettingsPage'));
+const AdminProfilePage = lazy(() => import('@/pages/AdminMisc/AdminProfilePage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFound/NotFoundPage'));
 
 /** Trang toàn màn hình (đăng nhập, 404) cần Suspense riêng vì không nằm trong AdminLayout */
@@ -33,7 +34,8 @@ const fullScreen = (page: ReactNode) => (
 );
 
 export const router = createBrowserRouter([
-  { path: '/', element: <Navigate to={ROUTES.DASHBOARD} replace /> },
+  // Khu client (du khách + đối tác): /, /login, /register, /explore, /partner…
+  ...clientRoutes,
 
   // Màn xác thực: chỉ dành cho người chưa đăng nhập
   {
@@ -55,26 +57,36 @@ export const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
           { index: true, element: <Navigate to={ROUTES.DASHBOARD} replace /> },
-          { path: ROUTES.DASHBOARD, element: <DashboardPage /> },
-          { path: ROUTES.USERS, element: <UsersPage /> },
-          { path: ROUTES.USER_DETAIL, element: <UserDetailPage /> },
+          { path: ROUTES.DASHBOARD, element: <AdminDashboardPage /> },
+          { path: ROUTES.USERS, element: <UserListPage /> },
+          { path: ROUTES.USER_DETAIL, element: <UserAdminDetailPage /> },
           { path: ROUTES.PARTNERS, element: <PartnersPage /> },
           { path: ROUTES.PARTNER_DETAIL, element: <PartnerDetailPage /> },
-          { path: ROUTES.LISTINGS, element: <ListingsPage /> },
+          { path: ROUTES.LISTINGS, element: <PlaceReviewQueuePage /> },
+          // Đường dẫn cũ → bộ lọc tương ứng trong hàng chờ
           {
             path: ROUTES.LISTINGS_PENDING,
             element: <Navigate to={`${ROUTES.LISTINGS}?status=pending`} replace />,
           },
-          { path: ROUTES.LISTINGS_APPROVED, element: <ApprovedListingsPage /> },
-          { path: ROUTES.LISTINGS_REJECTED, element: <RejectedListingsPage /> },
+          {
+            path: ROUTES.LISTINGS_APPROVED,
+            element: <Navigate to={`${ROUTES.LISTINGS}?status=approved`} replace />,
+          },
+          {
+            path: ROUTES.LISTINGS_REJECTED,
+            element: <Navigate to={`${ROUTES.LISTINGS}?status=rejected`} replace />,
+          },
+          { path: ROUTES.LISTING_REVISION, element: <RevisionReviewPage /> },
           { path: ROUTES.LISTING_REVIEW, element: <ListingReviewPage /> },
-          { path: ROUTES.POIS, element: <PoisPage /> },
-          { path: ROUTES.POI_NEW, element: <PoiEditorPage /> },
-          { path: ROUTES.POI_EDIT, element: <PoiEditorPage /> },
-          { path: ROUTES.REPORTS, element: <ReportsPage /> },
-          { path: ROUTES.NOTIFICATIONS, element: <NotificationsPage /> },
-          { path: ROUTES.SETTINGS, element: <SettingsPage /> },
-          { path: ROUTES.PROFILE, element: <ProfilePage /> },
+          { path: ROUTES.POIS, element: <PlaceCatalogPage /> },
+          { path: ROUTES.POI_DETAIL, element: <PlaceCatalogDetailPage /> },
+          // Thêm / sửa POI nền tảng chưa có API → về kho địa điểm
+          { path: ROUTES.POI_NEW, element: <Navigate to={ROUTES.POIS} replace /> },
+          { path: ROUTES.POI_EDIT, element: <Navigate to={ROUTES.POIS} replace /> },
+          { path: ROUTES.REPORTS, element: <AdminReportsPage /> },
+          { path: ROUTES.NOTIFICATIONS, element: <AdminNotificationsPage /> },
+          { path: ROUTES.SETTINGS, element: <AdminSettingsPage /> },
+          { path: ROUTES.PROFILE, element: <AdminProfilePage /> },
         ],
       },
     ],

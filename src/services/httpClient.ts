@@ -1,6 +1,6 @@
 import i18n from 'i18next';
 import { API_URL, REQUEST_TIMEOUT_MS } from './config';
-import { getAccessToken } from './tokenStore';
+import { getAccessToken, getRefreshToken, replaceTokens } from './tokenStore';
 
 /** Lỗi trả về từ API (hoặc lỗi mạng) — luôn có message tiếng Việt để hiển thị cho người dùng */
 export class ApiError extends Error {
@@ -78,9 +78,51 @@ const STATUS_MESSAGES: Record<number, string> = {
   },
 };
 
-/** Gọi REST API, trả về JSON đã ép kiểu T. Ném ApiError khi lỗi mạng / HTTP không thành công. */
+/** Nhiều request cùng gặp 401 chỉ làm mới token một lần */
+let refreshing: Promise<boolean> | null = null;
+
+/** Đổi refresh token lấy cặp token mới (POST /auth/refresh). Trả false nếu phiên đã hết. */
+function refreshTokens(): Promise<boolean> {
+  if (refreshing) return refreshing;
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) return Promise.resolve(false);
+  refreshing = fetch(buildUrl('/auth/refresh'), {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken }),
+  })
+    .then(async (response) => {
+      if (!response.ok) return false;
+      const result = (await response.json()) as { accessToken?: string; refreshToken?: string };
+      if (!result.accessToken || !result.refreshToken) return false;
+      replaceTokens(result.accessToken, result.refreshToken);
+      return true;
+    })
+    .catch(() => false)
+    .finally(() => {
+      refreshing = null;
+    });
+  return refreshing;
+}
+
+/**
+ * Gọi REST API, trả về JSON đã ép kiểu T. Ném ApiError khi lỗi mạng / HTTP không thành công.
+ * Access token hết hạn (401) → tự làm mới bằng refresh token rồi gửi lại một lần.
+ */
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = 'GET', body, query, signal, silentUnauthorized = false } = options;
+  const response = await send(path, options);
+  if (response.status !== 401 || options.silentUnauthorized) return parseResponse<T>(response);
+
+  if (await refreshTokens()) {
+    const retried = await send(path, options);
+    if (retried.status !== 401) return parseResponse<T>(retried);
+    return parseResponse<T>(retried, true);
+  }
+  return parseResponse<T>(response, true);
+}
+
+async function send(path: string, options: RequestOptions): Promise<Response> {
+  const { method = 'GET', body, query, signal } = options;
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   signal?.addEventListener('abort', () => controller.abort(), { once: true });
@@ -94,9 +136,8 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   const token = getAccessToken();
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  let response: Response;
   try {
-    response = await fetch(buildUrl(path, query), {
+    return await fetch(buildUrl(path, query), {
       method,
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),
@@ -114,7 +155,10 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   } finally {
     window.clearTimeout(timeout);
   }
+}
 
+/** expired = true: phiên đã hết hạn và không làm mới được → đăng xuất */
+async function parseResponse<T>(response: Response, expired = false): Promise<T> {
   if (response.status === 204) return undefined as T;
 
   const text = await response.text();
@@ -128,7 +172,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   }
 
   if (!response.ok) {
-    if (response.status === 401 && !silentUnauthorized) unauthorizedHandler?.();
+    if (expired) unauthorizedHandler?.();
     throw new ApiError(
       messageFromPayload(payload) ??
         STATUS_MESSAGES[response.status] ??

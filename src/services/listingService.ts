@@ -38,12 +38,10 @@ const MOCK_SNAPSHOT: ListingsSnapshot = {
 export const listingsSource = createSource(ENDPOINTS.listings.snapshot, MOCK_SNAPSHOT);
 
 export const listingService = {
-  peekDetail: (listing: Listing, allListings: Listing[]): ListingDetail | undefined =>
-    peek(() => buildMockListingDetail(listing, allListings)),
-  getDetail: (listing: Listing, allListings: Listing[]): Promise<ListingDetail> =>
-    readRequest(ENDPOINTS.listings.detail(listing.id), () =>
-      buildMockListingDetail(listing, allListings),
-    ),
+  peekDetail: (listing: Listing): ListingDetail | undefined =>
+    peek(() => buildMockListingDetail(listing)),
+  getDetail: (listing: Listing): Promise<ListingDetail> =>
+    readRequest(ENDPOINTS.listings.detail(listing.id), () => buildMockListingDetail(listing)),
 
   create: (listing: Listing) => writeRequest(ENDPOINTS.listings.create, 'POST', listing),
   update: (id: string, values: ListingFormValues) =>

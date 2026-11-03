@@ -79,6 +79,10 @@
       "suspended": {
         "label": "Suspended",
         "filterLabel": "Locked / Suspended"
+      },
+      "rejected": {
+        "label": "Rejected",
+        "filterLabel": "Rejected"
       }
     },
     "user": {
@@ -233,7 +237,7 @@
       "partner": "Partner & Representative business",
       "type": "Business type",
       "contact": "Contact information",
-      "listings": "Listings",
+      "listings": "Place",
       "joinedAt": "Joined on",
       "status": "Status",
       "actions": "Actions"
@@ -356,7 +360,8 @@
       "filtered": "Data filtered for {{range}}",
       "approved": "{{name}} has been approved & published",
       "refreshed": "Latest activities updated",
-      "exported": "Dashboard data exported (CSV opens in Excel)"
+      "exported": "Dashboard data exported (CSV opens in Excel)",
+      "blockedOnePlaceRule": "Cannot approve: {{name}} already has an active place (one place per partner)"
     },
     "kpi": {
       "totalUsers": "Total users",
@@ -719,9 +724,9 @@
       "viewPartnerDetails": "View partner details",
       "unlockAccount": "Unlock account",
       "representative": "Representative: {{representative}}",
-      "placeList": "Place list",
       "moreOptions": "More options",
-      "lockSettings": "Lock / Settings"
+      "lockSettings": "Lock / Settings",
+      "viewPlace": "View place"
     },
     "partnerStatsCards": {
       "ecosystemShare": "Ecosystem share",
@@ -754,7 +759,7 @@
       "province": "Province",
       "representative": "Representative",
       "phone": "Phone",
-      "listings": "Listings",
+      "listings": "Place",
       "joined": "Joined on",
       "status": "Status",
       "exportedPartnersExcelFile_one": "Exported {{count}} partner to an Excel file (CSV)",
@@ -762,14 +767,8 @@
       "addNewPartner": "+ Add new partner",
       "partners": "partners"
     },
-    "utils": {
-      "paused": "{{paused}} paused",
-      "pending": "{{pending}} pending",
-      "approved": "{{approved}} approved"
-    },
     "constants": {
       "newestSignUps": "Newest sign-ups",
-      "mostListedPlaces": "Most listed places",
       "highestRated": "Highest rated",
       "nationwide63Provinces": "Nationwide (63 provinces)"
     },
@@ -779,6 +778,267 @@
       "expiredLicense": "Business / fire safety license expired",
       "partnerRequest": "Suspended at the partner's request",
       "other": "Other (detailed note)"
+    },
+    "place": {
+      "none": "Not registered",
+      "pending": "Pending review",
+      "approved": "Approved",
+      "hidden": "Hidden",
+      "rejected": "Rejected"
+    }
+  },
+  "placeReview": {
+    "header": {
+      "eyebrow": "Content moderation",
+      "eyebrowNote": "Partner places",
+      "title": "Partner place review",
+      "description": "Review new places and change requests from partners before travellers can see them."
+    },
+    "stats": {
+      "pending": "Places to review",
+      "pendingHint": "New submissions to handle",
+      "revisions": "Changes to review",
+      "revisionsHint": "Edits to published places",
+      "approved": "Published",
+      "approvedHint": "Out of {{total}} places",
+      "rejected": "Rejected",
+      "rejectedHint": "Waiting for partners to resubmit"
+    },
+    "tabs": {
+      "listings": "New places",
+      "revisions": "Change requests"
+    },
+    "filters": {
+      "searchLabel": "Search",
+      "searchListings": "Search by place, business or address...",
+      "searchRevisions": "Search by place or business...",
+      "status": "Status",
+      "all": "All statuses",
+      "clear": "Clear filters"
+    },
+    "listingStatus": {
+      "pending": "Pending",
+      "approved": "Published",
+      "rejected": "Rejected",
+      "suspended": "Hidden"
+    },
+    "revisionStatus": {
+      "pending": "Pending",
+      "approved": "Applied",
+      "rejected": "Rejected",
+      "cancelled": "Withdrawn"
+    },
+    "table": {
+      "place": "Place",
+      "business": "Business",
+      "province": "Province",
+      "submitted": "Submitted",
+      "status": "Status",
+      "actions": "Actions",
+      "review": "Review",
+      "view": "View",
+      "empty": "No matching submissions",
+      "emptyHint": "Try another filter or keyword.",
+      "items": "submissions"
+    },
+    "detail": {
+      "backQueue": "Back to queue",
+      "notFound": "Submission {{id}} not found",
+      "loadError": "Could not load the submission",
+      "listingCode": "Place code: PL-{{id}}",
+      "photos": "Photos",
+      "noPhotos": "The partner has not added photos",
+      "cover": "Cover",
+      "description": "Description",
+      "noDescription": "No description",
+      "hours": "Opening hours",
+      "noHours": "No opening hours",
+      "closed": "Closed",
+      "prices": "Reference prices",
+      "noPrices": "No prices",
+      "info": "Place details",
+      "name": "Place name",
+      "group": "Service group",
+      "category": "Type",
+      "province": "Province",
+      "address": "Address",
+      "coordinates": "Coordinates",
+      "openMap": "Open Google Maps",
+      "phone": "Phone",
+      "website": "Website",
+      "business": "Business",
+      "review": "Review",
+      "submittedAt": "Submitted on",
+      "approvedAt": "Approved on",
+      "updatedAt": "Last updated",
+      "rejectReason": "Rejection reason",
+      "noReason": "No reason given",
+      "pendingNotice": "Check the map location, photos and contact details before approving. Once approved the place is visible to travellers.",
+      "rejectedNotice": "The partner can edit and resubmit; it then returns to the queue.",
+      "approvedNotice": "This place is published. Further partner changes arrive as change requests.",
+      "suspendedNotice": "This place is hidden from travellers.",
+      "previous": "Previous photo",
+      "next": "Next photo",
+      "close": "Close"
+    },
+    "days": {
+      "d1": "Monday",
+      "d2": "Tuesday",
+      "d3": "Wednesday",
+      "d4": "Thursday",
+      "d5": "Friday",
+      "d6": "Saturday",
+      "d7": "Sunday"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "approveListing": "Approve & publish",
+      "approveRevision": "Apply changes"
+    },
+    "approve": {
+      "listingTitle": "Approve this place?",
+      "listingMessage": "<c0>{{name}}</c0> will be visible to travellers right after approval.",
+      "revisionTitle": "Apply these changes?",
+      "revisionMessage": "The proposed content will replace what is published for <c0>{{name}}</c0>.",
+      "noteLabel": "Internal note (optional)",
+      "notePlaceholder": "Only admins can see this"
+    },
+    "rejectListing": {
+      "title": "Reject place",
+      "description": "The reason is shown to the partner so they can fix and resubmit.",
+      "reasonLabel": "Rejection reason",
+      "placeholder": "E.g. The coordinates do not match the shop location...",
+      "required": "Please enter a rejection reason",
+      "confirm": "Reject place"
+    },
+    "rejectRevision": {
+      "title": "Reject change request",
+      "description": "The place keeps its published content. The partner sees the reason group and feedback.",
+      "codeLabel": "Reason group",
+      "feedbackLabel": "Feedback for the partner",
+      "feedbackPlaceholder": "Explain what needs fixing so the partner can resubmit...",
+      "feedbackRequired": "Please enter feedback for the partner",
+      "noteLabel": "Review note (required)",
+      "notePlaceholder": "Rejection reason kept on record — only admins can see this",
+      "noteRequired": "Please enter a review note",
+      "confirm": "Reject changes"
+    },
+    "reasons": {
+      "pricing": "Incorrect prices",
+      "location": "Wrong location / address",
+      "photos": "Photos do not meet requirements",
+      "duplicate": "Duplicate of another place",
+      "other": "Other reason"
+    },
+    "compare": {
+      "title": "Compare changes",
+      "field": "Field",
+      "current": "Published",
+      "proposed": "Proposed",
+      "changed": "Changed",
+      "changedCount": "{{count}} changed fields",
+      "noChanges": "The proposal matches the published content",
+      "empty": "—"
+    },
+    "revision": {
+      "title": "Change request: {{name}}",
+      "code": "Change code: RV-{{id}}",
+      "reason": "Reason group",
+      "feedback": "Feedback sent to the partner",
+      "note": "Internal note",
+      "reviewedAt": "Handled on",
+      "pendingNotice": "The partner proposes changes to a published place. The old content stays visible until you apply them.",
+      "cancelledNotice": "The partner withdrew this change request.",
+      "approvedNotice": "These changes have been applied to the place.",
+      "rejectedNotice": "These changes were rejected; the place kept its old content.",
+      "viewListing": "View place"
+    },
+    "toast": {
+      "listingApproved": "Approved and published {{name}}",
+      "listingRejected": "Rejected place {{name}}",
+      "revisionApproved": "Applied the changes to {{name}}",
+      "revisionRejected": "Rejected the changes for {{name}}",
+      "failed": "Action failed: {{message}}"
+    }
+  },
+  "partnerAdmin": {
+    "stats": {
+      "total": "Total partners",
+      "newThisMonth": "+{{count}} new this month",
+      "pending": "Pending review",
+      "pendingHint": "Profiles awaiting action",
+      "active": "Active",
+      "activeHint": "Granted partner access",
+      "suspended": "Suspended",
+      "rejectedHint": "{{count}} rejected profiles"
+    },
+    "table": {
+      "business": "Business",
+      "taxCode": "Tax code",
+      "contact": "Contact",
+      "submitted": "Submitted",
+      "status": "Status",
+      "actions": "Actions",
+      "owner": "Owner: {{name}}"
+    },
+    "filters": {
+      "searchLabel": "Search",
+      "search": "Search by business name, tax code or email...",
+      "status": "Profile status",
+      "clear": "Clear filters"
+    },
+    "actions": {
+      "view": "View details",
+      "approve": "Approve",
+      "reject": "Reject",
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "refresh": "Refresh"
+    },
+    "toast": {
+      "approved": "Approved {{name}} — the account now has partner access",
+      "rejected": "Rejected the profile of {{name}}",
+      "locked": "Locked partner account {{name}}",
+      "unlocked": "Unlocked partner account {{name}}",
+      "failed": "Action failed: {{message}}"
+    },
+    "approve": {
+      "title": "Approve this partner profile?",
+      "message": "<c0>{{name}}</c0> will be activated and the account {{email}} will get partner (Business Owner) access.",
+      "confirm": "Approve profile"
+    },
+    "reject": {
+      "title": "Reject partner profile",
+      "description": "The reason is shown to the partner so they can fix the profile and resubmit.",
+      "reasonLabel": "Rejection reason",
+      "placeholder": "E.g. The tax code does not match the business name...",
+      "required": "Please enter a rejection reason",
+      "confirm": "Reject profile"
+    },
+    "detail": {
+      "businessInfo": "Business information",
+      "ownerAccount": "Owner account",
+      "review": "Review",
+      "businessName": "Business name",
+      "taxCode": "Tax code",
+      "contactEmail": "Contact email",
+      "contactPhone": "Contact phone",
+      "ownerName": "Owner",
+      "ownerEmail": "Account email",
+      "profileCode": "Profile code",
+      "submittedAt": "Submitted on",
+      "approvedAt": "Approved on",
+      "updatedAt": "Last updated",
+      "notApproved": "Not approved",
+      "rejectReason": "Rejection reason",
+      "lockReason": "Lock reason",
+      "noReason": "No reason given",
+      "pendingNotice": "This profile is awaiting review. Check the tax code and contact details before approving.",
+      "rejectedNotice": "The partner can edit and resubmit the profile; it then returns to the review queue.",
+      "suspendedNotice": "This partner is locked and cannot edit the profile.",
+      "placeTitle": "Partner place",
+      "placeSoon": "Shown once the places module is connected to the API."
     }
   },
   "partnerDetail": {
@@ -828,18 +1088,15 @@
     },
     "partnerProfileCard": {
       "registeredPlaces": "Registered places",
-      "business": "Business",
-      "approved": "Approved",
-      "public": "Public",
-      "pendingApproval": "Pending approval",
-      "needsAction": "Needs action",
       "mainBusiness": "Main business: {{businessName}}",
       "representative": "Representative: <c0>{{representative}}</c0>",
       "joined": "Joined: {{joinedAt}} (<c0>{{joinedAt2}}</c0>)",
       "aiTrust": "AI trust",
       "averageRating": "Average rating",
       "aiSearchHits": "AI search appearances",
-      "hits": "Hits"
+      "hits": "Hits",
+      "placeLimit": "1 place max",
+      "placeStatus": "Place status"
     },
     "scheduleReviewModal": {
       "scheduleReAssessment": "Schedule re-assessment",
@@ -1154,7 +1411,9 @@
       "approveSubmissions_one": "Approve {{count}} submission",
       "approveSubmissions_other": "Approve {{count}} submissions",
       "selectedSubmissionsNotPending_one": "{{count}} selected submission is not pending review and will be skipped.",
-      "selectedSubmissionsNotPending_other": "{{count}} selected submissions are not pending review and will be skipped."
+      "selectedSubmissionsNotPending_other": "{{count}} selected submissions are not pending review and will be skipped.",
+      "skippedOnePlaceRule_one": "Skipped {{count}} submission: the partner already has an active place",
+      "skippedOnePlaceRule_other": "Skipped {{count}} submissions: the partner already has an active place"
     },
     "utils": {
       "overdueH": "Overdue ({{hours}}h)"
@@ -1294,7 +1553,6 @@
     },
     "partnerChecklistCard": {
       "active": "Active",
-      "approved": "Approved",
       "response": "Response",
       "submittingOrganization": "Submitting organization",
       "verifiedPartner": "Verified partner",
@@ -1303,7 +1561,11 @@
       "partnerHotline": "Partner hotline",
       "standardInspectionChecklist": "Standard inspection checklist",
       "passed": "{{passedCount}} / {{length}} Passed",
-      "clickMarkAsPassed": "Click to mark as passed / failed"
+      "clickMarkAsPassed": "Click to mark as passed / failed",
+      "onePlaceRule": "One-place rule",
+      "ruleOk": "Valid",
+      "ruleViolated": "Violated",
+      "ruleViolationNote": "This partner already has <c0>{{name}}</c0> ({{id}}). Each partner may register only one place."
     },
     "photoGallerySection": {
       "photosUploadedByPartner": "Photos uploaded by the partner",
@@ -1373,7 +1635,8 @@
       "rejectedListingEmailNotification": "Rejected listing {{id}}. An email and notification have been sent to {{partnerName}}.",
       "preparingZipDocuments_one": "Preparing a ZIP of {{count}} document for {{id}}",
       "preparingZipDocuments_other": "Preparing a ZIP of {{count}} documents for {{id}}",
-      "cannotApproveYet": "Cannot approve yet: {{approveBlockedReason}}"
+      "cannotApproveYet": "Cannot approve yet: {{approveBlockedReason}}",
+      "partnerAlreadyHasPlace": "the partner already has an active place ({{name}})"
     },
     "utils": {
       "partnerSubmittedNewListing": "Partner {{partnerName}} submitted a new listing.",
@@ -1496,7 +1759,8 @@
       "address": "Address *",
       "eGCamChau": "e.g. Cam Chau, Hoi An City, Quang Nam",
       "provinceCity": "Province / City",
-      "subType": "Place type"
+      "subType": "Place type",
+      "partnerAlreadyHasPlace": "This partner already registered \"{{name}}\" — one place per partner"
     }
   },
   "rejectedListings": {
@@ -2540,6 +2804,7 @@
     },
     "errors": {
       "invalidCredentials": "Incorrect email or password",
+      "notAdministrator": "This account does not have access to the admin portal",
       "unknownEmail": "This email does not exist in the admin system",
       "accountNotFound": "Admin account not found",
       "wrongCurrentPassword": "The current password is incorrect",
@@ -2675,5 +2940,281 @@
       "giftWrapping": "Gift wrapping",
       "delivery": "Home delivery"
     }
+  },
+  "placeCatalog": {
+    "header": {
+      "eyebrow": "Place catalogue",
+      "eyebrowNote": "Live data",
+      "title": "Destination management",
+      "description": "Every place in the system: platform POIs and partner places. Partner places change through the listing review flow.",
+      "refresh": "Refresh"
+    },
+    "stats": {
+      "total": "Total places",
+      "totalHint": "{{count}} new this month",
+      "active": "Visible",
+      "activeHint": "Travellers can find them",
+      "draft": "Not published",
+      "draftHint": "New places awaiting listing review",
+      "sources": "Data sources",
+      "sourcesHint": "{{partner}} partners · {{admin}} platform POIs"
+    },
+    "tabs": {
+      "all": "All"
+    },
+    "filters": {
+      "searchLabel": "Search",
+      "searchPlaceholder": "Place name or address…",
+      "province": "Province / city",
+      "status": "Status",
+      "source": "Source",
+      "all": "All"
+    },
+    "status": {
+      "draft": "Not published",
+      "active": "Visible",
+      "maintenance": "Maintenance",
+      "paused": "Paused"
+    },
+    "source": {
+      "partner": "Partner",
+      "admin": "Platform POI"
+    },
+    "table": {
+      "place": "Place",
+      "source": "Source",
+      "province": "Province / city",
+      "status": "Status",
+      "rating": "Rating",
+      "updated": "Updated",
+      "actions": "Actions",
+      "view": "View",
+      "empty": "No places yet",
+      "emptyHint": "Try other filters or keywords.",
+      "items": "places",
+      "noRating": "None yet",
+      "reviews": "{{count}} reviews",
+      "photos": "{{count}} photos"
+    },
+    "detail": {
+      "back": "Place catalogue",
+      "loadError": "Could not load the place",
+      "sourceTitle": "Source & status",
+      "business": "Business",
+      "listingStatus": "Listing",
+      "openReview": "Open listing review",
+      "adminPoi": "Platform POI — no partner manages it.",
+      "placeCode": "Place code",
+      "created": "Created",
+      "updated": "Last updated",
+      "rating": "Rating",
+      "status": "Status"
+    },
+    "notice": {
+      "readOnly": "This page is read-only for now. Adding / editing platform POIs comes once the backend supports it; partner places change through change requests."
+    }
+  },
+  "userAdmin": {
+    "header": {
+      "eyebrow": "Accounts",
+      "eyebrowNote": "Live data",
+      "title": "User management",
+      "description": "Every account registered on SmartTravel. Admins can view, lock and unlock — not create or edit users.",
+      "refresh": "Refresh"
+    },
+    "stats": {
+      "total": "Total accounts",
+      "totalHint": "{{count}} new this month",
+      "travellers": "Travellers",
+      "travellersHint": "Accounts with the traveller role",
+      "owners": "Partners",
+      "ownersHint": "Approved business owners",
+      "suspended": "Locked",
+      "suspendedHint": "Cannot sign in"
+    },
+    "filters": {
+      "searchLabel": "Search",
+      "searchPlaceholder": "Name, email or phone…",
+      "role": "Role",
+      "status": "Status",
+      "all": "All"
+    },
+    "role": {
+      "traveller": "Traveller",
+      "business_owner": "Partner",
+      "admin": "Administrator"
+    },
+    "status": {
+      "active": "Active",
+      "suspended": "Locked"
+    },
+    "table": {
+      "user": "User",
+      "phone": "Phone",
+      "roles": "Roles",
+      "joined": "Joined",
+      "status": "Status",
+      "actions": "Actions",
+      "view": "View",
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "empty": "No accounts found",
+      "emptyHint": "Try other filters or keywords.",
+      "items": "accounts"
+    },
+    "detail": {
+      "back": "User management",
+      "loadError": "Could not load the user",
+      "code": "Account code: {{code}}",
+      "info": "Account details",
+      "email": "Email",
+      "phone": "Phone",
+      "dateOfBirth": "Date of birth",
+      "joined": "Joined",
+      "roles": "Roles",
+      "status": "Status",
+      "lockReason": "Lock reason",
+      "noReason": "No reason given",
+      "ownerNote": "This account owns a business — see its profile under Partner management.",
+      "openPartners": "Open Partner management",
+      "lockedNotice": "This account is locked and cannot sign in.",
+      "notProvided": "Not provided"
+    },
+    "lock": {
+      "title": "Lock account",
+      "description": "The user is signed out everywhere and cannot sign in again until unlocked.",
+      "reasonLabel": "Lock reason (admins only)",
+      "reasonPlaceholder": "E.g. review spam, terms violation…",
+      "required": "Please enter a lock reason",
+      "confirm": "Lock account"
+    },
+    "unlock": {
+      "title": "Unlock account",
+      "description": "The user can sign in again right away.",
+      "confirm": "Unlock"
+    },
+    "toast": {
+      "locked": "Locked {{name}}",
+      "unlocked": "Unlocked {{name}}",
+      "failed": "Could not complete: {{message}}"
+    }
+  },
+  "adminDashboard": {
+    "header": {
+      "eyebrow": "Overview",
+      "eyebrowNote": "Live data",
+      "title": "Dashboard",
+      "description": "System status and the work waiting for administrators.",
+      "refresh": "Refresh"
+    },
+    "kpi": {
+      "users": "Users",
+      "usersHint": "+{{count}} this month",
+      "partners": "Active partners",
+      "partnersHint": "{{count}} profiles awaiting review",
+      "places": "Visible places",
+      "placesHint": "Out of {{total}} places",
+      "pending": "Pending work",
+      "pendingHint": "Profiles, places and change requests"
+    },
+    "todo": {
+      "title": "To review",
+      "partners": "Partner profiles awaiting review",
+      "listings": "New places awaiting review",
+      "revisions": "Place changes awaiting review",
+      "open": "Open",
+      "allDone": "Nothing is waiting."
+    },
+    "recentListings": {
+      "title": "Recent places awaiting review",
+      "viewAll": "View all",
+      "empty": "No places are awaiting review."
+    },
+    "groups": {
+      "title": "Places by service group",
+      "empty": "No places yet."
+    },
+    "recentUsers": {
+      "title": "New accounts",
+      "viewAll": "View all",
+      "empty": "No accounts yet."
+    }
+  },
+  "adminNotifications": {
+    "eyebrow": "Inbox",
+    "title": "Notifications",
+    "description": "System notifications for administrators.",
+    "emptyTitle": "No notifications yet",
+    "emptyText": "The backend has no notification API yet. Once it does, events such as new partner profiles, places or change requests will show here.",
+    "goReview": "View pending reviews"
+  },
+  "adminReports": {
+    "eyebrow": "Statistics",
+    "eyebrowNote": "Live data",
+    "title": "Reports & Analytics",
+    "description": "Current totals for users, partners and places.",
+    "refresh": "Refresh",
+    "users": "Users by role",
+    "userStatus": "Account status",
+    "partners": "Partners by status",
+    "listings": "Place listings",
+    "placeGroups": "Places by service group",
+    "placeStatus": "Places by status",
+    "placeSources": "Place sources",
+    "total": "Total",
+    "note": "Charts over time (growth, travel seasons…) come once the backend keeps daily data.",
+    "label": {
+      "travellers": "Travellers",
+      "owners": "Partners",
+      "admins": "Administrators",
+      "active": "Active",
+      "locked": "Locked",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "suspended": "Suspended",
+      "approved": "Approved",
+      "hidden": "Hidden",
+      "revisions": "Changes pending",
+      "visible": "Visible",
+      "draft": "Not published",
+      "paused": "Paused",
+      "partnerPlaces": "Partner places",
+      "adminPlaces": "Platform POIs"
+    }
+  },
+  "adminProfile": {
+    "eyebrow": "Account",
+    "title": "Administrator profile",
+    "description": "Details of the signed-in account.",
+    "loadError": "Could not load the profile",
+    "info": "Personal details",
+    "name": "Full name",
+    "email": "Email",
+    "emailHint": "The sign-in email cannot be changed.",
+    "phone": "Phone number",
+    "phoneInvalid": "Invalid phone number",
+    "nameInvalid": "Name needs at least 2 characters",
+    "save": "Save changes",
+    "saved": "Profile saved",
+    "password": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Repeat new password",
+    "passwordHint": "At least 8 characters with upper case, lower case and a digit.",
+    "passwordMismatch": "Passwords do not match",
+    "passwordRequired": "Please fill in every password field",
+    "changePassword": "Change password",
+    "passwordChanged": "Password changed",
+    "sessions": "Sessions",
+    "sessionsText": "Sign out of every device using this account, including this one.",
+    "logoutAll": "Sign out everywhere",
+    "failed": "Could not complete: {{message}}"
+  },
+  "adminSettings": {
+    "eyebrow": "System",
+    "title": "System settings",
+    "description": "Platform-wide configuration.",
+    "emptyTitle": "Settings not connected yet",
+    "emptyText": "The database has a system_settings table (listing review SLA, idle sign-out, platform name) but the backend has no API to read or save it yet. This page opens once it does."
   }
 }

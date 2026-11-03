@@ -13,6 +13,27 @@ export interface ClientUser {
   roles: RoleName[];
 }
 
+export interface ProfileInput {
+  name: string;
+  phoneNumber: string | null;
+  /** yyyy-MM-dd */
+  dateOfBirth: string | null;
+  avatarUrl: string | null;
+}
+
+export type BudgetLevel = 'SAVING' | 'MEDIUM' | 'LUXURY';
+export type TravelStyle = 'RELAX' | 'ADVENTURE' | 'CULTURE' | 'FAMILY' | 'SOLO' | 'LUXURY';
+
+/** Sở thích du lịch (GET/PUT /api/users/me/preferences) — các list là mã tham chiếu của BE */
+export interface TravelPreferences {
+  budgetLevel: BudgetLevel | null;
+  travelStyle: TravelStyle | null;
+  notes: string | null;
+  interests: string[];
+  transportModes: string[];
+  specialNeeds: string[];
+}
+
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;

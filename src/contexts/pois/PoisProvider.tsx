@@ -49,7 +49,7 @@ const EMPTY_STATS: PoiStats = {
   byTab: { all: 0, attraction: 0, fnb: 0, hotel: 0, shopping: 0 },
 };
 
-/** Store điểm đến POI — dữ liệu tải qua poiService (mock hoặc API) */
+/** Store điểm đến POI — dữ liệu tải qua poiService (API) */
 export default function PoisProvider({ children }: { children: ReactNode }) {
   const { admin } = useAuth();
   const seed = poisSource.seed;

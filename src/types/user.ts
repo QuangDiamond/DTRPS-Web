@@ -35,7 +35,7 @@ export interface UserFilters {
 
 export type UserFormValues = Pick<AppUser, 'name' | 'email' | 'phone' | 'city' | 'accountType'>;
 
-/** Số liệu toàn hệ thống (gồm cả dữ liệu không có trong mock) */
+/** Số liệu toàn hệ thống (do server tính) */
 export interface UserStats {
   total: number;
   active: number;

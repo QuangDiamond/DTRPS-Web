@@ -1,11 +1,11 @@
 import { type FormEvent, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Icon } from '@/components/common';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { errorMessage } from '@/client/api/http';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import ClientAuthLayout, { SocialLogin } from '@/client/layouts/ClientAuthLayout';
 import { CLIENT_ROUTES } from '@/client/routePaths';
-import { FormAlert } from '@/client/ui/Blocks';
+import { FormAlert, Notice } from '@/client/ui/Blocks';
+import { routeNotice } from '@/client/ui/useNotice';
 import { PrimaryButton, TextLink } from '@/client/ui/Buttons';
 import Field from '@/client/ui/Field';
 import { isValidEmail } from '@/client/utils/validation';
@@ -29,7 +29,8 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [forgotNote, setForgotNote] = useState(false);
+  // Thông báo do trang trước gửi kèm (vd. vừa đổi mật khẩu)
+  const notice = routeNotice(location.state);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -61,6 +62,7 @@ export default function LoginPage() {
       </div>
 
       <form onSubmit={(event) => void submit(event)} noValidate>
+        {notice && !formError && <Notice>{notice}</Notice>}
         {formError && <FormAlert message={formError} />}
         <Field
           label="Email"
@@ -90,20 +92,13 @@ export default function LoginPage() {
             />
             Ghi nhớ đăng nhập
           </label>
-          <button
-            type="button"
-            onClick={() => setForgotNote(true)}
+          <Link
+            to={CLIENT_ROUTES.FORGOT_PASSWORD}
             className="text-[12px] font-bold text-[#007E78] hover:underline"
           >
             Quên mật khẩu?
-          </button>
+          </Link>
         </div>
-        {forgotNote && (
-          <p className="-mt-3 mb-4 flex items-center gap-1 text-[11px] text-client-muted">
-            <Icon name="info" className="text-[14px]" />
-            Khôi phục mật khẩu qua email đang được phát triển.
-          </p>
-        )}
         <PrimaryButton type="submit" loading={busy}>
           Đăng nhập
         </PrimaryButton>

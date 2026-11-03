@@ -193,7 +193,7 @@ export interface ListingFilters {
   priority: ListingPriority;
 }
 
-/** Số liệu tổng hợp toàn hệ thống (gồm cả dữ liệu không có trong mock) */
+/** Số liệu tổng hợp toàn hệ thống (do server tính) */
 export interface ListingStats {
   total: number;
   pending: number;

@@ -2632,8 +2632,7 @@
       "orEnterSecretKey": "Or enter the secret key manually",
       "couldNotCreateKey": "Could not create a key; please try again",
       "creatingKey": "Creating key…",
-      "copyKey": "Copy key",
-      "demoCode": "Demo code: <c0>{{DEMO_TOTP_CODE}}</c0>"
+      "copyKey": "Copy key"
     },
     "twoFactorCard": {
       "twoFactorSecurityAuthentication": "Two-factor security & Authentication keys",
@@ -2725,8 +2724,7 @@
   },
   "auth": {
     "authMessages": {
-      "demoCode": " (demo code: {{DEMO_OTP_CODE}})",
-      "otpCodeSent": "OTP code sent to {{email}}{{demoHint}}"
+      "otpCodeSent": "OTP code sent to {{email}}"
     },
     "forgotPassword": {
       "pleaseEnterValidEmail": "Please enter a valid email address",
@@ -2749,8 +2747,7 @@
       "signAdminPortal": "Sign in to the Admin Portal",
       "verifyingCredentials": "Verifying credentials...",
       "secureSignWith2fa": "Secure sign-in with 2FA. Social sign-in is NOT supported to protect national data.",
-      "enterpriseGradeSecurity2fa": "Enterprise-grade security & 2FA",
-      "demoAccount": "Demo account: {{email}} / {{password}}"
+      "enterpriseGradeSecurity2fa": "Enterprise-grade security & 2FA"
     },
     "resetPassword": {
       "theNewPasswordDoes": "The new password does not meet all security requirements",
@@ -2851,9 +2848,6 @@
     },
     "profileService": {
       "currentDevice": "Current device"
-    },
-    "settingsService": {
-      "superAdminAdministrator": "Super Admin administrator"
     }
   },
   "search": {

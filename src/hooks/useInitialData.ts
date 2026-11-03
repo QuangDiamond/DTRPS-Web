@@ -4,8 +4,7 @@ import { getErrorMessage } from '@/utils/error';
 
 /**
  * Tải dữ liệu khởi tạo cho một store.
- * - Chế độ mock: source.seed có sẵn → trạng thái "ready" ngay, không gọi mạng.
- * - Chế độ API: gọi source.load() khi `enabled` (đã đăng nhập), rồi đổ dữ liệu vào store qua `apply`.
+ * Gọi source.load() khi `enabled` (đã đăng nhập), rồi đổ dữ liệu vào store qua `apply`.
  */
 export function useInitialData<S>(
   source: DataSource<S>,

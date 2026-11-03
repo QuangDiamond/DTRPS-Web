@@ -50,10 +50,7 @@ function ReportView({ filters, onFiltersChange }: ReportViewProps) {
   const { stats: partnerStats } = usePartners();
   const { stats: poiStats } = usePois();
   const { stats: listingStats } = useListings();
-  const report = useResource(
-    () => reportService.getOverview(filters),
-    () => reportService.peekOverview(filters),
-  );
+  const report = useResource(() => reportService.getOverview(filters));
   const [aiOpen, setAiOpen] = useState(false);
 
   const data = report.data;

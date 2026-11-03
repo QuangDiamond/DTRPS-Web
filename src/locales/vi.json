@@ -2566,8 +2566,7 @@
       "orEnterSecretKey": "Hoặc nhập khóa bí mật thủ công",
       "couldNotCreateKey": "Không tạo được khóa, hãy thử lại",
       "creatingKey": "Đang tạo khóa…",
-      "copyKey": "Sao chép khóa",
-      "demoCode": "Mã demo: <c0>{{DEMO_TOTP_CODE}}</c0>"
+      "copyKey": "Sao chép khóa"
     },
     "twoFactorCard": {
       "twoFactorSecurityAuthentication": "Bảo mật 2 lớp & Khóa xác thực",
@@ -2653,8 +2652,7 @@
   },
   "auth": {
     "authMessages": {
-      "demoCode": " (mã demo: {{DEMO_OTP_CODE}})",
-      "otpCodeSent": "Đã gửi mã OTP tới {{email}}{{demoHint}}"
+      "otpCodeSent": "Đã gửi mã OTP tới {{email}}"
     },
     "forgotPassword": {
       "pleaseEnterValidEmail": "Vui lòng nhập email hợp lệ",
@@ -2677,8 +2675,7 @@
       "signAdminPortal": "Đăng nhập Cổng Quản trị",
       "verifyingCredentials": "Đang xác thực thông tin...",
       "secureSignWith2fa": "Đăng nhập an toàn với chuẩn xác thực 2FA. KHÔNG hỗ trợ đăng nhập qua mạng xã hội nhằm bảo toàn dữ liệu quốc gia.",
-      "enterpriseGradeSecurity2fa": "Bảo mật cấp Doanh nghiệp & 2FA",
-      "demoAccount": "Tài khoản demo: {{email}} / {{password}}"
+      "enterpriseGradeSecurity2fa": "Bảo mật cấp Doanh nghiệp & 2FA"
     },
     "resetPassword": {
       "theNewPasswordDoes": "Mật khẩu mới chưa đáp ứng đủ yêu cầu bảo mật",
@@ -2778,9 +2775,6 @@
     },
     "profileService": {
       "currentDevice": "Thiết bị hiện tại"
-    },
-    "settingsService": {
-      "superAdminAdministrator": "Quản trị viên Super Admin"
     }
   },
   "search": {

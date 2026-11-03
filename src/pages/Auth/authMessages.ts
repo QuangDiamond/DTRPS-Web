@@ -1,10 +1,8 @@
 import i18n from 'i18next';
-import { DEMO_OTP_CODE } from '@/services/authService';
 
-/** Toast sau khi gửi OTP — khi chạy dữ liệu mẫu hiện kèm mã demo để test */
+/** Toast sau khi gửi OTP */
 export function otpSentMessage(email: string): string {
-  const demoHint = DEMO_OTP_CODE ? i18n.t('auth.authMessages.demoCode', { DEMO_OTP_CODE }) : '';
-  return i18n.t('auth.authMessages.otpCodeSent', { email, demoHint });
+  return i18n.t('auth.authMessages.otpCodeSent', { email });
 }
 
 export const AUTH_LINK_CLASS =

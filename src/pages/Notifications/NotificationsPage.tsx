@@ -127,7 +127,7 @@ export default function NotificationsPage() {
   const sendBroadcast = async (payload: BroadcastPayload) => {
     setBroadcasting(true);
     try {
-      const result = await notificationService.broadcast(payload, audienceCounts[payload.audience]);
+      const result = await notificationService.broadcast(payload);
       setBroadcastOpen(false);
       showToast(
         t('notifications.broadcast.sent', {

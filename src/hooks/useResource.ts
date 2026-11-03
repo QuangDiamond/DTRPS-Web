@@ -11,16 +11,14 @@ export interface ResourceState<T> {
 
 /**
  * Dữ liệu riêng của một trang (hồ sơ chi tiết, tổng quan...).
- * `peek` trả dữ liệu có sẵn ngay (chế độ mock) — nếu undefined thì gọi `loader` để tải từ server.
+ * Dữ liệu được tải qua `loader` khi component mount.
  * Component dùng hook này nên được gắn `key` theo id bản ghi để tải lại khi đổi bản ghi.
  */
 export function useResource<T>(
   loader: () => Promise<T>,
-  peek: () => T | undefined,
 ): ResourceState<T> {
-  const [initial] = useState(peek);
-  const [data, setData] = useState<T | undefined>(initial);
-  const [status, setStatus] = useState<LoadStatus>(initial === undefined ? 'loading' : 'ready');
+  const [data, setData] = useState<T | undefined>(undefined);
+  const [status, setStatus] = useState<LoadStatus>('loading');
   const [error, setError] = useState<string | null>(null);
   const loaderRef = useRef(loader);
   useEffect(() => {
@@ -40,8 +38,8 @@ export function useResource<T>(
   }, []);
 
   useEffect(() => {
-    if (initial === undefined) void load();
-  }, [initial, load]);
+    void load();
+  }, [load]);
 
   return { data, status, error, reload: () => void load() };
 }

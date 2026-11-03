@@ -1,0 +1,261 @@
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Icon } from '@/components/common';
+import { CLIENT_ROUTES, placePath } from '@/client/routePaths';
+import {
+  normalizeText,
+  type Place,
+  type PlaceCategory,
+  PLACES,
+} from '@/client/traveller/data/places';
+import { useTraveller } from '@/client/traveller/travellerContext';
+import { ConfirmDialog } from '@/client/ui/Overlay';
+
+type SortMode = 'recent' | 'rating' | 'name';
+
+const CATEGORIES: { id: PlaceCategory; label: string }[] = [
+  { id: 'all', label: 'Tất cả' },
+  { id: 'nature', label: 'Danh lam thắng cảnh' },
+  { id: 'culture', label: 'Văn hoá' },
+  { id: 'food', label: 'Ẩm thực' },
+  { id: 'shopping', label: 'Mua sắm' },
+];
+
+const SORT_OPTIONS: { id: SortMode; label: string }[] = [
+  { id: 'recent', label: 'Mới lưu gần đây' },
+  { id: 'rating', label: 'Đánh giá cao nhất' },
+  { id: 'name', label: 'Tên A - Z' },
+];
+
+function FavoriteCard({ place, onRemove }: { place: Place; onRemove: () => void }) {
+  return (
+    <div className="relative overflow-hidden rounded-[22px] bg-white">
+      <Link to={placePath(place.id)} className="block">
+        <div className="relative h-[170px]">
+          <img src={place.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <span className="absolute bottom-3 left-3 flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1 text-[10px] font-bold text-white">
+            <Icon name="location_on" filled className="text-[13px]" />
+            {place.location}
+          </span>
+        </div>
+      </Link>
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label="Bỏ yêu thích"
+        className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white"
+      >
+        <Icon name="favorite" filled className="text-[20px] text-[#E5484D]" />
+      </button>
+      <div className="px-4 pt-3 pb-4">
+        <div className="flex items-start gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[16px] font-extrabold text-[#13364A]">{place.name}</p>
+            <p className="mt-1 flex flex-wrap items-center gap-x-1 text-[11px]">
+              <Icon name="star" filled className="text-[15px] text-[#E0A100]" />
+              <b className="text-[#13364A]">{place.rating}</b>
+              <span className="text-[#72818C]">({place.reviews} đánh giá)</span>
+              <span className="text-[#72818C]">•</span>
+              <span className="truncate font-semibold text-[#087A78]">{place.tag}</span>
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] text-[#72818C]">Giá tham khảo</p>
+            <p className="text-[15px] font-extrabold text-[#C2410C]">{place.priceLabel}</p>
+          </div>
+        </div>
+        <Link
+          to={placePath(place.id)}
+          className="mt-3 flex h-11 items-center justify-center rounded-2xl bg-[#EBEDFF] text-[13px] font-bold text-[#13364A] hover:bg-[#DFE2FF]"
+        >
+          Xem chi tiết
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+/** Địa điểm yêu thích — theo FavoritesScreen của mobile */
+export default function FavoritesPage() {
+  const { favorites, toggleFavorite } = useTraveller();
+  const [category, setCategory] = useState<PlaceCategory>('all');
+  const [sortMode, setSortMode] = useState<SortMode>('recent');
+  const [showSearch, setShowSearch] = useState(false);
+  const [query, setQuery] = useState('');
+  const [removing, setRemoving] = useState<Place | null>(null);
+
+  // Mới lưu nhất đứng đầu
+  const savedPlaces = useMemo(
+    () =>
+      [...favorites]
+        .reverse()
+        .map((id) => PLACES.find((place) => place.id === id))
+        .filter((place): place is Place => Boolean(place)),
+    [favorites],
+  );
+
+  const countByCategory = (id: PlaceCategory) =>
+    id === 'all' ? savedPlaces.length : savedPlaces.filter((place) => place.category === id).length;
+
+  const visiblePlaces = useMemo(() => {
+    const keyword = normalizeText(query);
+    const filtered = savedPlaces.filter(
+      (place) =>
+        (category === 'all' || place.category === category) &&
+        (!keyword || normalizeText(`${place.name} ${place.location}`).includes(keyword)),
+    );
+    if (sortMode === 'rating') return [...filtered].sort((a, b) => b.rating - a.rating);
+    if (sortMode === 'name')
+      return [...filtered].sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+    return filtered;
+  }, [savedPlaces, category, query, sortMode]);
+
+  return (
+    <div>
+      <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2">
+          <h1 className="text-[22px] font-extrabold text-[#13364A]">Địa điểm yêu thích</h1>
+          <span className="text-[12px] font-semibold text-[#087A78]">
+            ({savedPlaces.length} điểm đã lưu)
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setShowSearch((previous) => !previous);
+            setQuery('');
+          }}
+          aria-label="Tìm kiếm"
+          aria-expanded={showSearch}
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EBEDFF] text-[#13364A]"
+        >
+          <Icon name={showSearch ? 'close' : 'search'} className="text-[21px]" />
+        </button>
+      </div>
+
+      {showSearch && (
+        <div className="mt-3 flex h-11 items-center rounded-2xl bg-white px-3 focus-within:ring-2 focus-within:ring-primary/30">
+          <Icon name="search" className="text-[20px] text-[#72818C]" />
+          <input
+            autoFocus
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Tìm trong danh sách yêu thích..."
+            aria-label="Tìm trong danh sách yêu thích"
+            className="ml-2 h-full flex-1 bg-transparent text-[13px] text-[#13364A] placeholder:text-[#9AA6AD] focus:outline-none"
+          />
+        </div>
+      )}
+
+      <div className="mt-3 flex items-center justify-between">
+        <span className="flex items-center gap-1 text-[12px] text-[#72818C]">
+          <Icon name="sort" className="text-[17px]" />
+          Sắp xếp:
+        </span>
+        <div className="relative">
+          <select
+            value={sortMode}
+            onChange={(event) => setSortMode(event.target.value as SortMode)}
+            aria-label="Sắp xếp"
+            className="cursor-pointer appearance-none rounded-full bg-white py-1.5 pr-8 pl-3 text-[12px] font-bold text-[#13364A] focus:outline-none"
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <Icon
+            name="expand_more"
+            className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-[18px] text-[#13364A]"
+          />
+        </div>
+      </div>
+
+      <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1">
+        {CATEGORIES.map((item) => {
+          const selected = item.id === category;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setCategory(item.id)}
+              aria-pressed={selected}
+              className={`shrink-0 rounded-full px-4 py-2 text-[12px] font-bold ${
+                selected ? 'bg-[#075C66] text-white' : 'bg-white text-[#13364A]'
+              }`}
+            >
+              {item.label} ({countByCategory(item.id)})
+            </button>
+          );
+        })}
+      </div>
+
+      {visiblePlaces.length > 0 ? (
+        <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {visiblePlaces.map((place) => (
+            <FavoriteCard key={place.id} place={place} onRemove={() => setRemoving(place)} />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-4 flex flex-col items-center rounded-[22px] bg-white px-6 py-10 text-center">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FFE4E4]">
+            <Icon name="favorite" className="text-[32px] text-[#E5484D]" />
+          </span>
+          <p className="mt-3 text-[15px] font-extrabold text-[#13364A]">
+            {savedPlaces.length === 0
+              ? 'Chưa có địa điểm yêu thích'
+              : 'Không tìm thấy địa điểm phù hợp'}
+          </p>
+          <p className="mt-1 text-[12px] text-[#72818C]">
+            {savedPlaces.length === 0
+              ? 'Bấm vào biểu tượng trái tim ở màn Khám phá để lưu địa điểm.'
+              : 'Thử chọn danh mục khác hoặc đổi từ khoá tìm kiếm.'}
+          </p>
+          {savedPlaces.length === 0 && (
+            <Link
+              to={CLIENT_ROUTES.EXPLORE}
+              className="mt-4 rounded-2xl bg-[#075C66] px-5 py-3 text-[13px] font-bold text-white"
+            >
+              Khám phá ngay
+            </Link>
+          )}
+        </div>
+      )}
+
+      {savedPlaces.length > 0 && (
+        <div className="mt-5 flex flex-col gap-3 rounded-[22px] bg-linear-to-br from-[#E2FCF8] to-[#D6F0FF] p-4 md:flex-row md:items-center">
+          <div className="flex flex-1 items-center gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#075C66] text-white">
+              <Icon name="rocket_launch" className="text-[22px]" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[15px] font-extrabold text-[#13364A]">Sẵn sàng lên đường?</p>
+              <p className="mt-0.5 text-[11px] text-[#5D7782]">
+                Bạn muốn kết hợp các điểm yêu thích này vào một lịch trình thông minh?
+              </p>
+            </div>
+          </div>
+          <Link
+            to={CLIENT_ROUTES.TRIP_PLAN}
+            className="flex h-11 items-center justify-center gap-1.5 rounded-2xl bg-[#075C66] px-5 text-[13px] font-bold text-white hover:bg-primary"
+          >
+            Tạo chuyến đi từ danh sách này
+            <Icon name="arrow_forward" className="text-[18px]" />
+          </Link>
+        </div>
+      )}
+
+      {removing && (
+        <ConfirmDialog
+          title="Bỏ yêu thích"
+          message={`Xoá "${removing.name}" khỏi danh sách yêu thích?`}
+          confirmLabel="Xoá"
+          danger
+          onConfirm={() => toggleFavorite(removing.id)}
+          onClose={() => setRemoving(null)}
+        />
+      )}
+    </div>
+  );
+}

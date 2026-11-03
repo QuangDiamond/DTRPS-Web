@@ -1,11 +1,3 @@
-import { buildMockListingDetail } from '@/mocks/builders/listingDetailMock';
-import {
-  APPROVED_LISTING_STATS,
-  DASHBOARD_STATS,
-  MOCK_ACTIVITIES,
-  MOCK_LISTINGS,
-  REJECTED_LISTING_STATS,
-} from '@/mocks/data/mockData';
 import type {
   Listing,
   ListingSubType,
@@ -16,32 +8,14 @@ import type {
   RejectOptions,
 } from '@/types';
 import { ENDPOINTS } from './endpoints';
-import { createSource, peek, readRequest, writeRequest } from './request';
-
-const MOCK_SNAPSHOT: ListingsSnapshot = {
-  listings: MOCK_LISTINGS,
-  activities: MOCK_ACTIVITIES,
-  stats: {
-    total: DASHBOARD_STATS.totalListings,
-    pending: DASHBOARD_STATS.pendingReviews,
-    approved: DASHBOARD_STATS.approvedListings,
-    rejected: DASHBOARD_STATS.rejectedListings,
-    hidden: APPROVED_LISTING_STATS.hidden,
-    resubmitted: REJECTED_LISTING_STATS.resubmitted,
-    locked: REJECTED_LISTING_STATS.locked,
-    weeklyEngagements: APPROVED_LISTING_STATS.weeklyEngagements,
-    weeklyEngagementGrowth: APPROVED_LISTING_STATS.weeklyEngagementGrowth,
-  },
-};
+import { createSource, readRequest, writeRequest } from './request';
 
 /** Dữ liệu khởi tạo của store niêm yết */
-export const listingsSource = createSource(ENDPOINTS.listings.snapshot, MOCK_SNAPSHOT);
+export const listingsSource = createSource<ListingsSnapshot>(ENDPOINTS.listings.snapshot);
 
 export const listingService = {
-  peekDetail: (listing: Listing): ListingDetail | undefined =>
-    peek(() => buildMockListingDetail(listing)),
   getDetail: (listing: Listing): Promise<ListingDetail> =>
-    readRequest(ENDPOINTS.listings.detail(listing.id), () => buildMockListingDetail(listing)),
+    readRequest(ENDPOINTS.listings.detail(listing.id)),
 
   create: (listing: Listing) => writeRequest(ENDPOINTS.listings.create, 'POST', listing),
   update: (id: string, values: ListingFormValues) =>

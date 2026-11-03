@@ -18,7 +18,7 @@ export interface DataStatus {
 
 /**
  * Nguồn dữ liệu của một store:
- * - seed: dữ liệu khởi tạo có sẵn ngay (chế độ mock) — undefined khi gọi API thật
+ * - seed: luôn undefined — dữ liệu được tải từ server
  * - load: tải lại toàn bộ từ server
  */
 export interface DataSource<S> {

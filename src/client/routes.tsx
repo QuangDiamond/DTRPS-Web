@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import type { RouteObject } from 'react-router-dom';
+import { Navigate, type RouteObject } from 'react-router-dom';
 import { ClientAppLayout, ClientRoot, GuestOnlyClient, RequireActivePartner } from './guards';
 import { CLIENT_ROUTES } from './routePaths';
 
@@ -11,6 +11,8 @@ const HomePage = lazy(() => import('@/client/traveller/pages/HomePage'));
 const ProfilePage = lazy(() => import('@/client/traveller/pages/ProfilePage'));
 const PartnerHomePage = lazy(() => import('@/client/partner/pages/PartnerHomePage'));
 const PartnerApplicationPage = lazy(() => import('@/client/partner/pages/PartnerApplicationPage'));
+const PartnerLocationsPage = lazy(() => import('@/client/partner/pages/PartnerLocationsPage'));
+const PartnerNewLocationPage = lazy(() => import('@/client/partner/pages/PartnerNewLocationPage'));
 const PartnerLocationPage = lazy(() => import('@/client/partner/pages/PartnerLocationPage'));
 const PartnerBusinessProfilePage = lazy(
   () => import('@/client/partner/pages/PartnerBusinessProfilePage'),
@@ -79,7 +81,13 @@ export const clientRoutes: RouteObject[] = [
             element: <RequireActivePartner />,
             children: [
               { path: CLIENT_ROUTES.PARTNER_PROFILE, element: <PartnerBusinessProfilePage /> },
-              { path: CLIENT_ROUTES.PARTNER_LOCATION, element: <PartnerLocationPage /> },
+              { path: CLIENT_ROUTES.PARTNER_LOCATIONS, element: <PartnerLocationsPage /> },
+              { path: CLIENT_ROUTES.PARTNER_LOCATION_NEW, element: <PartnerNewLocationPage /> },
+              { path: CLIENT_ROUTES.PARTNER_LOCATION_DETAIL, element: <PartnerLocationPage /> },
+              {
+                path: CLIENT_ROUTES.PARTNER_LOCATION_LEGACY,
+                element: <Navigate to={CLIENT_ROUTES.PARTNER_LOCATIONS} replace />,
+              },
               partnerSoon(
                 CLIENT_ROUTES.PARTNER_ADS,
                 'Quản lý quảng cáo',

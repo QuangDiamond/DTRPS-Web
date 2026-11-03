@@ -1,32 +1,32 @@
-import { ClientApiError, clientRequest } from './http';
+import { clientRequest } from './http';
 import type { BusinessListing, BusinessListingInput, ListingRevision } from './types';
 
-export const businessListingApi = {
-  /** Địa điểm của doanh nghiệp đang đăng nhập; null khi chưa đăng ký */
-  getOwn: async (): Promise<BusinessListing | null> => {
-    try {
-      return await clientRequest<BusinessListing>('/business-listing');
-    } catch (error) {
-      if (error instanceof ClientApiError && error.status === 404) return null;
-      throw error;
-    }
-  },
+const BASE = '/business-listings';
 
+/** Các địa điểm của doanh nghiệp đang đăng nhập — một doanh nghiệp có thể đăng ký nhiều địa điểm */
+export const businessListingApi = {
+  /** Tất cả địa điểm của mình, mới nhất trước */
+  list: () => clientRequest<BusinessListing[]>(BASE),
+
+  /** Một địa điểm của mình (404 nếu không phải của mình) */
+  get: (id: number) => clientRequest<BusinessListing>(`${BASE}/${id}`),
+
+  /** Đăng ký địa điểm mới → chờ Admin duyệt */
   submit: (input: BusinessListingInput) =>
-    clientRequest<BusinessListing>('/business-listing', { method: 'POST', body: input }),
+    clientRequest<BusinessListing>(BASE, { method: 'POST', body: input }),
 
   /** Sửa khi đang chờ duyệt hoặc bị từ chối (bị từ chối → quay về chờ duyệt) */
-  update: (input: BusinessListingInput) =>
-    clientRequest<BusinessListing>('/business-listing', { method: 'PUT', body: input }),
+  update: (id: number, input: BusinessListingInput) =>
+    clientRequest<BusinessListing>(`${BASE}/${id}`, { method: 'PUT', body: input }),
 
   /** Đề xuất chỉnh sửa địa điểm đã duyệt — chỉ áp dụng sau khi Admin duyệt */
-  proposeRevision: (input: BusinessListingInput) =>
-    clientRequest<ListingRevision>('/business-listing/revisions', { method: 'POST', body: input }),
+  proposeRevision: (id: number, input: BusinessListingInput) =>
+    clientRequest<ListingRevision>(`${BASE}/${id}/revisions`, { method: 'POST', body: input }),
 
-  /** Lịch sử đề xuất, mới nhất trước */
-  revisions: () => clientRequest<ListingRevision[]>('/business-listing/revisions'),
+  /** Lịch sử đề xuất của một địa điểm, mới nhất trước */
+  revisions: (id: number) => clientRequest<ListingRevision[]>(`${BASE}/${id}/revisions`),
 
   /** Rút lại đề xuất đang chờ duyệt */
-  cancelRevision: (id: number) =>
-    clientRequest<ListingRevision>(`/business-listing/revisions/${id}/cancel`, { method: 'POST' }),
+  cancelRevision: (revisionId: number) =>
+    clientRequest<ListingRevision>(`${BASE}/revisions/${revisionId}/cancel`, { method: 'POST' }),
 };

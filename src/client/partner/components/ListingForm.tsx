@@ -225,11 +225,11 @@ export default function ListingForm({
     setBusy(true);
     try {
       if (mode === 'revision') {
-        onProposed?.(await businessListingApi.proposeRevision(input));
+        onProposed?.(await businessListingApi.proposeRevision(listing?.id ?? 0, input));
       } else {
         onSaved?.(
           mode === 'edit'
-            ? await businessListingApi.update(input)
+            ? await businessListingApi.update(listing?.id ?? 0, input)
             : await businessListingApi.submit(input),
         );
       }

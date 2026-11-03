@@ -1019,7 +1019,10 @@
       "rejectedNotice": "Đối tác có thể chỉnh sửa hồ sơ và gửi lại; hồ sơ sẽ quay về hàng chờ duyệt.",
       "suspendedNotice": "Đối tác đang bị khóa và không thể chỉnh sửa hồ sơ.",
       "placeTitle": "Địa điểm của đối tác",
-      "placeSoon": "Sẽ hiển thị khi phân hệ địa điểm được nối API."
+      "placeSoon": "Đối tác chưa đăng ký địa điểm nào.",
+      "placeCount": "{{count}} địa điểm",
+      "placeLoadError": "Không tải được địa điểm của đối tác",
+      "placeOpen": "Xem"
     }
   },
   "partnerDetail": {

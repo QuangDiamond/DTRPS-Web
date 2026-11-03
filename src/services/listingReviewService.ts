@@ -95,6 +95,8 @@ function toRevision(revision: ApiRevision): ListingRevision {
 export interface ReviewQuery<S extends string> {
   status: S | 'all';
   keyword: string;
+  /** Chỉ địa điểm của một đối tác (id hồ sơ doanh nghiệp) */
+  businessId?: string;
   /** Trang bắt đầu từ 0 */
   page: number;
   size: number;
@@ -103,6 +105,7 @@ export interface ReviewQuery<S extends string> {
 const toQuery = <S extends string>(query: ReviewQuery<S>) => ({
   status: upper(query.status),
   keyword: query.keyword.trim() || undefined,
+  businessId: query.businessId,
   page: query.page,
   size: query.size,
 });

@@ -9,6 +9,7 @@ import {
   PageHeader,
   PageLoader,
 } from '@/components/common';
+import PartnerPlaces from '@/components/partners/PartnerPlaces';
 import { usePartnerReview } from '@/components/partners/usePartnerReview';
 import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
 import { ROUTES } from '@/constants/routes';
@@ -176,17 +177,7 @@ function PartnerDetailContent({
         </div>
       </div>
 
-      <section className="flex items-center gap-4 rounded-2xl border border-dashed border-outline-variant bg-surface-container-lowest p-5">
-        <Icon name="location_on" className="text-[28px] text-outline" />
-        <div>
-          <p className="font-title-md text-title-md text-on-surface">
-            {t('partnerAdmin.detail.placeTitle')}
-          </p>
-          <p className="font-body-sm text-body-sm text-on-surface-variant">
-            {t('partnerAdmin.detail.placeSoon')}
-          </p>
-        </div>
-      </section>
+      <PartnerPlaces businessId={partner.id} />
 
       {review.dialogs}
     </div>

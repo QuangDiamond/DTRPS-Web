@@ -1037,8 +1037,11 @@
       "pendingNotice": "This profile is awaiting review. Check the tax code and contact details before approving.",
       "rejectedNotice": "The partner can edit and resubmit the profile; it then returns to the review queue.",
       "suspendedNotice": "This partner is locked and cannot edit the profile.",
-      "placeTitle": "Partner place",
-      "placeSoon": "Shown once the places module is connected to the API."
+      "placeTitle": "Partner places",
+      "placeSoon": "This partner has not registered any place yet.",
+      "placeCount": "{{count}} places",
+      "placeLoadError": "Could not load the partner places",
+      "placeOpen": "View"
     }
   },
   "partnerDetail": {

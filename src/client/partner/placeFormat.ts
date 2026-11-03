@@ -1,4 +1,17 @@
-import type { OpeningHour, PlacePrice, RevisionRejectCode } from '@/client/api/types';
+import type {
+  ListingStatus,
+  OpeningHour,
+  PlacePrice,
+  RevisionRejectCode,
+} from '@/client/api/types';
+import type { BadgeTone } from '@/client/ui/Blocks';
+
+export const LISTING_STATUS: Record<ListingStatus, { label: string; tone: BadgeTone }> = {
+  PENDING: { label: 'Chờ duyệt', tone: 'pending' },
+  APPROVED: { label: 'Đang hiển thị', tone: 'approved' },
+  REJECTED: { label: 'Bị từ chối', tone: 'rejected' },
+  SUSPENDED: { label: 'Tạm ẩn', tone: 'locked' },
+};
 
 export const DAY_LABELS: Record<number, string> = {
   1: 'Thứ 2',

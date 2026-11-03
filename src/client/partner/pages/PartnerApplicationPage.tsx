@@ -76,7 +76,7 @@ function ApplicationForm({ existing }: { existing: BusinessProfile | null }) {
       <Heading
         eyebrow="HỒ SƠ ĐĂNG KÝ"
         title={existing ? 'Thông tin doanh nghiệp' : 'Đăng ký đối tác'}
-        description="Mỗi tài khoản đối tác chỉ được quản lý một địa điểm."
+        description="Đăng ký hồ sơ doanh nghiệp một lần, sau khi được duyệt bạn có thể thêm nhiều địa điểm."
       />
       {resubmitting && existing.statusNote && (
         <Notice tone="danger">

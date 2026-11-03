@@ -25,7 +25,7 @@ const TRAVELLER_NAV: NavItem[] = [
 
 const PARTNER_NAV: NavItem[] = [
   { to: CLIENT_ROUTES.PARTNER, label: 'Tổng quan', icon: 'dashboard', end: true },
-  { to: CLIENT_ROUTES.PARTNER_LOCATION, label: 'Địa điểm', icon: 'location_on' },
+  { to: CLIENT_ROUTES.PARTNER_LOCATIONS, label: 'Địa điểm', icon: 'location_on' },
   { to: CLIENT_ROUTES.PARTNER_ADS, label: 'Quảng cáo', icon: 'campaign' },
   { to: CLIENT_ROUTES.PARTNER_PROFILE, label: 'Hồ sơ', icon: 'storefront' },
 ];

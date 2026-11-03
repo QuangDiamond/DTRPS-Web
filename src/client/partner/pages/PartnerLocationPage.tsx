@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { businessListingApi } from '@/client/api/businessListingApi';
 import { errorMessage } from '@/client/api/http';
@@ -7,15 +8,15 @@ import type {
   BusinessListing,
   CategoryGroup,
   ListingRevision,
-  ListingStatus,
   ReferenceItem,
 } from '@/client/api/types';
 import ListingForm from '@/client/partner/components/ListingForm';
 import PlaceDetailsView from '@/client/partner/components/PlaceDetailsView';
 import RevisionHistory from '@/client/partner/components/RevisionHistory';
+import { LISTING_STATUS } from '@/client/partner/placeFormat';
 import { formatDate } from '@/client/partner/profileStatus';
+import { CLIENT_ROUTES } from '@/client/routePaths';
 import {
-  type BadgeTone,
   Card,
   CardTitle,
   FormAlert,
@@ -26,15 +27,8 @@ import {
 } from '@/client/ui/Blocks';
 import { PrimaryButton, SecondaryButton } from '@/client/ui/Buttons';
 
-const LISTING_STATUS: Record<ListingStatus, { label: string; tone: BadgeTone }> = {
-  PENDING: { label: 'Chờ duyệt', tone: 'pending' },
-  APPROVED: { label: 'Đang hiển thị', tone: 'approved' },
-  REJECTED: { label: 'Bị từ chối', tone: 'rejected' },
-  SUSPENDED: { label: 'Tạm ẩn', tone: 'locked' },
-};
-
 interface PageData {
-  listing: BusinessListing | null;
+  listing: BusinessListing;
   revisions: ListingRevision[];
   groups: CategoryGroup[];
   provinces: ReferenceItem[];
@@ -42,13 +36,13 @@ interface PageData {
 
 type View = 'summary' | 'edit' | 'revision';
 
-async function loadPage(): Promise<PageData> {
+async function loadPage(id: number): Promise<PageData> {
   const [listing, groups, provinces] = await Promise.all([
-    businessListingApi.getOwn(),
+    businessListingApi.get(id),
     referenceApi.categories(),
     referenceApi.provinces(),
   ]);
-  const revisions = listing?.status === 'APPROVED' ? await businessListingApi.revisions() : [];
+  const revisions = listing.status === 'APPROVED' ? await businessListingApi.revisions(id) : [];
   return { listing, revisions, groups, provinces };
 }
 
@@ -124,8 +118,9 @@ function ListingSummary({
   );
 }
 
-/** /partner/location — đăng ký, theo dõi duyệt, sửa và đề xuất chỉnh sửa địa điểm duy nhất */
+/** /partner/locations/:id — theo dõi duyệt, sửa và đề xuất chỉnh sửa một địa điểm */
 export default function PartnerLocationPage() {
+  const listingId = Number(useParams().id);
   const [data, setData] = useState<PageData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<View>('summary');
@@ -135,7 +130,9 @@ export default function PartnerLocationPage() {
 
   useEffect(() => {
     let active = true;
-    loadPage()
+    setData(null);
+    setView('summary');
+    loadPage(listingId)
       .then((loaded) => {
         if (!active) return;
         setData(loaded);
@@ -147,11 +144,21 @@ export default function PartnerLocationPage() {
     return () => {
       active = false;
     };
-  }, [retry]);
+  }, [listingId, retry]);
+
+  const backLink = (
+    <Link
+      to={CLIENT_ROUTES.PARTNER_LOCATIONS}
+      className="mb-3 inline-flex items-center gap-1 text-[13px] font-bold text-[#007A73] hover:underline"
+    >
+      <Icon name="arrow_back" className="text-[18px]" /> Địa điểm của tôi
+    </Link>
+  );
 
   if (error) {
     return (
       <div className="mx-auto max-w-md">
+        {backLink}
         <FormAlert message={error} />
         <SecondaryButton onClick={() => setRetry((n) => n + 1)}>Thử lại</SecondaryButton>
       </div>
@@ -200,39 +207,22 @@ export default function PartnerLocationPage() {
 
   const { listing, revisions } = data;
   const pendingRevision = revisions.find((revision) => revision.status === 'PENDING');
-  const title = !listing
-    ? 'Đăng ký địa điểm'
-    : view === 'edit'
+  const title =
+    view === 'edit'
       ? 'Chỉnh sửa địa điểm'
       : view === 'revision'
         ? 'Đề xuất chỉnh sửa'
-        : 'Địa điểm của tôi';
+        : listing.name;
 
   return (
     <div className="mx-auto max-w-3xl">
+      {backLink}
       <Heading
         eyebrow="THÔNG TIN ĐỊA ĐIỂM"
         title={title}
-        description="Mỗi đối tác quản lý duy nhất một địa điểm. Địa điểm hiển thị với du khách sau khi Admin phê duyệt."
+        description="Địa điểm hiển thị với du khách sau khi Admin phê duyệt."
       />
-      {!listing ? (
-        <>
-          <div className="mb-4 flex items-center gap-3 rounded-2xl bg-white p-4">
-            <Icon name="add_location_alt" className="text-[28px] text-primary" />
-            <p className="text-[13px] text-client-muted">
-              Bạn chưa có địa điểm. Điền thông tin bên dưới để gửi Admin xét duyệt.
-            </p>
-          </div>
-          <ListingForm
-            key="new"
-            mode="create"
-            listing={null}
-            groups={data.groups}
-            provinces={data.provinces}
-            onSaved={saved}
-          />
-        </>
-      ) : view === 'summary' ? (
+      {view === 'summary' ? (
         <>
           <ListingSummary
             listing={listing}

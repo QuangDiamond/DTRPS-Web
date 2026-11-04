@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/common';
+import PlaceMap from '@/components/common/PlaceMap';
 import {
   DAY_KEYS,
   formatAmount,
   googleMapsUrl,
   hourText,
-  mapEmbedUrl,
   priceTypeLabel,
 } from '@/pages/PlaceReview/placeReviewUtils';
 import type { PlaceContent } from '@/types';
@@ -156,12 +156,7 @@ export default function PlaceContentView({
             />
           </dl>
           <div className="mt-3 overflow-hidden rounded-xl border border-surface-container">
-            <iframe
-              title={t('placeReview.detail.coordinates')}
-              src={mapEmbedUrl(place)}
-              className="h-56 w-full"
-              loading="lazy"
-            />
+            <PlaceMap latitude={place.latitude} longitude={place.longitude} />
           </div>
           <div className="mt-2 flex items-center justify-between font-body-sm text-body-sm">
             <span className="text-on-surface-variant tabular-nums">

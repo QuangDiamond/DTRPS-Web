@@ -115,6 +115,8 @@ export interface CatalogStats {
 export interface CatalogQuery {
   keyword?: string;
   group?: string;
+  /** Loại hình (loại con trong nhóm) */
+  category?: string;
   province?: string;
   status?: CatalogPlaceStatus | 'all';
   source?: PlaceSource | 'all';

@@ -1,7 +1,8 @@
 import { type FormEvent, type ReactNode, useMemo, useState } from 'react';
-import { LocationPicker } from '@/components/common';
+import LocationPicker from '@/components/common/LocationPicker';
 import { businessListingApi } from '@/client/api/businessListingApi';
 import { ClientApiError, errorMessage } from '@/client/api/http';
+import { mapsApi } from '@/client/api/mapsApi';
 import type {
   BusinessListing,
   BusinessListingInput,
@@ -318,6 +319,8 @@ export default function ListingForm({
             latitude={parseNumber(values.latitude)}
             longitude={parseNumber(values.longitude)}
             address={values.address}
+            search={mapsApi}
+            onAddress={update('address')}
             onChange={(latitude, longitude) => {
               setValues((current) => ({
                 ...current,

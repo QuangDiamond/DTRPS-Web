@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
+  ConfirmModal,
   ErrorState,
   Icon,
   Modal,
@@ -42,6 +43,8 @@ export default function PlaceCategoriesPage() {
   const [draftError, setDraftError] = useState('');
   const [saving, setSaving] = useState(false);
   const [toggling, setToggling] = useState<string | null>(null);
+  /** Loại hình đang chờ xác nhận xoá */
+  const [deleting, setDeleting] = useState<PlaceCategory | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -80,6 +83,22 @@ export default function PlaceCategoriesPage() {
           : { ...group, types };
       }),
     );
+
+  const remove = async (category: PlaceCategory) => {
+    setDeleting(null);
+    try {
+      await placeCategoryService.remove(category.id);
+      setGroups((current) =>
+        (current ?? []).map((group) => ({
+          ...group,
+          types: group.types.filter((type) => type.id !== category.id),
+        })),
+      );
+      showToast(t('placeCategories.deleted', { name: category.name }));
+    } catch (removeError) {
+      showToast(getErrorMessage(removeError), 'error');
+    }
+  };
 
   const toggle = async (category: PlaceCategory, groupCode: string) => {
     setToggling(category.id);
@@ -155,12 +174,12 @@ export default function PlaceCategoriesPage() {
           breadcrumbs={[ADMIN_ROOT_CRUMB, { label: t('nav.placeCategories'), icon: 'category' }]}
           title={t('placeCategories.title')}
           description={t('placeCategories.description')}
-          actions={
-            <Button icon="add" onClick={() => openNew(groups[0]?.code ?? '')}>
-              {t('placeCategories.add')}
-            </Button>
-          }
         />
+      </div>
+
+      <div className="flex items-start gap-3 rounded-2xl bg-surface-container-low p-4 text-on-surface-variant">
+        <Icon name="info" className="text-[20px] text-primary" />
+        <p className="font-body-sm text-body-sm">{t('placeCategories.deleteNote')}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -210,6 +229,17 @@ export default function PlaceCategoriesPage() {
                     >
                       <Icon name="edit" className="text-[18px]" />
                     </button>
+                    {type.placeCount === 0 && (
+                      <button
+                        type="button"
+                        aria-label={t('placeCategories.delete')}
+                        title={t('placeCategories.delete')}
+                        onClick={() => setDeleting(type)}
+                        className="text-outline hover:text-error"
+                      >
+                        <Icon name="delete" className="text-[18px]" />
+                      </button>
+                    )}
                     <ToggleSwitch
                       checked={type.status === 'active'}
                       disabled={toggling === type.id}
@@ -227,6 +257,18 @@ export default function PlaceCategoriesPage() {
           </section>
         ))}
       </div>
+
+      {deleting && (
+        <ConfirmModal
+          title={t('placeCategories.deleteTitle')}
+          confirmLabel={t('placeCategories.delete')}
+          confirmIcon="delete"
+          onConfirm={() => void remove(deleting)}
+          onClose={() => setDeleting(null)}
+        >
+          {t('placeCategories.deleteMessage', { name: deleting.name, code: deleting.code })}
+        </ConfirmModal>
+      )}
 
       {draft && (
         <Modal

@@ -86,6 +86,12 @@ export const ENDPOINTS = {
     status: (categoryId: string) => `/admin/place-categories/${id(categoryId)}/status`,
   },
   uploads: { image: '/uploads/images' },
+  // Bản đồ Goong qua backend
+  maps: {
+    autocomplete: '/maps/autocomplete',
+    place: (placeId: string) => `/maps/places/${id(placeId)}`,
+    reverse: '/maps/reverse',
+  },
   reference: {
     provinces: '/reference/provinces',
     categories: '/reference/categories',

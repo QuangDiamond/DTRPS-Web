@@ -6,6 +6,7 @@ import ClientShell from '@/client/layouts/ClientShell';
 import PartnerProfileProvider from '@/client/partner/PartnerProfileProvider';
 import { usePartnerProfile } from '@/client/partner/partnerProfileContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
+import TravellerProvider from '@/client/traveller/TravellerProvider';
 import { Spinner } from '@/client/ui/Blocks';
 
 /** Gốc của khu client: phiên đăng nhập riêng + tải trang theo từng chunk */
@@ -30,6 +31,10 @@ export function ClientAppLayout() {
   const { user } = useClientAuth();
   const location = useLocation();
   if (!user) {
+    // Mở thẳng trang chủ khi chưa đăng nhập → màn chào mừng (như app mobile)
+    if (location.pathname === CLIENT_ROUTES.HOME) {
+      return <Navigate to={CLIENT_ROUTES.WELCOME} replace />;
+    }
     return (
       <Navigate
         to={CLIENT_ROUTES.LOGIN}
@@ -38,10 +43,12 @@ export function ClientAppLayout() {
       />
     );
   }
-  // key: đổi tài khoản thì tải lại hồ sơ đối tác
+  // key: đổi tài khoản thì tải lại hồ sơ đối tác + dữ liệu du khách
   return (
     <PartnerProfileProvider key={user.id}>
-      <ClientShell />
+      <TravellerProvider key={user.id} userId={user.id}>
+        <ClientShell />
+      </TravellerProvider>
     </PartnerProfileProvider>
   );
 }

@@ -1,13 +1,7 @@
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Button,
-  ErrorState,
-  Icon,
-  PageHeader,
-  PageLoader,
-} from '@/components/common';
+import { Button, ErrorState, Icon, PageHeader, PageLoader } from '@/components/common';
 import LocationPicker, { type LocationPickerLabels } from '@/components/common/LocationPicker';
 import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
 import { placeDetailPath, ROUTES } from '@/constants/routes';
@@ -73,7 +67,8 @@ function initialValues(detail: CatalogPlaceDetail | null): Values {
     longitude: content ? String(content.longitude) : '',
     phone: content?.phone ?? '',
     website: content?.website ?? '',
-    status: detail?.place.status ?? 'active',
+    // Địa điểm mới mặc định Chưa công khai (DRAFT), admin tự bật Đang hiển thị
+    status: detail?.place.status ?? 'draft',
     hoursEnabled: true,
     week: fullWeek(content?.openingHours ?? []),
   };

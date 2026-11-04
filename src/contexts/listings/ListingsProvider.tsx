@@ -53,7 +53,7 @@ const EMPTY_STATS: ListingStats = {
 /**
  * Store niêm yết dùng chung cho Bảng điều khiển, Quản lý niêm yết, màn Thẩm định
  * và Địa điểm đã duyệt — thao tác ở đâu thì số liệu & danh sách ở mọi nơi đều cập nhật theo.
- * Dữ liệu tải qua listingService (mock hoặc API); thao tác ghi cập nhật lạc quan rồi lưu xuống server.
+ * Dữ liệu tải qua listingService (API); thao tác ghi cập nhật lạc quan rồi lưu xuống server.
  */
 export default function ListingsProvider({ children }: { children: ReactNode }) {
   const { admin } = useAuth();

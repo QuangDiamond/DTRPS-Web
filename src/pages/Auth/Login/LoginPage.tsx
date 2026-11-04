@@ -12,7 +12,6 @@ import { LOGIN_BRAND_CONTENT } from '@/constants/auth';
 import { ROUTES } from '@/constants/routes';
 import { useAuth, useToast } from '@/hooks';
 import AuthLayout from '@/layouts/AuthLayout';
-import { DEMO_ACCOUNT } from '@/services/authService';
 import { getErrorMessage } from '@/utils/error';
 import { getStateString } from '@/utils/routeState';
 
@@ -23,9 +22,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const { showToast } = useToast();
 
-  const [email, setEmail] = useState(
-    getStateString(location.state, 'email') ?? DEMO_ACCOUNT?.profile.email ?? '',
-  );
+  const [email, setEmail] = useState(getStateString(location.state, 'email') ?? '');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -111,14 +108,6 @@ export default function LoginPage() {
         {t('auth.login.secureSignWith2fa')}
       </AuthNotice>
 
-      {DEMO_ACCOUNT && (
-        <p className="text-center font-body-sm text-body-sm text-outline">
-          {t('auth.login.demoAccount', {
-            email: DEMO_ACCOUNT.profile.email,
-            password: DEMO_ACCOUNT.password,
-          })}
-        </p>
-      )}
     </AuthLayout>
   );
 }

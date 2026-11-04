@@ -32,10 +32,7 @@ const REFRESH_DELAY_MS = 800;
 export default function DashboardPage() {
   // Theo dõi ngôn ngữ để toàn bộ nội dung trang đổi ngay khi chuyển VI / EN
   const { t } = useTranslation();
-  const overview = useResource(
-    () => dashboardService.getOverview(),
-    () => dashboardService.peekOverview(),
-  );
+  const overview = useResource(() => dashboardService.getOverview());
 
   if (overview.status === 'error') {
     return (

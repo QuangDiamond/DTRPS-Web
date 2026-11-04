@@ -1,7 +1,7 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { authApi } from '@/client/api/authApi';
 import { bindSession } from '@/client/api/http';
-import type { AuthResponse, RoleName } from '@/client/api/types';
+import type { AuthResponse, ClientUser, RoleName } from '@/client/api/types';
 import { ClientAuthContext } from './clientAuthContext';
 import { type ClientSession, clearSession, readSession, writeSession } from './sessionStorage';
 
@@ -77,12 +77,20 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
     save(null);
   }, [save]);
 
+  const updateUser = useCallback(
+    (next: ClientUser) => {
+      const current = sessionRef.current;
+      if (current) save({ ...current, user: next });
+    },
+    [save],
+  );
+
   const user = session?.user ?? null;
   const hasRole = useCallback((role: RoleName) => Boolean(user?.roles.includes(role)), [user]);
 
   const value = useMemo(
-    () => ({ user, login, register, logout, refreshSession, hasRole }),
-    [user, login, register, logout, refreshSession, hasRole],
+    () => ({ user, login, register, logout, updateUser, refreshSession, hasRole }),
+    [user, login, register, logout, updateUser, refreshSession, hasRole],
   );
 
   return <ClientAuthContext.Provider value={value}>{children}</ClientAuthContext.Provider>;

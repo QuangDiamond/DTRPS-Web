@@ -61,6 +61,10 @@ export const placeCategoryService = {
       }),
     ),
 
+  /** Chỉ xoá được loại hình chưa có địa điểm nào dùng (BE trả 409 nếu đang dùng) */
+  remove: (categoryId: string): Promise<void> =>
+    apiRequest<void>(ENDPOINTS.placeCategories.detail(categoryId), { method: 'DELETE' }),
+
   changeStatus: async (categoryId: string, status: CategoryStatus): Promise<PlaceCategory> =>
     toCategory(
       await apiRequest<ApiCategory>(ENDPOINTS.placeCategories.status(categoryId), {

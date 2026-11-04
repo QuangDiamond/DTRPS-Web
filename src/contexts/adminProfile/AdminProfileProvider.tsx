@@ -145,9 +145,9 @@ export default function AdminProfileProvider({ children }: { children: ReactNode
       i18n.t('stores.adminProfile.backupCodesRegenerated'),
       i18n.t('stores.adminProfile.newRecoveryCodesOld', { length: codes.length }),
     );
-    // Khi dùng API, server sinh bộ mã chính thức → thay thế bộ mã tạm ở client
+    // Server sinh bộ mã chính thức → thay thế bộ mã tạm ở client
     persist(
-      profileService.regenerateBackupCodes(codes).then(({ codes: serverCodes }) => {
+      profileService.regenerateBackupCodes().then(({ codes: serverCodes }) => {
         setDetails((current) => ({ ...current, backupCodes: serverCodes }));
       }),
       i18n.t('stores.adminProfile.couldNotGenerateNew'),

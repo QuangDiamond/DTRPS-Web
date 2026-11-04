@@ -82,14 +82,8 @@ export default function UserDetailPage() {
 /** Tải hồ sơ chi tiết & lịch sử phiên của người dùng qua userService */
 function UserDetailLoader({ user }: { user: AppUser }) {
   const { t } = useTranslation();
-  const profile = useResource(
-    () => userService.getProfile(user),
-    () => userService.peekProfile(user),
-  );
-  const history = useResource(
-    () => userService.getSessionHistory(user),
-    () => userService.peekSessionHistory(user),
-  );
+  const profile = useResource(() => userService.getProfile(user));
+  const history = useResource(() => userService.getSessionHistory(user));
 
   if (profile.status === 'error' || history.status === 'error') {
     return (
@@ -125,8 +119,7 @@ function UserDetailContent({ user, loadedProfile, sessionHistory }: UserDetailCo
   const [modal, setModal] = useState<ModalName>(null);
   const [viewingTrip, setViewingTrip] = useState<UserTrip | null>(null);
 
-  // Chế độ mock: dựng lại hồ sơ theo trạng thái người dùng mới nhất (khóa/mở khóa cập nhật ngay)
-  const profile = userService.peekProfile(user) ?? loadedProfile;
+  const profile = loadedProfile;
   const sessionLog = useMemo(
     () => mergeSessionLog(sessionHistory, auditLogs[user.id]),
     [sessionHistory, auditLogs, user.id],

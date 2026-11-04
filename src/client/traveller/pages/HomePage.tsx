@@ -1,69 +1,25 @@
-import { type FormEvent, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { type FormEvent, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
-import PartnerShowcase from '@/client/traveller/components/PartnerShowcase';
-import { HERO_IMAGE, HOME_CATEGORIES, type PartnerAd } from '@/client/traveller/demoData';
-
-/** Hộp thoại chi tiết quảng cáo (mobile dùng Alert) */
-function AdDialog({ ad, onClose }: { ad: PartnerAd; onClose: () => void }) {
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 md:items-center"
-      onClick={onClose}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={ad.name}
-        onClick={(event) => event.stopPropagation()}
-        className="w-full max-w-md overflow-hidden rounded-3xl bg-white"
-      >
-        <img src={ad.image} alt="" className="h-48 w-full object-cover" />
-        <div className="p-5">
-          <p className="text-[10px] font-bold text-client-teal">
-            {ad.category.toUpperCase()} · {ad.location}
-          </p>
-          <p className="mt-1 text-[20px] font-extrabold text-client-ink">{ad.name}</p>
-          <p className="mt-2 text-[13px] text-client-muted">{ad.description}</p>
-          <div className="mt-4 flex items-center justify-between">
-            <span className="rounded-full bg-[#F8E4B4] px-3 py-1.5 text-[11px] font-extrabold text-[#795213]">
-              {ad.offer}
-            </span>
-            <span className="text-[17px] font-extrabold text-primary">Từ {ad.price}</span>
-          </div>
-          <p className="mt-4 text-[11px] text-[#98A6A1]">Đây là quảng cáo minh họa.</p>
-          <button
-            type="button"
-            onClick={onClose}
-            className="mt-4 h-11 w-full rounded-full bg-primary text-[13px] font-bold text-white"
-          >
-            Đóng
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /** Trang chủ du khách — theo HomeScreen của app mobile */
 export default function HomePage() {
   const { user } = useClientAuth();
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState('Tất cả');
-  const [openAd, setOpenAd] = useState<PartnerAd | null>(null);
   const [note, setNote] = useState<string | null>(null);
+
+  const navigate = useNavigate();
 
   const search = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setNote(`Tìm kiếm "${query.trim() || '…'}" sẽ có khi màn Khám phá được nối API.`);
+    const keyword = query.trim();
+    navigate(
+      keyword
+        ? `${CLIENT_ROUTES.EXPLORE}?${new URLSearchParams({ q: keyword })}`
+        : CLIENT_ROUTES.EXPLORE,
+    );
   };
 
   return (
@@ -78,7 +34,7 @@ export default function HomePage() {
           </p>
         </div>
         <Link
-          to={CLIENT_ROUTES.TRIPS}
+          to={CLIENT_ROUTES.TRIP_PLAN}
           aria-label="Lập kế hoạch chuyến đi"
           className="flex h-10 w-10 items-center justify-center rounded-full bg-client-soft text-primary"
         >
@@ -105,42 +61,18 @@ export default function HomePage() {
         >
           <Icon name="mic" className="text-[20px]" />
         </button>
-        <button
-          type="button"
-          onClick={() => setNote('Bộ lọc sẽ có khi màn Khám phá được nối API.')}
+        <Link
+          to={CLIENT_ROUTES.EXPLORE_FILTERS}
           aria-label="Bộ lọc"
           className="ml-1 flex h-10 w-10 items-center justify-center rounded-full bg-client-soft text-primary"
         >
           <Icon name="tune" className="text-[20px]" />
-        </button>
+        </Link>
       </form>
       {note && <p className="mt-2 text-[11px] text-client-muted">{note}</p>}
 
-      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 py-3">
-        {HOME_CATEGORIES.map((item) => {
-          const active = category === item.label;
-          return (
-            <button
-              key={item.label}
-              type="button"
-              onClick={() => setCategory(item.label)}
-              className={`flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-[12px] font-semibold ${
-                active ? 'bg-primary text-white' : 'bg-white text-client-ink'
-              }`}
-            >
-              <Icon
-                name={item.icon}
-                className={`text-[16px] ${active ? 'text-white' : 'text-primary'}`}
-              />
-              {item.label}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="relative h-56 overflow-hidden rounded-2xl md:h-72">
-        <img src={HERO_IMAGE} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 flex flex-col justify-end bg-black/45 p-5 md:p-8">
+      <div className="relative mt-4 h-56 overflow-hidden rounded-2xl bg-linear-to-br from-[#075C66] to-[#0E8C86] md:h-72">
+        <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-8">
           <span className="mb-2 self-start rounded-full bg-white px-3 py-1 text-[10px] font-semibold text-primary">
             ⭐ Tự thiết kế lộ trình
           </span>
@@ -151,15 +83,13 @@ export default function HomePage() {
             Tùy biến lịch trình trải nghiệm theo sở thích và ngân sách
           </p>
           <Link
-            to={CLIENT_ROUTES.TRIPS}
+            to={CLIENT_ROUTES.TRIP_PLAN}
             className="self-start rounded-full bg-primary px-5 py-3 text-[12px] font-bold text-white hover:bg-primary-container"
           >
             Lập kế hoạch chuyến đi →
           </Link>
         </div>
       </div>
-
-      <PartnerShowcase onOpen={setOpenAd} />
 
       <div className="mt-6 flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-[0_2px_6px_rgba(0,0,0,0.05)] md:flex-row md:items-center">
         <div className="flex flex-1 items-center gap-3">
@@ -172,14 +102,12 @@ export default function HomePage() {
           </span>
         </div>
         <Link
-          to={CLIENT_ROUTES.PROFILE}
+          to={CLIENT_ROUTES.PREFERENCES}
           className="flex h-11 items-center justify-center rounded-full bg-primary px-6 text-[13px] font-bold text-white md:w-56"
         >
           Thiết lập sở thích
         </Link>
       </div>
-
-      {openAd && <AdDialog ad={openAd} onClose={() => setOpenAd(null)} />}
     </div>
   );
 }

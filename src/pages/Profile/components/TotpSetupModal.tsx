@@ -1,10 +1,10 @@
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
 import OtpInput from '@/components/auth/OtpInput';
 import { Button, Icon, Modal } from '@/components/common';
 import { OTP_LENGTH } from '@/constants/auth';
 import { useResource, useToast } from '@/hooks';
-import { DEMO_TOTP_CODE, profileService } from '@/services/profileService';
+import { profileService } from '@/services/profileService';
 import { copyText } from '@/utils/clipboard';
 import { getErrorMessage } from '@/utils/error';
 
@@ -51,7 +51,7 @@ export default function TotpSetupModal({ accountEmail, onConfirm, onClose }: Tot
   );
   const [error, setError] = useState('');
   const [verifying, setVerifying] = useState(false);
-  const setup = useResource(profileService.startTotpSetup, profileService.peekTotpSetup);
+  const setup = useResource(profileService.startTotpSetup);
   const secret = setup.data?.secret ?? '';
   const cells = useMemo(() => buildQrCells(secret + accountEmail), [secret, accountEmail]);
   const code = digits.join('');
@@ -156,14 +156,6 @@ export default function TotpSetupModal({ accountEmail, onConfirm, onClose }: Tot
           {error ? (
             <span className="flex items-center gap-1 font-label-sm text-label-sm text-error">
               <Icon name="error" className="text-[14px]" /> {error}
-            </span>
-          ) : DEMO_TOTP_CODE ? (
-            <span className="font-body-sm text-body-sm text-outline">
-              <Trans
-                i18nKey="profile.totpSetupModal.demoCode"
-                values={{ DEMO_TOTP_CODE }}
-                components={{ c0: <strong /> }}
-              />
             </span>
           ) : null}
         </div>

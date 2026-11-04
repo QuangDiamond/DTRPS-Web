@@ -1,25 +1,15 @@
-import {
-  buildMockUserProfile,
-  buildMockUserSessionHistory,
-} from '@/mocks/builders/userProfileMock';
-import { MOCK_USERS, USER_STATS } from '@/mocks/data/mockData';
 import type { AppUser, UserAuditEntry, UserFormValues, UserProfile, UsersSnapshot } from '@/types';
 import { ENDPOINTS } from './endpoints';
-import { createSource, peek, readRequest, writeRequest } from './request';
-
-const MOCK_SNAPSHOT: UsersSnapshot = { users: MOCK_USERS, stats: USER_STATS };
+import { createSource, readRequest, writeRequest } from './request';
 
 /** Dữ liệu khởi tạo của store người dùng */
-export const usersSource = createSource(ENDPOINTS.users.snapshot, MOCK_SNAPSHOT);
+export const usersSource = createSource<UsersSnapshot>(ENDPOINTS.users.snapshot);
 
 export const userService = {
-  peekProfile: (user: AppUser): UserProfile | undefined => peek(() => buildMockUserProfile(user)),
   getProfile: (user: AppUser): Promise<UserProfile> =>
-    readRequest(ENDPOINTS.users.profile(user.id), () => buildMockUserProfile(user)),
-  peekSessionHistory: (user: AppUser): UserAuditEntry[] | undefined =>
-    peek(() => buildMockUserSessionHistory(user)),
+    readRequest(ENDPOINTS.users.profile(user.id)),
   getSessionHistory: (user: AppUser): Promise<UserAuditEntry[]> =>
-    readRequest(ENDPOINTS.users.sessionHistory(user.id), () => buildMockUserSessionHistory(user)),
+    readRequest(ENDPOINTS.users.sessionHistory(user.id)),
 
   create: (user: AppUser) => writeRequest(ENDPOINTS.users.create, 'POST', user),
   update: (id: string, values: UserFormValues) =>

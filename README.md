@@ -52,10 +52,8 @@ Trang / component  ──►  hook (useListings, usePartners…)        ← UI c
                         services/httpClient.ts (fetch, token, timeout, ApiError, 401)
 ```
 
-- **Chế độ mock (mặc định):** mỗi service trả dữ liệu từ `src/constants/mock*.ts`. Chỉ thư mục
-  `services/` được import dữ liệu mẫu — UI không import trực tiếp.
-- **Chuyển sang API thật:** tạo `.env.local` từ `.env.example`, đặt `VITE_USE_MOCK=false` và
-  `VITE_API_URL`. Không cần sửa trang hay store.
+- **Nguồn dữ liệu:** mọi service gọi API thật tại `VITE_API_URL` (tạo `.env.local` từ
+  `.env.example`). Không có dữ liệu mẫu trong mã nguồn.
 - **Hợp đồng REST:** toàn bộ endpoint ở `src/services/endpoints.ts`; kiểu dữ liệu trả về ở
   `src/types/api.ts` (mỗi phân hệ có một `…Snapshot` để tải dữ liệu khởi tạo).
 - **Đọc dữ liệu:** store tải snapshot sau khi đăng nhập (`useInitialData`); trang chi tiết tải

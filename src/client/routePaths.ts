@@ -8,6 +8,7 @@ export const CLIENT_ROUTES = {
   RESET_PASSWORD: '/reset-password',
   HOME: '/',
   EXPLORE: '/explore',
+  EXPLORE_FILTERS: '/explore/filters',
 
   PLACE_DETAIL: '/explore/:placeId',
   FAVORITES: '/favorites',

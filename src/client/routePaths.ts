@@ -1,13 +1,14 @@
 /** Đường dẫn của khu client (du khách + đối tác). Khu admin nằm dưới /admin. */
 export const CLIENT_ROUTES = {
   WELCOME: '/welcome',
+  PUBLIC_REFERENCES: '/danh-muc-dia-diem',
   LOGIN: '/login',
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
   HOME: '/',
   EXPLORE: '/explore',
-  EXPLORE_FILTERS: '/explore/filters',
+
   PLACE_DETAIL: '/explore/:placeId',
   FAVORITES: '/favorites',
   PREFERENCES: '/preferences',

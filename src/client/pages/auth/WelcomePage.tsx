@@ -59,6 +59,7 @@ export default function WelcomePage() {
           Bắt đầu ngay <Icon name="arrow_forward" className="text-[19px]" />
         </Link>
         <TextLink to={CLIENT_ROUTES.LOGIN}>Đã có tài khoản hành trình? Đăng nhập</TextLink>
+
       </div>
     </div>
   );

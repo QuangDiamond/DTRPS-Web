@@ -11,10 +11,11 @@ const ForgotPasswordPage = lazy(() => import('@/client/pages/auth/ForgotPassword
 const ResetPasswordPage = lazy(() => import('@/client/pages/auth/ResetPasswordPage'));
 const ComingSoonPage = lazy(() => import('@/client/pages/ComingSoonPage'));
 
+
 // Du khách
 const HomePage = lazy(() => import('@/client/traveller/pages/HomePage'));
 const ExplorePage = lazy(() => import('@/client/traveller/pages/ExplorePage'));
-const SearchFilterPage = lazy(() => import('@/client/traveller/pages/SearchFilterPage'));
+
 const PlaceDetailsPage = lazy(() => import('@/client/traveller/pages/PlaceDetailsPage'));
 const FavoritesPage = lazy(() => import('@/client/traveller/pages/FavoritesPage'));
 const TravelPreferencesPage = lazy(() => import('@/client/traveller/pages/TravelPreferencesPage'));
@@ -72,13 +73,14 @@ export const clientRoutes: RouteObject[] = [
       // Mở được cả khi đã đăng nhập (đi từ màn Đổi mật khẩu)
       { path: CLIENT_ROUTES.FORGOT_PASSWORD, element: <ForgotPasswordPage /> },
       { path: CLIENT_ROUTES.RESET_PASSWORD, element: <ResetPasswordPage /> },
+
       {
         element: <ClientAppLayout />,
         children: [
           // Du khách
           { path: CLIENT_ROUTES.HOME, element: <HomePage /> },
           { path: CLIENT_ROUTES.EXPLORE, element: <ExplorePage /> },
-          { path: CLIENT_ROUTES.EXPLORE_FILTERS, element: <SearchFilterPage /> },
+
           { path: CLIENT_ROUTES.PLACE_DETAIL, element: <PlaceDetailsPage /> },
           { path: CLIENT_ROUTES.FAVORITES, element: <FavoritesPage /> },
           { path: CLIENT_ROUTES.PREFERENCES, element: <TravelPreferencesPage /> },

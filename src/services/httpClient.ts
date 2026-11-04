@@ -20,12 +20,11 @@ type QueryValue = string | number | boolean | null | undefined;
 
 export interface RequestOptions {
   method?: HttpMethod;
-  /** Dữ liệu gửi lên — tự chuyển sang JSON (FormData được gửi nguyên dạng multipart) */
   body?: unknown;
   query?: Record<string, QueryValue>;
   signal?: AbortSignal;
-  /** Không kích hoạt đăng xuất tự động khi nhận 401 (dùng cho chính request đăng xuất) */
   silentUnauthorized?: boolean;
+  auth?: boolean;
 }
 
 let unauthorizedHandler: (() => void) | null = null;
@@ -109,20 +108,43 @@ function refreshTokens(): Promise<boolean> {
  * Gọi REST API, trả về JSON đã ép kiểu T. Ném ApiError khi lỗi mạng / HTTP không thành công.
  * Access token hết hạn (401) → tự làm mới bằng refresh token rồi gửi lại một lần.
  */
-export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+
+export async function apiRequest<T>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<T> {
   const response = await send(path, options);
-  if (response.status !== 401 || options.silentUnauthorized) return parseResponse<T>(response);
+
+  if (
+    response.status !== 401 ||
+    options.silentUnauthorized ||
+    options.auth === false
+  ) {
+    return parseResponse<T>(response);
+  }
 
   if (await refreshTokens()) {
     const retried = await send(path, options);
-    if (retried.status !== 401) return parseResponse<T>(retried);
+
+    if (retried.status !== 401) {
+      return parseResponse<T>(retried);
+    }
+
     return parseResponse<T>(retried, true);
   }
+
   return parseResponse<T>(response, true);
 }
 
+
 async function send(path: string, options: RequestOptions): Promise<Response> {
-  const { method = 'GET', body, query, signal } = options;
+  const {
+    method = 'GET',
+    body,
+    query,
+    signal,
+    auth = true,
+  } = options;
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   signal?.addEventListener('abort', () => controller.abort(), { once: true });
@@ -134,8 +156,11 @@ async function send(path: string, options: RequestOptions): Promise<Response> {
   };
   const multipart = body instanceof FormData;
   if (body !== undefined && !multipart) headers['Content-Type'] = 'application/json';
-  const token = getAccessToken();
-  if (token) headers.Authorization = `Bearer ${token}`;
+  const token = auth ? getAccessToken() : null;
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
 
   try {
     return await fetch(buildUrl(path, query), {

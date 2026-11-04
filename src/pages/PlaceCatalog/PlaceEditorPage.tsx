@@ -5,15 +5,15 @@ import {
   Button,
   ErrorState,
   Icon,
-  LocationPicker,
-  type LocationPickerLabels,
   PageHeader,
   PageLoader,
 } from '@/components/common';
+import LocationPicker, { type LocationPickerLabels } from '@/components/common/LocationPicker';
 import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
 import { placeDetailPath, ROUTES } from '@/constants/routes';
 import { useToast } from '@/hooks/useToast';
 import { ApiError } from '@/services/httpClient';
+import { mapService } from '@/services/mapService';
 import { placeCatalogService } from '@/services/placeCatalogService';
 import type {
   CatalogPlaceDetail,
@@ -167,6 +167,8 @@ export default function PlaceEditorPage() {
       geolocationDenied: t('placeEditor.map.geolocationDenied'),
       hintWithPoint: t('placeEditor.map.hintWithPoint'),
       hintNoPoint: t('placeEditor.map.hintNoPoint'),
+      pinAddress: t('placeEditor.map.pinAddress'),
+      useAddress: t('placeEditor.map.useAddress'),
     }),
     [t],
   );
@@ -414,6 +416,8 @@ export default function PlaceEditorPage() {
               longitude={parseNumber(values.longitude)}
               address={values.address}
               labels={mapLabels}
+              search={mapService}
+              onAddress={(address) => update('address')(address)}
               onChange={(latitude, longitude) => {
                 setValues((current) => ({
                   ...current,

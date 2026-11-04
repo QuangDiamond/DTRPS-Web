@@ -1,44 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import Icon from './Icon';
-
-interface SearchResult {
-  lat: number;
-  lon: number;
-  label: string;
-}
-
-/** Kết quả GeoJSON của Photon (photon.komoot.io — tìm địa chỉ trên dữ liệu OpenStreetMap) */
-interface PhotonFeature {
-  geometry: { coordinates: [number, number] };
-  properties: Record<string, string | undefined>;
-}
-
-/** Khung bao Việt Nam: lon trái, lat dưới, lon phải, lat trên */
-const VIETNAM_BBOX = '102.1,8.2,109.6,23.4';
-
-function toResult(feature: PhotonFeature): SearchResult {
-  const p = feature.properties;
-  const street = [p.housenumber, p.street].filter(Boolean).join(' ');
-  const parts = [p.name, street, p.district, p.city, p.state].filter(
-    (part, index, all): part is string => Boolean(part) && all.indexOf(part) === index,
-  );
-  const [lon, lat] = feature.geometry.coordinates;
-  return { lat, lon, label: parts.join(', ') || `${lat}, ${lon}` };
-}
-
-/** Giữa Việt Nam — dùng khi chưa có tọa độ */
-const VIETNAM_CENTER: L.LatLngTuple = [16.05, 106.5];
-
-const PIN_ICON = L.divIcon({
-  className: '',
-  html: '<span class="material-symbols-outlined" style="font-size:40px;color:#0F766E;font-variation-settings:\'FILL\' 1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))">location_on</span>',
-  iconSize: [40, 40],
-  iconAnchor: [20, 38],
-});
-
-const round = (value: number) => Math.round(value * 1e6) / 1e6;
+import {
+  type AddressSuggestion,
+  type MapSearch,
+  mapStyle,
+  pinElement,
+  round6,
+  VIETNAM_CENTER,
+} from './mapTypes';
 
 /** Chữ hiển thị — mặc định tiếng Việt; trang admin truyền bản đã dịch */
 export interface LocationPickerLabels {
@@ -54,6 +25,8 @@ export interface LocationPickerLabels {
   geolocationDenied: string;
   hintWithPoint: string;
   hintNoPoint: string;
+  pinAddress: string;
+  useAddress: string;
 }
 
 const DEFAULT_LABELS: LocationPickerLabels = {
@@ -70,20 +43,27 @@ const DEFAULT_LABELS: LocationPickerLabels = {
   geolocationDenied: 'Không lấy được vị trí. Hãy cho phép truy cập vị trí hoặc chọn trên bản đồ.',
   hintWithPoint: 'Kéo ghim hoặc bấm chỗ khác trên bản đồ để chỉnh cho đúng vị trí.',
   hintNoPoint: 'Tìm địa chỉ rồi chọn kết quả, hoặc phóng to và bấm đúng vị trí trên bản đồ.',
+  pinAddress: 'Địa chỉ tại ghim',
+  useAddress: 'Dùng địa chỉ này',
 };
 
+const SEARCH_DELAY_MS = 350;
+
 interface LocationPickerProps {
-  labels?: Partial<LocationPickerLabels>;
   latitude: number | null;
   longitude: number | null;
   /** Gợi ý ô tìm kiếm ban đầu (địa chỉ đã nhập) */
   address: string;
   onChange: (latitude: number, longitude: number) => void;
+  /** Tìm địa chỉ qua backend (Goong) — mỗi khu truyền service của mình */
+  search: MapSearch;
+  /** Có thì hiện nút "Dùng địa chỉ này" để điền địa chỉ Goong vào form */
+  onAddress?: (address: string) => void;
+  labels?: Partial<LocationPickerLabels>;
 }
 
 /**
- * Chọn vị trí địa điểm: tìm theo địa chỉ (Photon), bấm lên bản đồ hoặc kéo ghim.
- * Nền bản đồ dùng CARTO vì một số mạng ở VN không phân giải được tile.openstreetmap.org.
+ * Chọn vị trí địa điểm trên bản đồ Goong: gõ để tìm địa chỉ, bấm lên bản đồ hoặc kéo ghim.
  * Tọa độ được điền ngược lại vào form. Dùng chung cho form đối tác và form admin.
  */
 export default function LocationPicker({
@@ -91,34 +71,47 @@ export default function LocationPicker({
   longitude,
   address,
   onChange,
+  search,
+  onAddress,
   labels,
 }: LocationPickerProps) {
   const text = { ...DEFAULT_LABELS, ...labels };
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<L.Map | null>(null);
-  const markerRef = useRef<L.Marker | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const markerRef = useRef<maplibregl.Marker | null>(null);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+  const searchRef = useRef(search);
+  searchRef.current = search;
 
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[] | null>(null);
+  const [results, setResults] = useState<AddressSuggestion[] | null>(null);
   const [searching, setSearching] = useState(false);
   const [message, setMessage] = useState('');
+  const [pinAddress, setPinAddress] = useState<string | null>(null);
+  /** Chỉ tìm địa chỉ của ghim khi người dùng tự đặt ghim (không phải khi mở form có sẵn tọa độ) */
+  const lookupPin = useRef(false);
 
   const hasPoint = latitude !== null && longitude !== null;
+
+  const choose = (lat: number, lng: number, findAddress: boolean) => {
+    lookupPin.current = findAddress;
+    onChangeRef.current(round6(lat), round6(lng));
+  };
 
   // Khởi tạo bản đồ một lần
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-    const map = L.map(containerRef.current, { scrollWheelZoom: false }).setView(VIETNAM_CENTER, 5);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      subdomains: 'abcd',
-      maxZoom: 20,
-      attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-    }).addTo(map);
-    map.on('click', (event: L.LeafletMouseEvent) =>
-      onChangeRef.current(round(event.latlng.lat), round(event.latlng.lng)),
-    );
+    const map = new maplibregl.Map({
+      container: containerRef.current,
+      style: mapStyle(),
+      center: VIETNAM_CENTER,
+      zoom: 4.5,
+      scrollZoom: false,
+      attributionControl: { compact: true },
+    });
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    map.on('click', (event) => choose(event.lngLat.lat, event.lngLat.lng, true));
     mapRef.current = map;
     return () => {
       map.remove();
@@ -139,53 +132,98 @@ export default function LocationPicker({
     ) {
       markerRef.current?.remove();
       markerRef.current = null;
+      setPinAddress(null);
       return;
     }
-    const point: L.LatLngTuple = [latitude, longitude];
+    const point: [number, number] = [longitude, latitude];
     if (!markerRef.current) {
-      const marker = L.marker(point, { draggable: true, icon: PIN_ICON }).addTo(map);
+      const marker = new maplibregl.Marker({
+        element: pinElement(),
+        draggable: true,
+        anchor: 'bottom',
+      })
+        .setLngLat(point)
+        .addTo(map);
       marker.on('dragend', () => {
-        const { lat, lng } = marker.getLatLng();
-        onChangeRef.current(round(lat), round(lng));
+        const { lat, lng } = marker.getLngLat();
+        choose(lat, lng, true);
       });
       markerRef.current = marker;
-      map.setView(point, Math.max(map.getZoom(), 16));
+      map.jumpTo({ center: point, zoom: Math.max(map.getZoom(), 16) });
     } else {
-      markerRef.current.setLatLng(point);
+      markerRef.current.setLngLat(point);
       if (!map.getBounds().contains(point)) map.panTo(point);
     }
   }, [latitude, longitude]);
 
-  const search = async () => {
+  // Địa chỉ tại ghim (Goong) để người dùng điền nhanh vào ô địa chỉ
+  useEffect(() => {
+    if (!onAddress || !lookupPin.current || latitude === null || longitude === null) return;
+    let active = true;
+    const timer = window.setTimeout(() => {
+      searchRef.current
+        .reverse(latitude, longitude)
+        .then((found) => active && setPinAddress(found.address || null))
+        .catch(() => active && setPinAddress(null));
+    }, SEARCH_DELAY_MS);
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+  }, [latitude, longitude, onAddress]);
+
+  // Gợi ý theo từng chữ gõ (chờ người dùng ngừng gõ một chút)
+  useEffect(() => {
+    const wanted = query.trim();
+    if (wanted.length < 2) {
+      setResults(null);
+      return;
+    }
+    let active = true;
+    const timer = window.setTimeout(() => {
+      setSearching(true);
+      setMessage('');
+      searchRef.current
+        .autocomplete(
+          wanted,
+          latitude !== null && longitude !== null ? { latitude, longitude } : undefined,
+        )
+        .then((found) => {
+          if (!active) return;
+          setResults(found);
+          if (found.length === 0) setMessage(text.notFound);
+        })
+        .catch(() => active && setMessage(text.searchFailed))
+        .finally(() => active && setSearching(false));
+    }, SEARCH_DELAY_MS);
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+    // Chỉ chạy lại khi từ khóa đổi
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
+
+  const searchNow = () => {
     const wanted = (query || address).trim();
     if (!wanted) {
       setMessage(text.emptyQuery);
       return;
     }
-    setQuery(wanted);
-    setSearching(true);
-    setMessage('');
-    try {
-      const params = new URLSearchParams({ q: wanted, limit: '5', bbox: VIETNAM_BBOX });
-      const response = await fetch(`https://photon.komoot.io/api/?${params}`);
-      if (!response.ok) throw new Error(String(response.status));
-      const data = (await response.json()) as { features: PhotonFeature[] };
-      const found = data.features.map(toResult);
-      setResults(found);
-      if (found.length === 0) setMessage(text.notFound);
-    } catch {
-      setMessage(text.searchFailed);
-    } finally {
-      setSearching(false);
-    }
+    setQuery(wanted === query ? `${wanted} ` : wanted);
   };
 
-  const pick = (result: SearchResult) => {
-    const lat = round(result.lat);
-    const lng = round(result.lon);
-    onChange(lat, lng);
-    mapRef.current?.setView([lat, lng], 17);
+  const pick = async (result: AddressSuggestion) => {
     setResults(null);
+    setMessage('');
+    try {
+      const found = await search.place(result.placeId);
+      choose(found.latitude, found.longitude, false);
+      setPinAddress(found.address || result.description);
+      mapRef.current?.jumpTo({ center: [found.longitude, found.latitude], zoom: 17 });
+    } catch {
+      setMessage(text.searchFailed);
+    }
   };
 
   const useMyLocation = () => {
@@ -196,10 +234,11 @@ export default function LocationPicker({
     setMessage('');
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const lat = round(position.coords.latitude);
-        const lng = round(position.coords.longitude);
-        onChange(lat, lng);
-        mapRef.current?.setView([lat, lng], 17);
+        choose(position.coords.latitude, position.coords.longitude, true);
+        mapRef.current?.jumpTo({
+          center: [position.coords.longitude, position.coords.latitude],
+          zoom: 17,
+        });
       },
       () => setMessage(text.geolocationDenied),
     );
@@ -208,59 +247,87 @@ export default function LocationPicker({
   return (
     <div className="mb-4">
       <p className="mb-2 text-[13px] font-semibold text-client-ink">{text.title}</p>
-      <div className="flex flex-wrap gap-2">
-        <input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              event.preventDefault();
-              void search();
-            }
-          }}
-          placeholder={address || text.searchPlaceholder}
-          className="h-11 min-w-0 flex-1 rounded-xl border border-[#EBEDF5] bg-client-field px-3 text-[13px] text-[#18333E] placeholder:text-[#98A4AF] focus:ring-2 focus:ring-primary/40 focus:outline-none"
-        />
-        <button
-          type="button"
-          onClick={() => void search()}
-          disabled={searching}
-          className="flex h-11 items-center gap-1 rounded-xl bg-primary px-4 text-[13px] font-bold text-white hover:bg-primary-container disabled:opacity-60"
-        >
-          <Icon name="search" className="text-[18px]" />
-          {searching ? text.searching : text.search}
-        </button>
-        <button
-          type="button"
-          onClick={useMyLocation}
-          className="flex h-11 items-center gap-1 rounded-xl bg-[#E3F3EF] px-3 text-[13px] font-bold text-primary hover:bg-client-pale"
-        >
-          <Icon name="my_location" className="text-[18px]" /> {text.myLocation}
-        </button>
-      </div>
+      <div className="relative">
+        <div className="flex flex-wrap gap-2">
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                searchNow();
+              }
+            }}
+            placeholder={address || text.searchPlaceholder}
+            className="h-11 min-w-0 flex-1 rounded-xl border border-[#EBEDF5] bg-client-field px-3 text-[13px] text-[#18333E] placeholder:text-[#98A4AF] focus:ring-2 focus:ring-primary/40 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={searchNow}
+            disabled={searching}
+            className="flex h-11 items-center gap-1 rounded-xl bg-primary px-4 text-[13px] font-bold text-white hover:bg-primary-container disabled:opacity-60"
+          >
+            <Icon name="search" className="text-[18px]" />
+            {searching ? text.searching : text.search}
+          </button>
+          <button
+            type="button"
+            onClick={useMyLocation}
+            className="flex h-11 items-center gap-1 rounded-xl bg-[#E3F3EF] px-3 text-[13px] font-bold text-primary hover:bg-client-pale"
+          >
+            <Icon name="my_location" className="text-[18px]" /> {text.myLocation}
+          </button>
+        </div>
 
-      {results && results.length > 0 && (
-        <ul className="mt-2 overflow-hidden rounded-xl border border-client-line bg-white">
-          {results.map((result) => (
-            <li key={`${result.lat},${result.lon}`}>
-              <button
-                type="button"
-                onClick={() => pick(result)}
-                className="flex w-full items-start gap-2 px-3 py-2 text-left text-[12px] text-client-ink hover:bg-client-field"
-              >
-                <Icon name="location_on" className="text-[16px] text-primary" />
-                {result.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+        {results && results.length > 0 && (
+          <ul className="absolute top-12 right-0 left-0 z-20 overflow-hidden rounded-xl border border-client-line bg-white shadow-lg">
+            {results.map((result) => (
+              <li key={result.placeId}>
+                <button
+                  type="button"
+                  onClick={() => void pick(result)}
+                  className="flex w-full items-start gap-2 px-3 py-2 text-left hover:bg-client-field"
+                >
+                  <Icon name="location_on" className="mt-0.5 text-[16px] text-primary" />
+                  <span className="min-w-0">
+                    <span className="block truncate text-[13px] font-semibold text-client-ink">
+                      {result.title}
+                    </span>
+                    {result.subtitle && (
+                      <span className="block truncate text-[11px] text-client-muted">
+                        {result.subtitle}
+                      </span>
+                    )}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
       {message && <p className="mt-1 text-[12px] text-client-danger">{message}</p>}
 
       <div
         ref={containerRef}
-        className="relative z-0 mt-2 h-72 w-full overflow-hidden rounded-xl border border-client-line"
+        className="relative z-0 mt-2 h-80 w-full overflow-hidden rounded-xl border border-client-line"
       />
+      {onAddress && pinAddress && (
+        <div className="mt-2 flex flex-wrap items-center gap-2 rounded-xl bg-client-field px-3 py-2 text-[12px] text-client-ink">
+          <Icon name="pin_drop" className="text-[16px] text-primary" />
+          <span className="min-w-0 flex-1">
+            <span className="text-client-muted">{text.pinAddress}:</span> {pinAddress}
+          </span>
+          {pinAddress !== address && (
+            <button
+              type="button"
+              onClick={() => onAddress(pinAddress)}
+              className="font-bold text-[#007A73] hover:underline"
+            >
+              {text.useAddress}
+            </button>
+          )}
+        </div>
+      )}
       <p className="mt-1 text-[11px] text-[#71838D]">
         {hasPoint ? text.hintWithPoint : text.hintNoPoint}
       </p>

@@ -14,6 +14,12 @@ export const referenceApi = {
     clientRequest<CategoryGroup[]>('/reference/categories', {
       auth: false,
     }),
-  interests: () => clientRequest<ReferenceItem[]>('/reference/interests'),
-  specialNeeds: () => clientRequest<ReferenceItem[]>('/reference/special-needs')
+
+  // GET /api/reference/interests
+  interests: () =>
+    clientRequest<ReferenceItem[]>('/reference/interests'),
+
+  // GET /api/reference/special-needs
+  specialNeeds: () =>
+    clientRequest<ReferenceItem[]>('/reference/special-needs'),
 };

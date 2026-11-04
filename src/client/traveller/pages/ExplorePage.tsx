@@ -148,6 +148,9 @@ function PlaceGridCard({
   );
 }
 
+/** Mỗi lần tải bao nhiêu địa điểm (API cho tối đa 100) */
+const PAGE_SIZE = 60;
+
 /** Explore page: bộ lọc & tìm tỉnh từ HuyNgo, dữ liệu địa điểm từ main. */
 export default function ExplorePage() {
   const [params, setParams] = useSearchParams();
@@ -174,6 +177,10 @@ export default function ExplorePage() {
   const [places, setPlaces] = useState<PlaceSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  /** Tổng số địa điểm khớp từ khoá / tỉnh (API trả về), trang tiếp theo cần tải */
+  const [total, setTotal] = useState(0);
+  const [nextPage, setNextPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     // Chỉ đồng bộ khi URL thay đổi từ phía ngoài (ví dụ Back/Forward).
@@ -215,12 +222,17 @@ export default function ExplorePage() {
       placesApi.list({
         keyword: selectedProvinceCode ? '' : searchText.trim(),
         province: selectedProvinceCode || undefined,
-        size: 60,
+        page: 0,
+        size: PAGE_SIZE,
       }).then((page) => {
-        if (active) setPlaces(page.items);
+        if (!active) return;
+        setPlaces(page.items);
+        setTotal(page.total);
+        setNextPage(1);
       }).catch((failure: unknown) => {
         if (active) {
           setPlaces([]);
+          setTotal(0);
           setLoadError(errorMessage(failure));
         }
       }).finally(() => {
@@ -232,6 +244,30 @@ export default function ExplorePage() {
       window.clearTimeout(timer);
     };
   }, [searchText, selectedProvinceCode]);
+
+  /** Từ khoá / tỉnh đang tìm — dùng chung cho lần tải đầu và nút "Xem thêm" */
+  function searchParams() {
+    return {
+      keyword: selectedProvinceCode ? '' : searchText.trim(),
+      province: selectedProvinceCode || undefined,
+    };
+  }
+
+  const loadMore = () => {
+    setLoadingMore(true);
+    placesApi
+      .list({ ...searchParams(), page: nextPage, size: PAGE_SIZE })
+      .then((page) => {
+        setPlaces((current) => {
+          const seen = new Set(current.map((place) => place.id));
+          return [...current, ...page.items.filter((place) => !seen.has(place.id))];
+        });
+        setTotal(page.total);
+        setNextPage((current) => current + 1);
+      })
+      .catch((failure: unknown) => setLoadError(errorMessage(failure)))
+      .finally(() => setLoadingMore(false));
+  };
 
   const setQuery = (value: string) => {
     const next = new URLSearchParams(params);
@@ -302,6 +338,11 @@ export default function ExplorePage() {
     }
     return true;
   }), [places, minRating, selectedCategories]);
+
+  // Chưa chọn bộ lọc bên trái → hiện tổng thật từ API; đang lọc → số địa điểm khớp trong các trang đã tải
+  const filtering = minRating > 0 || selectedCategories.length > 0;
+  const resultCount = filtering ? visiblePlaces.length : total;
+  const hasMore = places.length < total;
 
   const toggleCategory = (code: string) => {
     setSelectedCategoryCodes((current) =>
@@ -736,7 +777,7 @@ export default function ExplorePage() {
       </span>
 
               <span className="text-[16px] font-extrabold text-[#087F79]">
-        {visiblePlaces.length}
+        {resultCount}
                 <span className="ml-1 text-[11px] font-medium text-[#8B9DAA]">
           địa điểm
         </span>
@@ -748,7 +789,7 @@ export default function ExplorePage() {
               onClick={() => setMobileFiltersOpen(false)}
               className="group flex h-[48px] w-full items-center justify-center gap-2 rounded-[14px] bg-gradient-to-r from-[#087F79] to-[#089F92] text-[13px] font-extrabold text-white shadow-[0_5px_16px_rgba(8,127,121,0.2)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_22px_rgba(8,127,121,0.3)] active:translate-y-0"
             >
-              Xem {visiblePlaces.length} kết quả
+              Xem {resultCount} kết quả
               <Icon
                 name="arrow_forward"
                 className="text-[19px] transition-transform group-hover:translate-x-1"
@@ -905,7 +946,7 @@ export default function ExplorePage() {
             <p className="flex min-w-0 flex-1 items-center gap-1.5 text-[11px] text-[#72818C]">
               <Icon name="travel_explore" className="text-[16px] text-[#087A78]" />
               <span className="truncate">
-            Tìm thấy <b className="font-extrabold text-[#13364A]">{visiblePlaces.length}</b> địa
+            Tìm thấy <b className="font-extrabold text-[#13364A]">{resultCount}</b> địa
             điểm tuyệt vời tại Việt Nam
           </span>
             </p>
@@ -978,6 +1019,22 @@ export default function ExplorePage() {
                   onToggleFavorite={() => toggleFavorite(String(place.id))}
                 />
               ))}
+            </div>
+          )}
+          {!loading && hasMore && (
+            <div className="mt-5 flex flex-col items-center gap-1">
+              <button
+                type="button"
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="flex h-11 items-center gap-2 rounded-full bg-[#C3F8F0] px-6 text-[13px] font-extrabold text-[#087A78] transition-colors hover:bg-[#A9F0E5] disabled:opacity-60"
+              >
+                <Icon name={loadingMore ? 'hourglass_top' : 'expand_more'} className="text-[20px]" />
+                {loadingMore ? 'Đang tải…' : 'Xem thêm địa điểm'}
+              </button>
+              <span className="text-[11px] text-[#8B9DAA]">
+                Đã hiển thị {places.length}/{total} địa điểm
+              </span>
             </div>
           )}
         </main>

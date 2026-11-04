@@ -29,6 +29,9 @@ export function isLiveModule(module: LiveModule): boolean {
   return !USE_MOCK_API || LIVE_MODULES.has(module);
 }
 
+/** Goong Maptiles key (nền bản đồ). Trống → dùng nền CARTO dự phòng */
+export const GOONG_MAPTILES_KEY: string = import.meta.env.VITE_GOONG_MAPTILES_KEY?.trim() ?? '';
+
 /** Thời gian chờ tối đa cho một request */
 export const REQUEST_TIMEOUT_MS = 15_000;
 

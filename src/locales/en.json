@@ -31,9 +31,9 @@
       "notifications": "Notifications",
       "systemSettings": "System settings",
       "systemAdministration": "System administration",
-      "placeCategories": "Place types"
+      "placeCategories": "Service types"
     },
-    "placeCategories": "Place types"
+    "placeCategories": "Service types"
   },
   "header": {
     "searchPlaceholder": "Search data, users, tours, POIs...",
@@ -2974,7 +2974,9 @@
       "province": "Province / city",
       "status": "Status",
       "source": "Source",
-      "all": "All"
+      "all": "All",
+      "category": "Type",
+      "allTypes": "All types"
     },
     "status": {
       "draft": "Not published",
@@ -3254,7 +3256,7 @@
       "name": "Place name",
       "namePlaceholder": "E.g. Museum of Cham Sculpture",
       "group": "Service group",
-      "category": "Place type",
+      "category": "Type",
       "choose": "Choose…",
       "groupFirst": "Choose a group first",
       "description": "Description",
@@ -3274,7 +3276,7 @@
       "checkFields": "Please check the highlighted fields.",
       "name": "The place name needs at least 2 characters",
       "group": "Please choose a service group",
-      "category": "Please choose a place type",
+      "category": "Please choose a type",
       "province": "Please choose a province/city",
       "address": "Please enter the address",
       "latitude": "Please pick the location on the map (latitude between -90 and 90)",
@@ -3341,25 +3343,27 @@
       "noGeolocation": "This browser cannot read your location.",
       "geolocationDenied": "Could not get your location. Allow location access or pick on the map.",
       "hintWithPoint": "Drag the pin or click elsewhere on the map to adjust.",
-      "hintNoPoint": "Search an address and pick a result, or click the exact spot on the map."
+      "hintNoPoint": "Search an address and pick a result, or click the exact spot on the map.",
+      "pinAddress": "Address at the pin",
+      "useAddress": "Use this address"
     }
   },
   "placeCategories": {
-    "title": "Place types",
-    "description": "Place types under the 4 service groups. Disabled types no longer appear when creating places; places already using them keep them.",
-    "loadError": "Could not load place types",
+    "title": "Service types",
+    "description": "Each service group has its types — shared by the partner registration form, the admin place form and the POI filters. Disabled types no longer appear when registering places; places already using them keep them.",
+    "loadError": "Could not load the types",
     "add": "Add type",
     "addShort": "Add",
-    "addTitle": "Add place type",
-    "editTitle": "Edit place type",
+    "addTitle": "Add type",
+    "editTitle": "Edit type",
     "edit": "Edit type",
     "count": "{{count}} types",
     "places": "{{count}} places",
     "empty": "No types yet.",
     "active": "Enabled",
     "inactive": "Disabled",
-    "created": "Place type added",
-    "saved": "Place type saved",
+    "created": "Type added",
+    "saved": "Type saved",
     "enabled": "Enabled \"{{name}}\"",
     "disabled": "Disabled \"{{name}}\"",
     "fields": {

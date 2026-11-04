@@ -104,6 +104,7 @@ function query(params: CatalogQuery): string {
   const optional: Record<string, string | undefined> = {
     keyword: params.keyword?.trim() || undefined,
     group: params.group && params.group !== 'all' ? params.group : undefined,
+    category: params.category && params.category !== 'all' ? params.category : undefined,
     province: params.province && params.province !== 'all' ? params.province : undefined,
     status: upper(params.status),
     source: upper(params.source),

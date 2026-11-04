@@ -63,6 +63,7 @@ export default function PlaceCatalogPage() {
   const [provinces, setProvinces] = useState<RefItem[]>([]);
 
   const [group, setGroup] = useState('all');
+  const [category, setCategory] = useState('all');
   const [province, setProvince] = useState('all');
   const [status, setStatus] = useState<CatalogPlaceStatus | 'all'>('all');
   const [source, setSource] = useState<PlaceSource | 'all'>('all');
@@ -108,7 +109,16 @@ export default function PlaceCatalogPage() {
     let active = true;
     setLoading(true);
     placeCatalogService
-      .list({ keyword: search, group, province, status, source, page: page - 1, size: pageSize })
+      .list({
+        keyword: search,
+        group,
+        category,
+        province,
+        status,
+        source,
+        page: page - 1,
+        size: pageSize,
+      })
       .then((next) => {
         if (!active) return;
         setResult(next);
@@ -123,7 +133,7 @@ export default function PlaceCatalogPage() {
     return () => {
       active = false;
     };
-  }, [search, group, province, status, source, page, pageSize, retry]);
+  }, [search, group, category, province, status, source, page, pageSize, retry]);
 
   const resetPage =
     <T,>(setter: (value: T) => void) =>
@@ -154,11 +164,18 @@ export default function PlaceCatalogPage() {
     [t],
   );
 
+  /** Loại hình của nhóm đang chọn (giống ô "Loại hình" khi đăng ký địa điểm) */
+  const subtypes = groups.find((item) => item.code === group)?.subtypes ?? [];
+
   const groupTab = (code: string, label: string, count: number) => (
     <button
       key={code}
       type="button"
-      onClick={() => resetPage(setGroup)(code)}
+      onClick={() => {
+        // Đổi nhóm dịch vụ → chọn lại loại hình (giống form đăng ký địa điểm)
+        setCategory('all');
+        resetPage(setGroup)(code);
+      }}
       className={`flex items-center gap-2 rounded-full px-4 py-2 font-label-md text-label-md transition-colors ${
         group === code
           ? 'bg-primary font-semibold text-on-primary'
@@ -255,6 +272,30 @@ export default function PlaceCatalogPage() {
           {groupTab('all', t('placeCatalog.tabs.all'), stats.total)}
           {groups.map((item) => groupTab(item.code, item.name, stats.byGroup[item.code] ?? 0))}
         </div>
+        {subtypes.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 border-t border-surface-container pt-3">
+            <span className="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant">
+              <Icon name="sell" className="text-[18px] text-primary" />
+              {t('placeCatalog.filters.category')}:
+            </span>
+            {[{ code: 'all', name: t('placeCatalog.filters.allTypes') }, ...subtypes].map(
+              (item) => (
+                <button
+                  key={item.code}
+                  type="button"
+                  onClick={() => resetPage(setCategory)(item.code)}
+                  className={`rounded-full border px-3 py-1 font-label-md text-label-md transition-colors ${
+                    category === item.code
+                      ? 'border-primary bg-primary-fixed font-semibold text-on-primary-fixed'
+                      : 'border-outline-variant text-on-surface-variant hover:bg-surface-container'
+                  }`}
+                >
+                  {item.name}
+                </button>
+              ),
+            )}
+          </div>
+        )}
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
           <label className="flex flex-1 flex-col gap-1.5">
             <span className="font-label-sm text-label-sm font-semibold tracking-wider text-on-surface-variant uppercase">

@@ -7,6 +7,8 @@ interface ImportMetaEnv {
   readonly VITE_USE_MOCK?: string;
   /** Phân hệ dùng API thật khi các phần khác còn mock, ví dụ "auth,partners" */
   readonly VITE_LIVE_MODULES?: string;
+  /** Goong Maptiles key — nền bản đồ (công khai). API key tìm địa chỉ nằm ở backend */
+  readonly VITE_GOONG_MAPTILES_KEY?: string;
 }
 
 interface ImportMeta {

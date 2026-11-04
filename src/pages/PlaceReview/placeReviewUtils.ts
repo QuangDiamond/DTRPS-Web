@@ -98,9 +98,5 @@ export const hourText = (hour: OpeningHour, closedLabel: string): string =>
 export const googleMapsUrl = (place: Pick<PlaceContent, 'latitude' | 'longitude'>): string =>
   `https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}`;
 
-/** Bản đồ Google nhúng (không cần API key) — openstreetmap.org không truy cập được trên một số mạng ở VN */
-export const mapEmbedUrl = (place: Pick<PlaceContent, 'latitude' | 'longitude'>): string =>
-  `https://maps.google.com/maps?q=${place.latitude},${place.longitude}&z=16&hl=vi&output=embed`;
-
 export const coverOf = (place: Pick<PlaceContent, 'images'>): string | undefined =>
   (place.images.find((image) => image.primary) ?? place.images[0])?.url;

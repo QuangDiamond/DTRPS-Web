@@ -31,9 +31,9 @@
       "notifications": "Thông báo",
       "systemSettings": "Cài đặt hệ thống",
       "systemAdministration": "Quản trị hệ thống",
-      "placeCategories": "Loại địa điểm"
+      "placeCategories": "Loại hình dịch vụ"
     },
-    "placeCategories": "Loại địa điểm"
+    "placeCategories": "Loại hình dịch vụ"
   },
   "header": {
     "searchPlaceholder": "Tìm kiếm dữ liệu, người dùng, tour, POI...",
@@ -2901,7 +2901,9 @@
       "province": "Tỉnh / thành",
       "status": "Trạng thái",
       "source": "Nguồn",
-      "all": "Tất cả"
+      "all": "Tất cả",
+      "category": "Loại hình",
+      "allTypes": "Tất cả loại hình"
     },
     "status": {
       "draft": "Chưa công khai",
@@ -3181,7 +3183,7 @@
       "name": "Tên địa điểm",
       "namePlaceholder": "Ví dụ: Bảo tàng Điêu khắc Chăm",
       "group": "Nhóm dịch vụ",
-      "category": "Loại địa điểm",
+      "category": "Loại hình",
       "choose": "Chọn…",
       "groupFirst": "Chọn nhóm trước",
       "description": "Mô tả",
@@ -3201,7 +3203,7 @@
       "checkFields": "Vui lòng kiểm tra lại các ô được đánh dấu.",
       "name": "Tên địa điểm phải có ít nhất 2 ký tự",
       "group": "Vui lòng chọn nhóm dịch vụ",
-      "category": "Vui lòng chọn loại địa điểm",
+      "category": "Vui lòng chọn loại hình",
       "province": "Vui lòng chọn tỉnh/thành",
       "address": "Vui lòng nhập địa chỉ",
       "latitude": "Vui lòng chọn vị trí trên bản đồ (vĩ độ từ -90 đến 90)",
@@ -3268,39 +3270,41 @@
       "noGeolocation": "Trình duyệt không hỗ trợ lấy vị trí.",
       "geolocationDenied": "Không lấy được vị trí. Hãy cho phép truy cập vị trí hoặc chọn trên bản đồ.",
       "hintWithPoint": "Kéo ghim hoặc bấm chỗ khác trên bản đồ để chỉnh vị trí.",
-      "hintNoPoint": "Tìm địa chỉ rồi chọn kết quả, hoặc bấm đúng vị trí trên bản đồ."
+      "hintNoPoint": "Tìm địa chỉ rồi chọn kết quả, hoặc bấm đúng vị trí trên bản đồ.",
+      "pinAddress": "Địa chỉ tại ghim",
+      "useAddress": "Dùng địa chỉ này"
     }
   },
   "placeCategories": {
-    "title": "Loại địa điểm",
-    "description": "Các loại địa điểm thuộc 4 nhóm dịch vụ. Loại đã tắt không còn hiện khi tạo địa điểm; địa điểm đang dùng vẫn giữ nguyên.",
-    "loadError": "Không tải được loại địa điểm",
-    "add": "Thêm loại",
+    "title": "Loại hình dịch vụ",
+    "description": "Mỗi nhóm dịch vụ gồm các loại hình — dùng chung cho form đăng ký của đối tác, form tạo địa điểm của admin và bộ lọc POI. Loại hình đã tắt không còn hiện khi đăng ký địa điểm; địa điểm đang dùng vẫn giữ nguyên.",
+    "loadError": "Không tải được loại hình",
+    "add": "Thêm loại hình",
     "addShort": "Thêm",
-    "addTitle": "Thêm loại địa điểm",
-    "editTitle": "Sửa loại địa điểm",
-    "edit": "Sửa loại",
-    "count": "{{count}} loại",
+    "addTitle": "Thêm loại hình",
+    "editTitle": "Sửa loại hình",
+    "edit": "Sửa loại hình",
+    "count": "{{count}} loại hình",
     "places": "{{count}} địa điểm",
-    "empty": "Chưa có loại nào.",
+    "empty": "Chưa có loại hình nào.",
     "active": "Đang bật",
     "inactive": "Đã tắt",
-    "created": "Đã thêm loại địa điểm",
-    "saved": "Đã lưu loại địa điểm",
+    "created": "Đã thêm loại hình",
+    "saved": "Đã lưu loại hình",
     "enabled": "Đã bật \"{{name}}\"",
     "disabled": "Đã tắt \"{{name}}\"",
     "fields": {
       "group": "Nhóm dịch vụ",
-      "code": "Mã loại",
+      "code": "Mã loại hình",
       "codeHint": "Chữ thường không dấu, số và dấu gạch dưới, ví dụ hot_spring. Không đổi được sau khi tạo.",
-      "codeFixed": "Mã loại không đổi được sau khi tạo.",
-      "name": "Tên loại",
+      "codeFixed": "Mã loại hình không đổi được sau khi tạo.",
+      "name": "Tên loại hình",
       "namePlaceholder": "Ví dụ: Suối nước nóng",
       "description": "Mô tả"
     },
     "errors": {
-      "code": "Mã loại 2–50 ký tự: chữ thường không dấu, số hoặc dấu gạch dưới",
-      "name": "Tên loại phải có ít nhất 2 ký tự"
+      "code": "Mã loại hình 2–50 ký tự: chữ thường không dấu, số hoặc dấu gạch dưới",
+      "name": "Tên loại hình phải có ít nhất 2 ký tự"
     }
   }
 }

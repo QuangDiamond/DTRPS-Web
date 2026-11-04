@@ -1,38 +1,72 @@
 import { useEffect, useMemo, useState } from 'react';
-import { referenceApi } from '@/client/api/referenceApi';
-import { errorMessage } from '@/client/api/http';
-import type { ReferenceItem, CategoryGroup } from '@/client/api/types';
 import { Link, useSearchParams } from 'react-router-dom';
+import { referenceApi } from '@/client/api/referenceApi';
+import { placesApi } from '@/client/api/placesApi';
+import { errorMessage } from '@/client/api/http';
+import type { ReferenceItem, CategoryGroup, PlaceSummary } from '@/client/api/types';
 import { Icon } from '@/components/common';
 import { placePath } from '@/client/routePaths';
 import FavoriteButton from '@/client/traveller/components/FavoriteButton';
-import { normalizeText, type Place, PLACES } from '@/client/traveller/data/places';
 import { useTraveller } from '@/client/traveller/travellerContext';
+import { FormAlert, Spinner } from '@/client/ui/Blocks';
 
 type ViewMode = 'list' | 'grid';
 
+// Phục vụ riêng thanh tìm kiếm tỉnh/thành và bộ lọc của HuyNgo.
+function normalizeText(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .toLowerCase()
+    .trim();
+}
+
+const GROUP_ICONS: Record<string, string> = {
+  lodging: 'hotel',
+  fnb: 'restaurant',
+  attraction: 'attractions',
+  shopping: 'storefront',
+};
+const DEFAULT_GROUP_ICON = 'place';
+
+function groupIconOf(place: PlaceSummary): string {
+  return place.group ? GROUP_ICONS[place.group.code] ?? DEFAULT_GROUP_ICON : DEFAULT_GROUP_ICON;
+}
+
 function PlaceCard({
-  place,
-  favorite,
-  onToggleFavorite,
-}: {
-  place: Place;
+                     place,
+                     favorite,
+                     onToggleFavorite,
+                   }: {
+  place: PlaceSummary;
   favorite: boolean;
   onToggleFavorite: () => void;
 }) {
   return (
     <div className="relative overflow-hidden rounded-[20px] bg-white shadow-[0_4px_10px_rgba(19,54,74,0.08)] transition-shadow hover:shadow-lg">
-      <Link to={placePath(place.id)} className="block">
+      <Link to={placePath(String(place.id))} className="block">
         <div className="relative h-40 bg-[#CFE9E6] md:h-44">
-          <img src={place.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          {place.coverUrl ? (
+            <img
+              src={place.coverUrl}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Icon name="image" className="text-[40px] text-white/70" />
+            </div>
+          )}
           <div className="absolute inset-0 flex flex-col justify-between bg-linear-to-b from-black/5 to-black/45 p-2.5">
             <span className="flex items-center gap-1 self-start rounded-full bg-[#087A78]/90 px-2.5 py-1 text-[10px] font-bold text-white">
-              <Icon name={place.tagIcon} className="text-[13px]" />
-              {place.tag}
+              <Icon name={groupIconOf(place)} className="text-[13px]" />
+              {place.category?.name ?? place.group?.name ?? 'Địa điểm'}
             </span>
             <span className="flex items-center gap-1 self-start rounded-full bg-black/40 px-2.5 py-1 text-[11px] font-semibold text-white">
               <Icon name="location_on" filled className="text-[13px]" />
-              {place.location}
+              {place.province?.name ?? '—'}
             </span>
           </div>
         </div>
@@ -43,23 +77,18 @@ function PlaceCard({
             </p>
             <span className="flex items-center gap-0.5 rounded-full bg-[#FFF5DA] px-2 py-0.5 text-[11px] font-bold text-[#8A6100]">
               <Icon name="star" filled className="text-[13px] text-[#E0A100]" />
-              {place.rating}
-              <span className="text-[10px] font-normal text-[#A8894A]">({place.reviews})</span>
+              {place.rating ?? 'Mới'}
+              {place.rating !== null && (
+                <span className="text-[10px] font-normal text-[#A8894A]">
+                  ({place.reviewCount})
+                </span>
+              )}
             </span>
           </div>
           <p className="mt-1 line-clamp-2 text-[12px] leading-[17px] text-[#72818C]">
-            {place.description}
+            {place.address ?? ''}
           </p>
-          <div className="mt-3 flex items-center justify-between gap-2">
-            <div className="min-w-0 flex-1 rounded-xl bg-[#F1F3FF] px-3 py-1.5">
-              <p className="text-[10px] text-[#7E8797]">Chi phí dự kiến</p>
-              <p className="truncate text-[14px] font-extrabold text-[#087A78]">
-                {place.priceLabel}
-                {place.priceNote && (
-                  <span className="text-[10px] font-medium text-[#7E8797]">{place.priceNote}</span>
-                )}
-              </p>
-            </div>
+          <div className="mt-3 flex items-center justify-end">
             <span className="flex h-9 items-center gap-1 rounded-full bg-[#A0F1E7] px-4 text-[13px] font-bold text-[#006D68]">
               Chi tiết <Icon name="arrow_forward" className="text-[16px]" />
             </span>
@@ -76,28 +105,38 @@ function PlaceCard({
 }
 
 function PlaceGridCard({
-  place,
-  favorite,
-  onToggleFavorite,
-}: {
-  place: Place;
+                         place,
+                         favorite,
+                         onToggleFavorite,
+                       }: {
+  place: PlaceSummary;
   favorite: boolean;
   onToggleFavorite: () => void;
 }) {
   return (
     <div className="relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-md">
-      <Link to={placePath(place.id)} className="block">
-        <img src={place.image} alt="" className="h-[110px] w-full bg-[#CFE9E6] object-cover" />
+      <Link to={placePath(String(place.id))} className="block">
+        {place.coverUrl ? (
+          <img
+            src={place.coverUrl}
+            alt=""
+            className="h-[110px] w-full bg-[#CFE9E6] object-cover"
+          />
+        ) : (
+          <div className="flex h-[110px] w-full items-center justify-center bg-[#CFE9E6]">
+            <Icon name="image" className="text-[28px] text-white/80" />
+          </div>
+        )}
         <div className="p-2.5">
           <p className="truncate text-[13px] font-extrabold text-[#13364A]">{place.name}</p>
           <p className="mt-0.5 flex items-center gap-0.5 text-[10px] text-[#72818C]">
             <Icon name="location_on" className="text-[12px]" />
-            <span className="flex-1 truncate">{place.location}</span>
+            <span className="flex-1 truncate">{place.province?.name ?? '—'}</span>
             <Icon name="star" filled className="text-[12px] text-[#E0A100]" />
-            <span className="font-bold text-[#8A6100]">{place.rating}</span>
+            <span className="font-bold text-[#8A6100]">{place.rating ?? '—'}</span>
           </p>
           <p className="mt-1.5 truncate text-[12px] font-extrabold text-[#087A78]">
-            {place.priceLabel}
+            {place.category?.name ?? ''}
           </p>
         </div>
       </Link>
@@ -111,258 +150,162 @@ function PlaceGridCard({
   );
 }
 
-/** Khám phá điểm đến — theo ExploreScreen của mobile */
-
-/** Khám phá địa điểm với bộ lọc dọc bên trái */
+/** Danh sách và card từ main; chỉ giữ search tỉnh/thành và sidebar từ HuyNgo. */
 export default function ExplorePage() {
   const [params, setParams] = useSearchParams();
   const { favorites, toggleFavorite } = useTraveller();
 
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-
   const query = params.get('q') ?? '';
   const minRating = Number(params.get('rating') ?? 0) || 0;
 
+  // Search + sidebar của HuyNgo.
   const [searchText, setSearchText] = useState(query);
   const [showSuggestions, setShowSuggestions] = useState(false);
-
-  // Dữ liệu tham chiếu từ Backend
   const [provinces, setProvinces] = useState<ReferenceItem[]>([]);
   const [categoryGroups, setCategoryGroups] = useState<CategoryGroup[]>([]);
   const [loadingReferences, setLoadingReferences] = useState(true);
   const [referenceError, setReferenceError] = useState('');
-
-  // Trạng thái của bộ lọc
   const [selectedProvinceCode, setSelectedProvinceCode] = useState('');
   const [selectedCategoryCodes, setSelectedCategoryCodes] = useState<string[]>([]);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
 
-  // Đồng bộ từ khóa khi URL thay đổi
+  // Dữ liệu địa điểm thực tế của main.
+  const [places, setPlaces] = useState<PlaceSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
   useEffect(() => {
     setSearchText(query);
   }, [query]);
 
-  // Lấy tỉnh/thành và danh mục trực tiếp từ Backend
   useEffect(() => {
     let active = true;
-
-    Promise.allSettled([
-      referenceApi.provinces(),
-      referenceApi.categories(),
-    ]).then(([provinceResult, categoryResult]) => {
-      if (!active) return;
-
-      const failures: string[] = [];
-
-      if (provinceResult.status === 'fulfilled') {
-        setProvinces(provinceResult.value);
-      } else {
-        failures.push(
-          `Tỉnh/thành: ${errorMessage(provinceResult.reason)}`
-        );
-      }
-
-      if (categoryResult.status === 'fulfilled') {
-        setCategoryGroups(categoryResult.value);
-      } else {
-        failures.push(
-          `Danh mục: ${errorMessage(categoryResult.reason)}`
-        );
-      }
-
-      setReferenceError(failures.join(' | '));
-      setLoadingReferences(false);
-    });
-
-    return () => {
-      active = false;
-    };
+    Promise.allSettled([referenceApi.provinces(), referenceApi.categories()]).then(
+      ([provinceResult, categoryResult]) => {
+        if (!active) return;
+        const failures: string[] = [];
+        if (provinceResult.status === 'fulfilled') {
+          setProvinces(provinceResult.value);
+        } else {
+          failures.push(`Tỉnh/thành: ${errorMessage(provinceResult.reason)}`);
+        }
+        if (categoryResult.status === 'fulfilled') {
+          setCategoryGroups(categoryResult.value);
+        } else {
+          failures.push(`Danh mục: ${errorMessage(categoryResult.reason)}`);
+        }
+        setReferenceError(failures.join(' | '));
+        setLoadingReferences(false);
+      },
+    );
+    return () => { active = false; };
   }, []);
 
-  // Cập nhật từ khóa trên URL khi xác nhận tìm kiếm
+  // Giữ cách main gọi API (có debounce); bổ sung mã tỉnh để search của HuyNgo hoạt động.
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setLoadError(null);
+    const timer = window.setTimeout(() => {
+      placesApi
+        .list({
+          keyword: selectedProvinceCode ? '' : query,
+          province: selectedProvinceCode || undefined,
+          size: 60,
+        })
+        .then((page) => { if (active) setPlaces(page.items); })
+        .catch((failure: unknown) => {
+          if (active) {
+            setPlaces([]);
+            setLoadError(errorMessage(failure));
+          }
+        })
+        .finally(() => { if (active) setLoading(false); });
+    }, 300);
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+  }, [query, selectedProvinceCode]);
+
   const setQuery = (value: string) => {
     const next = new URLSearchParams(params);
-
-    if (value.trim()) {
-      next.set('q', value.trim());
-    } else {
-      next.delete('q');
-    }
-
+    if (value.trim()) next.set('q', value.trim());
+    else next.delete('q');
     setParams(next, { replace: true });
   };
 
-  // Cập nhật mức đánh giá
   const setRating = (rating: number) => {
     const next = new URLSearchParams(params);
-
-    if (rating > 0) {
-      next.set('rating', String(rating));
-    } else {
-      next.delete('rating');
-    }
-
+    if (rating > 0) next.set('rating', String(rating));
+    else next.delete('rating');
     setParams(next, { replace: true });
   };
 
-  // Đặt lại tất cả bộ lọc
   const resetFilters = () => {
     setSelectedProvinceCode('');
     setSelectedCategoryCodes([]);
     setMaxPrice(null);
     setSearchText('');
     setShowSuggestions(false);
-
     const next = new URLSearchParams(params);
     next.delete('q');
     next.delete('rating');
-
     setParams(next, { replace: true });
   };
 
-  // Gợi ý tỉnh/thành khi người dùng nhập
   const suggestedProvinces = useMemo(() => {
     const keyword = normalizeText(searchText);
-
     return provinces
-      .filter((province) =>
-        normalizeText(province.name).includes(keyword)
-      )
+      .filter((province) => normalizeText(province.name).includes(keyword))
       .sort((a, b) => {
         const aFirst = normalizeText(a.name).startsWith(keyword) ? 0 : 1;
         const bFirst = normalizeText(b.name).startsWith(keyword) ? 0 : 1;
-
-        return (
-          aFirst - bFirst ||
-          a.name.localeCompare(b.name, 'vi')
-        );
+        return aFirst - bFirst || a.name.localeCompare(b.name, 'vi');
       })
       .slice(0, 12);
   }, [provinces, searchText]);
 
-  const selectedProvince = provinces.find(
-    (item) => item.code === selectedProvinceCode
-  );
-
+  const selectedProvince = provinces.find((item) => item.code === selectedProvinceCode);
   const selectedCategories = useMemo(
-    () =>
-      categoryGroups.flatMap((group) =>
-        [group, ...group.subtypes].filter((item) =>
-          selectedCategoryCodes.includes(item.code)
-        )
-      ),
-    [categoryGroups, selectedCategoryCodes]
+    () => categoryGroups.flatMap((group) =>
+      [group, ...group.subtypes].filter((item) => selectedCategoryCodes.includes(item.code))
+    ),
+    [categoryGroups, selectedCategoryCodes],
   );
 
-  // Lọc dựa trên những trường đang có trong Place
-  const visiblePlaces = useMemo(() => {
-    const keyword = normalizeText(query);
-
-    const provinceName = selectedProvince
-      ? normalizeText(selectedProvince.name)
-      : '';
-
-    return PLACES.filter((place) => {
-      const placeText = normalizeText(
-        `${place.name} ${place.location} ${place.tag}`
-      );
-
-      // Từ khóa tìm kiếm
-      if (keyword && !placeText.includes(keyword)) {
-        return false;
-      }
-
-      // Đánh giá
-      if (place.rating < minRating) {
-        return false;
-      }
-
-      // Tỉnh/thành
-      if (
-        provinceName &&
-        !normalizeText(place.location).includes(provinceName)
-      ) {
-        return false;
-      }
-
-      // Danh mục: đối chiếu code/tên với category và tag
-      if (selectedCategories.length > 0) {
-        const type = normalizeText(
-          `${place.category} ${place.tag}`
-        );
-
-        const matches = selectedCategories.some((category) => {
-          const code = normalizeText(category.code);
-          const name = normalizeText(category.name);
-
-          return (
-            type === code ||
-            type.includes(name) ||
-            type.includes(code)
-          );
-        });
-
-        if (!matches) return false;
-      }
-
-      // Khoảng giá: đọc giá từ priceLabel nếu có
-      if (maxPrice !== null) {
-        const text = normalizeText(place.priceLabel);
-        let price: number | null = null;
-
-        if (text.includes('mien phi')) {
-          price = 0;
-        } else {
-          const million = text.match(
-            /(\d+(?:[.,]\d+)?)\s*(trieu|tr)\b/
-          );
-
-          const thousand = text.match(
-            /(\d+(?:[.,]\d+)?)\s*(nghin|k)\b/
-          );
-
-          if (million) {
-            price =
-              Number(million[1].replace(',', '.')) * 1_000_000;
-          } else if (thousand) {
-            price =
-              Number(thousand[1].replace(',', '.')) * 1_000;
-          } else {
-            const numberText = text.match(/\d[\d.,]*/)?.[0];
-
-            if (numberText) {
-              price = Number(
-                numberText.replace(/[.,]/g, '')
-              );
-            }
-          }
-        }
-
-        if (
-          price === null ||
-          !Number.isFinite(price) ||
-          price > maxPrice
-        ) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [
-    query,
-    minRating,
-    selectedProvince,
-    selectedCategories,
-    maxPrice,
-  ]);
+  // Rating theo main; tỉnh và danh mục được áp dụng thêm từ sidebar HuyNgo.
+  // Giá không tồn tại trong PlaceSummary của main, không tự giả định có thể lọc được.
+  const visiblePlaces = useMemo(() => places.filter((place) => {
+    if ((place.rating ?? 0) < minRating) return false;
+    if (selectedProvince) {
+      const province = place.province?.name ?? '';
+      if (normalizeText(province) !== normalizeText(selectedProvince.name)) return false;
+    }
+    if (selectedCategories.length > 0) {
+      const categoryCode = place.category && 'code' in place.category
+        ? String(place.category.code ?? '')
+        : '';
+      const fields = [
+        place.group?.code ?? '',
+        place.group?.name ?? '',
+        categoryCode,
+        place.category?.name ?? '',
+      ].map(normalizeText);
+      if (!selectedCategories.some((item) => {
+        const code = normalizeText(item.code);
+        const name = normalizeText(item.name);
+        return fields.some((field) => field === code || field === name || (name && field.includes(name)));
+      })) return false;
+    }
+    return true;
+  }), [places, minRating, selectedProvince, selectedCategories]);
 
   const toggleCategory = (code: string) => {
     setSelectedCategoryCodes((current) =>
-      current.includes(code)
-        ? current.filter((item) => item !== code)
-        : [...current, code]
+      current.includes(code) ? current.filter((item) => item !== code) : [...current, code],
     );
   };
 
@@ -602,6 +545,8 @@ export default function ExplorePage() {
 
               <div className="relative">
                 <select
+                  disabled
+                  title="API địa điểm hiện chưa có dữ liệu giá để lọc"
                   value={
                     maxPrice === null ? 'all' : String(maxPrice)
                   }
@@ -633,7 +578,7 @@ export default function ExplorePage() {
                   className="mt-0.5 text-[16px] text-[#D39939]"
                 />
                 <p className="text-[10px] leading-[16px] text-[#9E8353]">
-                  Mức giá được ước tính từ thông tin chi phí hiển thị của địa điểm.
+                  API địa điểm hiện chưa cung cấp giá; phần lọc giá sẽ được bật khi Backend hỗ trợ.
                 </p>
               </div>
             </section>
@@ -944,117 +889,73 @@ export default function ExplorePage() {
             </div>
           </div>
 
-          {/* Số lượng kết quả và chế độ hiển thị */}
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <p className="flex items-center gap-1.5 text-xs text-[#72818C]">
-              <Icon
-                name="travel_explore"
-                className="text-[16px] text-[#087A78]"
-              />
-              Tìm thấy{' '}
-              <strong className="text-[#13364A]">
-                {visiblePlaces.length}
-              </strong>{' '}
-              địa điểm
-            </p>
+          {loadError && (
+            <FormAlert message={`Không tải được danh sách địa điểm: ${loadError}`} />
+          )}
 
-            <div
-              className="flex gap-1"
-              role="group"
-              aria-label="Kiểu hiển thị"
-            >
+          <div className="mt-1 mb-3 flex items-center justify-between gap-2">
+            <p className="flex min-w-0 flex-1 items-center gap-1.5 text-[11px] text-[#72818C]">
+              <Icon name="travel_explore" className="text-[16px] text-[#087A78]" />
+              <span className="truncate">
+                Tìm thấy <b className="font-extrabold text-[#13364A]">{visiblePlaces.length}</b> địa điểm tuyệt vời tại Việt Nam
+              </span>
+            </p>
+            {minRating > 0 && (
+              <button type="button" onClick={() => setRating(0)}
+                      className="flex items-center gap-1 rounded-full bg-[#C3F8F0] px-2.5 py-1 text-[10px] font-bold text-[#075C66]">
+                ⭐ {minRating}+ <Icon name="close" className="text-[13px]" />
+              </button>
+            )}
+            <div className="flex gap-1" role="group" aria-label="Kiểu hiển thị">
               {([
-                {
-                  id: 'list',
-                  icon: 'view_agenda',
-                  label: 'Danh sách',
-                },
-                {
-                  id: 'grid',
-                  icon: 'grid_view',
-                  label: 'Lưới',
-                },
-              ] as {
-                id: ViewMode;
-                icon: string;
-                label: string;
-              }[]).map((item) => (
+                { id: 'list', icon: 'view_agenda', label: 'Danh sách' },
+                { id: 'grid', icon: 'grid_view', label: 'Lưới' },
+              ] as { id: ViewMode; icon: string; label: string }[]).map((item) => (
                 <button
                   key={item.id}
                   type="button"
-                  onClick={() =>
-                    setViewMode(item.id)
-                  }
+                  onClick={() => setViewMode(item.id)}
                   aria-label={item.label}
-                  aria-pressed={
-                    viewMode === item.id
-                  }
+                  aria-pressed={viewMode === item.id}
                   className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-                    viewMode === item.id
-                      ? 'bg-[#C3F8F0] text-[#087A78]'
-                      : 'text-[#8C989E]'
+                    viewMode === item.id ? 'bg-[#C3F8F0] text-[#087A78]' : 'text-[#8C989E]'
                   }`}
                 >
-                  <Icon
-                    name={item.icon}
-                    className="text-[18px]"
-                  />
+                  <Icon name={item.icon} className="text-[18px]" />
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Danh sách địa điểm */}
-          {PLACES.length === 0 ? (
-            <div className="rounded-[20px] bg-white px-6 py-10 text-center">
-              <Icon
-                name="travel_explore"
-                className="text-[32px] text-[#087A78]"
-              />
-
-              <p className="mt-3 font-bold text-[#13364A]">
-                Chưa có dữ liệu địa điểm
-              </p>
-
-              <p className="mt-1 text-sm text-[#72818C]">
-                Tỉnh/thành và danh mục đã lấy từ Backend,
-                nhưng danh sách địa điểm vẫn chưa
-                được nối API.
-              </p>
-            </div>
+          {loading ? (
+            <Spinner />
           ) : visiblePlaces.length === 0 ? (
-            <div className="rounded-[20px] bg-white px-6 py-10 text-center">
-              <p className="font-bold text-[#13364A]">
-                Không tìm thấy địa điểm phù hợp
-              </p>
-
-              <p className="mt-1 text-sm text-[#72818C]">
-                Thử thay đổi hoặc đặt lại bộ lọc.
-              </p>
+            <div className="flex flex-col items-center rounded-[20px] bg-white px-6 py-10 text-center">
+              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#C3F8F0]">
+                <Icon name="wrong_location" className="text-[32px] text-[#087A78]" />
+              </span>
+              <p className="mt-3 text-[15px] font-bold text-[#13364A]">Không tìm thấy địa điểm</p>
+              <p className="mt-1 text-[12px] text-[#72818C]">Thử từ khoá khác hoặc chọn danh mục khác nhé.</p>
             </div>
           ) : viewMode === 'list' ? (
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {visiblePlaces.map((place) => (
                 <PlaceCard
                   key={place.id}
                   place={place}
-                  favorite={favorites.includes(place.id)}
-                  onToggleFavorite={() =>
-                    toggleFavorite(place.id)
-                  }
+                  favorite={favorites.includes(String(place.id))}
+                  onToggleFavorite={() => toggleFavorite(String(place.id))}
                 />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">
               {visiblePlaces.map((place) => (
                 <PlaceGridCard
                   key={place.id}
                   place={place}
-                  favorite={favorites.includes(place.id)}
-                  onToggleFavorite={() =>
-                    toggleFavorite(place.id)
-                  }
+                  favorite={favorites.includes(String(place.id))}
+                  onToggleFavorite={() => toggleFavorite(String(place.id))}
                 />
               ))}
             </div>
@@ -1064,4 +965,3 @@ export default function ExplorePage() {
     </div>
   );
 }
-

@@ -27,9 +27,9 @@ export default function AdminLayout() {
   return (
     <>
       <Sidebar />
-      <div className="flex min-h-screen flex-col bg-surface pl-72 print:pl-0">
+      <div className="flex min-h-screen flex-col bg-[#F3F5F9] pl-72 print:pl-0">
         <Header />
-        <main className="w-full flex-1 bg-surface px-space-xl pt-[calc(68px+var(--spacing-space-xl))] pb-space-xl print:pt-0">
+        <main className="w-full flex-1 bg-[#F3F5F9] px-space-xl pt-[calc(68px+var(--spacing-space-xl))] pb-space-xl print:pt-0">
           <div className="flex w-full flex-col">
             <DataStatusGate>
               <Suspense fallback={<PageLoader />}>

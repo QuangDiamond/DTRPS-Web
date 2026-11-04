@@ -32,25 +32,25 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="print:hidden fixed top-0 bottom-0 left-0 z-50 flex w-72 flex-col justify-between bg-surface-container-lowest shadow-[0_1px_12px_rgba(0,0,0,0.05)]">
+    <aside className="print:hidden fixed top-0 bottom-0 left-0 z-50 flex w-72 flex-col justify-between bg-linear-to-b from-[#0B3F3B] to-[#072A28] text-white shadow-[2px_0_16px_rgba(7,42,40,0.18)]">
       <div className="flex flex-1 flex-col overflow-y-auto">
         {/* Logo */}
-        <div className="flex h-[68px] items-center gap-3 bg-surface-container-lowest px-space-lg">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand shadow-sm">
-            <Icon name="public" className="text-[20px] text-on-primary" />
+        <div className="flex h-[68px] items-center gap-3 border-b border-white/10 px-space-lg">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#14B8A6] shadow-sm">
+            <Icon name="public" className="text-[20px] text-white" />
           </div>
           <div className="flex min-w-0 flex-col">
-            <span className="text-base leading-none font-black tracking-tight text-on-surface">
-              Smart<span className="text-brand">Travel</span>
+            <span className="text-base leading-none font-black tracking-tight text-white">
+              Smart<span className="text-[#5EEAD4]">Travel</span>
             </span>
-            <span className="mt-0.5 block text-[10px] font-bold tracking-wider text-outline uppercase">
+            <span className="mt-0.5 block text-[10px] font-bold tracking-wider text-white/50 uppercase">
               VIETNAM TRAVEL ADMIN
             </span>
           </div>
         </div>
 
         <div className="px-space-md py-space-sm">
-          <div className="px-space-sm py-space-xs font-label-sm text-label-sm font-semibold tracking-wider text-outline uppercase">
+          <div className="px-space-sm py-space-xs font-label-sm text-label-sm font-semibold tracking-wider text-white/45 uppercase">
             {t('nav.section')}
           </div>
         </div>
@@ -64,10 +64,10 @@ export default function Sidebar() {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
-                  `flex items-center justify-between rounded-xl px-space-md py-2.5 transition-all ${
+                  `relative flex items-center justify-between rounded-xl px-space-md py-2.5 transition-all ${
                     isActive
-                      ? 'bg-primary font-semibold text-on-primary shadow-sm'
-                      : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+                      ? 'bg-white/12 font-semibold text-white shadow-sm before:absolute before:top-2 before:bottom-2 before:left-0 before:w-1 before:rounded-full before:bg-[#5EEAD4]'
+                      : 'text-white/70 hover:bg-white/8 hover:text-white'
                   }`
                 }
               >
@@ -89,13 +89,11 @@ export default function Sidebar() {
       </div>
 
       {/* Thông tin admin + đăng xuất */}
-      <div className="bg-surface-container-low/60 p-space-md">
+      <div className="border-t border-white/10 p-space-md">
         {/* Bấm vào thẻ để mở Hồ sơ quản trị viên — thẻ được tô sáng khi đang ở trang hồ sơ */}
         <div
           className={`flex items-center justify-between rounded-xl p-space-sm transition-all ${
-            isProfileActive
-              ? 'bg-primary-container text-on-primary-container shadow-sm'
-              : 'bg-surface-container-lowest shadow-[0_1px_4px_rgba(0,0,0,0.03)]'
+            isProfileActive ? 'bg-white/15 shadow-sm' : 'bg-white/6 hover:bg-white/10'
           }`}
         >
           <NavLink
@@ -103,24 +101,16 @@ export default function Sidebar() {
             title={t('nav.profile')}
             className="flex min-w-0 flex-1 items-center gap-3"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary">
-              <Icon name="person" className="text-[18px] text-on-primary" />
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#14B8A6]">
+              <Icon name="person" className="text-[18px] text-white" />
             </div>
             <div className="flex min-w-0 flex-col">
               <span
-                className={`truncate font-label-md text-label-md font-semibold ${
-                  isProfileActive ? 'text-on-primary-container' : 'text-on-surface'
-                }`}
+                className={`truncate font-label-md text-label-md font-semibold ${'text-white'}`}
               >
                 {admin?.name}
               </span>
-              <span
-                className={`truncate font-body-sm text-body-sm ${
-                  isProfileActive
-                    ? 'text-on-primary-container opacity-85'
-                    : 'text-on-surface-variant'
-                }`}
-              >
+              <span className={`truncate font-body-sm text-body-sm ${'text-white/60'}`}>
                 {admin?.email}
               </span>
             </div>
@@ -128,9 +118,7 @@ export default function Sidebar() {
           <button
             type="button"
             onClick={handleLogout}
-            className={`shrink-0 rounded-lg p-1.5 transition-colors hover:bg-error-container/40 hover:text-error ${
-              isProfileActive ? 'text-on-primary-container' : 'text-on-surface-variant'
-            }`}
+            className={`shrink-0 rounded-lg p-1.5 transition-colors hover:bg-white/10 hover:text-[#FCA5A5] ${'text-white/70'}`}
             title={t('nav.logout')}
           >
             <Icon name="logout" className="text-[20px]" />

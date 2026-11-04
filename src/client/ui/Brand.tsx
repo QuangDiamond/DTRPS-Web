@@ -2,17 +2,26 @@ import { Link } from 'react-router-dom';
 import { Icon } from '@/components/common';
 
 /** Logo trên header (theo AppLogo của mobile) */
-export function AppLogo({ subtitle = 'VIETNAM AI PLANNER' }: { subtitle?: string }) {
+/** onDark: chữ sáng khi đặt trên nền đậm (top bar) */
+export function AppLogo({
+  subtitle = 'VIETNAM AI PLANNER',
+  onDark = false,
+}: {
+  subtitle?: string;
+  onDark?: boolean;
+}) {
   return (
     <Link to="/" className="flex items-center gap-2" aria-label="SmartTravel — Trang chủ">
       <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand text-white">
         <Icon name="public" className="text-[24px]" />
       </span>
       <span className="flex flex-col leading-none">
-        <span className="text-[16px] font-extrabold text-client-ink">
-          Smart<span className="text-client-teal">Travel</span>
+        <span className={`text-[16px] font-extrabold ${onDark ? 'text-white' : 'text-client-ink'}`}>
+          Smart<span className={onDark ? 'text-[#5EEAD4]' : 'text-client-teal'}>Travel</span>
         </span>
-        <span className="mt-1 text-[9px] font-semibold tracking-[0.2em] text-primary">
+        <span
+          className={`mt-1 text-[9px] font-semibold tracking-[0.2em] ${onDark ? 'text-white/60' : 'text-primary'}`}
+        >
           {subtitle}
         </span>
       </span>

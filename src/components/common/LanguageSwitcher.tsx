@@ -43,7 +43,7 @@ export default function LanguageSwitcher() {
     <div
       role="group"
       aria-label={t('language.label')}
-      className="flex items-center rounded-full bg-surface-container-lowest p-1 shadow-[0_1px_4px_rgba(0,0,0,0.02)]"
+      className="flex items-center rounded-full bg-[#F1F4F8] p-1"
     >
       {SUPPORTED_LANGUAGES.map((language) => {
         const active = current === language;

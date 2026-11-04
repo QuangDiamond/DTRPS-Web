@@ -8,6 +8,19 @@ export const userApi = {
   updateProfile: (input: ProfileInput) =>
     clientRequest<ClientUser>('/users/me', { method: 'PUT', body: input }),
 
+  /** Đổi ảnh đại diện (mọi vai trò) — BE lưu luôn và trả hồ sơ mới */
+  uploadAvatar: (file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return clientRequest<ClientUser>('/users/me/avatar', {
+      method: 'POST',
+      body: form,
+      timeoutMs: 60_000,
+    });
+  },
+
+  removeAvatar: () => clientRequest<ClientUser>('/users/me/avatar', { method: 'DELETE' }),
+
   preferences: () => clientRequest<TravelPreferences>('/users/me/preferences'),
 
   updatePreferences: (input: TravelPreferences) =>

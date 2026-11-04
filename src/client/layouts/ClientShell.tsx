@@ -6,6 +6,7 @@ import { usePartnerProfile } from '@/client/partner/partnerProfileContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import { Spinner } from '@/client/ui/Blocks';
 import { AppLogo } from '@/client/ui/Brand';
+import Avatar from '@/client/traveller/components/Avatar';
 
 interface NavItem {
   to: string;
@@ -88,15 +89,23 @@ function AccountMenu() {
         onClick={() => setOpen((current) => !current)}
         aria-label="Tài khoản"
         aria-expanded={open}
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-[#99EFE5] text-primary"
+        className="rounded-full ring-2 ring-white/40 transition hover:ring-white/80"
       >
-        <Icon name="person" className="text-[20px]" />
+        <Avatar
+          url={user.avatarUrl}
+          size={36}
+          iconSize={30}
+          className="bg-[#99EFE5] text-primary"
+        />
       </button>
       {open && (
         <div className="absolute right-0 z-40 mt-2 w-64 rounded-2xl border border-client-line bg-white p-2 shadow-lg">
-          <div className="border-b border-client-line px-3 pt-1 pb-3">
-            <p className="truncate text-[14px] font-bold text-client-ink">{user.name}</p>
-            <p className="truncate text-[12px] text-client-muted">{user.email}</p>
+          <div className="flex items-center gap-3 border-b border-client-line px-3 pt-1 pb-3">
+            <Avatar url={user.avatarUrl} size={40} iconSize={34} />
+            <div className="min-w-0">
+              <p className="truncate text-[14px] font-bold text-client-ink">{user.name}</p>
+              <p className="truncate text-[12px] text-client-muted">{user.email}</p>
+            </div>
           </div>
           <div className="pt-2">
             <Link to={CLIENT_ROUTES.PROFILE} className={itemClass} onClick={() => setOpen(false)}>

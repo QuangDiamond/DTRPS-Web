@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import type { RoleName } from '@/client/api/types';
+import { ACCEPTED_IMAGE_TYPES } from '@/client/api/uploadApi';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import Avatar from '@/client/traveller/components/Avatar';
 import { useTraveller } from '@/client/traveller/travellerContext';
+import { useAvatarUpload } from '@/client/traveller/useAvatarUpload';
 import { ConfirmDialog, NoticeToast } from '@/client/ui/Overlay';
 import { useNotice } from '@/client/ui/useNotice';
 
@@ -103,6 +105,8 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [notice, showNotice] = useNotice();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const avatar = useAvatarUpload(() => showNotice('Đã cập nhật ảnh đại diện'));
   if (!user) return null;
 
   const upcoming = trips.filter((trip) => trip.status === 'upcoming' || trip.status === 'planned');
@@ -114,13 +118,30 @@ export default function ProfilePage() {
       <div className="flex items-center rounded-[22px] bg-linear-to-r from-white to-[#E2FCF8] p-4">
         <div className="relative mr-4">
           <Avatar url={user.avatarUrl} size={82} iconSize={62} />
-          <Link
-            to={CLIENT_ROUTES.PROFILE_EDIT}
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            disabled={avatar.uploading}
             aria-label="Đổi ảnh đại diện"
             className="absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-full border-[3px] border-white bg-[#00827F] text-white"
           >
-            <Icon name="photo_camera" className="text-[16px]" />
-          </Link>
+            {avatar.uploading ? (
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+            ) : (
+              <Icon name="photo_camera" className="text-[16px]" />
+            )}
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept={ACCEPTED_IMAGE_TYPES.join(',')}
+            className="hidden"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = '';
+              if (file) avatar.upload(file);
+            }}
+          />
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[20px] font-extrabold text-[#13364A]">{user.name}</p>

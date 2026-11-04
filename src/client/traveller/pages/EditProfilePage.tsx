@@ -2,11 +2,12 @@ import { type ChangeEvent, type FormEvent, type ReactNode, useRef, useState } fr
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { ClientApiError, errorMessage } from '@/client/api/http';
-import { ACCEPTED_IMAGE_TYPES, MAX_IMAGE_BYTES, uploadApi } from '@/client/api/uploadApi';
+import { ACCEPTED_IMAGE_TYPES } from '@/client/api/uploadApi';
 import { userApi } from '@/client/api/userApi';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import Avatar from '@/client/traveller/components/Avatar';
+import { useAvatarUpload } from '@/client/traveller/useAvatarUpload';
 import { FormAlert } from '@/client/ui/Blocks';
 import PageBar from '@/client/ui/PageBar';
 import { isValidPhone, normalizePhone } from '@/client/utils/validation';
@@ -53,33 +54,18 @@ export default function EditProfilePage() {
   const [phone, setPhone] = useState(user?.phoneNumber ?? '');
   const [dateOfBirth, setDateOfBirth] = useState(user?.dateOfBirth ?? '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl ?? null);
-  const [uploading, setUploading] = useState(false);
+  // Ảnh đại diện lưu ngay khi chọn (không chờ bấm Lưu) — top bar đổi theo luôn
+  const avatar = useAvatarUpload((updated) => setAvatarUrl(updated.avatarUrl ?? null));
+  const uploading = avatar.uploading;
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   if (!user) return null;
 
-  const pickAvatar = async (event: ChangeEvent<HTMLInputElement>) => {
+  const pickAvatar = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = '';
-    if (!file) return;
-    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-      setErrors((previous) => ({ ...previous, avatarUrl: 'Chỉ nhận ảnh JPG, PNG hoặc WEBP' }));
-      return;
-    }
-    if (file.size > MAX_IMAGE_BYTES) {
-      setErrors((previous) => ({ ...previous, avatarUrl: 'Ảnh tối đa 5MB' }));
-      return;
-    }
-    setUploading(true);
-    setErrors(({ avatarUrl: _avatar, ...rest }) => rest);
-    try {
-      setAvatarUrl(await uploadApi.image(file));
-    } catch (uploadError) {
-      setErrors((previous) => ({ ...previous, avatarUrl: errorMessage(uploadError) }));
-    } finally {
-      setUploading(false);
-    }
+    if (file) avatar.upload(file);
   };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -142,24 +128,25 @@ export default function EditProfilePage() {
             ref={fileRef}
             type="file"
             accept={ACCEPTED_IMAGE_TYPES.join(',')}
-            onChange={(event) => void pickAvatar(event)}
+            onChange={pickAvatar}
             className="hidden"
           />
           <p className="mt-4 text-[12px] font-medium text-[#526179]">
-            Nhấn để thay đổi ảnh đại diện
+            Nhấn để thay đổi ảnh đại diện (lưu ngay)
           </p>
           <p className="text-[11px] text-[#8793AB]">(Tối đa 5MB, JPG/PNG/WEBP)</p>
           {avatarUrl && (
             <button
               type="button"
-              onClick={() => setAvatarUrl(null)}
+              onClick={avatar.remove}
+              disabled={uploading}
               className="mt-1 text-[11px] font-semibold text-client-danger hover:underline"
             >
               Gỡ ảnh đại diện
             </button>
           )}
-          {errors.avatarUrl && (
-            <p className="mt-1 text-xs text-client-danger">{errors.avatarUrl}</p>
+          {(avatar.error || errors.avatarUrl) && (
+            <p className="mt-1 text-xs text-client-danger">{avatar.error ?? errors.avatarUrl}</p>
           )}
         </div>
 

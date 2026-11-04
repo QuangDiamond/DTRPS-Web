@@ -1,41 +1,45 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '@/components/common';
+import { errorMessage } from '@/client/api/http';
+import { placesApi } from '@/client/api/placesApi';
+import type { PlaceSummary } from '@/client/api/types';
 import { CLIENT_ROUTES, placePath } from '@/client/routePaths';
-import {
-  normalizeText,
-  type Place,
-  type PlaceCategory,
-  PLACES,
-} from '@/client/traveller/data/places';
+import { normalizeText } from '@/client/traveller/data/places';
 import { useTraveller } from '@/client/traveller/travellerContext';
+import { FormAlert, Spinner } from '@/client/ui/Blocks';
 import { ConfirmDialog } from '@/client/ui/Overlay';
 
-type SortMode = 'recent' | 'rating' | 'name';
+type SortMode = 'rating' | 'name';
+type GroupFilter = 'all' | string;
 
-const CATEGORIES: { id: PlaceCategory; label: string }[] = [
-  { id: 'all', label: 'Tất cả' },
-  { id: 'nature', label: 'Danh lam thắng cảnh' },
-  { id: 'culture', label: 'Văn hoá' },
-  { id: 'food', label: 'Ẩm thực' },
-  { id: 'shopping', label: 'Mua sắm' },
-];
+const GROUP_LABELS: Record<string, string> = {
+  lodging: 'Lưu trú',
+  fnb: 'Ẩm thực',
+  attraction: 'Vui chơi & Tham quan',
+  shopping: 'Mua sắm & Đặc sản',
+};
 
 const SORT_OPTIONS: { id: SortMode; label: string }[] = [
-  { id: 'recent', label: 'Mới lưu gần đây' },
   { id: 'rating', label: 'Đánh giá cao nhất' },
   { id: 'name', label: 'Tên A - Z' },
 ];
 
-function FavoriteCard({ place, onRemove }: { place: Place; onRemove: () => void }) {
+function FavoriteCard({ place, onRemove }: { place: PlaceSummary; onRemove: () => void }) {
   return (
     <div className="relative overflow-hidden rounded-[22px] bg-white">
-      <Link to={placePath(place.id)} className="block">
-        <div className="relative h-[170px]">
-          <img src={place.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <Link to={placePath(String(place.id))} className="block">
+        <div className="relative h-[170px] bg-[#CFE9E6]">
+          {place.coverUrl ? (
+            <img src={place.coverUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Icon name="image" className="text-[36px] text-white/70" />
+            </div>
+          )}
           <span className="absolute bottom-3 left-3 flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1 text-[10px] font-bold text-white">
             <Icon name="location_on" filled className="text-[13px]" />
-            {place.location}
+            {place.province?.name ?? '—'}
           </span>
         </div>
       </Link>
@@ -53,19 +57,21 @@ function FavoriteCard({ place, onRemove }: { place: Place; onRemove: () => void 
             <p className="truncate text-[16px] font-extrabold text-[#13364A]">{place.name}</p>
             <p className="mt-1 flex flex-wrap items-center gap-x-1 text-[11px]">
               <Icon name="star" filled className="text-[15px] text-[#E0A100]" />
-              <b className="text-[#13364A]">{place.rating}</b>
-              <span className="text-[#72818C]">({place.reviews} đánh giá)</span>
-              <span className="text-[#72818C]">•</span>
-              <span className="truncate font-semibold text-[#087A78]">{place.tag}</span>
+              <b className="text-[#13364A]">{place.rating ?? 'Mới'}</b>
+              <span className="text-[#72818C]">({place.reviewCount} đánh giá)</span>
             </p>
           </div>
-          <div className="text-right">
-            <p className="text-[10px] text-[#72818C]">Giá tham khảo</p>
-            <p className="text-[15px] font-extrabold text-[#C2410C]">{place.priceLabel}</p>
-          </div>
+          {place.category && (
+            <div className="text-right">
+              <p className="text-[10px] text-[#72818C]">Loại hình</p>
+              <p className="max-w-[110px] truncate text-[13px] font-extrabold text-[#C2410C]">
+                {place.category.name}
+              </p>
+            </div>
+          )}
         </div>
         <Link
-          to={placePath(place.id)}
+          to={placePath(String(place.id))}
           className="mt-3 flex h-11 items-center justify-center rounded-2xl bg-[#EBEDFF] text-[13px] font-bold text-[#13364A] hover:bg-[#DFE2FF]"
         >
           Xem chi tiết
@@ -75,40 +81,68 @@ function FavoriteCard({ place, onRemove }: { place: Place; onRemove: () => void 
   );
 }
 
-/** Địa điểm yêu thích — theo FavoritesScreen của mobile */
+/** Địa điểm yêu thích — favorites lưu local, nội dung mỗi địa điểm lấy từ GET /api/places/{id} */
 export default function FavoritesPage() {
   const { favorites, toggleFavorite } = useTraveller();
-  const [category, setCategory] = useState<PlaceCategory>('all');
-  const [sortMode, setSortMode] = useState<SortMode>('recent');
+  const [places, setPlaces] = useState<PlaceSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [groupFilter, setGroupFilter] = useState<GroupFilter>('all');
+  const [sortMode, setSortMode] = useState<SortMode>('rating');
   const [showSearch, setShowSearch] = useState(false);
   const [query, setQuery] = useState('');
-  const [removing, setRemoving] = useState<Place | null>(null);
+  const [removing, setRemoving] = useState<PlaceSummary | null>(null);
 
-  // Mới lưu nhất đứng đầu
-  const savedPlaces = useMemo(
-    () =>
-      [...favorites]
-        .reverse()
-        .map((id) => PLACES.find((place) => place.id === id))
-        .filter((place): place is Place => Boolean(place)),
-    [favorites],
-  );
+  useEffect(() => {
+    if (favorites.length === 0) {
+      setPlaces([]);
+      setLoading(false);
+      return;
+    }
+    let active = true;
+    setLoading(true);
+    setLoadError(null);
+    Promise.all(
+      favorites.map((id) =>
+        placesApi
+          .get(id)
+          .then((detail) => detail.summary)
+          .catch(() => null),
+      ),
+    )
+      .then((results) => {
+        if (!active) return;
+        // Mới lưu nhất đứng đầu; bỏ địa điểm đã bị gỡ/khoá khỏi hệ thống
+        const found = results.filter((place): place is PlaceSummary => place !== null);
+        setPlaces(found.reverse());
+      })
+      .catch((failure: unknown) => active && setLoadError(errorMessage(failure)))
+      .finally(() => active && setLoading(false));
+    return () => {
+      active = false;
+    };
+  }, [favorites]);
 
-  const countByCategory = (id: PlaceCategory) =>
-    id === 'all' ? savedPlaces.length : savedPlaces.filter((place) => place.category === id).length;
+  const availableGroups = useMemo(() => {
+    const codes = new Set<string>();
+    places.forEach((place) => place.group && codes.add(place.group.code));
+    return [...codes];
+  }, [places]);
+
+  const countByGroup = (id: GroupFilter) =>
+    id === 'all' ? places.length : places.filter((place) => place.group?.code === id).length;
 
   const visiblePlaces = useMemo(() => {
     const keyword = normalizeText(query);
-    const filtered = savedPlaces.filter(
+    const filtered = places.filter(
       (place) =>
-        (category === 'all' || place.category === category) &&
-        (!keyword || normalizeText(`${place.name} ${place.location}`).includes(keyword)),
+        (groupFilter === 'all' || place.group?.code === groupFilter) &&
+        (!keyword ||
+          normalizeText(`${place.name} ${place.province?.name ?? ''}`).includes(keyword)),
     );
-    if (sortMode === 'rating') return [...filtered].sort((a, b) => b.rating - a.rating);
-    if (sortMode === 'name')
-      return [...filtered].sort((a, b) => a.name.localeCompare(b.name, 'vi'));
-    return filtered;
-  }, [savedPlaces, category, query, sortMode]);
+    if (sortMode === 'rating') return [...filtered].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    return [...filtered].sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+  }, [places, groupFilter, query, sortMode]);
 
   return (
     <div>
@@ -116,7 +150,7 @@ export default function FavoritesPage() {
         <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2">
           <h1 className="text-[22px] font-extrabold text-[#13364A]">Địa điểm yêu thích</h1>
           <span className="text-[12px] font-semibold text-[#087A78]">
-            ({savedPlaces.length} điểm đã lưu)
+            ({places.length} điểm đã lưu)
           </span>
         </div>
         <button
@@ -132,6 +166,8 @@ export default function FavoritesPage() {
           <Icon name={showSearch ? 'close' : 'search'} className="text-[21px]" />
         </button>
       </div>
+
+      {loadError && <FormAlert message={`Không tải được danh sách yêu thích: ${loadError}`} />}
 
       {showSearch && (
         <div className="mt-3 flex h-11 items-center rounded-2xl bg-white px-3 focus-within:ring-2 focus-within:ring-primary/30">
@@ -173,25 +209,27 @@ export default function FavoritesPage() {
       </div>
 
       <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1">
-        {CATEGORIES.map((item) => {
-          const selected = item.id === category;
+        {(['all', ...availableGroups] as GroupFilter[]).map((id) => {
+          const selected = id === groupFilter;
           return (
             <button
-              key={item.id}
+              key={id}
               type="button"
-              onClick={() => setCategory(item.id)}
+              onClick={() => setGroupFilter(id)}
               aria-pressed={selected}
               className={`shrink-0 rounded-full px-4 py-2 text-[12px] font-bold ${
                 selected ? 'bg-[#075C66] text-white' : 'bg-white text-[#13364A]'
               }`}
             >
-              {item.label} ({countByCategory(item.id)})
+              {id === 'all' ? 'Tất cả' : GROUP_LABELS[id] ?? id} ({countByGroup(id)})
             </button>
           );
         })}
       </div>
 
-      {visiblePlaces.length > 0 ? (
+      {loading ? (
+        <Spinner />
+      ) : visiblePlaces.length > 0 ? (
         <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {visiblePlaces.map((place) => (
             <FavoriteCard key={place.id} place={place} onRemove={() => setRemoving(place)} />
@@ -203,16 +241,14 @@ export default function FavoritesPage() {
             <Icon name="favorite" className="text-[32px] text-[#E5484D]" />
           </span>
           <p className="mt-3 text-[15px] font-extrabold text-[#13364A]">
-            {savedPlaces.length === 0
-              ? 'Chưa có địa điểm yêu thích'
-              : 'Không tìm thấy địa điểm phù hợp'}
+            {places.length === 0 ? 'Chưa có địa điểm yêu thích' : 'Không tìm thấy địa điểm phù hợp'}
           </p>
           <p className="mt-1 text-[12px] text-[#72818C]">
-            {savedPlaces.length === 0
+            {places.length === 0
               ? 'Bấm vào biểu tượng trái tim ở màn Khám phá để lưu địa điểm.'
               : 'Thử chọn danh mục khác hoặc đổi từ khoá tìm kiếm.'}
           </p>
-          {savedPlaces.length === 0 && (
+          {places.length === 0 && (
             <Link
               to={CLIENT_ROUTES.EXPLORE}
               className="mt-4 rounded-2xl bg-[#075C66] px-5 py-3 text-[13px] font-bold text-white"
@@ -223,7 +259,7 @@ export default function FavoritesPage() {
         </div>
       )}
 
-      {savedPlaces.length > 0 && (
+      {places.length > 0 && (
         <div className="mt-5 flex flex-col gap-3 rounded-[22px] bg-linear-to-br from-[#E2FCF8] to-[#D6F0FF] p-4 md:flex-row md:items-center">
           <div className="flex flex-1 items-center gap-3">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#075C66] text-white">
@@ -252,7 +288,7 @@ export default function FavoritesPage() {
           message={`Xoá "${removing.name}" khỏi danh sách yêu thích?`}
           confirmLabel="Xoá"
           danger
-          onConfirm={() => toggleFavorite(removing.id)}
+          onConfirm={() => toggleFavorite(String(removing.id))}
           onClose={() => setRemoving(null)}
         />
       )}

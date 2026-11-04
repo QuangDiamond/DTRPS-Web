@@ -1,9 +1,10 @@
 /**
- * Lựa chọn cho màn Sở thích du lịch (UC-006) — giống constants/travelPreferences.ts của mobile.
- * Mã (id) trùng với bảng tham chiếu của BE: interests, transport_modes, special_needs;
- * ngân sách / phong cách gửi lên dạng chữ hoa (SAVING, RELAX…).
+ * Lựa chọn cho màn Sở thích du lịch (UC-006).
+ * Danh sách sở thích / nhu cầu đặc biệt lấy từ BE (GET /api/reference/...),
+ * ảnh và icon hiển thị được tra theo mã (code) ở đây; ngân sách / phong cách là enum cố định
+ * của TravelPreferences nên vẫn khai báo tĩnh.
  */
-import type { BudgetLevel, TravelStyle } from '@/client/api/types';
+import type { BudgetLevel, ReferenceItem, TravelStyle } from '@/client/api/types';
 
 export interface ImageOption<T extends string = string> {
   id: T;
@@ -20,17 +21,19 @@ export interface IconOption<T extends string = string> {
 
 const img = (id: string) => `https://images.unsplash.com/photo-${id}?w=600&q=80`;
 
-/** Bước 1 – Trải nghiệm (chọn nhiều) */
-export const INTEREST_OPTIONS: ImageOption[] = [
-  { id: 'nature', label: 'Thiên nhiên & Ngoài trời', image: img('1528127269322-539801943592') },
-  { id: 'culture', label: 'Văn hóa & Lịch sử', image: img('1559592413-7cec4d0cae2b') },
-  { id: 'food', label: 'Ẩm thực', image: img('1555126634-323283e090fa') },
-  { id: 'photo', label: 'Chụp ảnh', image: img('1490750967868-88aa4486c946') },
-  { id: 'shopping', label: 'Mua sắm', image: img('1583417319070-4a69db38a482') },
-  { id: 'nightlife', label: 'Cuộc sống về đêm', image: img('1528181304800-259b08848526') },
-];
+/** Bước 1 – Trải nghiệm: ảnh minh họa theo mã sở thích của BE */
+const INTEREST_IMAGES: Record<string, string> = {
+  nature: img('1528127269322-539801943592'),
+  culture: img('1559592413-7cec4d0cae2b'),
+  food: img('1555126634-323283e090fa'),
+  photo: img('1490750967868-88aa4486c946'),
+  shopping: img('1583417319070-4a69db38a482'),
+  nightlife: img('1528181304800-259b08848526'),
+  beach: img('1507525428034-b723cf961d3e'),
+};
+const DEFAULT_INTEREST_IMAGE = img('1488646953014-85cb44e25828');
 
-/** Bước 2 – Ngân sách (chọn 1) */
+/** Bước 2 – Ngân sách (chọn 1, không có bảng tham chiếu ở BE) */
 export const BUDGET_OPTIONS: IconOption<BudgetLevel>[] = [
   { id: 'SAVING', label: 'Tiết kiệm', note: 'Dưới 5.000.000đ', icon: 'savings' },
   {
@@ -42,17 +45,7 @@ export const BUDGET_OPTIONS: IconOption<BudgetLevel>[] = [
   { id: 'LUXURY', label: 'Cao cấp', note: 'Trên 15.000.000đ', icon: 'diamond' },
 ];
 
-/** Bước 3 – Phương tiện (chọn nhiều) */
-export const TRANSPORT_OPTIONS: IconOption[] = [
-  { id: 'plane', label: 'Máy bay', icon: 'flight' },
-  { id: 'train', label: 'Tàu hỏa', icon: 'train' },
-  { id: 'bus', label: 'Xe khách', icon: 'directions_bus' },
-  { id: 'car', label: 'Ô tô thuê', icon: 'directions_car' },
-  { id: 'motorbike', label: 'Xe máy', icon: 'two_wheeler' },
-  { id: 'other', label: 'Khác', icon: 'more_horiz' },
-];
-
-/** Bước 4 – Phong cách (chọn 1) */
+/** Bước 3 – Phong cách (chọn 1, không có bảng tham chiếu ở BE) */
 export const STYLE_OPTIONS: ImageOption<TravelStyle>[] = [
   { id: 'RELAX', label: 'Thư giãn', image: img('1506461883276-594a12b11cf3') },
   { id: 'ADVENTURE', label: 'Phiêu lưu', image: img('1570366583862-f91883984fde') },
@@ -62,12 +55,27 @@ export const STYLE_OPTIONS: ImageOption<TravelStyle>[] = [
   { id: 'LUXURY', label: 'Du lịch cao cấp', image: img('1573270689103-d7a4e42b609a') },
 ];
 
-/** Bước 5 – Yêu cầu đặc biệt (chọn nhiều, không bắt buộc) */
-export const SPECIAL_NEED_OPTIONS: IconOption[] = [
-  { id: 'vegetarian', label: 'Ăn chay', icon: 'eco' },
-  { id: 'diet', label: 'Hạn chế đồ ăn', icon: 'no_meals' },
-  { id: 'kids', label: 'Phù hợp trẻ em', icon: 'child_care' },
-  { id: 'elderly', label: 'Phù hợp người lớn tuổi', icon: 'elderly' },
-  { id: 'pets', label: 'Thân thiện với thú cưng', icon: 'pets' },
-  { id: 'other', label: 'Khác', icon: 'more_horiz' },
-];
+/** Bước 4 – Yêu cầu đặc biệt: icon theo mã của BE */
+const SPECIAL_NEED_ICONS: Record<string, string> = {
+  vegetarian: 'eco',
+  diet: 'no_meals',
+  kids: 'child_care',
+  elderly: 'elderly',
+  pets: 'pets',
+  other: 'more_horiz',
+};
+const DEFAULT_SPECIAL_NEED_ICON = 'info';
+
+export const toInterestOptions = (items: ReferenceItem[]): ImageOption[] =>
+  items.map((item) => ({
+    id: item.code,
+    label: item.name,
+    image: INTEREST_IMAGES[item.code] ?? DEFAULT_INTEREST_IMAGE,
+  }));
+
+export const toSpecialNeedOptions = (items: ReferenceItem[]): IconOption[] =>
+  items.map((item) => ({
+    id: item.code,
+    label: item.name,
+    icon: SPECIAL_NEED_ICONS[item.code] ?? DEFAULT_SPECIAL_NEED_ICON,
+  }));

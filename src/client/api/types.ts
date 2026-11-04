@@ -30,7 +30,6 @@ export interface TravelPreferences {
   travelStyle: TravelStyle | null;
   notes: string | null;
   interests: string[];
-  transportModes: string[];
   specialNeeds: string[];
 }
 
@@ -156,6 +155,39 @@ export interface BusinessListingInput {
 export type RevisionStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
 
 export type RevisionRejectCode = 'pricing' | 'location' | 'photos' | 'duplicate' | 'other';
+
+export interface Paged<T> {
+  items: T[];
+  total: number;
+  page: number;
+  size: number;
+}
+
+/** Một dòng trong danh sách địa điểm công khai (GET /api/places) */
+export interface PlaceSummary {
+  id: number;
+  name: string;
+  group: ReferenceItem | null;
+  category: ReferenceItem | null;
+  province: ReferenceItem | null;
+  address: string | null;
+  coverUrl: string | null;
+  rating: number | null;
+  reviewCount: number;
+}
+
+/** Chi tiết địa điểm công khai (GET /api/places/{id}) */
+export interface PlaceDetail {
+  summary: PlaceSummary;
+  description: string | null;
+  latitude: number;
+  longitude: number;
+  phone: string | null;
+  website: string | null;
+  openingHours: OpeningHour[];
+  prices: PlacePrice[];
+  images: PlaceImage[];
+}
 
 export interface ListingRevision {
   id: number;

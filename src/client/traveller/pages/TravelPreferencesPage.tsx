@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { errorMessage } from '@/client/api/http';
+import { referenceApi } from '@/client/api/referenceApi';
 import type { TravelPreferences } from '@/client/api/types';
 import { userApi } from '@/client/api/userApi';
 import { CLIENT_ROUTES } from '@/client/routePaths';
@@ -9,10 +10,9 @@ import {
   BUDGET_OPTIONS,
   type IconOption,
   type ImageOption,
-  INTEREST_OPTIONS,
-  SPECIAL_NEED_OPTIONS,
   STYLE_OPTIONS,
-  TRANSPORT_OPTIONS,
+  toInterestOptions,
+  toSpecialNeedOptions,
 } from '@/client/traveller/data/preferenceOptions';
 import { FormAlert, Spinner } from '@/client/ui/Blocks';
 import PageBar from '@/client/ui/PageBar';
@@ -23,7 +23,6 @@ const STEPS = [
     subtitle: 'Chọn những hoạt động bạn yêu thích nhất (Chọn nhiều mục)',
   },
   { title: 'Mức ngân sách', subtitle: 'Bạn thường chi bao nhiêu cho một chuyến đi?' },
-  { title: 'Phương tiện di chuyển', subtitle: 'Bạn thường sử dụng phương tiện nào?' },
   { title: 'Phong cách du lịch', subtitle: 'Chọn phong cách phù hợp với bạn' },
   { title: 'Yêu cầu đặc biệt', subtitle: 'Bạn có yêu cầu đặc biệt nào không? (Chọn nếu có)' },
 ];
@@ -33,11 +32,10 @@ const EMPTY: TravelPreferences = {
   travelStyle: null,
   notes: null,
   interests: [],
-  transportModes: [],
   specialNeeds: [],
 };
 
-type ListKey = 'interests' | 'transportModes' | 'specialNeeds';
+type ListKey = 'interests' | 'specialNeeds';
 
 function CheckBadge() {
   return (
@@ -47,7 +45,7 @@ function CheckBadge() {
   );
 }
 
-/** Thẻ ảnh (bước 1 và 4) */
+/** Thẻ ảnh (bước 1 và 3) */
 function ImageGrid({
   options,
   isSelected,
@@ -89,7 +87,7 @@ function ImageGrid({
   );
 }
 
-/** Danh sách có icon (bước 2, 3, 5) */
+/** Danh sách có icon (bước 2, 4) */
 function IconList({
   options,
   isSelected,
@@ -151,11 +149,13 @@ function IconList({
   );
 }
 
-/** Sở thích du lịch 5 bước — theo TravelPreferencesScreen của mobile, lưu qua API */
+/** Sở thích du lịch 4 bước — theo TravelPreferencesScreen của mobile, lưu qua API */
 export default function TravelPreferencesPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [preferences, setPreferences] = useState<TravelPreferences | null>(null);
+  const [interestOptions, setInterestOptions] = useState<ImageOption[] | null>(null);
+  const [specialNeedOptions, setSpecialNeedOptions] = useState<IconOption[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -171,12 +171,26 @@ export default function TravelPreferencesPage() {
         setLoadError(errorMessage(loadFailure));
         setPreferences(EMPTY);
       });
+    Promise.all([referenceApi.interests(), referenceApi.specialNeeds()])
+      .then(([interests, specialNeeds]) => {
+        if (!active) return;
+        setInterestOptions(toInterestOptions(interests));
+        setSpecialNeedOptions(toSpecialNeedOptions(specialNeeds));
+      })
+      .catch((loadFailure: unknown) => {
+        if (!active) return;
+        setLoadError(errorMessage(loadFailure));
+        setInterestOptions([]);
+        setSpecialNeedOptions([]);
+      });
     return () => {
       active = false;
     };
   }, []);
 
-  if (!preferences) return <Spinner />;
+  if (!preferences || !interestOptions || !specialNeedOptions) {
+    return <Spinner />;
+  }
 
   const isLastStep = step === STEPS.length - 1;
   const toggleIn = (key: ListKey, id: string) =>
@@ -191,11 +205,10 @@ export default function TravelPreferencesPage() {
         : previous,
     );
 
-  // Bước 5 không bắt buộc
+  // Bước cuối (yêu cầu đặc biệt) không bắt buộc
   const canContinue = [
     preferences.interests.length > 0,
     preferences.budgetLevel !== null,
-    preferences.transportModes.length > 0,
     preferences.travelStyle !== null,
     true,
   ][step];
@@ -238,7 +251,7 @@ export default function TravelPreferencesPage() {
       case 0:
         return (
           <ImageGrid
-            options={INTEREST_OPTIONS}
+            options={interestOptions}
             isSelected={(id) => preferences.interests.includes(id)}
             onToggle={(id) => toggleIn('interests', id)}
           />
@@ -259,15 +272,6 @@ export default function TravelPreferencesPage() {
         );
       case 2:
         return (
-          <IconList
-            variant="multi"
-            options={TRANSPORT_OPTIONS}
-            isSelected={(id) => preferences.transportModes.includes(id)}
-            onToggle={(id) => toggleIn('transportModes', id)}
-          />
-        );
-      case 3:
-        return (
           <ImageGrid
             options={STYLE_OPTIONS}
             isSelected={(id) => preferences.travelStyle === id}
@@ -283,7 +287,7 @@ export default function TravelPreferencesPage() {
         return (
           <IconList
             variant="multi"
-            options={SPECIAL_NEED_OPTIONS}
+            options={specialNeedOptions}
             isSelected={(id) => preferences.specialNeeds.includes(id)}
             onToggle={(id) => toggleIn('specialNeeds', id)}
           />

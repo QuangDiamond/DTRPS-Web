@@ -2,7 +2,6 @@ import { type ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { CLIENT_ROUTES } from '@/client/routePaths';
-import { normalizeText, PLACES } from '@/client/traveller/data/places';
 import PageBar from '@/client/ui/PageBar';
 
 type Region = 'all' | 'north' | 'central' | 'south';
@@ -181,13 +180,6 @@ export default function SearchFilterPage() {
         ? previous.categories.filter((item) => item !== category)
         : [...previous.categories, category],
     }));
-
-  const keyword = normalizeText(filters.destinationQuery);
-  const resultCount = PLACES.filter(
-    (place) =>
-      place.rating >= filters.minRating &&
-      (!keyword || normalizeText(`${place.name} ${place.location} ${place.tag}`).includes(keyword)),
-  ).length;
 
   const apply = () => {
     const params = new URLSearchParams();
@@ -441,7 +433,7 @@ export default function SearchFilterPage() {
           onClick={apply}
           className="flex h-[52px] flex-1 items-center justify-center gap-1.5 rounded-full bg-[#007B73] px-3 text-[13px] font-extrabold text-white shadow-md hover:bg-primary"
         >
-          Áp dụng bộ lọc (Xem {resultCount} kết quả)
+          Áp dụng bộ lọc
           <Icon name="arrow_forward" className="text-[20px]" />
         </button>
       </div>

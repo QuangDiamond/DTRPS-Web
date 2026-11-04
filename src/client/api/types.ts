@@ -69,6 +69,7 @@ export interface BusinessProfileInput {
 }
 
 export interface ReferenceItem {
+  id?: number;
   code: string;
   name: string;
 }

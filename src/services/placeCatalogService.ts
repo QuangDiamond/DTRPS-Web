@@ -206,8 +206,17 @@ export const placeCatalogService = {
     return result.url;
   },
 
-  provinces: () => apiRequest<RefItem[]>(ENDPOINTS.reference.provinces),
-  categories: () => apiRequest<CategoryGroupRef[]>(ENDPOINTS.reference.categories),
+  provinces: () =>
+    apiRequest<RefItem[]>(
+      ENDPOINTS.reference.provinces,
+      { auth: false },
+    ),
+
+  categories: () =>
+    apiRequest<CategoryGroupRef[]>(
+      ENDPOINTS.reference.categories,
+      { auth: false },
+    ),
 };
 
 function toDetail(detail: ApiDetail): CatalogPlaceDetail {

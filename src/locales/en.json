@@ -3222,7 +3222,7 @@
   "placeEditor": {
     "createTitle": "Add a new place",
     "editTitle": "Edit place details",
-    "createHint": "Admins add places directly — no partner, no review. Choose \"Active\" to show it to travellers right away.",
+    "createHint": "Admins add places directly — no partner, no review. New places start as \"Draft\"; choose \"Active\" when travellers should see them.",
     "editHint": "Edit the basic details and location. Photos, opening hours and prices are edited on the place detail page.",
     "loadError": "Could not load the form data",
     "create": "Create place",
@@ -3372,6 +3372,11 @@
     "errors": {
       "code": "Type code: 2–50 lowercase letters, digits or underscores",
       "name": "The type name needs at least 2 characters"
-    }
+    },
+    "delete": "Delete type",
+    "deleteTitle": "Delete this type?",
+    "deleteMessage": "Permanently delete the type \"{{name}}\" ({{code}}). This cannot be undone.",
+    "deleted": "Deleted \"{{name}}\"",
+    "deleteNote": "Only a type no place uses (0 places) can be deleted — e.g. one added by mistake. A type in use can only be turned off: its places keep it and stay visible to travellers; it just can no longer be chosen for new places."
   }
 }

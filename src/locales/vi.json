@@ -3149,7 +3149,7 @@
   "placeEditor": {
     "createTitle": "Thêm địa điểm mới",
     "editTitle": "Sửa thông tin địa điểm",
-    "createHint": "Admin thêm địa điểm trực tiếp — không qua đối tác, không cần duyệt. Chọn \"Đang hiển thị\" để du khách thấy ngay.",
+    "createHint": "Admin thêm địa điểm trực tiếp — không qua đối tác, không cần duyệt. Địa điểm mới mặc định là \"Chưa công khai\"; chọn \"Đang hiển thị\" khi muốn du khách thấy.",
     "editHint": "Sửa thông tin cơ bản và vị trí. Ảnh, giờ mở cửa và bảng giá chỉnh ở trang chi tiết địa điểm.",
     "loadError": "Không tải được dữ liệu form",
     "create": "Tạo địa điểm",
@@ -3299,6 +3299,11 @@
     "errors": {
       "code": "Mã loại hình 2–50 ký tự: chữ thường không dấu, số hoặc dấu gạch dưới",
       "name": "Tên loại hình phải có ít nhất 2 ký tự"
-    }
+    },
+    "delete": "Xoá loại hình",
+    "deleteTitle": "Xoá loại hình?",
+    "deleteMessage": "Xoá hẳn loại hình \"{{name}}\" ({{code}}). Không hoàn tác được.",
+    "deleted": "Đã xoá \"{{name}}\"",
+    "deleteNote": "Chỉ xoá được loại hình chưa có địa điểm nào dùng (0 địa điểm) — ví dụ loại hình tạo nhầm. Loại hình đang có địa điểm chỉ có thể tắt: địa điểm vẫn giữ nguyên loại hình và vẫn hiển thị với du khách, chỉ không chọn được loại hình đó cho địa điểm mới."
   }
 }

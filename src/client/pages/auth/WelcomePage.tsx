@@ -81,10 +81,14 @@ export default function WelcomePage() {
 
         <Link
           to={CLIENT_ROUTES.HOME}
-          className="mt-5 flex items-center justify-center gap-1 text-[12.5px] font-semibold text-[#62737F] hover:text-primary"
+          className="group mx-auto mt-5 flex w-fit items-center gap-2 rounded-full border border-[#9FD8D1] bg-white px-5 py-2.5 text-[13px] font-bold text-primary shadow-sm transition-colors hover:border-primary hover:bg-[#E8F9F4]"
         >
-          <Icon name="explore" className="text-[17px]" />
+          <Icon name="explore" className="text-[19px]" />
           Khám phá ngay, chưa cần tài khoản
+          <Icon
+            name="arrow_forward"
+            className="text-[17px] transition-transform group-hover:translate-x-0.5"
+          />
         </Link>
       </div>
     </div>

@@ -145,7 +145,11 @@ function RevisionReviewContent({
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
         <div className="xl:col-span-8">
-          <RevisionCompare current={current} proposed={revision.proposed} />
+          <RevisionCompare
+            current={current}
+            proposed={revision.proposed}
+            applied={revision.status === 'approved'}
+          />
           <div className="mt-6">
             <Section icon="map" title={t('placeReview.revision.mapTitle')}>
               <div className="overflow-hidden rounded-xl border border-surface-container">

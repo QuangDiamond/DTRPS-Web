@@ -44,6 +44,14 @@ export const authApi = {
       body: { ticket, name: name.trim(), password },
     }),
 
+  /** Tiếp tục với Google: access token từ cửa sổ Google → phiên đăng nhập (+ tài khoản mới?) */
+  googleSignIn: (accessToken: string) =>
+    clientRequest<{ session: AuthResponse; newAccount: boolean }>('/auth/google', {
+      method: 'POST',
+      auth: false,
+      body: { accessToken },
+    }),
+
   // ===== Quên mật khẩu 3 bước: email → mã OTP → mật khẩu mới =====
   sendResetCode: (email: string) =>
     clientRequest<OtpSent>('/auth/password/otp', {

@@ -53,7 +53,8 @@ export default function TypeChips({
   }
 
   return (
-    <div className="flex flex-col gap-2.5">
+    // @container: chỗ hẹp (cột so sánh) thì tên nhóm nằm trên, loại hình xuống dòng dưới
+    <div className="@container flex flex-col gap-2.5">
       {rows.map((group) => {
         const code = group.code || null;
         const current = code ? inGroup(categories, code) : orphans.filter((t) => now.has(t.code));
@@ -61,7 +62,7 @@ export default function TypeChips({
         if (current.length === 0 && gone.length === 0) return null;
         return (
           <div key={group.code || 'other'} className="flex flex-wrap items-start gap-x-3 gap-y-1.5">
-            <span className="flex w-full items-center gap-1.5 pt-1 text-[13px] font-bold text-slate-700 sm:w-40 sm:shrink-0">
+            <span className="flex w-full items-center gap-1.5 pt-1 text-[13px] font-bold text-slate-700 @md:w-40 @md:shrink-0">
               <Icon
                 name={GROUP_ICONS[group.code] ?? 'category'}
                 className="text-[17px] text-teal-700"
@@ -76,7 +77,7 @@ export default function TypeChips({
                   <span
                     key={type.code}
                     title={isNew ? text.added : undefined}
-                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[12px] font-semibold ${
+                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[12px] font-semibold whitespace-nowrap ${
                       isNew
                         ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
                         : main
@@ -88,7 +89,7 @@ export default function TypeChips({
                     {type.name}
                     {main && (
                       <span
-                        className={`ml-0.5 inline-flex items-center gap-0.5 rounded-full px-1.5 text-[10px] ${
+                        className={`ml-0.5 inline-flex shrink-0 items-center gap-0.5 rounded-full px-1.5 text-[10px] ${
                           isNew ? 'bg-emerald-100' : 'bg-white/25'
                         }`}
                       >
@@ -103,7 +104,7 @@ export default function TypeChips({
                 <span
                   key={type.code}
                   title={text.removed}
-                  className="inline-flex items-center gap-1 rounded-full border border-red-300 bg-red-50 px-2.5 py-1 text-[12px] font-semibold text-red-700 line-through"
+                  className="inline-flex items-center gap-1 rounded-full border border-red-300 bg-red-50 px-2.5 py-1 text-[12px] font-semibold whitespace-nowrap text-red-700 line-through"
                 >
                   <Icon name="remove" className="text-[14px]" />
                   {type.name}

@@ -76,6 +76,18 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
     [save],
   );
 
+  /** Tiếp tục với Google: luôn ghi nhớ đăng nhập; newAccount = tài khoản vừa được tạo */
+  const loginWithGoogle = useCallback(
+    async (accessToken: string) => {
+      const { session: response, newAccount } = await authApi.googleSignIn(accessToken);
+      idleLock.unlock();
+      clientSessionEnd.clear();
+      save(toSession(response, true));
+      return { user: response.user, newAccount };
+    },
+    [save],
+  );
+
   const logout = useCallback(() => {
     const current = sessionRef.current;
     if (current) authApi.revoke(current.refreshToken).catch(() => undefined);
@@ -103,8 +115,17 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
   const hasRole = useCallback((role: RoleName) => Boolean(user?.roles.includes(role)), [user]);
 
   const value = useMemo(
-    () => ({ user, login, logout, updateUser, refreshSession, hasRole, lockIdle }),
-    [user, login, logout, updateUser, refreshSession, hasRole, lockIdle],
+    () => ({
+      user,
+      login,
+      loginWithGoogle,
+      logout,
+      updateUser,
+      refreshSession,
+      hasRole,
+      lockIdle,
+    }),
+    [user, login, loginWithGoogle, logout, updateUser, refreshSession, hasRole, lockIdle],
   );
 
   return <ClientAuthContext.Provider value={value}>{children}</ClientAuthContext.Provider>;

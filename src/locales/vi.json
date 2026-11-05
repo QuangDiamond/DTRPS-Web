@@ -935,6 +935,8 @@
       "changed": "Thay đổi",
       "changedCount": "{{count}} mục thay đổi",
       "noChanges": "Bản đề xuất giống hệt thông tin đang công khai",
+      "appliedNote": "Đã áp dụng — thông tin công khai hiện là nội dung đề xuất",
+      "currentNow": "Đang công khai (sau khi áp dụng)",
       "empty": "—"
     },
     "revision": {
@@ -3163,6 +3165,12 @@
     "cancel": "Hủy",
     "created": "Đã thêm địa điểm",
     "saved": "Đã lưu thay đổi",
+    "location": {
+      "save": "Lưu vị trí",
+      "saved": "Đã lưu vị trí trên bản đồ",
+      "changed": "Ghim đã dời — bấm Lưu vị trí để cập nhật ngay (chỉ lưu tọa độ).",
+      "unchanged": "Kéo ghim hoặc bấm vào bản đồ để chỉnh vị trí."
+    },
     "editInfo": "Sửa thông tin",
     "statusChanged": "Đã chuyển trạng thái sang \"{{status}}\"",
     "partnerLocked": "Không thể sửa địa điểm của đối tác",
@@ -3180,7 +3188,7 @@
       "publish": "Hiển thị",
       "contact": "Liên hệ",
       "types": "Dịch vụ & loại hình",
-      "typesHint": "Tích các dịch vụ địa điểm có, rồi tích loại hình. Loại hình tích đầu tiên là loại hình đại diện."
+      "typesHint": "Tích các dịch vụ và loại hình địa điểm có, rồi chọn một loại hình đại diện."
     },
     "fields": {
       "name": "Tên địa điểm",
@@ -3287,7 +3295,8 @@
       "types": "Loại hình",
       "pickGroupFirst": "Tích nhóm dịch vụ bên trái để chọn loại hình",
       "main": "Đại diện",
-      "selected": "Đã chọn"
+      "selected": "Đã chọn",
+      "mainPick": "Loại hình đại diện"
     }
   },
   "placeCategories": {

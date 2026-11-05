@@ -280,7 +280,7 @@ export default function ListingForm({
           <PartnerSection
             icon="category"
             title="Dịch vụ & loại hình"
-            hint="Tích các dịch vụ địa điểm có, rồi tích loại hình. Loại hình tích đầu tiên là loại hình đại diện."
+            hint="Tích các dịch vụ và loại hình địa điểm có, rồi chọn một loại hình đại diện."
           >
             <TypePicker
               groups={groups}

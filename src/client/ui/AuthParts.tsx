@@ -1,7 +1,23 @@
-import { type ClipboardEvent, type KeyboardEvent, type ReactNode, useRef, useState } from 'react';
+import {
+  type ClipboardEvent,
+  type KeyboardEvent,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import type { OtpSent } from '@/client/api/authApi';
 import { errorMessage } from '@/client/api/http';
+import { useClientAuth } from '@/client/auth/clientAuthContext';
+import {
+  GOOGLE_CLIENT_ID,
+  GoogleCancelled,
+  loadGoogle,
+  requestGoogleToken,
+} from '@/client/auth/googleSignIn';
+import { CLIENT_ROUTES } from '@/client/routePaths';
 import { FormAlert } from '@/client/ui/Blocks';
 import { PrimaryButton } from '@/client/ui/Buttons';
 import { formatClock, useCountdown } from '@/client/utils/useCountdown';
@@ -329,9 +345,47 @@ function GoogleLogo() {
   );
 }
 
-/** Nút "Tiếp tục với Google" + vạch "hoặc" phía trên */
-export function GoogleButton() {
-  const [note, setNote] = useState(false);
+/**
+ * Nút "Tiếp tục với Google" + vạch "hoặc" phía trên. Tài khoản Google mới → trang câu hỏi sở thích,
+ * tài khoản đã có → {@code redirectTo} (mặc định trang chủ). Admin bị BE từ chối.
+ */
+export function GoogleButton({ redirectTo = CLIENT_ROUTES.HOME }: { redirectTo?: string }) {
+  const { loginWithGoogle } = useClientAuth();
+  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Tải sẵn thư viện Google để bấm là mở cửa sổ ngay (trình duyệt không chặn popup)
+  useEffect(() => {
+    if (GOOGLE_CLIENT_ID) loadGoogle().catch(() => undefined);
+  }, []);
+
+  const signIn = async () => {
+    if (!GOOGLE_CLIENT_ID) {
+      setError('Đăng nhập Google chưa được cấu hình (thiếu VITE_GOOGLE_CLIENT_ID).');
+      return;
+    }
+    setError(null);
+    setBusy(true);
+    try {
+      const token = await requestGoogleToken(await loadGoogle());
+      const { newAccount } = await loginWithGoogle(token);
+      if (newAccount) {
+        navigate(CLIENT_ROUTES.PREFERENCES, {
+          replace: true,
+          state: {
+            notice: 'Chào mừng bạn! Trả lời vài câu hỏi để SmartTravel gợi ý đúng gu bạn.',
+          },
+        });
+      } else {
+        navigate(redirectTo, { replace: true });
+      }
+    } catch (failure) {
+      if (!(failure instanceof GoogleCancelled)) setError(errorMessage(failure));
+      setBusy(false);
+    }
+  };
+
   return (
     <div className="mt-5">
       <div className="mb-4 flex items-center gap-3 text-[11px] font-semibold text-[#9AA6B1]">
@@ -341,15 +395,20 @@ export function GoogleButton() {
       </div>
       <button
         type="button"
-        onClick={() => setNote(true)}
-        className="flex h-[48px] w-full items-center justify-center gap-2.5 rounded-2xl border border-[#E3E8EE] bg-white text-[13.5px] font-semibold text-[#293A48] transition-colors hover:bg-[#F7F9FB]"
+        onClick={() => void signIn()}
+        disabled={busy}
+        className="flex h-[48px] w-full items-center justify-center gap-2.5 rounded-2xl border border-[#E3E8EE] bg-white text-[13.5px] font-semibold text-[#293A48] transition-colors hover:bg-[#F7F9FB] disabled:cursor-wait disabled:opacity-70"
       >
-        <GoogleLogo />
-        Tiếp tục với Google
+        {busy ? (
+          <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#C9D3DC] border-t-primary" />
+        ) : (
+          <GoogleLogo />
+        )}
+        {busy ? 'Đang đăng nhập với Google…' : 'Tiếp tục với Google'}
       </button>
-      {note && (
-        <p className="mt-2 text-center text-[11.5px] text-[#8A99A6]">
-          Đăng nhập bằng Google đang được hoàn thiện — tạm thời bạn dùng email nhé.
+      {error && (
+        <p role="alert" className="mt-2 text-center text-[12px] text-client-danger">
+          {error}
         </p>
       )}
     </div>

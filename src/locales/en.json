@@ -954,6 +954,8 @@
       "changed": "Changed",
       "changedCount": "{{count}} changed fields",
       "noChanges": "The proposal matches the published content",
+      "appliedNote": "Applied — the published content now is the proposal",
+      "currentNow": "Published (after applying)",
       "empty": "—"
     },
     "revision": {
@@ -3236,6 +3238,12 @@
     "cancel": "Cancel",
     "created": "Place added",
     "saved": "Changes saved",
+    "location": {
+      "save": "Save location",
+      "saved": "Map location saved",
+      "changed": "The pin moved — click Save location to update it now (coordinates only).",
+      "unchanged": "Drag the pin or click the map to adjust the location."
+    },
     "editInfo": "Edit details",
     "statusChanged": "Status changed to \"{{status}}\"",
     "partnerLocked": "Partner places cannot be edited here",
@@ -3253,7 +3261,7 @@
       "publish": "Visibility",
       "contact": "Contact",
       "types": "Services & types",
-      "typesHint": "Tick the services the place offers, then tick the types. The first type ticked is the main one."
+      "typesHint": "Tick the services and types the place offers, then choose one main type."
     },
     "fields": {
       "name": "Place name",
@@ -3360,7 +3368,8 @@
       "types": "Types",
       "pickGroupFirst": "Tick a service group on the left to choose types",
       "main": "Main",
-      "selected": "Selected"
+      "selected": "Selected",
+      "mainPick": "Main type"
     }
   },
   "placeCategories": {

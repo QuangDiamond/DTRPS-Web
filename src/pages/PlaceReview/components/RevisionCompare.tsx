@@ -59,9 +59,12 @@ const TYPES_ROW = { labelKey: 'placeReview.detail.types', current: '', proposed:
 export default function RevisionCompare({
   current,
   proposed,
+  applied = false,
 }: {
   current: PlaceContent;
   proposed: PlaceContent;
+  /** Bản sửa đã được áp dụng: thông tin công khai lúc này chính là bản đề xuất */
+  applied?: boolean;
 }) {
   const { t } = useTranslation();
   const empty = t('placeReview.compare.empty');
@@ -151,9 +154,11 @@ export default function RevisionCompare({
               : 'bg-surface-container-high text-on-surface-variant'
           }`}
         >
-          {changedCount > 0
-            ? t('placeReview.compare.changedCount', { count: changedCount })
-            : t('placeReview.compare.noChanges')}
+          {applied && changedCount === 0
+            ? t('placeReview.compare.appliedNote')
+            : changedCount > 0
+              ? t('placeReview.compare.changedCount', { count: changedCount })
+              : t('placeReview.compare.noChanges')}
         </span>
       </div>
       <div className="table-scroll w-full overflow-x-auto">
@@ -161,7 +166,9 @@ export default function RevisionCompare({
           <thead>
             <tr className="bg-surface-container-low/70 font-label-sm text-label-sm tracking-wider text-on-surface-variant uppercase">
               <th className="w-44 px-5 py-3 font-semibold">{t('placeReview.compare.field')}</th>
-              <th className="px-4 py-3 font-semibold">{t('placeReview.compare.current')}</th>
+              <th className="px-4 py-3 font-semibold">
+                {t(applied ? 'placeReview.compare.currentNow' : 'placeReview.compare.current')}
+              </th>
               <th className="px-4 py-3 font-semibold">{t('placeReview.compare.proposed')}</th>
             </tr>
           </thead>

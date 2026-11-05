@@ -13,7 +13,7 @@ import AuthLayout from '@/layouts/AuthLayout';
 import { AUTH_LINK_CLASS } from '@/pages/Auth/authMessages';
 import { resetPassword } from '@/services/authService';
 import { getErrorMessage } from '@/utils/error';
-import { getStateBoolean, getStateString } from '@/utils/routeState';
+import { getStateString } from '@/utils/routeState';
 
 /**
  * Bước 3/3 — Đặt mật khẩu mới.
@@ -22,14 +22,14 @@ import { getStateBoolean, getStateString } from '@/utils/routeState';
 export default function ResetPasswordPage() {
   const location = useLocation();
   const email = getStateString(location.state, 'email');
-  const otpVerified = getStateBoolean(location.state, 'otpVerified');
+  const ticket = getStateString(location.state, 'ticket');
 
-  // Chưa xác thực OTP thì không được vào bước này
-  if (!email || !otpVerified) return <Navigate to={ROUTES.FORGOT_PASSWORD} replace />;
-  return <ResetPasswordForm email={email} />;
+  // Chưa xác thực OTP (không có vé) thì không được vào bước này
+  if (!email || !ticket) return <Navigate to={ROUTES.FORGOT_PASSWORD} replace />;
+  return <ResetPasswordForm email={email} ticket={ticket} />;
 }
 
-function ResetPasswordForm({ email }: { email: string }) {
+function ResetPasswordForm({ email, ticket }: { email: string; ticket: string }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -53,7 +53,7 @@ function ResetPasswordForm({ email }: { email: string }) {
     setLoading(true);
     setError(null);
     try {
-      await resetPassword(email, password);
+      await resetPassword(ticket, password);
       showToast(t('auth.resetPassword.passwordChangedSuccessfullyPlease'));
       navigate(ROUTES.LOGIN, { replace: true, state: { email } });
     } catch (resetError) {

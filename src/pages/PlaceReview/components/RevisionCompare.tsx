@@ -85,7 +85,7 @@ export default function RevisionCompare({
       : place.prices
           .map(
             (price) =>
-              `${price.description ?? priceTypeLabel(price.priceType)}: ${formatAmount(price)}`,
+              `${price.description ?? priceTypeLabel(price.priceType)}: ${formatAmount(price, t('placeReview.detail.free'))}`,
           )
           .join('\n');
 

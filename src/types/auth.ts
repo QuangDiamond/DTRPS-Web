@@ -13,7 +13,6 @@ export interface AuthFeature {
 
 /** Nội dung cột thương hiệu bên trái của các màn xác thực */
 export interface AuthBrandContent {
-  statusText: string;
   title: string;
   description: string;
   features: AuthFeature[];

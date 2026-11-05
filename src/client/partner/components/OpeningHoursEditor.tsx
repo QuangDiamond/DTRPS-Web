@@ -1,3 +1,4 @@
+import { Icon } from '@/components/common';
 import type { OpeningHour } from '@/client/api/types';
 import { DAY_LABELS } from '@/client/partner/placeFormat';
 
@@ -31,15 +32,37 @@ export default function OpeningHoursEditor({
 
   return (
     <div>
-      <label className="mb-3 flex cursor-pointer items-center gap-2 text-[13px] font-semibold text-client-ink select-none">
-        <input
-          type="checkbox"
-          checked={enabled}
-          onChange={(event) => onEnabledChange(event.target.checked)}
-          className="h-4 w-4 accent-primary"
-        />
-        Khai báo giờ mở cửa
-      </label>
+      <div
+        role="radiogroup"
+        aria-label="Kiểu giờ mở cửa"
+        className="mb-3 grid grid-cols-2 gap-1 rounded-xl bg-client-field p-1"
+      >
+        {[
+          { value: false, icon: 'all_inclusive', label: 'Mở cả ngày' },
+          { value: true, icon: 'schedule', label: 'Theo giờ cụ thể' },
+        ].map((option) => (
+          <button
+            key={option.label}
+            type="button"
+            role="radio"
+            aria-checked={enabled === option.value}
+            onClick={() => onEnabledChange(option.value)}
+            className={`flex h-10 items-center justify-center gap-1.5 rounded-lg text-[13px] font-bold transition-colors ${
+              enabled === option.value
+                ? 'bg-white text-primary shadow-sm'
+                : 'text-client-muted hover:text-client-ink'
+            }`}
+          >
+            <Icon name={option.icon} className="text-[18px]" />
+            {option.label}
+          </button>
+        ))}
+      </div>
+      {!enabled && (
+        <p className="text-[12px] text-client-muted">
+          Không có giờ đóng/mở cố định — khách sẽ thấy “Mở cả ngày”.
+        </p>
+      )}
       {enabled && (
         <>
           <div className="flex flex-col divide-y divide-client-line rounded-xl border border-client-line">

@@ -1,16 +1,20 @@
 import { type FormEvent, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Icon } from '@/components/common';
+import SessionEndedBanner from '@/components/common/SessionEndedBanner';
 import { errorMessage } from '@/client/api/http';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
-import ClientAuthLayout, { SocialLogin } from '@/client/layouts/ClientAuthLayout';
+import ClientAuthLayout from '@/client/layouts/ClientAuthLayout';
 import { CLIENT_ROUTES } from '@/client/routePaths';
+import { AuthCard, GoogleButton } from '@/client/ui/AuthParts';
 import { FormAlert, Notice } from '@/client/ui/Blocks';
-import { routeNotice } from '@/client/ui/useNotice';
-import { PrimaryButton, TextLink } from '@/client/ui/Buttons';
+import { PrimaryButton } from '@/client/ui/Buttons';
 import Field from '@/client/ui/Field';
+import { routeNotice } from '@/client/ui/useNotice';
 import { isValidEmail } from '@/client/utils/validation';
+import { clientSessionEnd } from '@/utils/sessionEnd';
 
-/** Trang được mở trước khi bị chuyển về đăng nhập (RequireClientAuth gửi kèm) */
+/** Trang được mở trước khi bị chuyển về đăng nhập (RequireClientLogin gửi kèm) */
 function redirectTarget(state: unknown): string {
   if (typeof state === 'object' && state !== null && 'from' in state) {
     const { from } = state as { from: unknown };
@@ -29,8 +33,10 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  // Thông báo do trang trước gửi kèm (vd. vừa đổi mật khẩu)
+  // Thông báo do trang trước gửi kèm (vd. vừa đặt lại mật khẩu)
   const notice = routeNotice(location.state);
+  // Tab vừa bị đăng xuất (không thao tác 30 phút / phiên hết hạn) — còn khi F5 hay quay lại tab
+  const [ended] = useState(() => clientSessionEnd.get());
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -53,59 +59,82 @@ export default function LoginPage() {
 
   return (
     <ClientAuthLayout title="Đăng nhập">
-      <div className="mb-6 rounded-2xl bg-[#E7FAF6] p-4">
-        <p className="text-[11px] font-bold text-[#00756F]">AI Curated Journey</p>
-        <p className="mt-1 text-[17px] font-extrabold text-[#1B3845]">Chào mừng trở lại! 👋</p>
-        <p className="mt-1 text-[12px] text-[#647784]">
-          Đăng nhập để tiếp tục hành trình khám phá Việt Nam cùng lịch trình thông minh của bạn.
-        </p>
-      </div>
+      {ended && !formError && (
+        <SessionEndedBanner
+          reason={ended}
+          title={ended === 'idle' ? 'Phiên đăng nhập đã tạm dừng' : 'Phiên đăng nhập đã hết hạn'}
+          message={
+            ended === 'idle'
+              ? 'Bạn đã không thao tác trong 30 phút nên tab này đã được đăng xuất để bảo vệ tài khoản. Đăng nhập lại để tiếp tục — bạn sẽ quay về đúng trang đang xem.'
+              : 'Phiên làm việc đã hết hạn hoặc tài khoản vừa đăng xuất ở nơi khác. Vui lòng đăng nhập lại để tiếp tục.'
+          }
+        />
+      )}
 
-      <form onSubmit={(event) => void submit(event)} noValidate>
-        {notice && !formError && <Notice>{notice}</Notice>}
-        {formError && <FormAlert message={formError} />}
-        <Field
-          label="Email"
-          type="email"
-          autoComplete="username"
-          placeholder="Nhập email"
-          value={email}
-          onChange={setEmail}
-          error={errors.email}
-        />
-        <Field
-          label="Mật khẩu"
-          type="password"
-          autoComplete="current-password"
-          placeholder="Nhập mật khẩu"
-          value={password}
-          onChange={setPassword}
-          error={errors.password}
-        />
-        <div className="mb-5 flex items-center justify-between">
-          <label className="flex cursor-pointer items-center gap-1 text-[12px] text-[#5C6D79] select-none">
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={(event) => setRemember(event.target.checked)}
-              className="h-4 w-4 accent-primary"
-            />
-            Ghi nhớ đăng nhập
-          </label>
-          <Link
-            to={CLIENT_ROUTES.FORGOT_PASSWORD}
-            className="text-[12px] font-bold text-[#007E78] hover:underline"
-          >
-            Quên mật khẩu?
+      <AuthCard
+        title="Đăng nhập"
+        subtitle="Chào mừng trở lại! Tiếp tục khám phá và lên kế hoạch chuyến đi của bạn."
+      >
+        <form onSubmit={(event) => void submit(event)} noValidate>
+          {notice && !ended && !formError && <Notice>{notice}</Notice>}
+          {formError && <FormAlert message={formError} />}
+          <Field
+            label="Email"
+            type="email"
+            autoComplete="username"
+            placeholder="ban@gmail.com"
+            value={email}
+            onChange={setEmail}
+            error={errors.email}
+          />
+          <Field
+            label="Mật khẩu"
+            type="password"
+            autoComplete="current-password"
+            placeholder="Nhập mật khẩu"
+            value={password}
+            onChange={setPassword}
+            error={errors.password}
+          />
+          <div className="mb-5 flex items-center justify-between">
+            <label className="flex cursor-pointer items-center gap-1.5 text-[12.5px] text-[#5C6D79] select-none">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(event) => setRemember(event.target.checked)}
+                className="h-4 w-4 accent-primary"
+              />
+              Ghi nhớ đăng nhập
+            </label>
+            <Link
+              to={CLIENT_ROUTES.FORGOT_PASSWORD}
+              className="text-[12.5px] font-bold text-primary hover:underline"
+            >
+              Quên mật khẩu?
+            </Link>
+          </div>
+          <PrimaryButton type="submit" loading={busy}>
+            Đăng nhập
+          </PrimaryButton>
+        </form>
+
+        <GoogleButton />
+
+        <p className="mt-6 text-center text-[13px] text-[#62737F]">
+          Chưa có tài khoản?{' '}
+          <Link to={CLIENT_ROUTES.REGISTER} className="font-bold text-primary hover:underline">
+            Đăng ký
           </Link>
-        </div>
-        <PrimaryButton type="submit" loading={busy}>
-          Đăng nhập
-        </PrimaryButton>
-      </form>
+        </p>
+      </AuthCard>
 
-      <SocialLogin />
-      <TextLink to={CLIENT_ROUTES.REGISTER}>Chưa có tài khoản? Tạo tài khoản ngay ›</TextLink>
+      <Link
+        to={CLIENT_ROUTES.HOME}
+        className="mt-5 flex items-center justify-center gap-1 text-[12.5px] font-semibold text-[#62737F] hover:text-primary"
+      >
+        <Icon name="explore" className="text-[17px]" />
+        Tiếp tục khám phá, chưa cần đăng nhập
+      </Link>
     </ClientAuthLayout>
   );
 }

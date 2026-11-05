@@ -1,69 +1,174 @@
 import { type FormEvent, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Icon } from '@/components/common';
+import { authApi, type OtpSent } from '@/client/api/authApi';
+import { ClientApiError, errorMessage } from '@/client/api/http';
 import ClientAuthLayout from '@/client/layouts/ClientAuthLayout';
 import { CLIENT_ROUTES } from '@/client/routePaths';
-import { Notice } from '@/client/ui/Blocks';
-import { PrimaryButton, TextLink } from '@/client/ui/Buttons';
+import { AuthCard, OtpStep, PasswordChecklist, StepIndicator } from '@/client/ui/AuthParts';
+import { FormAlert } from '@/client/ui/Blocks';
+import { PrimaryButton } from '@/client/ui/Buttons';
 import Field from '@/client/ui/Field';
-import { isValidEmail } from '@/client/utils/validation';
+import { isValidEmail, isValidPassword, PASSWORD_HINT } from '@/client/utils/validation';
 
-/**
- * Quên mật khẩu — theo ForgotPasswordScreen của mobile.
- * BE chưa có API gửi email khôi phục nên chỉ kiểm tra dữ liệu và báo chưa hỗ trợ.
- */
+const STEPS = ['Email', 'Xác thực', 'Mật khẩu mới'];
+
+const TITLES = [
+  {
+    title: 'Quên mật khẩu',
+    subtitle: 'Nhập email đã đăng ký — chúng tôi sẽ gửi mã 6 số để đặt lại mật khẩu.',
+  },
+  { title: 'Xác thực email', subtitle: 'Nhập mã 6 số trong email vừa nhận.' },
+  {
+    title: 'Mật khẩu mới',
+    subtitle: 'Tạo mật khẩu mới. Các thiết bị đang đăng nhập sẽ được đăng xuất để an toàn.',
+  },
+];
+
+/** Quên mật khẩu 3 bước: email → mã OTP qua email → mật khẩu mới */
 export default function ForgotPasswordPage() {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(0);
   const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [sent, setSent] = useState<OtpSent | null>(null);
+  const [ticket, setTicket] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formError, setFormError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const fail = (error: unknown) => {
+    if (error instanceof ClientApiError && Object.keys(error.fieldErrors).length > 0) {
+      setErrors(error.fieldErrors);
+    }
+    setFormError(errorMessage(error));
+    setBusy(false);
+  };
+
+  const sendCode = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setFormError(null);
     if (!isValidEmail(email)) {
-      setError('Vui lòng nhập email hợp lệ');
+      setErrors({ email: 'Vui lòng nhập email hợp lệ' });
       return;
     }
-    setError('');
-    setSubmitted(true);
+    setErrors({});
+    setBusy(true);
+    try {
+      setSent(await authApi.sendResetCode(email));
+      setStep(1);
+      setBusy(false);
+    } catch (error) {
+      fail(error);
+    }
+  };
+
+  const finish = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const next: Record<string, string> = {};
+    if (!isValidPassword(password)) next.password = PASSWORD_HINT;
+    if (confirm !== password) next.confirm = 'Mật khẩu nhập lại chưa khớp';
+    setErrors(next);
+    setFormError(null);
+    if (Object.keys(next).length > 0) return;
+
+    setBusy(true);
+    try {
+      await authApi.resetPassword(ticket, password);
+      navigate(CLIENT_ROUTES.LOGIN, {
+        replace: true,
+        state: { notice: 'Đã đặt lại mật khẩu. Hãy đăng nhập bằng mật khẩu mới.' },
+      });
+    } catch (error) {
+      fail(error);
+    }
   };
 
   return (
     <ClientAuthLayout title="Quên mật khẩu">
-      <h1 className="text-center text-[22px] font-extrabold text-[#19333F]">Quên mật khẩu? 🔐</h1>
-      <p className="mt-2 mb-7 text-center text-[12px] text-[#63737E]">
-        Đừng lo lắng! Hãy nhập địa chỉ email đã đăng ký của bạn. Chúng tôi sẽ gửi hướng dẫn kèm liên
-        kết đặt lại mật khẩu an toàn.
-      </p>
+      <AuthCard title={TITLES[step].title} subtitle={TITLES[step].subtitle}>
+        <StepIndicator steps={STEPS} current={step} />
 
-      <form onSubmit={submit} noValidate className="rounded-2xl bg-white p-4">
-        <Field
-          label="Địa chỉ Email"
-          type="email"
-          autoComplete="email"
-          placeholder="hoang.nam@email.com"
-          value={email}
-          onChange={(value) => {
-            setEmail(value);
-            setSubmitted(false);
-          }}
-          error={error}
-        />
-        <div className="mb-4 rounded-xl bg-[#DFF9F5] p-3 text-[12px] text-[#147C75]">
-          🛡️ Mẹo bảo mật: Liên kết khôi phục sẽ có hiệu lực trong thời gian giới hạn.
-        </div>
-        {submitted && (
-          <Notice tone="warning">
-            Máy chủ chưa hỗ trợ gửi email khôi phục mật khẩu. Vui lòng liên hệ quản trị viên để được
-            cấp lại mật khẩu.
-          </Notice>
+        {step === 0 && (
+          <form onSubmit={(event) => void sendCode(event)} noValidate>
+            {formError && <FormAlert message={formError} />}
+            <Field
+              label="Email"
+              type="email"
+              autoComplete="email"
+              placeholder="ban@gmail.com"
+              value={email}
+              onChange={setEmail}
+              error={errors.email}
+            />
+            <PrimaryButton type="submit" loading={busy}>
+              Gửi mã xác thực
+            </PrimaryButton>
+          </form>
         )}
-        <PrimaryButton type="submit">Gửi link khôi phục</PrimaryButton>
-      </form>
 
-      <div className="mt-4 rounded-xl bg-white p-4">
-        <p className="text-[13px] font-bold text-[#263C4A]">Nhận mã xác thực qua SMS / Zalo</p>
-        <p className="mt-1 text-[11px] text-[#81909B]">Tùy chọn này sẽ được tích hợp sau.</p>
-      </div>
-      <TextLink to={CLIENT_ROUTES.RESET_PASSWORD}>Đã có mã khôi phục? Đặt lại mật khẩu</TextLink>
-      <TextLink to={CLIENT_ROUTES.LOGIN}>← Quay lại Đăng nhập</TextLink>
+        {step === 1 && sent && (
+          <>
+            <p className="-mt-2 mb-4 text-[12px] leading-5 text-[#8A99A6]">
+              Nếu email này đã đăng ký, mã sẽ đến trong ít phút. Không thấy? Hãy xem mục Spam /
+              Quảng cáo.
+            </p>
+            <OtpStep
+              email={email}
+              sent={sent}
+              onVerify={async (code) => {
+                const result = await authApi.verifyResetCode(email, code);
+                setTicket(result.ticket);
+                setErrors({});
+                setFormError(null);
+                setStep(2);
+              }}
+              onResend={() => authApi.sendResetCode(email)}
+              onChangeEmail={() => {
+                setStep(0);
+                setSent(null);
+              }}
+            />
+          </>
+        )}
+
+        {step === 2 && (
+          <form onSubmit={(event) => void finish(event)} noValidate>
+            {formError && <FormAlert message={formError} />}
+            <Field
+              label="Mật khẩu mới"
+              type="password"
+              autoComplete="new-password"
+              placeholder="Tạo mật khẩu mới"
+              value={password}
+              onChange={setPassword}
+              error={errors.password ?? errors.newPassword}
+            />
+            <PasswordChecklist password={password} />
+            <Field
+              label="Nhập lại mật khẩu mới"
+              type="password"
+              autoComplete="new-password"
+              placeholder="Nhập lại mật khẩu"
+              value={confirm}
+              onChange={setConfirm}
+              error={errors.confirm}
+            />
+            <PrimaryButton type="submit" loading={busy}>
+              Đặt lại mật khẩu
+            </PrimaryButton>
+          </form>
+        )}
+
+        <Link
+          to={CLIENT_ROUTES.LOGIN}
+          className="mt-6 flex items-center justify-center gap-1 text-[13px] font-semibold text-[#62737F] hover:text-primary"
+        >
+          <Icon name="arrow_back" className="text-[17px]" />
+          Quay lại đăng nhập
+        </Link>
+      </AuthCard>
     </ClientAuthLayout>
   );
 }

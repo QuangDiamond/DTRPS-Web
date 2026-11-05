@@ -398,7 +398,7 @@ export default function ListingForm({
           <PartnerSection
             icon="schedule"
             title="Giờ mở cửa"
-            hint="Khai báo đủ 7 ngày; bỏ chọn “Mở cửa” cho ngày nghỉ."
+            hint="Mở cả ngày, hoặc khai báo đủ 7 ngày (bỏ chọn “Mở cửa” cho ngày nghỉ)."
           >
             <OpeningHoursEditor
               enabled={values.hoursEnabled}

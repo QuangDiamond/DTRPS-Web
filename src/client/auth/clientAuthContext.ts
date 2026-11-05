@@ -4,7 +4,8 @@ import type { ClientUser, RoleName } from '@/client/api/types';
 export interface ClientAuthValue {
   user: ClientUser | null;
   login: (email: string, password: string, remember: boolean) => Promise<ClientUser>;
-  register: (name: string, email: string, password: string) => Promise<ClientUser>;
+  /** Hoàn tất đăng ký bằng vé từ mã OTP email — tạo tài khoản và đăng nhập luôn */
+  register: (ticket: string, name: string, password: string) => Promise<ClientUser>;
   logout: () => void;
   /** Ghi thông tin user mới (sau khi sửa hồ sơ) vào phiên hiện tại */
   updateUser: (user: ClientUser) => void;

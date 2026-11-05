@@ -92,7 +92,10 @@ export default function PlaceDetailsView({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <PartnerSection icon="schedule" title="Giờ mở cửa">
             {hours.length === 0 ? (
-              <Empty text={withHint('Chưa khai báo giờ mở cửa')} />
+              <p className="flex items-center gap-2 text-[13px] font-semibold text-primary">
+                <Icon name="all_inclusive" className="text-[18px]" />
+                Mở cả ngày — không có giờ đóng/mở cố định
+              </p>
             ) : (
               <dl>
                 {hours.map((hour) => (
@@ -113,15 +116,25 @@ export default function PlaceDetailsView({
             {place.prices.length === 0 ? (
               <Empty text={withHint('Chưa khai báo giá')} />
             ) : (
-              <dl>
-                {place.prices.map((price, index) => (
-                  <Row
-                    key={index}
-                    label={priceLabel(price)}
-                    value={formatMoney(price.amount, price.currency)}
-                  />
-                ))}
-              </dl>
+              <>
+                <dl>
+                  {place.prices.map((price, index) => (
+                    <Row
+                      key={index}
+                      label={priceLabel(price)}
+                      value={
+                        <span className={price.amount === 0 ? 'text-primary' : undefined}>
+                          {formatMoney(price.amount, price.currency)}
+                        </span>
+                      }
+                    />
+                  ))}
+                </dl>
+                <p className="mt-2 flex items-center gap-1.5 text-[11.5px] text-client-muted">
+                  <Icon name="info" className="text-[15px]" />
+                  Giá tham khảo, có thể thay đổi theo thời điểm.
+                </p>
+              </>
             )}
           </PartnerSection>
         </div>

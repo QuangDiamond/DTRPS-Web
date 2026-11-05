@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
+import BrandMark from '@/components/common/BrandMark';
 import { ADMIN_NAV_ITEMS } from '@/constants/navigation';
 import { ROUTES } from '@/constants/routes';
 import { useAuth, useListingReview, useToast } from '@/hooks';
@@ -36,17 +37,7 @@ export default function Sidebar() {
       <div className="flex flex-1 flex-col overflow-y-auto">
         {/* Logo */}
         <div className="flex h-[68px] items-center gap-3 border-b border-white/10 px-space-lg">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#14B8A6] shadow-sm">
-            <Icon name="public" className="text-[20px] text-white" />
-          </div>
-          <div className="flex min-w-0 flex-col">
-            <span className="text-base leading-none font-black tracking-tight text-white">
-              Smart<span className="text-[#5EEAD4]">Travel</span>
-            </span>
-            <span className="mt-0.5 block text-[10px] font-bold tracking-wider text-white/50 uppercase">
-              VIETNAM TRAVEL ADMIN
-            </span>
-          </div>
+          <BrandMark tone="dark" size="sm" subtitle="VIETNAM TRAVEL ADMIN" />
         </div>
 
         <div className="px-space-md py-space-sm">

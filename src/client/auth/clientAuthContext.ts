@@ -11,6 +11,11 @@ export interface ClientAuthValue {
   /** Lấy token mới để nhận vai trò vừa được cấp (vd. BUSINESS_OWNER sau khi admin duyệt) */
   refreshSession: () => Promise<boolean>;
   hasRole: (role: RoleName) => boolean;
+  /**
+   * Khoá RIÊNG tab này vì không thao tác quá lâu: tab coi như chưa đăng nhập, nhưng phiên chung
+   * vẫn giữ nên các tab khác không bị đăng xuất theo.
+   */
+  lockIdle: () => void;
 }
 
 export const ClientAuthContext = createContext<ClientAuthValue | null>(null);

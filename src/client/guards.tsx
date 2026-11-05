@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import ClientAuthProvider from '@/client/auth/ClientAuthProvider';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import ClientShell from '@/client/layouts/ClientShell';
@@ -12,6 +12,10 @@ import {
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import TravellerProvider from '@/client/traveller/TravellerProvider';
 import { Spinner } from '@/client/ui/Blocks';
+import { useIdleTimeout } from '@/utils/useIdleTimeout';
+
+/** Không thao tác bao lâu (trong một tab) thì tab đó phải đăng nhập lại */
+const IDLE_MINUTES = 30;
 
 /** Gốc của khu client: phiên đăng nhập riêng + tải trang theo từng chunk */
 export function ClientRoot() {
@@ -43,7 +47,20 @@ const GUEST_PARTNER: PartnerProfileValue = {
  * Khách xem được trang chủ, khám phá, chi tiết địa điểm; các trang khác bọc RequireClientLogin.
  */
 export function ClientAppLayout() {
-  const { user } = useClientAuth();
+  const { user, lockIdle } = useClientAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  // Mỗi tab đếm riêng: tab này để yên 30 phút → chỉ tab này phải đăng nhập lại
+  useIdleTimeout(Boolean(user), IDLE_MINUTES, () => {
+    lockIdle();
+    navigate(CLIENT_ROUTES.LOGIN, {
+      replace: true,
+      state: {
+        from: `${location.pathname}${location.search}`,
+        notice: `Bạn đã không thao tác ${IDLE_MINUTES} phút, vui lòng đăng nhập lại`,
+      },
+    });
+  });
   if (!user) {
     return (
       <PartnerProfileContext.Provider value={GUEST_PARTNER}>

@@ -5,9 +5,13 @@ import * as authService from '@/services/authService';
 import { onUnauthorized } from '@/services/httpClient';
 import { clearAccessToken } from '@/services/tokenStore';
 import type { AdminProfile } from '@/types';
+import { tabLock } from '@/utils/useIdleTimeout';
 import { AuthContext } from './authContext';
 
 const STORAGE_KEY = 'smarttravel.admin';
+
+/** Cờ khoá theo từng tab (sessionStorage) khi không thao tác 30 phút */
+const idleLock = tabLock('smarttravel.admin.idleLocked');
 
 function isAdminProfile(value: unknown): value is AdminProfile {
   return (
@@ -56,11 +60,15 @@ function clearStoredAdmin(): void {
 }
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const [admin, setAdmin] = useState<AdminProfile | null>(readStoredAdmin);
+  // Tab đã bị khoá vì không thao tác → coi như chưa đăng nhập cho tới khi đăng nhập lại
+  const [admin, setAdmin] = useState<AdminProfile | null>(() =>
+    idleLock.isLocked() ? null : readStoredAdmin(),
+  );
   const { showToast } = useToast();
 
   const login = useCallback(async (email: string, password: string, remember: boolean) => {
     const profile = await authService.login(email, password, remember);
+    idleLock.unlock();
     clearStoredAdmin();
     try {
       const storage = remember ? window.localStorage : window.sessionStorage;
@@ -74,7 +82,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     authService.logout();
+    idleLock.unlock();
     clearStoredAdmin();
+    setAdmin(null);
+  }, []);
+
+  // Không xoá phiên lưu chung, không thu hồi token: chỉ tab này phải đăng nhập lại
+  const lockIdle = useCallback(() => {
+    idleLock.lock();
     setAdmin(null);
   }, []);
 
@@ -89,7 +104,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return () => onUnauthorized(null);
   }, [showToast]);
 
-  const value = useMemo(() => ({ admin, login, logout }), [admin, login, logout]);
+  const value = useMemo(
+    () => ({ admin, login, logout, lockIdle }),
+    [admin, login, logout, lockIdle],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

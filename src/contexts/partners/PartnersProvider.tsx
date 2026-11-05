@@ -51,6 +51,11 @@ export default function PartnersProvider({ children }: { children: ReactNode }) 
     [loadStats],
   );
 
+  const refresh = useCallback(() => {
+    setVersion((current) => current + 1);
+    void loadStats();
+  }, [loadStats]);
+
   const approve = useCallback(
     (id: string) => partnerService.approve(id).then(afterWrite),
     [afterWrite],
@@ -81,8 +86,8 @@ export default function PartnersProvider({ children }: { children: ReactNode }) 
   );
 
   const value = useMemo(
-    () => ({ stats, dataStatus, version, approve, reject, lock, unlock }),
-    [stats, dataStatus, version, approve, reject, lock, unlock],
+    () => ({ stats, dataStatus, version, refresh, approve, reject, lock, unlock }),
+    [stats, dataStatus, version, refresh, approve, reject, lock, unlock],
   );
 
   return <PartnersContext.Provider value={value}>{children}</PartnersContext.Provider>;

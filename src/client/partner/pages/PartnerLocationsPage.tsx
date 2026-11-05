@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { businessListingApi } from '@/client/api/businessListingApi';
+import { useClientLiveRefresh } from '@/client/live/clientLiveContext';
 import { errorMessage } from '@/client/api/http';
 import type { BusinessListing, ListingStatus } from '@/client/api/types';
 import { LISTING_STATUS } from '@/client/partner/placeFormat';
@@ -95,6 +96,8 @@ export default function PartnerLocationsPage() {
       active = false;
     };
   }, [retry]);
+
+  useClientLiveRefresh(['LISTING_', 'REVISION_'], () => setRetry((n) => n + 1));
 
   if (error) {
     return (

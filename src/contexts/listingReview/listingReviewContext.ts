@@ -13,6 +13,8 @@ export interface ListingReviewContextValue {
   /** Tăng sau mỗi thao tác — các trang danh sách / chi tiết dựa vào đây để tải lại */
   version: number;
   refreshStats: () => void;
+  /** Dữ liệu đổi từ nơi khác (sự kiện realtime): tải lại số liệu và báo các trang tải lại */
+  refresh: () => void;
   approveListing: (id: string) => Promise<ReviewListing>;
   rejectListing: (id: string, reason: string) => Promise<ReviewListing>;
   approveRevision: (id: string, note?: string) => Promise<RevisionDetail>;

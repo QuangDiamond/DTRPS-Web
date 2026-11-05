@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { businessListingApi } from '@/client/api/businessListingApi';
+import { useClientLiveRefresh } from '@/client/live/clientLiveContext';
 import { errorMessage } from '@/client/api/http';
 import type { BusinessListing, BusinessProfile, ListingRevision } from '@/client/api/types';
 import { LISTING_STATUS, MAX_IMAGES, REJECT_REASONS } from '@/client/partner/placeFormat';
@@ -293,6 +294,8 @@ export default function PartnerDashboard({ profile }: { profile: BusinessProfile
       active = false;
     };
   }, [retry]);
+
+  useClientLiveRefresh(['LISTING_', 'REVISION_'], () => setRetry((n) => n + 1));
 
   const todos: Todo[] = places
     ? places.length === 0

@@ -15,6 +15,7 @@ import PlaceDetailsView from '@/client/partner/components/PlaceDetailsView';
 import RevisionHistory from '@/client/partner/components/RevisionHistory';
 import { LISTING_STATUS } from '@/client/partner/placeFormat';
 import { formatDate } from '@/client/partner/profileStatus';
+import { useClientLiveRefresh } from '@/client/live/clientLiveContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import {
   Card,
@@ -165,6 +166,14 @@ export default function PartnerLocationPage() {
       active = false;
     };
   }, [listingId, retry]);
+
+  // Admin duyệt / từ chối địa điểm hoặc đề xuất của chính địa điểm này → cập nhật tại chỗ
+  useClientLiveRefresh(['LISTING_', 'REVISION_'], (event) => {
+    if (event.data.listingId !== listingId) return;
+    loadPage(listingId)
+      .then((loaded) => setData(loaded))
+      .catch(() => undefined);
+  });
 
   const backLink = (
     <Link

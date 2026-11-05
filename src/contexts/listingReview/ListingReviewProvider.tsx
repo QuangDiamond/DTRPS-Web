@@ -45,6 +45,11 @@ export default function ListingReviewProvider({ children }: { children: ReactNod
     [refreshStats],
   );
 
+  const refresh = useCallback(() => {
+    setVersion((current) => current + 1);
+    refreshStats();
+  }, [refreshStats]);
+
   const approveListing = useCallback(
     (id: string) => listingReviewService.approveListing(id).then(afterWrite),
     [afterWrite],
@@ -68,12 +73,22 @@ export default function ListingReviewProvider({ children }: { children: ReactNod
       stats,
       version,
       refreshStats,
+      refresh,
       approveListing,
       rejectListing,
       approveRevision,
       rejectRevision,
     }),
-    [stats, version, refreshStats, approveListing, rejectListing, approveRevision, rejectRevision],
+    [
+      stats,
+      version,
+      refreshStats,
+      refresh,
+      approveListing,
+      rejectListing,
+      approveRevision,
+      rejectRevision,
+    ],
   );
 
   return <ListingReviewContext.Provider value={value}>{children}</ListingReviewContext.Provider>;

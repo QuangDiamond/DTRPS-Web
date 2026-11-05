@@ -200,3 +200,18 @@
     transform: translateY(0) scale(1);
   }
 }
+
+/* Toast thông báo realtime trượt vào từ bên phải */
+@keyframes liveToastIn {
+  from {
+    opacity: 0;
+    transform: translateX(28px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.live-toast {
+  animation: liveToastIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}

@@ -5,8 +5,10 @@ import { PageLoader } from '@/components/common';
 import { ADMIN_NAV_ITEMS } from '@/constants/navigation';
 import { ROUTES } from '@/constants/routes';
 import { useDocumentTitle, useIdleLogout } from '@/hooks';
+import LiveProvider from '@/contexts/live/LiveProvider';
 import DataStatusGate from './DataStatusGate';
 import Header from './Header';
+import LiveSync from './LiveSync';
 import Sidebar from './Sidebar';
 
 /** Tên trang hiện tại theo mục menu khớp dài nhất với đường dẫn (nhãn menu đã theo ngôn ngữ) */
@@ -25,7 +27,8 @@ export default function AdminLayout() {
   useDocumentTitle(getPageTitle(useLocation().pathname, t('nav.profile')));
 
   return (
-    <>
+    <LiveProvider>
+      <LiveSync />
       <Sidebar />
       <div className="flex min-h-screen flex-col bg-[#F3F5F9] pl-72 print:pl-0">
         <Header />
@@ -39,6 +42,6 @@ export default function AdminLayout() {
           </div>
         </main>
       </div>
-    </>
+    </LiveProvider>
   );
 }

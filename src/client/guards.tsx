@@ -3,6 +3,7 @@ import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import ClientAuthProvider from '@/client/auth/ClientAuthProvider';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import ClientShell from '@/client/layouts/ClientShell';
+import ClientLiveProvider from '@/client/live/ClientLiveProvider';
 import PartnerProfileProvider from '@/client/partner/PartnerProfileProvider';
 import {
   PartnerProfileContext,
@@ -73,9 +74,11 @@ export function ClientAppLayout() {
   // key: đổi tài khoản thì tải lại hồ sơ đối tác + dữ liệu du khách
   return (
     <PartnerProfileProvider key={user.id}>
-      <TravellerProvider key={user.id} userId={user.id}>
-        <ClientShell />
-      </TravellerProvider>
+      <ClientLiveProvider key={user.id} userId={user.id}>
+        <TravellerProvider key={user.id} userId={user.id}>
+          <ClientShell />
+        </TravellerProvider>
+      </ClientLiveProvider>
     </PartnerProfileProvider>
   );
 }

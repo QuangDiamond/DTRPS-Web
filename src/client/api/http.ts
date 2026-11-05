@@ -31,6 +31,11 @@ export function bindSession(binding: SessionBinding | null): void {
   session = binding;
 }
 
+/** Access token hiện tại (cho luồng realtime — fetch thủ công, không qua clientRequest) */
+export function currentAccessToken(): string | null {
+  return session?.getAccessToken() ?? null;
+}
+
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 interface RequestOptions {

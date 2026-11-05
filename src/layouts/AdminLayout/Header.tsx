@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Icon, LanguageSwitcher } from '@/components/common';
 import { ROUTES } from '@/constants/routes';
-import { useAuth, useToast } from '@/hooks';
+import NotificationBell from '@/components/common/NotificationBell';
+import { useAuth, useLive, useToast } from '@/hooks';
 
 const ICON_BUTTON_CLASS =
   'flex h-10 w-10 items-center justify-center rounded-full bg-[#F1F4F8] text-on-surface-variant transition-all hover:bg-[#E4EAF1] hover:text-on-surface';
@@ -12,8 +13,7 @@ export default function Header() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { admin } = useAuth();
-  // Chưa có API thông báo
-  const unreadCount = 0;
+  const live = useLive();
   const [keyword, setKeyword] = useState('');
   const { t } = useTranslation();
 
@@ -39,21 +39,20 @@ export default function Header() {
       <div className="flex items-center gap-4">
         <LanguageSwitcher />
 
-        <button
-          type="button"
-          onClick={() => navigate(ROUTES.NOTIFICATIONS)}
-          className={`relative ${ICON_BUTTON_CLASS}`}
-          title={
-            unreadCount > 0
-              ? t('header.notificationsUnread', { count: unreadCount })
-              : t('header.notifications')
-          }
-        >
-          <Icon name="notifications" className="text-[20px]" />
-          {unreadCount > 0 && (
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-error ring-2 ring-surface-container-lowest" />
-          )}
-        </button>
+        {live && (
+          <NotificationBell
+            unread={live.unread}
+            items={live.items}
+            loading={live.loading}
+            connected={live.connected}
+            onOpen={live.loadItems}
+            onMarkAllRead={live.markAllRead}
+            onSelect={(item) => {
+              live.markRead(item.id);
+              if (item.link) navigate(item.link);
+            }}
+          />
+        )}
 
         <button
           type="button"

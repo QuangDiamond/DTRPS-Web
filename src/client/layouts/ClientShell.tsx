@@ -1,6 +1,8 @@
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
+import NotificationBell from '@/components/common/NotificationBell';
+import { useClientLive } from '@/client/live/clientLiveContext';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import { usePartnerProfile } from '@/client/partner/partnerProfileContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
@@ -147,6 +149,8 @@ function AccountMenu() {
 /** Khung chung của du khách + đối tác: header, thanh chuyển vai trò, menu và thanh tab dưới (điện thoại) */
 export default function ClientShell() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const live = useClientLive();
   const { profile } = usePartnerProfile();
   const [notice, setNotice] = useState<string | null>(null);
   const partnerMode = pathname.startsWith(CLIENT_ROUTES.PARTNER);
@@ -196,14 +200,34 @@ export default function ClientShell() {
               <Icon name="language" className="text-[14px]" />
               VI | EN
             </button>
-            <button
-              type="button"
-              onClick={() => setNotice('Thông báo đang được phát triển.')}
-              aria-label="Thông báo"
-              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/12 text-white hover:bg-white/20"
-            >
-              <Icon name="notifications" className="text-[21px]" />
-            </button>
+            {live ? (
+              <NotificationBell
+                tone="dark"
+                unread={live.unread}
+                items={live.items}
+                loading={live.loading}
+                connected={live.connected}
+                onOpen={live.loadItems}
+                onMarkAllRead={live.markAllRead}
+                onSelect={(item) => {
+                  live.markRead(item.id);
+                  if (item.link) navigate(item.link);
+                }}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(CLIENT_ROUTES.LOGIN, {
+                    state: { from: pathname, notice: 'Đăng nhập để nhận thông báo' },
+                  })
+                }
+                aria-label="Thông báo"
+                className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/12 text-white hover:bg-white/20"
+              >
+                <Icon name="notifications" className="text-[21px]" />
+              </button>
+            )}
             <AccountMenu />
           </div>
         </div>

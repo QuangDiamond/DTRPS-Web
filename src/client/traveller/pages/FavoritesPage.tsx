@@ -67,6 +67,11 @@ function FavoriteCard({ place, onRemove }: { place: PlaceSummary; onRemove: () =
               <p className="max-w-[110px] truncate text-[13px] font-extrabold text-[#C2410C]">
                 {place.category.name}
               </p>
+              {place.secondaryCategory && (
+                <p className="max-w-[110px] truncate text-[11px] font-bold text-[#C2410C]/80">
+                  + {place.secondaryCategory.name}
+                </p>
+              )}
             </div>
           )}
         </div>

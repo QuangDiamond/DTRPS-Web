@@ -66,7 +66,7 @@ function RevisionItem({
         )}
       </div>
       {open && (
-        <div className="mt-3 rounded-xl border border-client-line p-3">
+        <div className="mt-3 rounded-2xl bg-client-field p-3">
           <PlaceDetailsView place={revision.proposed} />
         </div>
       )}

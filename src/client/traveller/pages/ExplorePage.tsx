@@ -134,7 +134,7 @@ function PlaceGridCard({
             <span className="font-bold text-[#8A6100]">{place.rating ?? '—'}</span>
           </p>
           <p className="mt-1.5 truncate text-[12px] font-extrabold text-[#087A78]">
-            {place.category?.name ?? ''}
+            {[place.category?.name, place.secondaryCategory?.name].filter(Boolean).join(' · ')}
           </p>
         </div>
       </Link>
@@ -170,7 +170,10 @@ export default function ExplorePage() {
   const [referenceError, setReferenceError] = useState('');
 
   const [selectedProvinceCode, setSelectedProvinceCode] = useState('');
-  const [selectedCategoryCodes, setSelectedCategoryCodes] = useState<string[]>([]);
+  const typeParam = params.get('type') ?? '';
+  const [selectedCategoryCodes, setSelectedCategoryCodes] = useState<string[]>(() =>
+    typeParam ? [typeParam] : [],
+  );
   // Backend chưa hỗ trợ giá nên UI giữ lại nhưng tạm khóa.
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
 
@@ -181,6 +184,10 @@ export default function ExplorePage() {
   const [total, setTotal] = useState(0);
   const [nextPage, setNextPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
+
+  useEffect(() => {
+    if (typeParam) setSelectedCategoryCodes([typeParam]);
+  }, [typeParam]);
 
   useEffect(() => {
     // Chỉ đồng bộ khi URL thay đổi từ phía ngoài (ví dụ Back/Forward).
@@ -212,6 +219,14 @@ export default function ExplorePage() {
     return () => { active = false; };
   }, []);
 
+  const serverCategory = useMemo(() => {
+    if (selectedCategoryCodes.length !== 1) return undefined;
+    const code = selectedCategoryCodes[0];
+    return categoryGroups.some((group) => group.subtypes.some((s) => s.code === code))
+      ? code
+      : undefined;
+  }, [selectedCategoryCodes, categoryGroups]);
+
   // Tìm kiếm dữ liệu thật từ main; debounce 300ms khi gõ.
   // Khi chọn tỉnh, truyền province code (không lấy tên tỉnh làm keyword).
   useEffect(() => {
@@ -222,6 +237,7 @@ export default function ExplorePage() {
       placesApi.list({
         keyword: selectedProvinceCode ? '' : searchText.trim(),
         province: selectedProvinceCode || undefined,
+        category: serverCategory,
         page: 0,
         size: PAGE_SIZE,
       }).then((page) => {
@@ -243,13 +259,14 @@ export default function ExplorePage() {
       active = false;
       window.clearTimeout(timer);
     };
-  }, [searchText, selectedProvinceCode]);
+  }, [searchText, selectedProvinceCode, serverCategory]);
 
   /** Từ khoá / tỉnh đang tìm — dùng chung cho lần tải đầu và nút "Xem thêm" */
   function searchParams() {
     return {
       keyword: selectedProvinceCode ? '' : searchText.trim(),
       province: selectedProvinceCode || undefined,
+      category: serverCategory,
     };
   }
 
@@ -292,6 +309,7 @@ export default function ExplorePage() {
     const next = new URLSearchParams(params);
     next.delete('q');
     next.delete('rating');
+    next.delete('type');
     setParams(next, { replace: true });
   };
 
@@ -327,6 +345,10 @@ export default function ExplorePage() {
         place.group?.name ?? '',
         categoryCode,
         place.category?.name ?? '',
+        place.secondaryGroup?.code ?? '',
+        place.secondaryGroup?.name ?? '',
+        place.secondaryCategory?.code ?? '',
+        place.secondaryCategory?.name ?? '',
       ].map(normalizeText);
       if (!selectedCategories.some((item) => {
         const code = normalizeText(item.code);
@@ -340,11 +362,17 @@ export default function ExplorePage() {
   }), [places, minRating, selectedCategories]);
 
   // Chưa chọn bộ lọc bên trái → hiện tổng thật từ API; đang lọc → số địa điểm khớp trong các trang đã tải
-  const filtering = minRating > 0 || selectedCategories.length > 0;
+  const filtering =
+    minRating > 0 || (selectedCategories.length > 0 && !serverCategory);
   const resultCount = filtering ? visiblePlaces.length : total;
   const hasMore = places.length < total;
 
   const toggleCategory = (code: string) => {
+    if (typeParam) {
+      const next = new URLSearchParams(params);
+      next.delete('type');
+      setParams(next, { replace: true });
+    }
     setSelectedCategoryCodes((current) =>
       current.includes(code) ? current.filter((item) => item !== code) : [...current, code]
     );

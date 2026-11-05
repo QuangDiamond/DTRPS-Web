@@ -45,7 +45,7 @@ export default function PartnerNewLocationPage() {
   if (!refs) return <Spinner />;
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-6xl">
       <Link
         to={CLIENT_ROUTES.PARTNER_LOCATIONS}
         className="mb-3 inline-flex items-center gap-1 text-[13px] font-bold text-[#007A73] hover:underline"

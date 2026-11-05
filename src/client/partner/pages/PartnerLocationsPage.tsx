@@ -42,7 +42,9 @@ function LocationCard({ listing }: { listing: BusinessListing }) {
       <div className="flex flex-1 flex-col p-4">
         <p className="text-[15px] font-bold text-client-ink">{listing.name}</p>
         <p className="mt-0.5 text-[12px] text-client-muted">
-          {[listing.category?.name, listing.province?.name].filter(Boolean).join(' · ')}
+          {[listing.category?.name, listing.secondaryCategory?.name, listing.province?.name]
+            .filter(Boolean)
+            .join(' · ')}
         </p>
         <p className="mt-2 flex items-start gap-1 text-[12px] text-client-ink">
           <Icon name="location_on" className="text-[15px] text-primary" />

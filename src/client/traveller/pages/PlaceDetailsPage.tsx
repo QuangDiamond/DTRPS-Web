@@ -173,11 +173,24 @@ export default function PlaceDetailsPage() {
             {place.address ?? 'Chưa cập nhật địa chỉ'}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {place.category && (
-              <span className="flex items-center gap-1.5 rounded-full bg-[#EBEDFF] px-3 py-1.5 text-[11px] font-semibold text-[#36546A]">
-                <Icon name="sell" className="text-[15px] text-[#4A7091]" />
-                {place.category.name}
-              </span>
+            {/* Tag loại hình — bấm để xem các địa điểm cùng loại ở trang Khám phá */}
+            {[place.category, place.secondaryCategory].map(
+              (type, index) =>
+                type && (
+                  <Link
+                    key={type.code}
+                    to={`${CLIENT_ROUTES.EXPLORE}?type=${encodeURIComponent(type.code)}`}
+                    title={`Xem các địa điểm ${type.name}`}
+                    className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors ${
+                      index === 0
+                        ? 'bg-[#087A78] text-white hover:bg-[#06615F]'
+                        : 'border border-[#9FD8D1] bg-white text-[#087A78] hover:bg-[#E8F9F4]'
+                    }`}
+                  >
+                    <Icon name="sell" className="text-[15px]" />
+                    {type.name}
+                  </Link>
+                ),
             )}
             {place.province && (
               <span className="flex items-center gap-1.5 rounded-full bg-[#EBEDFF] px-3 py-1.5 text-[11px] font-semibold text-[#36546A]">

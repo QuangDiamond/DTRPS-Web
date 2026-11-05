@@ -402,6 +402,7 @@ export default function PlaceCatalogPage() {
                               {[place.group?.name, place.category?.name]
                                 .filter(Boolean)
                                 .join(' · ')}
+                              {place.secondaryCategory && ` + ${place.secondaryCategory.name}`}
                               {' · '}
                               {t('placeCatalog.table.photos', { count: place.imageCount })}
                             </span>

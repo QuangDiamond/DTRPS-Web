@@ -19,6 +19,9 @@ export interface CatalogPlace {
   name: string;
   group: RefItem | null;
   category: RefItem | null;
+  /** Loại hình phụ (không bắt buộc) */
+  secondaryGroup: RefItem | null;
+  secondaryCategory: RefItem | null;
   province: RefItem | null;
   address: string | null;
   status: CatalogPlaceStatus;
@@ -56,6 +59,8 @@ export interface CatalogPlaceDetail {
 export interface CatalogPlaceInput {
   name: string;
   categoryCode: string;
+  /** null = không có loại hình phụ */
+  secondaryCategoryCode: string | null;
   provinceCode: string;
   address: string;
   description: string | null;

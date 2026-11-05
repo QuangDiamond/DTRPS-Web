@@ -1,4 +1,4 @@
-import { type FormEvent, type ReactNode, useMemo, useState } from 'react';
+import { type FormEvent, useMemo, useState } from 'react';
 import LocationPicker from '@/components/common/LocationPicker';
 import { businessListingApi } from '@/client/api/businessListingApi';
 import { ClientApiError, errorMessage } from '@/client/api/http';
@@ -12,10 +12,11 @@ import type {
   ReferenceItem,
 } from '@/client/api/types';
 import OpeningHoursEditor from '@/client/partner/components/OpeningHoursEditor';
+import PartnerSection from '@/client/partner/components/PartnerSection';
 import PhotoEditor from '@/client/partner/components/PhotoEditor';
 import PriceEditor, { type PriceRow } from '@/client/partner/components/PriceEditor';
 import { DAY_LABELS, fullWeek } from '@/client/partner/placeFormat';
-import { Card, CardTitle, FormAlert, Notice } from '@/client/ui/Blocks';
+import { FormAlert, Notice } from '@/client/ui/Blocks';
 import { PrimaryButton, SecondaryButton } from '@/client/ui/Buttons';
 import Field from '@/client/ui/Field';
 import { SelectField, TextAreaField } from '@/client/ui/FormControls';
@@ -23,9 +24,16 @@ import { isValidPhone, normalizePhone } from '@/client/utils/validation';
 
 type Values = Omit<
   BusinessListingInput,
-  'latitude' | 'longitude' | 'openingHours' | 'prices' | 'phone' | 'website'
+  | 'latitude'
+  | 'longitude'
+  | 'openingHours'
+  | 'prices'
+  | 'phone'
+  | 'website'
+  | 'secondaryCategoryCode'
 > & {
   groupCode: string;
+  secondaryCategoryCode: string;
   phone: string;
   website: string;
   latitude: string;
@@ -38,6 +46,7 @@ type TextKey =
   | 'name'
   | 'groupCode'
   | 'categoryCode'
+  | 'secondaryCategoryCode'
   | 'provinceCode'
   | 'address'
   | 'description'
@@ -53,11 +62,21 @@ export type ListingFormMode = 'create' | 'edit' | 'revision';
 
 const MAX_DESCRIPTION = 2000;
 
+/** Mọi loại hình của 4 nhóm (trừ loại hình chính) để chọn làm loại hình phụ */
+function secondaryOptions(groups: CategoryGroup[], primary: string) {
+  return groups.flatMap((group) =>
+    group.subtypes
+      .filter((subtype) => subtype.code !== primary)
+      .map((subtype) => ({ value: subtype.code, label: `${group.name} › ${subtype.name}` })),
+  );
+}
+
 function initialValues(listing: BusinessListing | null): Values {
   return {
     name: listing?.name ?? '',
     groupCode: listing?.group?.code ?? '',
     categoryCode: listing?.category?.code ?? '',
+    secondaryCategoryCode: listing?.secondaryCategory?.code ?? '',
     provinceCode: listing?.province?.code ?? '',
     address: listing?.address ?? '',
     description: listing?.description ?? '',
@@ -90,24 +109,6 @@ const parseNumber = (value: string): number | null => {
   const parsed = Number(value.trim().replace(',', '.'));
   return value.trim() && Number.isFinite(parsed) ? parsed : null;
 };
-
-function SectionCard({
-  title,
-  hint,
-  children,
-}: {
-  title: string;
-  hint?: string;
-  children: ReactNode;
-}) {
-  return (
-    <Card className="p-5">
-      <CardTitle>{title}</CardTitle>
-      {hint && <p className="mt-1 text-[12px] text-client-muted">{hint}</p>}
-      <div className="mt-3">{children}</div>
-    </Card>
-  );
-}
 
 interface ListingFormProps {
   mode: ListingFormMode;
@@ -151,6 +152,9 @@ export default function ListingForm({
       const next = { ...current, [key]: value };
       // Đổi nhóm → chọn lại loại con
       if (key === 'groupCode') next.categoryCode = '';
+      // Loại hình phụ không được trùng loại hình chính
+      if (next.secondaryCategoryCode && next.secondaryCategoryCode === next.categoryCode)
+        next.secondaryCategoryCode = '';
       // Dán "15.8794, 108.335" vào ô vĩ độ → tự tách ra hai ô
       if (key === 'latitude' && /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(value)) {
         const [lat, lng] = value.split(',');
@@ -204,6 +208,7 @@ export default function ListingForm({
     const input: BusinessListingInput = {
       name: values.name.trim(),
       categoryCode: values.categoryCode,
+      secondaryCategoryCode: values.secondaryCategoryCode || null,
       provinceCode: values.provinceCode,
       address: values.address.trim(),
       description: values.description.trim(),
@@ -267,153 +272,201 @@ export default function ListingForm({
         </Notice>
       )}
       {formError && <FormAlert message={formError} />}
-      <div className="flex flex-col gap-4">
-        <SectionCard title="Thông tin cơ bản">
-          <Field
-            label="Tên địa điểm"
-            icon="storefront"
-            placeholder="Hội An Garden Homestay"
-            value={values.name}
-            onChange={update('name')}
-            error={errors.name}
-          />
-          <div className="grid gap-x-4 md:grid-cols-2">
-            <SelectField
-              label="Nhóm dịch vụ"
-              icon="category"
-              placeholder="Chọn nhóm"
-              value={values.groupCode}
-              onChange={update('groupCode')}
-              options={groups.map((group) => ({ value: group.code, label: group.name }))}
-              error={errors.groupCode}
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
+        <div className="flex min-w-0 flex-col gap-4">
+          <PartnerSection icon="info" title="Thông tin cơ bản">
+            <Field
+              label="Tên địa điểm"
+              icon="storefront"
+              placeholder="Hội An Garden Homestay"
+              value={values.name}
+              onChange={update('name')}
+              error={errors.name}
             />
+            <div className="grid gap-x-4 md:grid-cols-2">
+              <SelectField
+                label="Nhóm dịch vụ"
+                icon="category"
+                placeholder="Chọn nhóm"
+                value={values.groupCode}
+                onChange={update('groupCode')}
+                options={groups.map((group) => ({ value: group.code, label: group.name }))}
+                error={errors.groupCode}
+              />
+              <SelectField
+                label="Loại hình"
+                icon="sell"
+                placeholder={values.groupCode ? 'Chọn loại hình' : 'Chọn nhóm trước'}
+                value={values.categoryCode}
+                onChange={update('categoryCode')}
+                options={subtypes.map((subtype) => ({ value: subtype.code, label: subtype.name }))}
+                error={errors.categoryCode}
+                disabled={!values.groupCode}
+              />
+            </div>
             <SelectField
-              label="Loại hình"
-              icon="sell"
-              placeholder={values.groupCode ? 'Chọn loại hình' : 'Chọn nhóm trước'}
-              value={values.categoryCode}
-              onChange={update('categoryCode')}
-              options={subtypes.map((subtype) => ({ value: subtype.code, label: subtype.name }))}
-              error={errors.categoryCode}
-              disabled={!values.groupCode}
+              label="Loại hình phụ (không bắt buộc)"
+              icon="add_circle"
+              placeholder="Không có loại hình phụ"
+              value={values.secondaryCategoryCode}
+              onChange={update('secondaryCategoryCode')}
+              options={secondaryOptions(groups, values.categoryCode)}
+              hint="Địa điểm có thêm dịch vụ khác, ví dụ resort có nhà hàng → Ẩm thực › Nhà hàng"
+              disabled={!values.categoryCode}
             />
-          </div>
-          <SelectField
-            label="Tỉnh / Thành phố"
+            <TextAreaField
+              label="Mô tả"
+              placeholder="Giới thiệu ngắn về địa điểm, không gian, điểm nổi bật…"
+              value={values.description}
+              onChange={update('description')}
+              maxLength={MAX_DESCRIPTION}
+              error={errors.description}
+            />
+          </PartnerSection>
+
+          <PartnerSection
             icon="map"
-            placeholder="Chọn tỉnh/thành"
-            value={values.provinceCode}
-            onChange={update('provinceCode')}
-            options={provinces.map((province) => ({ value: province.code, label: province.name }))}
-            error={errors.provinceCode}
-          />
-          <Field
-            label="Địa chỉ"
-            icon="location_on"
-            placeholder="12 Trần Phú, phường Hội An"
-            value={values.address}
-            onChange={update('address')}
-            error={errors.address}
-          />
-          <LocationPicker
-            latitude={parseNumber(values.latitude)}
-            longitude={parseNumber(values.longitude)}
-            address={values.address}
-            search={mapsApi}
-            onAddress={update('address')}
-            onChange={(latitude, longitude) => {
-              setValues((current) => ({
-                ...current,
-                latitude: String(latitude),
-                longitude: String(longitude),
-              }));
-              setErrors((current) => ({ ...current, latitude: undefined, longitude: undefined }));
-            }}
-          />
-          <div className="grid gap-x-4 md:grid-cols-2">
-            <Field
-              label="Vĩ độ (latitude)"
-              icon="my_location"
-              inputMode="decimal"
-              placeholder="Tự điền khi chọn trên bản đồ"
-              value={values.latitude}
-              onChange={update('latitude')}
-              error={errors.latitude && 'Vui lòng chọn vị trí trên bản đồ'}
-              hint="Có thể dán cả cặp “vĩ độ, kinh độ”"
+            title="Vị trí"
+            hint="Tìm địa chỉ hoặc bấm lên bản đồ để đặt ghim."
+          >
+            <div className="grid gap-x-4 md:grid-cols-2">
+              <SelectField
+                label="Tỉnh / Thành phố"
+                icon="map"
+                placeholder="Chọn tỉnh/thành"
+                value={values.provinceCode}
+                onChange={update('provinceCode')}
+                options={provinces.map((province) => ({
+                  value: province.code,
+                  label: province.name,
+                }))}
+                error={errors.provinceCode}
+              />
+              <Field
+                label="Địa chỉ"
+                icon="location_on"
+                placeholder="12 Trần Phú, phường Hội An"
+                value={values.address}
+                onChange={update('address')}
+                error={errors.address}
+              />
+            </div>
+            <LocationPicker
+              latitude={parseNumber(values.latitude)}
+              longitude={parseNumber(values.longitude)}
+              address={values.address}
+              search={mapsApi}
+              onAddress={update('address')}
+              onChange={(latitude, longitude) => {
+                setValues((current) => ({
+                  ...current,
+                  latitude: String(latitude),
+                  longitude: String(longitude),
+                }));
+                setErrors((current) => ({ ...current, latitude: undefined, longitude: undefined }));
+              }}
             />
-            <Field
-              label="Kinh độ (longitude)"
-              icon="explore"
-              inputMode="decimal"
-              placeholder="Tự điền khi chọn trên bản đồ"
-              value={values.longitude}
-              onChange={update('longitude')}
-              error={errors.longitude}
+            <div className="mt-4 grid gap-x-4 md:grid-cols-2">
+              <Field
+                label="Vĩ độ (latitude)"
+                icon="my_location"
+                inputMode="decimal"
+                placeholder="Tự điền khi chọn trên bản đồ"
+                value={values.latitude}
+                onChange={update('latitude')}
+                error={errors.latitude && 'Vui lòng chọn vị trí trên bản đồ'}
+                hint="Có thể dán cả cặp “vĩ độ, kinh độ”"
+              />
+              <Field
+                label="Kinh độ (longitude)"
+                icon="explore"
+                inputMode="decimal"
+                placeholder="Tự điền khi chọn trên bản đồ"
+                value={values.longitude}
+                onChange={update('longitude')}
+                error={errors.longitude}
+              />
+            </div>
+          </PartnerSection>
+
+          <PartnerSection icon="contact_phone" title="Liên hệ">
+            <div className="grid gap-x-4 md:grid-cols-2">
+              <Field
+                label="Số điện thoại (không bắt buộc)"
+                icon="call"
+                type="tel"
+                placeholder="0905 128 991"
+                value={values.phone}
+                onChange={update('phone')}
+                error={errors.phone}
+              />
+              <Field
+                label="Website (không bắt buộc)"
+                icon="language"
+                type="url"
+                placeholder="https://"
+                value={values.website}
+                onChange={update('website')}
+                error={errors.website}
+              />
+            </div>
+          </PartnerSection>
+
+          <PartnerSection
+            icon="photo_library"
+            title="Hình ảnh"
+            hint="Tối đa 10 ảnh. Ảnh bìa hiển thị đầu tiên với du khách."
+          >
+            <PhotoEditor
+              images={values.images}
+              onChange={(images) => setField('images', images, 'images')}
+              onUploadingChange={setUploading}
+              error={errors.images}
             />
-          </div>
-          <TextAreaField
-            label="Mô tả"
-            placeholder="Giới thiệu ngắn về địa điểm, không gian, điểm nổi bật…"
-            value={values.description}
-            onChange={update('description')}
-            maxLength={MAX_DESCRIPTION}
-            error={errors.description}
-          />
-          <div className="grid gap-x-4 md:grid-cols-2">
-            <Field
-              label="Số điện thoại (không bắt buộc)"
-              icon="call"
-              type="tel"
-              placeholder="0905 128 991"
-              value={values.phone}
-              onChange={update('phone')}
-              error={errors.phone}
+          </PartnerSection>
+
+          <PartnerSection
+            icon="schedule"
+            title="Giờ mở cửa"
+            hint="Khai báo đủ 7 ngày; bỏ chọn “Mở cửa” cho ngày nghỉ."
+          >
+            <OpeningHoursEditor
+              enabled={values.hoursEnabled}
+              onEnabledChange={(enabled) => setField('hoursEnabled', enabled, 'openingHours')}
+              week={values.week}
+              onChange={(week) => setField('week', week, 'openingHours')}
+              error={errors.openingHours}
             />
-            <Field
-              label="Website (không bắt buộc)"
-              icon="language"
-              type="url"
-              placeholder="https://"
-              value={values.website}
-              onChange={update('website')}
-              error={errors.website}
+          </PartnerSection>
+
+          <PartnerSection
+            icon="payments"
+            title="Bảng giá"
+            hint="Giá tính bằng VND, không âm, tối đa 20 mức giá."
+          >
+            <PriceEditor
+              rows={values.prices}
+              onChange={(prices) => setField('prices', prices, 'prices')}
+              error={errors.prices}
             />
-          </div>
-        </SectionCard>
-        <SectionCard title="Hình ảnh" hint="Tối đa 10 ảnh. Ảnh bìa hiển thị đầu tiên với du khách.">
-          <PhotoEditor
-            images={values.images}
-            onChange={(images) => setField('images', images, 'images')}
-            onUploadingChange={setUploading}
-            error={errors.images}
-          />
-        </SectionCard>
-        <SectionCard title="Giờ mở cửa">
-          <OpeningHoursEditor
-            enabled={values.hoursEnabled}
-            onEnabledChange={(enabled) => setField('hoursEnabled', enabled, 'openingHours')}
-            week={values.week}
-            onChange={(week) => setField('week', week, 'openingHours')}
-            error={errors.openingHours}
-          />
-        </SectionCard>
-        <SectionCard title="Bảng giá tham khảo" hint="Giá tính bằng VND, tối đa 20 mức giá.">
-          <PriceEditor
-            rows={values.prices}
-            onChange={(prices) => setField('prices', prices, 'prices')}
-            error={errors.prices}
-          />
-        </SectionCard>
-        <Notice>{footerNote}</Notice>
+          </PartnerSection>
+        </div>
+        <div className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
+          <PartnerSection icon="send" title={mode === 'revision' ? 'Gửi đề xuất' : 'Gửi xét duyệt'}>
+            <Notice>{footerNote}</Notice>
+            <div className="mt-3 flex flex-col gap-3">
+              <PrimaryButton type="submit" loading={busy} disabled={uploading}>
+                {uploading ? 'Đang tải ảnh lên…' : submitLabel}
+              </PrimaryButton>
+              {onCancel && (
+                <SecondaryButton onClick={onCancel} disabled={busy}>
+                  Hủy
+                </SecondaryButton>
+              )}
+            </div>
+          </PartnerSection>
+        </div>
       </div>
-      <PrimaryButton type="submit" loading={busy} disabled={uploading}>
-        {uploading ? 'Đang tải ảnh lên…' : submitLabel}
-      </PrimaryButton>
-      {onCancel && (
-        <SecondaryButton className="mt-3" onClick={onCancel} disabled={busy}>
-          Hủy
-        </SecondaryButton>
-      )}
     </form>
   );
 }

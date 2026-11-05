@@ -64,3 +64,19 @@ export function pinElement(): HTMLElement {
     "font-size:40px;color:#0F766E;font-variation-settings:'FILL' 1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35));cursor:grab";
   return pin;
 }
+
+export interface MapSpot {
+  latitude: number;
+  longitude: number;
+}
+
+/** Khoảng cách giữa hai điểm (mét, công thức haversine) */
+export function distanceMeters(a: MapSpot, b: MapSpot): number {
+  const rad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = rad(b.latitude - a.latitude);
+  const dLng = rad(b.longitude - a.longitude);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(rad(a.latitude)) * Math.cos(rad(b.latitude)) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6_371_000 * Math.asin(Math.sqrt(h));
+}

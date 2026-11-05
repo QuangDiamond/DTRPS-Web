@@ -37,6 +37,7 @@ interface Values {
   name: string;
   groupCode: string;
   categoryCode: string;
+  secondaryCategoryCode: string;
   provinceCode: string;
   address: string;
   description: string;
@@ -60,6 +61,7 @@ function initialValues(detail: CatalogPlaceDetail | null): Values {
     name: content?.name ?? '',
     groupCode: content?.group?.code ?? '',
     categoryCode: content?.category?.code ?? '',
+    secondaryCategoryCode: content?.secondaryCategory?.code ?? '',
     provinceCode: content?.province?.code ?? '',
     address: content?.address ?? '',
     description: content?.description ?? '',
@@ -193,6 +195,9 @@ export default function PlaceEditorPage() {
     setValues((current) => {
       const next = { ...current, [key]: value };
       if (key === 'groupCode') next.categoryCode = '';
+      // Loại hình phụ không được trùng loại hình chính
+      if (next.secondaryCategoryCode && next.secondaryCategoryCode === next.categoryCode)
+        next.secondaryCategoryCode = '';
       // Dán "15.8794, 108.335" vào ô vĩ độ → tự tách
       if (key === 'latitude' && COORDINATE_PAIR.test(value)) {
         const [lat, lng] = value.split(',');
@@ -241,6 +246,7 @@ export default function PlaceEditorPage() {
     const input: CatalogPlaceInput = {
       name: values.name.trim(),
       categoryCode: values.categoryCode,
+      secondaryCategoryCode: values.secondaryCategoryCode || null,
       provinceCode: values.provinceCode,
       address: values.address.trim(),
       description: values.description.trim() || null,
@@ -364,6 +370,40 @@ export default function PlaceEditorPage() {
                 </select>
               </FormField>
             </div>
+            <FormField
+              label={t('placeEditor.fields.secondary')}
+              hint={t('placeEditor.fields.secondaryHint')}
+            >
+              <select
+                value={values.secondaryCategoryCode}
+                disabled={!values.categoryCode}
+                onChange={(event) => update('secondaryCategoryCode')(event.target.value)}
+                className={INPUT_CLASS}
+              >
+                <option value="">{t('placeEditor.fields.secondaryNone')}</option>
+                {refs.groups.map((group) => (
+                  <optgroup key={group.code} label={group.name}>
+                    {group.subtypes
+                      .filter((subtype) => subtype.code !== values.categoryCode)
+                      .map((subtype) => (
+                        <option key={subtype.code} value={subtype.code}>
+                          {subtype.name}
+                        </option>
+                      ))}
+                  </optgroup>
+                ))}
+                {/* Loại đã bị tắt vẫn hiện cho địa điểm đang dùng nó */}
+                {detail?.content.secondaryCategory &&
+                  values.secondaryCategoryCode === detail.content.secondaryCategory.code &&
+                  !refs.groups.some((group) =>
+                    group.subtypes.some((s) => s.code === values.secondaryCategoryCode),
+                  ) && (
+                    <option value={detail.content.secondaryCategory.code}>
+                      {detail.content.secondaryCategory.name}
+                    </option>
+                  )}
+              </select>
+            </FormField>
             <FormField label={t('placeEditor.fields.description')} error={errors.description}>
               <textarea
                 rows={5}
@@ -376,7 +416,11 @@ export default function PlaceEditorPage() {
             </FormField>
           </EditorSection>
 
-          <EditorSection icon="map" title={t('placeEditor.sections.location')}>
+          <EditorSection
+            icon="map"
+            title={t('placeEditor.sections.location')}
+            hint={t('placeEditor.sections.locationHint')}
+          >
             <div className="grid gap-4 md:grid-cols-2">
               <FormField
                 label={t('placeEditor.fields.province')}
@@ -451,6 +495,26 @@ export default function PlaceEditorPage() {
             </div>
           </EditorSection>
 
+          <EditorSection icon="contact_phone" title={t('placeEditor.sections.contact')}>
+            <FormField label={t('placeEditor.fields.phone')} error={errors.phone}>
+              <input
+                type="tel"
+                value={values.phone}
+                onChange={(event) => update('phone')(event.target.value)}
+                placeholder="0905 128 991"
+                className={INPUT_CLASS}
+              />
+            </FormField>
+            <FormField label={t('placeEditor.fields.website')} error={errors.website}>
+              <input
+                type="url"
+                value={values.website}
+                onChange={(event) => update('website')(event.target.value)}
+                placeholder="https://"
+                className={INPUT_CLASS}
+              />
+            </FormField>
+          </EditorSection>
           {creating && (
             <>
               <EditorSection
@@ -531,7 +595,7 @@ export default function PlaceEditorPage() {
           )}
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 xl:sticky xl:top-24 xl:self-start">
           <EditorSection icon="visibility" title={t('placeEditor.sections.publish')}>
             <FormField
               label={t('placeEditor.fields.status')}
@@ -561,27 +625,6 @@ export default function PlaceEditorPage() {
                 {t('placeEditor.cancel')}
               </Button>
             </div>
-          </EditorSection>
-
-          <EditorSection icon="contact_phone" title={t('placeEditor.sections.contact')}>
-            <FormField label={t('placeEditor.fields.phone')} error={errors.phone}>
-              <input
-                type="tel"
-                value={values.phone}
-                onChange={(event) => update('phone')(event.target.value)}
-                placeholder="0905 128 991"
-                className={INPUT_CLASS}
-              />
-            </FormField>
-            <FormField label={t('placeEditor.fields.website')} error={errors.website}>
-              <input
-                type="url"
-                value={values.website}
-                onChange={(event) => update('website')(event.target.value)}
-                placeholder="https://"
-                className={INPUT_CLASS}
-              />
-            </FormField>
           </EditorSection>
         </div>
       </div>

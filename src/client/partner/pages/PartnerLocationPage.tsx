@@ -87,33 +87,53 @@ function ListingSummary({
             dụng sau khi Admin duyệt.
           </Notice>
         ))}
-      <Card className="p-5">
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <div>
-            <CardTitle>{listing.name}</CardTitle>
+      <Card className="mb-4 p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <CardTitle>{listing.name}</CardTitle>
+              <StatusBadge tone={status.tone}>{status.label}</StatusBadge>
+            </div>
             <p className="mt-1 text-[12px] text-client-muted">
               Gửi {formatDate(listing.createdAt)}
               {listing.approvedAt && ` · Duyệt ${formatDate(listing.approvedAt)}`}
             </p>
           </div>
-          <StatusBadge tone={status.tone}>{status.label}</StatusBadge>
+          <div className="w-full sm:w-auto">
+            {listing.status === 'REJECTED' && (
+              <PrimaryButton className="px-5" onClick={onEdit}>
+                Chỉnh sửa và gửi lại
+              </PrimaryButton>
+            )}
+            {listing.status === 'PENDING' && (
+              <SecondaryButton className="px-5" onClick={onEdit}>
+                Chỉnh sửa thông tin
+              </SecondaryButton>
+            )}
+            {approved && (
+              <PrimaryButton
+                className="px-5"
+                arrow={false}
+                onClick={onPropose}
+                disabled={Boolean(pendingRevision)}
+              >
+                <Icon name="edit_note" className="text-[19px]" />
+                {pendingRevision ? 'Đang có đề xuất chờ duyệt' : 'Đề xuất chỉnh sửa'}
+              </PrimaryButton>
+            )}
+          </div>
         </div>
-        <PlaceDetailsView place={listing} />
       </Card>
-      <div className="mt-4">
-        {listing.status === 'REJECTED' && (
-          <PrimaryButton onClick={onEdit}>Chỉnh sửa và gửi lại</PrimaryButton>
-        )}
-        {listing.status === 'PENDING' && (
-          <SecondaryButton onClick={onEdit}>Chỉnh sửa thông tin</SecondaryButton>
-        )}
-        {approved && (
-          <PrimaryButton onClick={onPropose} disabled={Boolean(pendingRevision)}>
-            <Icon name="edit_note" className="text-[19px]" />
-            {pendingRevision ? 'Đang có đề xuất chờ duyệt' : 'Đề xuất chỉnh sửa'}
-          </PrimaryButton>
-        )}
-      </div>
+      <PlaceDetailsView
+        place={listing}
+        emptyHint={
+          approved
+            ? 'Bấm "Đề xuất chỉnh sửa" để bổ sung.'
+            : listing.status === 'SUSPENDED'
+              ? undefined
+              : 'Bấm "Chỉnh sửa" để bổ sung.'
+        }
+      />
     </>
   );
 }
@@ -215,7 +235,7 @@ export default function PartnerLocationPage() {
         : listing.name;
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-6xl">
       {backLink}
       <Heading
         eyebrow="THÔNG TIN ĐỊA ĐIỂM"

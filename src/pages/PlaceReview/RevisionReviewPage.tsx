@@ -16,7 +16,9 @@ import { ApiError } from '@/services/httpClient';
 import { listingReviewService } from '@/services/listingReviewService';
 import type { RevisionDetail, RevisionRejectCode, RevisionStatus } from '@/types';
 import { getErrorMessage } from '@/utils/error';
-import { Row, Section } from './components/PlaceContentView';
+import CompareMap from '@/components/common/CompareMap';
+import { distanceMeters } from '@/components/common/mapTypes';
+import PlaceContentView, { Row, Section } from './components/PlaceContentView';
 import RevisionCompare from './components/RevisionCompare';
 import { ApproveDialog, RejectRevisionDialog } from './components/ReviewDialogs';
 import { RevisionStatusBadge } from './components/StatusBadges';
@@ -64,7 +66,9 @@ function RevisionReviewContent({
   const review = useListingReview();
   const [dialog, setDialog] = useState<'approve' | 'reject' | null>(null);
   const [busy, setBusy] = useState(false);
+  const [showFull, setShowFull] = useState(false);
   const { revision, current } = detail;
+  const moved = distanceMeters(current, revision.proposed);
   const notice = NOTICE[revision.status];
 
   const approve = async (note: string) => {
@@ -142,6 +146,42 @@ function RevisionReviewContent({
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
         <div className="xl:col-span-8">
           <RevisionCompare current={current} proposed={revision.proposed} />
+          <div className="mt-6">
+            <Section icon="map" title={t('placeReview.revision.mapTitle')}>
+              <div className="overflow-hidden rounded-xl border border-surface-container">
+                <CompareMap
+                  current={current}
+                  proposed={revision.proposed}
+                  currentLabel={t('placeReview.revision.mapCurrent')}
+                  proposedLabel={t('placeReview.revision.mapProposed')}
+                />
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 font-body-sm text-body-sm">
+                {moved >= 1 && (
+                  <span className="flex items-center gap-1 text-on-surface-variant">
+                    <Icon name="location_on" filled className="text-[18px] text-[#8A979C]" />
+                    {t('placeReview.revision.mapCurrent')}
+                  </span>
+                )}
+                <span className="flex items-center gap-1 text-on-surface-variant">
+                  <Icon name="location_on" filled className="text-[18px] text-[#0F766E]" />
+                  {t('placeReview.revision.mapProposed')}
+                </span>
+                <span
+                  className={`ml-auto font-semibold ${moved >= 1 ? 'text-tertiary' : 'text-on-surface-variant'}`}
+                >
+                  {moved >= 1
+                    ? t('placeReview.revision.moved', {
+                        distance:
+                          moved >= 1000
+                            ? `${(moved / 1000).toFixed(1)} km`
+                            : `${Math.round(moved)} m`,
+                      })
+                    : t('placeReview.revision.notMoved')}
+                </span>
+              </div>
+            </Section>
+          </div>
         </div>
         <div className="xl:col-span-4">
           <Section icon="fact_check" title={t('placeReview.detail.review')}>
@@ -173,6 +213,21 @@ function RevisionReviewContent({
           </Section>
         </div>
       </div>
+
+      <div>
+        <Button variant="secondary" onClick={() => setShowFull((open) => !open)}>
+          <Icon name={showFull ? 'expand_less' : 'expand_more'} className="text-[20px]" />
+          {t(showFull ? 'placeReview.revision.hideFull' : 'placeReview.revision.showFull')}
+        </Button>
+      </div>
+      {showFull && (
+        <div className="flex flex-col gap-3">
+          <h2 className="font-headline-sm text-headline-sm text-on-surface">
+            {t('placeReview.revision.fullTitle')}
+          </h2>
+          <PlaceContentView place={revision.proposed} />
+        </div>
+      )}
 
       {dialog === 'approve' && (
         <ApproveDialog

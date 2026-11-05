@@ -38,6 +38,8 @@ export interface PlaceContent {
   longitude: number;
   group: RefItem | null;
   category: RefItem | null;
+  secondaryGroup?: RefItem | null;
+  secondaryCategory?: RefItem | null;
   province: RefItem | null;
   phone: string | null;
   website: string | null;

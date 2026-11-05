@@ -91,6 +91,11 @@ export default function RevisionCompare({
       proposed: value(proposed.category?.name),
     },
     {
+      labelKey: 'placeReview.detail.secondaryCategory',
+      current: value(current.secondaryCategory?.name),
+      proposed: value(proposed.secondaryCategory?.name),
+    },
+    {
       labelKey: 'placeReview.detail.province',
       current: value(current.province?.name),
       proposed: value(proposed.province?.name),

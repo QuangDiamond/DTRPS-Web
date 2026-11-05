@@ -23,8 +23,10 @@ export function Section({
 }) {
   return (
     <section className="rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-      <h2 className="mb-3 flex items-center gap-2 font-headline-sm text-headline-sm text-on-surface">
-        <Icon name={icon} className="text-[22px] text-primary" />
+      <h2 className="mb-4 flex items-center gap-3 font-title-md text-title-md font-bold text-on-surface">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary-container text-secondary">
+          <Icon name={icon} className="text-[20px]" />
+        </span>
         {title}
       </h2>
       {children}
@@ -134,6 +136,14 @@ export default function PlaceContentView({
           <dl>
             <Row label={t('placeReview.detail.group')} value={place.group?.name ?? '—'} />
             <Row label={t('placeReview.detail.category')} value={place.category?.name ?? '—'} />
+            {place.secondaryCategory && (
+              <Row
+                label={t('placeReview.detail.secondaryCategory')}
+                value={[place.secondaryGroup?.name, place.secondaryCategory.name]
+                  .filter(Boolean)
+                  .join(' › ')}
+              />
+            )}
             <Row label={t('placeReview.detail.province')} value={place.province?.name ?? '—'} />
             <Row label={t('placeReview.detail.address')} value={place.address} />
             <Row label={t('placeReview.detail.phone')} value={place.phone ?? '—'} />

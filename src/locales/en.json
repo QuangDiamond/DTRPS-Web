@@ -301,7 +301,11 @@
   },
   "session": {
     "idleLogout": "Your session ended after {{minutes}} minutes of inactivity",
-    "welcome": "Signed in successfully. Welcome, {{name}}!"
+    "welcome": "Signed in successfully. Welcome, {{name}}!",
+    "idleTitle": "Your session was paused",
+    "idleMessage": "There was no activity for {{minutes}} minutes, so this tab was signed out to protect your account. Sign in again to continue — you will return to the page you were on.",
+    "expiredTitle": "Your session has expired",
+    "expiredMessage": "Your session expired or the account was signed out elsewhere. Please sign in again to continue."
   },
   "time": {
     "justNow": "Just now",
@@ -854,10 +858,12 @@
       "description": "Description",
       "noDescription": "No description",
       "hours": "Opening hours",
-      "noHours": "No opening hours",
+      "noHours": "Open all day — no fixed opening hours",
       "closed": "Closed",
       "prices": "Reference prices",
-      "noPrices": "No prices",
+      "noPrices": "No price information",
+      "free": "Free",
+      "priceNote": "Reference prices; they may change over time.",
       "info": "Place details",
       "name": "Place name",
       "group": "Service group",
@@ -948,6 +954,8 @@
       "changed": "Changed",
       "changedCount": "{{count}} changed fields",
       "noChanges": "The proposal matches the published content",
+      "appliedNote": "Applied — the published content now is the proposal",
+      "currentNow": "Published (after applying)",
       "empty": "—"
     },
     "revision": {
@@ -2761,8 +2769,7 @@
       "forgotPassword": "Forgot password?",
       "signAdminPortal": "Sign in to the Admin Portal",
       "verifyingCredentials": "Verifying credentials...",
-      "secureSignWith2fa": "Secure sign-in with 2FA. Social sign-in is NOT supported to protect national data.",
-      "enterpriseGradeSecurity2fa": "Enterprise-grade security & 2FA"
+      "adminOnlyNote": "Administrator accounts only. This tab signs out after 30 minutes without activity."
     },
     "resetPassword": {
       "theNewPasswordDoes": "The new password does not meet all security requirements",
@@ -2801,23 +2808,16 @@
       "anUppercaseLetterZ": "An uppercase letter (A-Z)",
       "aNumber09": "A number (0-9)",
       "aSpecialCharacter": "A special character (!@#...)",
-      "infrastructureV384": "Infrastructure v3.8.4 running smoothly",
-      "comprehensiveOperationsManagementSystem": "Comprehensive Operations & Management System",
-      "vietnamSCentralSmart": "Vietnam's central smart travel orchestration platform, giving the dedicated admin team real-time control and analytics.",
-      "multiLayerSecurityZero": "Multi-layer security & Zero-Trust encryption",
-      "hardwareCertificateAuthenticationReal": "Hardware certificate authentication and real-time intrusion-proof activity logging.",
-      "realTimeDataManagement": "Real-time Data Management",
-      "syncsInternationalVisitorFlows": "Syncs place data and international visitor flows across 63 provinces.",
-      "automatedPartnerListingReview": "Automated partner & listing review",
-      "aiAssistedReviewHotels": "AI-assisted review of hotels, tour operators and experiences.",
-      "adminAccountSecurityRecovery": "Admin Account Security & Recovery",
-      "multiLayerAuthenticationSecure": "Multi-layer authentication and secure encryption protect control of the nationwide smart travel system.",
-      "highlySecure6Digit": "Highly secure 6-digit OTP",
-      "shortValidityAutomaticallyExpires": "Short validity, automatically expires after 5 minutes",
-      "temporaryLockAfterMore": "Temporary lock after more than 5 wrong attempts",
-      "protectsAdminAccountsAgainst": "Protects admin accounts against brute-force attempts",
-      "twoFactorAuthentication2fa": "Two-factor authentication (2FA / Zero-Trust)",
-      "ensuresOnlyRightfulAccount": "Ensures only the rightful account owner gets access"
+      "loginTitle": "SmartTravel Admin",
+      "loginDescription": "Manage destinations, review partners and follow activity on the itinerary planning platform.",
+      "featureReviewTitle": "Partner & place reviews",
+      "featureReviewText": "Review partner profiles, submitted places and change requests — updates arrive live, no reload needed.",
+      "featurePlacesTitle": "Destination catalogue",
+      "featurePlacesText": "Places, services & types, opening hours, prices and photos on the map.",
+      "featureUsersTitle": "Users & reports",
+      "featureUsersText": "Follow traveller and partner accounts and activity figures.",
+      "recoveryTitle": "Recover your admin password",
+      "recoveryDescription": "Follow the steps to reset the password of your admin account."
     },
     "errors": {
       "invalidCredentials": "Incorrect email or password",
@@ -2837,15 +2837,8 @@
     }
   },
   "layout": {
-    "authBrandPanel": {
-      "viettelTier3Idc": "Viettel Tier-3 IDC, ISO 27001 certified"
-    },
     "authLayout": {
-      "privacyPolicy": "Privacy Policy",
-      "operatingRegulations": "Operating Regulations",
-      "systemAdministrator": "System administrator",
-      "n2025SmartTravelVietnam": "© 2025 Smart Travel Vietnam Co., Ltd. All rights reserved.",
-      "isBeingUpdated": "{{label}} is being updated"
+      "copyright": "© 2025 SmartTravel · Administration"
     }
   },
   "services": {
@@ -3245,6 +3238,12 @@
     "cancel": "Cancel",
     "created": "Place added",
     "saved": "Changes saved",
+    "location": {
+      "save": "Save location",
+      "saved": "Map location saved",
+      "changed": "The pin moved — click Save location to update it now (coordinates only).",
+      "unchanged": "Drag the pin or click the map to adjust the location."
+    },
     "editInfo": "Edit details",
     "statusChanged": "Status changed to \"{{status}}\"",
     "partnerLocked": "Partner places cannot be edited here",
@@ -3256,13 +3255,13 @@
       "photos": "Photos",
       "photosHint": "Up to 10 photos. The main photo is shown first to travellers.",
       "hours": "Opening hours",
-      "hoursHint": "Fill in all 7 days; untick \"Open\" for days off.",
+      "hoursHint": "Open all day, or fill in all 7 days (untick \"Open\" for days off).",
       "prices": "Prices",
       "pricesHint": "Prices in VND, not negative, up to 20 prices.",
       "publish": "Visibility",
       "contact": "Contact",
       "types": "Services & types",
-      "typesHint": "Tick the services the place offers, then tick the types. The first type ticked is the main one."
+      "typesHint": "Tick the services and types the place offers, then choose one main type."
     },
     "fields": {
       "name": "Place name",
@@ -3307,7 +3306,11 @@
       "closed": "Closed",
       "openAt": "Opening time {{day}}",
       "closeAt": "Closing time {{day}}",
-      "copyMonday": "Apply Monday's hours to the whole week"
+      "copyMonday": "Apply Monday's hours to the whole week",
+      "mode": "Opening hours type",
+      "allDay": "Open all day",
+      "custom": "Set hours",
+      "allDayHint": "No fixed opening or closing time — visitors will see “Open all day”."
     },
     "photos": {
       "cover": "Main photo",
@@ -3365,7 +3368,8 @@
       "types": "Types",
       "pickGroupFirst": "Tick a service group on the left to choose types",
       "main": "Main",
-      "selected": "Selected"
+      "selected": "Selected",
+      "mainPick": "Main type"
     }
   },
   "placeCategories": {

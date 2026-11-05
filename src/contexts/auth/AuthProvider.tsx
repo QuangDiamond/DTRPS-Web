@@ -1,10 +1,11 @@
 import i18n from 'i18next';
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useToast } from '@/hooks';
 import * as authService from '@/services/authService';
 import { onUnauthorized } from '@/services/httpClient';
 import { clearAccessToken } from '@/services/tokenStore';
 import type { AdminProfile } from '@/types';
+import { adminSessionEnd } from '@/utils/sessionEnd';
 import { tabLock } from '@/utils/useIdleTimeout';
 import { AuthContext } from './authContext';
 
@@ -64,11 +65,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [admin, setAdmin] = useState<AdminProfile | null>(() =>
     idleLock.isLocked() ? null : readStoredAdmin(),
   );
+  const adminRef = useRef(admin);
+  adminRef.current = admin;
   const { showToast } = useToast();
 
   const login = useCallback(async (email: string, password: string, remember: boolean) => {
     const profile = await authService.login(email, password, remember);
     idleLock.unlock();
+    adminSessionEnd.clear();
     clearStoredAdmin();
     try {
       const storage = remember ? window.localStorage : window.sessionStorage;
@@ -83,6 +87,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     authService.logout();
     idleLock.unlock();
+    adminSessionEnd.clear();
     clearStoredAdmin();
     setAdmin(null);
   }, []);
@@ -90,12 +95,15 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   // Không xoá phiên lưu chung, không thu hồi token: chỉ tab này phải đăng nhập lại
   const lockIdle = useCallback(() => {
     idleLock.lock();
+    adminSessionEnd.set('idle');
     setAdmin(null);
   }, []);
 
   // API trả 401 (token hết hạn / bị thu hồi) → đăng xuất và báo cho người dùng
   useEffect(() => {
     onUnauthorized(() => {
+      // Chỉ khi đang đăng nhập (không phải lỗi 401 ở chính trang đăng nhập)
+      if (adminRef.current) adminSessionEnd.set('expired');
       clearAccessToken();
       clearStoredAdmin();
       setAdmin(null);

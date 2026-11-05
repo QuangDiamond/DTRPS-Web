@@ -69,12 +69,19 @@ function VerifyOtpForm({ email }: { email: string }) {
 
     setVerifying(true);
     setError(null);
-    const isValid = await verifyPasswordResetOtp(email, code);
+    let ticket: string | null;
+    try {
+      ticket = await verifyPasswordResetOtp(email, code);
+    } catch (verifyError) {
+      setVerifying(false);
+      setError(getErrorMessage(verifyError));
+      return;
+    }
     setVerifying(false);
 
-    if (isValid) {
+    if (ticket) {
       showToast(t('auth.verifyOtp.otpVerifiedSuccessfully'));
-      navigate(ROUTES.RESET_PASSWORD, { replace: true, state: { email, otpVerified: true } });
+      navigate(ROUTES.RESET_PASSWORD, { replace: true, state: { email, ticket } });
       return;
     }
 

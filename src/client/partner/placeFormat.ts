@@ -47,8 +47,11 @@ export const priceLabel = (price: Pick<PlacePrice, 'priceType' | 'description'>)
   PRICE_TYPES.find((type) => type.value === price.priceType)?.label ||
   price.priceType;
 
+/** 0 đ → "Miễn phí" */
 export const formatMoney = (amount: number, currency = 'VND'): string =>
-  `${new Intl.NumberFormat('vi-VN').format(amount)} ${currency === 'VND' ? '₫' : currency}`;
+  amount === 0
+    ? 'Miễn phí'
+    : `${new Intl.NumberFormat('vi-VN').format(amount)} ${currency === 'VND' ? '₫' : currency}`;
 
 export const hourText = (hour: OpeningHour): string =>
   hour.closed ? 'Đóng cửa' : `${hour.openTime} – ${hour.closeTime}`;

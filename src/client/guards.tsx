@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import ClientAuthProvider from '@/client/auth/ClientAuthProvider';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
@@ -13,6 +13,7 @@ import {
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import TravellerProvider from '@/client/traveller/TravellerProvider';
 import { Spinner } from '@/client/ui/Blocks';
+import { clientSessionEnd } from '@/utils/sessionEnd';
 import { useIdleTimeout } from '@/utils/useIdleTimeout';
 
 /** Không thao tác bao lâu (trong một tab) thì tab đó phải đăng nhập lại */
@@ -20,6 +21,12 @@ const IDLE_MINUTES = 30;
 
 /** Gốc của khu client: phiên đăng nhập riêng + tải trang theo từng chunk */
 export function ClientRoot() {
+  const { pathname } = useLocation();
+  // Lý do mất phiên chỉ sống tới lần chuyển trang kế tiếp: guard đã mang nó sang trang đăng nhập
+  // (qua state, còn khi F5); phiên hết hạn lúc đang xem trang công khai thì bỏ, không hiện nhầm sau này
+  useEffect(() => {
+    clientSessionEnd.clear();
+  }, [pathname]);
   return (
     <ClientAuthProvider>
       <Suspense fallback={<Spinner />}>
@@ -56,10 +63,7 @@ export function ClientAppLayout() {
     lockIdle();
     navigate(CLIENT_ROUTES.LOGIN, {
       replace: true,
-      state: {
-        from: `${location.pathname}${location.search}`,
-        notice: `Bạn đã không thao tác ${IDLE_MINUTES} phút, vui lòng đăng nhập lại`,
-      },
+      state: { from: `${location.pathname}${location.search}`, ended: 'idle' },
     });
   });
   if (!user) {
@@ -88,11 +92,13 @@ export function RequireClientLogin() {
   const { user } = useClientAuth();
   const location = useLocation();
   if (user) return <Outlet />;
+  // Vừa mất phiên ngay trên trang này → mang lý do sang trang đăng nhập (khách mở trang thì không có)
+  const ended = clientSessionEnd.get();
   return (
     <Navigate
       to={CLIENT_ROUTES.LOGIN}
       replace
-      state={{ from: `${location.pathname}${location.search}` }}
+      state={{ from: `${location.pathname}${location.search}`, ...(ended && { ended }) }}
     />
   );
 }

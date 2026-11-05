@@ -1,5 +1,6 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { userApi } from '@/client/api/userApi';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import { getSuggestedPlace } from './data/suggestedPlaces';
 import type { Trip } from './data/trips';
@@ -81,9 +82,14 @@ export default function TravellerProvider({
         });
         return;
       }
+      const adding = !state.favorites.includes(placeId);
       setState((current) => ({ ...current, favorites: toggle(current.favorites, placeId) }));
+      // Cập nhật giao diện ngay; lưu lên BE ở nền — lưu/bỏ lại lần nữa không lỗi (PUT/DELETE idempotent)
+      (adding ? userApi.addFavorite(placeId) : userApi.removeFavorite(placeId)).catch(() => {
+        // Đồng bộ thất bại: giữ nguyên trạng thái local, lần bấm sau sẽ thử đồng bộ lại
+      });
     },
-    [guest, navigate, location.pathname, location.search],
+    [guest, navigate, location.pathname, location.search, state.favorites],
   );
 
   const toggleSavedSuggestion = useCallback(

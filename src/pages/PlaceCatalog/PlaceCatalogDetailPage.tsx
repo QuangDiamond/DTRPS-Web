@@ -39,6 +39,8 @@ export default function PlaceCatalogDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
   const [week, setWeek] = useState<OpeningHour[] | null>(null);
+  // Đang sửa: true = mở cả ngày (gửi tuần rỗng), false = theo giờ từng ngày
+  const [allDay, setAllDay] = useState(false);
   const [hoursError, setHoursError] = useState('');
   const [savingHours, setSavingHours] = useState(false);
   const [savingStatus, setSavingStatus] = useState(false);
@@ -96,7 +98,7 @@ export default function PlaceCatalogDetailPage() {
   };
 
   const saveHours = async (days: OpeningHour[]) => {
-    const bad = invalidDay(days);
+    const bad = allDay ? undefined : invalidDay(days);
     if (bad) {
       setHoursError(t('placeEditor.errors.hours', { day: t(DAY_KEYS[bad.dayOfWeek]) }));
       return;
@@ -105,7 +107,7 @@ export default function PlaceCatalogDetailPage() {
     setHoursError('');
     try {
       await apply(
-        placeCatalogService.replaceHours(place.id, cleanWeek(days)),
+        placeCatalogService.replaceHours(place.id, allDay ? [] : cleanWeek(days)),
         t('placeEditor.hours.saved'),
       );
       setWeek(null);
@@ -165,7 +167,10 @@ export default function PlaceCatalogDetailPage() {
                   size="sm"
                   variant="secondary"
                   icon="edit_calendar"
-                  onClick={() => setWeek(fullWeek(content.openingHours))}
+                  onClick={() => {
+                    setWeek(fullWeek(content.openingHours));
+                    setAllDay(content.openingHours.length === 0);
+                  }}
                 >
                   {content.openingHours.length === 0
                     ? t('placeEditor.hours.declare')
@@ -175,9 +180,45 @@ export default function PlaceCatalogDetailPage() {
             }
           >
             {week ? (
-              <HoursEditor week={week} onChange={setWeek} disabled={savingHours} />
+              <>
+                <div
+                  role="radiogroup"
+                  aria-label={t('placeEditor.hours.mode')}
+                  className="mb-3 grid grid-cols-2 gap-1 rounded-xl bg-surface-container-low p-1"
+                >
+                  {[
+                    { value: true, icon: 'all_inclusive', label: t('placeEditor.hours.allDay') },
+                    { value: false, icon: 'schedule', label: t('placeEditor.hours.custom') },
+                  ].map((option) => (
+                    <button
+                      key={option.icon}
+                      type="button"
+                      role="radio"
+                      aria-checked={allDay === option.value}
+                      disabled={savingHours}
+                      onClick={() => setAllDay(option.value)}
+                      className={`flex h-10 items-center justify-center gap-1.5 rounded-lg font-label-md text-label-md font-bold transition-colors ${
+                        allDay === option.value
+                          ? 'bg-surface-container-lowest text-primary shadow-sm'
+                          : 'text-on-surface-variant hover:text-on-surface'
+                      }`}
+                    >
+                      <Icon name={option.icon} className="text-[18px]" />
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                {allDay ? (
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">
+                    {t('placeEditor.hours.allDayHint')}
+                  </p>
+                ) : (
+                  <HoursEditor week={week} onChange={setWeek} disabled={savingHours} />
+                )}
+              </>
             ) : content.openingHours.length === 0 ? (
-              <p className="font-body-sm text-body-sm text-outline italic">
+              <p className="flex items-center gap-2 font-body-md text-body-md font-semibold text-primary">
+                <Icon name="all_inclusive" className="text-[18px]" />
                 {t('placeReview.detail.noHours')}
               </p>
             ) : (

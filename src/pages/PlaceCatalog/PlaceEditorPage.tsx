@@ -80,6 +80,23 @@ function initialValues(detail: CatalogPlaceDetail | null): Values {
   };
 }
 
+/** Thông tin cơ bản gửi lên BE (không gồm ảnh / giờ / giá) */
+function basicsInput(values: Values): CatalogPlaceInput {
+  return {
+    name: values.name.trim(),
+    categoryCode: values.categoryCodes[0],
+    categoryCodes: values.categoryCodes,
+    provinceCode: values.provinceCode,
+    address: values.address.trim(),
+    description: values.description.trim() || null,
+    latitude: parseNumber(values.latitude) ?? 0,
+    longitude: parseNumber(values.longitude) ?? 0,
+    phone: values.phone.replace(/[\s.-]/g, '') || null,
+    website: values.website.trim() || null,
+    status: values.status.toUpperCase() as CatalogPlaceInput['status'],
+  };
+}
+
 /** Lỗi theo ô từ BE: { errors: { "openingHours[2].openTime": "…" } } → gom về ô gốc */
 function fieldErrors(error: unknown): Errors {
   if (!(error instanceof ApiError)) return {};
@@ -117,6 +134,7 @@ export default function PlaceEditorPage() {
   const [errors, setErrors] = useState<Errors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [savingLocation, setSavingLocation] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -234,17 +252,7 @@ export default function PlaceEditorPage() {
       return;
     }
     const input: CatalogPlaceInput = {
-      name: values.name.trim(),
-      categoryCode: values.categoryCodes[0],
-      categoryCodes: values.categoryCodes,
-      provinceCode: values.provinceCode,
-      address: values.address.trim(),
-      description: values.description.trim() || null,
-      latitude: parseNumber(values.latitude) ?? 0,
-      longitude: parseNumber(values.longitude) ?? 0,
-      phone: values.phone.replace(/[\s.-]/g, '') || null,
-      website: values.website.trim() || null,
-      status: values.status.toUpperCase() as CatalogPlaceInput['status'],
+      ...basicsInput(values),
       ...(creating && {
         openingHours: values.hoursEnabled ? cleanWeek(values.week) : [],
         prices: prices.map(({ priceType, amount, description }) => ({
@@ -266,6 +274,39 @@ export default function PlaceEditorPage() {
       setErrors(fieldErrors(error));
       setFormError(getErrorMessage(error));
       setSaving(false);
+    }
+  };
+
+  // Lưu riêng vị trí ngay cạnh bản đồ: lấy thông tin đã lưu + tọa độ mới (các ô khác đang sửa dở
+  // trong form không bị gửi theo)
+  const savedLatitude = detail?.content.latitude;
+  const savedLongitude = detail?.content.longitude;
+  const newLatitude = parseNumber(values.latitude);
+  const newLongitude = parseNumber(values.longitude);
+  const locationValid =
+    newLatitude !== null &&
+    newLongitude !== null &&
+    Math.abs(newLatitude) <= 90 &&
+    Math.abs(newLongitude) <= 180;
+  const locationChanged =
+    locationValid && (newLatitude !== savedLatitude || newLongitude !== savedLongitude);
+
+  const saveLocation = async () => {
+    if (!id || !detail || !locationChanged) return;
+    setSavingLocation(true);
+    try {
+      const saved = await placeCatalogService.update(id, {
+        ...basicsInput(initialValues(detail)),
+        latitude: newLatitude,
+        longitude: newLongitude,
+      });
+      setDetail(saved);
+      showToast(t('placeEditor.location.saved'));
+    } catch (error) {
+      setErrors((current) => ({ ...current, ...fieldErrors(error) }));
+      showToast(getErrorMessage(error), 'error');
+    } finally {
+      setSavingLocation(false);
     }
   };
 
@@ -353,6 +394,7 @@ export default function PlaceEditorPage() {
                 pickGroupFirst: t('placeEditor.types.pickGroupFirst'),
                 main: t('placeEditor.types.main'),
                 selected: t('placeEditor.types.selected'),
+                mainPick: t('placeEditor.types.mainPick'),
               }}
             />
           </EditorSection>
@@ -407,6 +449,25 @@ export default function PlaceEditorPage() {
                 setErrors((current) => ({ ...current, latitude: undefined, longitude: undefined }));
               }}
             />
+            {!creating && (
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface-container-low px-4 py-3">
+                <p className="font-body-sm text-body-sm text-on-surface-variant">
+                  {locationChanged
+                    ? t('placeEditor.location.changed')
+                    : t('placeEditor.location.unchanged')}
+                </p>
+                <Button
+                  type="button"
+                  size="sm"
+                  icon="where_to_vote"
+                  loading={savingLocation}
+                  disabled={!locationChanged || saving}
+                  onClick={() => void saveLocation()}
+                >
+                  {t('placeEditor.location.save')}
+                </Button>
+              </div>
+            )}
             <div className="grid gap-4 md:grid-cols-2">
               <FormField
                 label={t('placeEditor.fields.latitude')}

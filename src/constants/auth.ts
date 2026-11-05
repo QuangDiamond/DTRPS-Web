@@ -2,8 +2,8 @@ import i18n from 'i18next';
 import type { AuthBrandContent, PasswordRule } from '@/types';
 
 export const OTP_LENGTH = 6;
-/** Mã OTP hết hạn sau 5 phút */
-export const OTP_TTL_SECONDS = 300;
+/** Mã OTP hết hạn sau 10 phút (app.otp.ttl bên backend) */
+export const OTP_TTL_SECONDS = 600;
 export const MAX_OTP_ATTEMPTS = 5;
 
 export const PASSWORD_RULES: PasswordRule[] = [
@@ -37,84 +37,52 @@ export const PASSWORD_RULES: PasswordRule[] = [
   },
 ];
 
+/** Cột trái màn đăng nhập admin — chỉ mô tả những gì hệ thống thực sự làm */
 export const LOGIN_BRAND_CONTENT: AuthBrandContent = {
-  get statusText() {
-    return i18n.t('auth.constants.infrastructureV384');
-  },
   get title() {
-    return i18n.t('auth.constants.comprehensiveOperationsManagementSystem');
+    return i18n.t('auth.constants.loginTitle');
   },
   get description() {
-    return i18n.t('auth.constants.vietnamSCentralSmart');
+    return i18n.t('auth.constants.loginDescription');
   },
   features: [
     {
-      icon: 'security',
+      icon: 'fact_check',
       get title() {
-        return i18n.t('auth.constants.multiLayerSecurityZero');
+        return i18n.t('auth.constants.featureReviewTitle');
       },
       get description() {
-        return i18n.t('auth.constants.hardwareCertificateAuthenticationReal');
+        return i18n.t('auth.constants.featureReviewText');
       },
     },
     {
-      icon: 'insights',
+      icon: 'location_on',
       get title() {
-        return i18n.t('auth.constants.realTimeDataManagement');
+        return i18n.t('auth.constants.featurePlacesTitle');
       },
       get description() {
-        return i18n.t('auth.constants.syncsInternationalVisitorFlows');
+        return i18n.t('auth.constants.featurePlacesText');
       },
     },
     {
-      icon: 'verified',
+      icon: 'group',
       get title() {
-        return i18n.t('auth.constants.automatedPartnerListingReview');
+        return i18n.t('auth.constants.featureUsersTitle');
       },
       get description() {
-        return i18n.t('auth.constants.aiAssistedReviewHotels');
+        return i18n.t('auth.constants.featureUsersText');
       },
     },
   ],
 };
 
+/** Cột trái các màn khôi phục mật khẩu */
 export const RECOVERY_BRAND_CONTENT: AuthBrandContent = {
-  get statusText() {
-    return i18n.t('auth.constants.infrastructureV384');
-  },
   get title() {
-    return i18n.t('auth.constants.adminAccountSecurityRecovery');
+    return i18n.t('auth.constants.recoveryTitle');
   },
   get description() {
-    return i18n.t('auth.constants.multiLayerAuthenticationSecure');
+    return i18n.t('auth.constants.recoveryDescription');
   },
-  features: [
-    {
-      icon: 'pin',
-      get title() {
-        return i18n.t('auth.constants.highlySecure6Digit');
-      },
-      get description() {
-        return i18n.t('auth.constants.shortValidityAutomaticallyExpires');
-      },
-    },
-    {
-      icon: 'lock_clock',
-      get title() {
-        return i18n.t('auth.constants.temporaryLockAfterMore');
-      },
-      get description() {
-        return i18n.t('auth.constants.protectsAdminAccountsAgainst');
-      },
-    },
-    {
-      icon: 'shield_person',
-      get title() {
-        return i18n.t('auth.constants.twoFactorAuthentication2fa');
-      },
-      get description() {
-        return i18n.t('auth.constants.ensuresOnlyRightfulAccount');
-      },
-    },
-  ],
+  features: [],
 };

@@ -7,6 +7,8 @@ export interface TypePickerLabels {
   pickGroupFirst: string;
   main: string;
   selected: string;
+  /** Hàng chọn loại hình đại diện (khi showMain) */
+  mainPick: string;
   /** Dòng gợi ý dưới nhóm chưa tích loại hình nào (chế độ allWhenEmpty) */
   wholeGroupHint: string;
   /** Trong dòng "Đã chọn": cả nhóm, ví dụ "Tất cả Ẩm thực" */
@@ -19,6 +21,7 @@ const DEFAULT_LABELS: TypePickerLabels = {
   pickGroupFirst: 'Tích nhóm dịch vụ bên trái để chọn loại hình',
   main: 'Đại diện',
   selected: 'Đã chọn',
+  mainPick: 'Loại hình đại diện',
   wholeGroupHint: 'Không tích loại hình nào = thích tất cả loại hình của nhóm này',
   wholeGroup: (group) => `Tất cả ${group}`,
 };
@@ -26,7 +29,8 @@ const DEFAULT_LABELS: TypePickerLabels = {
 /**
  * Chọn dịch vụ & loại hình bằng tích chọn, không giới hạn số lượng.
  * Cột trái: các nhóm dịch vụ. Cột phải: loại hình của những nhóm đã tích.
- * Bỏ tích nhóm thì bỏ luôn các loại hình của nhóm đó. Loại hình tích đầu tiên là loại hình đại diện.
+ * Bỏ tích nhóm thì bỏ luôn các loại hình của nhóm đó. Loại hình đại diện chọn ở hàng dưới cùng
+ * (mặc định là loại hình tích đầu tiên); gửi đi luôn đứng đầu danh sách.
  */
 export default function TypePicker({
   groups,
@@ -45,7 +49,7 @@ export default function TypePicker({
   onChange: (groupCodes: string[], typeCodes: string[]) => void;
   error?: string;
   labels?: Partial<TypePickerLabels>;
-  /** Hiện nhãn "Đại diện" trên loại hình tích đầu tiên (form địa điểm) */
+  /** Có loại hình đại diện (form địa điểm): nhãn "Đại diện" + hàng chọn đại diện */
   showMain?: boolean;
   /** Nhóm đã tích mà chưa chọn loại hình nào = cả nhóm (sở thích của du khách) */
   allWhenEmpty?: boolean;
@@ -71,6 +75,10 @@ export default function TypePicker({
       onChange([...groupCodes, group.code], typeCodes);
     }
   };
+
+  // Đưa loại hình được chọn làm đại diện lên đầu, giữ thứ tự các loại hình còn lại
+  const setMain = (code: string) =>
+    onChange(groupCodes, [code, ...typeCodes.filter((c) => c !== code)]);
 
   const toggleType = (code: string) =>
     onChange(
@@ -181,11 +189,45 @@ export default function TypePicker({
           )}
         </div>
       </div>
+      {showMain && typeCodes.length > 0 && (
+        <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50/60 p-3">
+          <p className="mb-2 flex items-center gap-1.5 text-[12px] font-bold tracking-wide text-amber-800 uppercase">
+            <Icon name="star" filled className="text-[15px]" />
+            {text.mainPick}
+          </p>
+          <div role="radiogroup" aria-label={text.mainPick} className="flex flex-wrap gap-2">
+            {typeCodes.map((code, index) => {
+              const active = index === 0;
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => setMain(code)}
+                  className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12px] font-semibold whitespace-nowrap transition-colors ${
+                    active
+                      ? 'border-amber-500 bg-amber-400 text-amber-950'
+                      : 'border-slate-300 bg-white text-slate-600 hover:border-amber-400 hover:text-amber-800'
+                  }`}
+                >
+                  <Icon
+                    name={active ? 'radio_button_checked' : 'radio_button_unchecked'}
+                    className="text-[16px]"
+                  />
+                  {typeNames.get(code) ?? code}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
       {error ? (
         <p className="mt-1.5 flex items-center gap-1 text-[12px] text-red-600">
           <Icon name="error" className="text-[14px]" /> {error}
         </p>
       ) : (
+        !showMain &&
         summary.length > 0 && (
           <p className="mt-1.5 text-[12px] text-slate-500">
             {text.selected}: {summary.join(' · ')}

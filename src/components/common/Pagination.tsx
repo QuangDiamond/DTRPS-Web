@@ -12,6 +12,8 @@ interface PaginationProps {
   pageSizeOptions: readonly number[];
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
+  /** Ẩn dòng "Hiển thị X-Y trong tổng số..." + chọn số dòng/trang, chỉ còn nút chuyển trang */
+  showSummary?: boolean;
 }
 
 export default function Pagination({
@@ -22,6 +24,7 @@ export default function Pagination({
   pageSizeOptions,
   onPageChange,
   onPageSizeChange,
+  showSummary = true,
 }: PaginationProps) {
   const { t } = useTranslation();
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
@@ -29,34 +32,40 @@ export default function Pagination({
   const end = Math.min(page * pageSize, totalItems);
 
   return (
-    <div className="flex flex-col items-center justify-between gap-4 border-t border-surface-container bg-surface-container-lowest px-6 py-4 sm:flex-row">
-      <div className="flex items-center gap-2">
-        <span className="font-body-sm text-body-sm text-on-surface-variant">
-          <Trans
-            i18nKey="components.pagination.showing"
-            values={{ start, end, totalItems: formatNumber(totalItems), itemLabel }}
-            components={{
-              c0: <span className="font-semibold text-on-surface" />,
-              c1: <span className="font-semibold text-on-surface" />,
-            }}
-          />
-        </span>
-        <span className="text-outline-variant">•</span>
-        <div className="flex items-center gap-1 text-body-sm text-on-surface-variant">
-          <span>{t('components.pagination.rowsPerPage')}</span>
-          <select
-            value={pageSize}
-            onChange={(event) => onPageSizeChange(Number(event.target.value))}
-            className="cursor-pointer rounded-lg bg-surface-container-low px-2 py-1 font-label-sm text-label-sm text-on-surface outline-none"
-          >
-            {pageSizeOptions.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
+    <div
+      className={`flex flex-col items-center gap-4 border-t border-surface-container bg-surface-container-lowest px-6 py-4 sm:flex-row ${
+        showSummary ? 'justify-between' : 'justify-center'
+      }`}
+    >
+      {showSummary && (
+        <div className="flex items-center gap-2">
+          <span className="font-body-sm text-body-sm text-on-surface-variant">
+            <Trans
+              i18nKey="components.pagination.showing"
+              values={{ start, end, totalItems: formatNumber(totalItems), itemLabel }}
+              components={{
+                c0: <span className="font-semibold text-on-surface" />,
+                c1: <span className="font-semibold text-on-surface" />,
+              }}
+            />
+          </span>
+          <span className="text-outline-variant">•</span>
+          <div className="flex items-center gap-1 text-body-sm text-on-surface-variant">
+            <span>{t('components.pagination.rowsPerPage')}</span>
+            <select
+              value={pageSize}
+              onChange={(event) => onPageSizeChange(Number(event.target.value))}
+              className="cursor-pointer rounded-lg bg-surface-container-low px-2 py-1 font-label-sm text-label-sm text-on-surface outline-none"
+            >
+              {pageSizeOptions.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex items-center gap-1">
         <button

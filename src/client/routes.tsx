@@ -92,6 +92,7 @@ export const clientRoutes: RouteObject[] = [
             element: <RequireClientLogin />,
             children: [
               { path: CLIENT_ROUTES.FAVORITES, element: <FavoritesPage /> },
+              { path: CLIENT_ROUTES.FAVORITE_DETAIL, element: <PlaceDetailsPage /> },
               { path: CLIENT_ROUTES.PREFERENCES, element: <TravelPreferencesPage /> },
               { path: CLIENT_ROUTES.PROFILE, element: <ProfilePage /> },
               { path: CLIENT_ROUTES.PROFILE_EDIT, element: <EditProfilePage /> },

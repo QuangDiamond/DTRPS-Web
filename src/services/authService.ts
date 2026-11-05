@@ -2,7 +2,7 @@ import i18n from 'i18next';
 /** Service xác thực admin — gọi API thật của backend */
 import type { AdminProfile } from '@/types';
 import { ENDPOINTS } from './endpoints';
-import { apiRequest } from './httpClient';
+import { ApiError, apiRequest } from './httpClient';
 import { clearAccessToken, setTokens } from './tokenStore';
 
 interface LoginResponse {
@@ -18,22 +18,22 @@ export async function login(
   remember = true,
 ): Promise<AdminProfile> {
   const result = await apiRequest<LoginResponse>(ENDPOINTS.auth.login, {
+    method: 'POST',
+    body: { email: email.trim().toLowerCase(), password },
+    // Sai mật khẩu cũng trả 401 — không phải "phiên hết hạn"
+    silentUnauthorized: true,
+  });
+  if (!result.admin) {
+    // Tài khoản du khách / đối tác không được vào trang quản trị
+    apiRequest<void>(ENDPOINTS.auth.revoke, {
       method: 'POST',
-      body: { email: email.trim().toLowerCase(), password },
-      // Sai mật khẩu cũng trả 401 — không phải "phiên hết hạn"
+      body: { refreshToken: result.refreshToken },
       silentUnauthorized: true,
-    });
-    if (!result.admin) {
-      // Tài khoản du khách / đối tác không được vào trang quản trị
-      apiRequest<void>(ENDPOINTS.auth.revoke, {
-        method: 'POST',
-        body: { refreshToken: result.refreshToken },
-        silentUnauthorized: true,
-      }).catch(() => undefined);
-      throw new Error(i18n.t('auth.errors.notAdministrator'));
-    }
-    setTokens(result.accessToken, result.refreshToken, remember);
-    return result.admin;
+    }).catch(() => undefined);
+    throw new Error(i18n.t('auth.errors.notAdministrator'));
+  }
+  setTokens(result.accessToken, result.refreshToken, remember);
+  return result.admin;
 }
 
 /** Hủy phiên trên server (nếu có) và xóa token ở trình duyệt */
@@ -50,18 +50,28 @@ export async function sendPasswordResetOtp(email: string): Promise<void> {
   await apiRequest<void>(ENDPOINTS.auth.sendResetOtp, { method: 'POST', body: { email } });
 }
 
-export async function verifyPasswordResetOtp(email: string, code: string): Promise<boolean> {
-  const result = await apiRequest<{ valid: boolean }>(ENDPOINTS.auth.verifyResetOtp, {
-    method: 'POST',
-    body: { email, code },
-  });
-  return result.valid;
+/**
+ * Kiểm tra mã OTP. Đúng → vé dùng một lần cho bước đặt mật khẩu mới; sai / hết hạn → null
+ * (backend đếm số lần sai, quá 5 lần phải gửi mã mới).
+ */
+export async function verifyPasswordResetOtp(email: string, code: string): Promise<string | null> {
+  try {
+    const result = await apiRequest<{ ticket: string }>(ENDPOINTS.auth.verifyResetOtp, {
+      method: 'POST',
+      body: { email, code },
+    });
+    return result.ticket;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 400) return null;
+    throw error;
+  }
 }
 
-export async function resetPassword(email: string, newPassword: string): Promise<void> {
+/** Đặt mật khẩu mới bằng vé từ bước xác thực OTP (mọi phiên đăng nhập cũ bị đăng xuất) */
+export async function resetPassword(ticket: string, newPassword: string): Promise<void> {
   await apiRequest<void>(ENDPOINTS.auth.resetPassword, {
     method: 'POST',
-    body: { email, newPassword },
+    body: { ticket, newPassword },
   });
 }
 

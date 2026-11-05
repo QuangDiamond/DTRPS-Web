@@ -12,6 +12,8 @@ export const CLIENT_ROUTES = {
 
   PLACE_DETAIL: '/explore/:placeId',
   FAVORITES: '/favorites',
+  /** Chi tiết một địa điểm mở từ Yêu thích — để tab "Yêu thích" vẫn sáng, không nhảy sang Khám phá */
+  FAVORITE_DETAIL: '/favorites/:placeId',
   PREFERENCES: '/preferences',
   PROFILE: '/profile',
   PROFILE_EDIT: '/profile/edit',
@@ -43,6 +45,7 @@ export const CLIENT_ROUTES = {
 } as const;
 
 export const placePath = (placeId: string): string => `/explore/${placeId}`;
+export const favoritePlacePath = (placeId: string): string => `/favorites/${placeId}`;
 export const suggestionPath = (placeId: string): string => `/trips/suggestions/${placeId}`;
 export const editPlanPath = (planId: number): string => `/trips/plan/${planId}/edit`;
 export const addLocationPath = (tripId: string): string => `/trips/${tripId}/add-location`;

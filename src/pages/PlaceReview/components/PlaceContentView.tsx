@@ -96,7 +96,10 @@ export default function PlaceContentView({
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <Section icon="schedule" title={t('placeReview.detail.hours')}>
               {place.openingHours.length === 0 ? (
-                <Empty text={t('placeReview.detail.noHours')} />
+                <p className="flex items-center gap-2 font-body-md text-body-md font-semibold text-primary">
+                  <Icon name="all_inclusive" className="text-[18px]" />
+                  {t('placeReview.detail.noHours')}
+                </p>
               ) : (
                 <dl>
                   {place.openingHours.map((hour) => (
@@ -118,15 +121,25 @@ export default function PlaceContentView({
               {place.prices.length === 0 ? (
                 <Empty text={t('placeReview.detail.noPrices')} />
               ) : (
-                <dl>
-                  {place.prices.map((price, index) => (
-                    <Row
-                      key={`${price.priceType}-${index}`}
-                      label={price.description ?? priceTypeLabel(price.priceType)}
-                      value={formatAmount(price)}
-                    />
-                  ))}
-                </dl>
+                <>
+                  <dl>
+                    {place.prices.map((price, index) => (
+                      <Row
+                        key={`${price.priceType}-${index}`}
+                        label={price.description ?? priceTypeLabel(price.priceType)}
+                        value={
+                          <span className={price.amount === 0 ? 'text-primary' : undefined}>
+                            {formatAmount(price, t('placeReview.detail.free'))}
+                          </span>
+                        }
+                      />
+                    ))}
+                  </dl>
+                  <p className="mt-2 flex items-center gap-1.5 font-body-sm text-body-sm text-outline">
+                    <Icon name="info" className="text-[15px]" />
+                    {t('placeReview.detail.priceNote')}
+                  </p>
+                </>
               )}
             </Section>
           </div>

@@ -21,13 +21,11 @@ export interface ProfileInput {
   avatarUrl: string | null;
 }
 
-export type BudgetLevel = 'SAVING' | 'MEDIUM' | 'LUXURY';
-export type TravelStyle = 'RELAX' | 'ADVENTURE' | 'CULTURE' | 'FAMILY' | 'SOLO' | 'LUXURY';
-
-/** Sở thích du lịch (GET/PUT /api/users/me/preferences) — các list là mã tham chiếu của BE */
+/**
+ * Sở thích du lịch (GET/PUT /api/users/me/preferences) — các list là mã tham chiếu của BE.
+ * {@code interests} là mã loại hình địa điểm (place_categories), ví dụ "restaurant", "heritage".
+ */
 export interface TravelPreferences {
-  budgetLevel: BudgetLevel | null;
-  travelStyle: TravelStyle | null;
   notes: string | null;
   interests: string[];
   specialNeeds: string[];

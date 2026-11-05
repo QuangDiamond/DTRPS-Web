@@ -12,7 +12,6 @@ import {
   type CompanionId,
   PACE_OPTIONS,
   type PaceId,
-  preferencesToTypes,
   typesToInterests,
 } from '@/client/traveller/data/planTrip';
 import { useTraveller } from '@/client/traveller/travellerContext';
@@ -47,29 +46,13 @@ function initialCategories(
 ): string[] {
   if (!preferences) return [];
 
+  // Sở thích (UC-006) đã lưu thẳng mã loại hình địa điểm — dùng trực tiếp, không cần suy ra.
   const validTypes = new Set(
     groups.flatMap((group) => group.subtypes.map((subtype) => subtype.code)),
   );
-  const chosen = preferencesToTypes(
-    preferences.interests,
-    preferences.travelStyle,
-    validTypes,
-  );
-  if (!chosen) return [];
-
-  // Sở thích cũ chỉ ghi nhóm: chọn toàn bộ loại hình con của nhóm.
-  // Không bao giờ gửi group.code lên Backend thay vì subtype.code.
   return [
     ...new Set(
-      groups.flatMap((group) => {
-        if (!chosen.groupCodes.includes(group.code)) return [];
-        const matching = group.subtypes.filter((subtype) =>
-          chosen.typeCodes.includes(subtype.code),
-        );
-        return (matching.length ? matching : group.subtypes).map(
-          (subtype) => subtype.code,
-        );
-      }),
+      preferences.interests.filter((code) => validTypes.has(code)),
     ),
   ];
 }
@@ -137,7 +120,6 @@ export default function PlanTripPage() {
   const navigate = useNavigate();
   const { startPlan } = useTraveller();
   const categoryTouched = useRef(false);
-  const paceTouched = useRef(false);
 
   const [provinces, setProvinces] = useState<ReferenceItem[]>([]);
   const [provincesFailed, setProvincesFailed] = useState(false);
@@ -195,15 +177,6 @@ export default function PlanTripPage() {
         const preferences = preferencesResult.value;
         if (!categoryTouched.current) {
           setSelectedCategoryCodes(initialCategories(groups, preferences));
-        }
-        if (!paceTouched.current) {
-          const savedPace: Record<string, PaceId> = {
-            RELAX: 'relaxed',
-            LUXURY: 'relaxed',
-            FAMILY: 'relaxed',
-            ADVENTURE: 'packed',
-          };
-          setPace(savedPace[preferences.travelStyle ?? ''] ?? 'balanced');
         }
       },
     );
@@ -752,10 +725,7 @@ export default function PlanTripPage() {
                   type="button"
                   role="radio"
                   aria-checked={selected}
-                  onClick={() => {
-                    paceTouched.current = true;
-                    setPace(item.id);
-                  }}
+                  onClick={() => setPace(item.id)}
                   className={`flex items-start rounded-2xl p-3 text-left ${
                     selected
                       ? 'border-[1.5px] border-[#087A78] bg-[#E2FAF5]'

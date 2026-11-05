@@ -7,10 +7,8 @@ import type { TravelPreferences } from '@/client/api/types';
 import { userApi } from '@/client/api/userApi';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import {
-  BUDGET_OPTIONS,
   type IconOption,
   type ImageOption,
-  STYLE_OPTIONS,
   toInterestOptions,
   toSpecialNeedOptions,
 } from '@/client/traveller/data/preferenceOptions';
@@ -23,14 +21,10 @@ const STEPS = [
     title: 'Bạn thích trải nghiệm gì?',
     subtitle: 'Chọn những hoạt động bạn yêu thích nhất (Chọn nhiều mục)',
   },
-  { title: 'Mức ngân sách', subtitle: 'Bạn thường chi bao nhiêu cho một chuyến đi?' },
-  { title: 'Phong cách du lịch', subtitle: 'Chọn phong cách phù hợp với bạn' },
   { title: 'Yêu cầu đặc biệt', subtitle: 'Bạn có yêu cầu đặc biệt nào không? (Chọn nếu có)' },
 ];
 
 const EMPTY: TravelPreferences = {
-  budgetLevel: null,
-  travelStyle: null,
   notes: null,
   interests: [],
   specialNeeds: [],
@@ -46,7 +40,7 @@ function CheckBadge() {
   );
 }
 
-/** Thẻ ảnh (bước 1 và 3) */
+/** Thẻ ảnh (bước 1) */
 function ImageGrid({
   options,
   isSelected,
@@ -88,7 +82,7 @@ function ImageGrid({
   );
 }
 
-/** Danh sách có icon (bước 2, 4) */
+/** Danh sách có icon (bước 2) */
 function IconList({
   options,
   isSelected,
@@ -150,7 +144,7 @@ function IconList({
   );
 }
 
-/** Sở thích du lịch 4 bước — theo TravelPreferencesScreen của mobile, lưu qua API */
+/** Sở thích du lịch 2 bước — theo TravelPreferencesScreen của mobile, lưu qua API */
 export default function TravelPreferencesPage() {
   const navigate = useNavigate();
   // Vừa tạo tài khoản → lời chào kèm gợi ý chọn sở thích
@@ -209,12 +203,7 @@ export default function TravelPreferencesPage() {
     );
 
   // Bước cuối (yêu cầu đặc biệt) không bắt buộc
-  const canContinue = [
-    preferences.interests.length > 0,
-    preferences.budgetLevel !== null,
-    preferences.travelStyle !== null,
-    true,
-  ][step];
+  const canContinue = [preferences.interests.length > 0, true][step];
 
   const finish = async () => {
     setSaving(true);
@@ -257,33 +246,6 @@ export default function TravelPreferencesPage() {
             options={interestOptions}
             isSelected={(id) => preferences.interests.includes(id)}
             onToggle={(id) => toggleIn('interests', id)}
-          />
-        );
-      case 1:
-        return (
-          <IconList
-            variant="single"
-            options={BUDGET_OPTIONS}
-            isSelected={(id) => preferences.budgetLevel === id}
-            onToggle={(id) =>
-              setPreferences({
-                ...preferences,
-                budgetLevel: id as TravelPreferences['budgetLevel'],
-              })
-            }
-          />
-        );
-      case 2:
-        return (
-          <ImageGrid
-            options={STYLE_OPTIONS}
-            isSelected={(id) => preferences.travelStyle === id}
-            onToggle={(id) =>
-              setPreferences({
-                ...preferences,
-                travelStyle: id as TravelPreferences['travelStyle'],
-              })
-            }
           />
         );
       default:

@@ -124,33 +124,3 @@ export function typesToInterests(
   return [...tags];
 }
 
-/** Sở thích đã lưu trong hồ sơ (UC-006) → nhóm + loại hình để điền sẵn */
-const PREFERENCE_TYPES: Record<string, { group: string; types: string[] }[]> = {
-  nature: [{ group: 'attraction', types: ['scenicSpot', 'park'] }],
-  culture: [{ group: 'attraction', types: ['heritage'] }],
-  beach: [{ group: 'attraction', types: ['beach'] }],
-  food: [{ group: 'fnb', types: [] }],
-  shopping: [{ group: 'shopping', types: [] }],
-  nightlife: [
-    { group: 'shopping', types: ['nightMarket'] },
-    { group: 'fnb', types: ['barPub'] },
-  ],
-};
-
-export function preferencesToTypes(
-  interests: string[],
-  travelStyle: string | null | undefined,
-  known: Set<string>,
-): { groupCodes: string[]; typeCodes: string[] } | null {
-  const groupCodes = new Set<string>();
-  const typeCodes = new Set<string>();
-  const add = (group: string, types: string[]) => {
-    groupCodes.add(group);
-    types.filter((type) => known.has(type)).forEach((type) => typeCodes.add(type));
-  };
-  for (const interest of interests)
-    for (const item of PREFERENCE_TYPES[interest] ?? []) add(item.group, item.types);
-  if (travelStyle === 'RELAX' || travelStyle === 'LUXURY') add('lodging', ['resort']);
-  if (travelStyle === 'ADVENTURE') add('attraction', ['amusementPark', 'checkinSpot']);
-  return groupCodes.size > 0 ? { groupCodes: [...groupCodes], typeCodes: [...typeCodes] } : null;
-}

@@ -78,7 +78,17 @@ function AccountMenu() {
     return () => document.removeEventListener('mousedown', close);
   }, [open]);
 
-  if (!user) return null;
+  // Khách chưa đăng nhập: nút đăng nhập thay cho ảnh đại diện
+  if (!user)
+    return (
+      <Link
+        to={CLIENT_ROUTES.LOGIN}
+        className="flex h-9 items-center gap-1.5 rounded-full bg-white px-4 text-[13px] font-extrabold text-[#0B3F3B] shadow-sm hover:bg-[#E0F5EF]"
+      >
+        <Icon name="login" className="text-[18px]" />
+        Đăng nhập
+      </Link>
+    );
   const itemClass =
     'flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-[13px] text-client-ink hover:bg-client-soft';
 

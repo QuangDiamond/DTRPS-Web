@@ -1,4 +1,6 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { CLIENT_ROUTES } from '@/client/routePaths';
 import { getSuggestedPlace } from './data/suggestedPlaces';
 import type { Trip } from './data/trips';
 import { type PlanDraft, TravellerContext } from './travellerContext';
@@ -45,27 +47,43 @@ function readState(userId: number): StoredState {
 const toggle = (list: string[], id: string) =>
   list.includes(id) ? list.filter((item) => item !== id) : [...list, id];
 
+/** guest: khách chưa đăng nhập — xem được, nhưng bấm Yêu thích thì chuyển sang đăng nhập */
 export default function TravellerProvider({
   userId,
+  guest = false,
   children,
 }: {
   userId: number;
+  guest?: boolean;
   children: ReactNode;
 }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [state, setState] = useState<StoredState>(() => readState(userId));
 
   useEffect(() => {
+    if (guest) return;
     try {
       window.localStorage.setItem(storageKey(userId), JSON.stringify(state));
     } catch {
       // Storage bị chặn → dữ liệu chỉ còn trong phiên hiện tại
     }
-  }, [state, userId]);
+  }, [state, userId, guest]);
 
   const toggleFavorite = useCallback(
-    (placeId: string) =>
-      setState((current) => ({ ...current, favorites: toggle(current.favorites, placeId) })),
-    [],
+    (placeId: string) => {
+      if (guest) {
+        navigate(CLIENT_ROUTES.LOGIN, {
+          state: {
+            from: `${location.pathname}${location.search}`,
+            notice: 'Đăng nhập để lưu địa điểm yêu thích',
+          },
+        });
+        return;
+      }
+      setState((current) => ({ ...current, favorites: toggle(current.favorites, placeId) }));
+    },
+    [guest, navigate, location.pathname, location.search],
   );
 
   const toggleSavedSuggestion = useCallback(

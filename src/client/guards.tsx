@@ -4,7 +4,11 @@ import ClientAuthProvider from '@/client/auth/ClientAuthProvider';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import ClientShell from '@/client/layouts/ClientShell';
 import PartnerProfileProvider from '@/client/partner/PartnerProfileProvider';
-import { usePartnerProfile } from '@/client/partner/partnerProfileContext';
+import {
+  PartnerProfileContext,
+  type PartnerProfileValue,
+  usePartnerProfile,
+} from '@/client/partner/partnerProfileContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import TravellerProvider from '@/client/traveller/TravellerProvider';
 import { Spinner } from '@/client/ui/Blocks';
@@ -26,21 +30,27 @@ export function GuestOnlyClient() {
   return user ? <Navigate to={CLIENT_ROUTES.HOME} replace /> : <Outlet />;
 }
 
-/** Các trang cần đăng nhập — bọc khung chung (header, thanh chuyển vai trò, menu) */
+/** Khách chưa đăng nhập: không có hồ sơ đối tác (không gọi API) */
+const GUEST_PARTNER: PartnerProfileValue = {
+  profile: null,
+  error: null,
+  reload: () => undefined,
+  setProfile: () => undefined,
+};
+
+/**
+ * Khung chung (header, thanh chuyển vai trò, menu) cho cả khách và người đã đăng nhập.
+ * Khách xem được trang chủ, khám phá, chi tiết địa điểm; các trang khác bọc RequireClientLogin.
+ */
 export function ClientAppLayout() {
   const { user } = useClientAuth();
-  const location = useLocation();
   if (!user) {
-    // Mở thẳng trang chủ khi chưa đăng nhập → màn chào mừng (như app mobile)
-    if (location.pathname === CLIENT_ROUTES.HOME) {
-      return <Navigate to={CLIENT_ROUTES.WELCOME} replace />;
-    }
     return (
-      <Navigate
-        to={CLIENT_ROUTES.LOGIN}
-        replace
-        state={{ from: `${location.pathname}${location.search}` }}
-      />
+      <PartnerProfileContext.Provider value={GUEST_PARTNER}>
+        <TravellerProvider userId={0} guest>
+          <ClientShell />
+        </TravellerProvider>
+      </PartnerProfileContext.Provider>
     );
   }
   // key: đổi tài khoản thì tải lại hồ sơ đối tác + dữ liệu du khách
@@ -50,6 +60,20 @@ export function ClientAppLayout() {
         <ClientShell />
       </TravellerProvider>
     </PartnerProfileProvider>
+  );
+}
+
+/** Trang cần đăng nhập (lịch trình, yêu thích, hồ sơ, đối tác) — đăng nhập xong quay lại đúng trang */
+export function RequireClientLogin() {
+  const { user } = useClientAuth();
+  const location = useLocation();
+  if (user) return <Outlet />;
+  return (
+    <Navigate
+      to={CLIENT_ROUTES.LOGIN}
+      replace
+      state={{ from: `${location.pathname}${location.search}` }}
+    />
   );
 }
 

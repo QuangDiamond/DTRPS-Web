@@ -1,6 +1,12 @@
 import { lazy } from 'react';
 import { Navigate, type RouteObject } from 'react-router-dom';
-import { ClientAppLayout, ClientRoot, GuestOnlyClient, RequireActivePartner } from './guards';
+import {
+  ClientAppLayout,
+  ClientRoot,
+  GuestOnlyClient,
+  RequireActivePartner,
+  RequireClientLogin,
+} from './guards';
 import { CLIENT_ROUTES } from './routePaths';
 
 // Mỗi trang một chunk riêng — chỉ tải khi mở
@@ -10,7 +16,6 @@ const RegisterPage = lazy(() => import('@/client/pages/auth/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/client/pages/auth/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('@/client/pages/auth/ResetPasswordPage'));
 const ComingSoonPage = lazy(() => import('@/client/pages/ComingSoonPage'));
-
 
 // Du khách
 const HomePage = lazy(() => import('@/client/traveller/pages/HomePage'));
@@ -77,47 +82,52 @@ export const clientRoutes: RouteObject[] = [
       {
         element: <ClientAppLayout />,
         children: [
-          // Du khách
+          // Khách chưa đăng nhập cũng xem được: trang chủ, danh sách + bộ lọc, chi tiết địa điểm
           { path: CLIENT_ROUTES.HOME, element: <HomePage /> },
           { path: CLIENT_ROUTES.EXPLORE, element: <ExplorePage /> },
-
           { path: CLIENT_ROUTES.PLACE_DETAIL, element: <PlaceDetailsPage /> },
-          { path: CLIENT_ROUTES.FAVORITES, element: <FavoritesPage /> },
-          { path: CLIENT_ROUTES.PREFERENCES, element: <TravelPreferencesPage /> },
-          { path: CLIENT_ROUTES.PROFILE, element: <ProfilePage /> },
-          { path: CLIENT_ROUTES.PROFILE_EDIT, element: <EditProfilePage /> },
-          { path: CLIENT_ROUTES.PROFILE_PASSWORD, element: <ChangePasswordPage /> },
-          { path: CLIENT_ROUTES.PROFILE_SETTINGS, element: <SettingsPage /> },
-          { path: CLIENT_ROUTES.TRIPS, element: <MyTripsPage /> },
-          { path: CLIENT_ROUTES.TRIP_PLAN, element: <PlanTripPage /> },
-          { path: CLIENT_ROUTES.TRIP_PLAN_SELECTED, element: <SelectedPlacesPage /> },
-          { path: CLIENT_ROUTES.TRIP_GENERATING, element: <GeneratingTripPage /> },
-          { path: CLIENT_ROUTES.TRIP_SUGGESTIONS, element: <SuggestedPlacesPage /> },
-          { path: CLIENT_ROUTES.TRIP_SUGGESTION_DETAIL, element: <SuggestionDetailPage /> },
-          { path: CLIENT_ROUTES.TRIP_ADD_LOCATION, element: <AddLocationPage /> },
-          { path: CLIENT_ROUTES.ITINERARY, element: <ItineraryOverviewPage /> },
-          { path: CLIENT_ROUTES.ITINERARY_DAY, element: <ItineraryDetailPage /> },
-          { path: CLIENT_ROUTES.ITINERARY_LIVE, element: <TripLiveMapPage /> },
-
-          // Đối tác
-          { path: CLIENT_ROUTES.PARTNER, element: <PartnerHomePage /> },
-          { path: CLIENT_ROUTES.PARTNER_APPLY, element: <PartnerApplicationPage /> },
           {
-            element: <RequireActivePartner />,
+            // Cần đăng nhập: yêu thích, hồ sơ, lịch trình, đối tác
+            element: <RequireClientLogin />,
             children: [
-              { path: CLIENT_ROUTES.PARTNER_PROFILE, element: <PartnerBusinessProfilePage /> },
-              { path: CLIENT_ROUTES.PARTNER_LOCATIONS, element: <PartnerLocationsPage /> },
-              { path: CLIENT_ROUTES.PARTNER_LOCATION_NEW, element: <PartnerNewLocationPage /> },
-              { path: CLIENT_ROUTES.PARTNER_LOCATION_DETAIL, element: <PartnerLocationPage /> },
+              { path: CLIENT_ROUTES.FAVORITES, element: <FavoritesPage /> },
+              { path: CLIENT_ROUTES.PREFERENCES, element: <TravelPreferencesPage /> },
+              { path: CLIENT_ROUTES.PROFILE, element: <ProfilePage /> },
+              { path: CLIENT_ROUTES.PROFILE_EDIT, element: <EditProfilePage /> },
+              { path: CLIENT_ROUTES.PROFILE_PASSWORD, element: <ChangePasswordPage /> },
+              { path: CLIENT_ROUTES.PROFILE_SETTINGS, element: <SettingsPage /> },
+              { path: CLIENT_ROUTES.TRIPS, element: <MyTripsPage /> },
+              { path: CLIENT_ROUTES.TRIP_PLAN, element: <PlanTripPage /> },
+              { path: CLIENT_ROUTES.TRIP_PLAN_SELECTED, element: <SelectedPlacesPage /> },
+              { path: CLIENT_ROUTES.TRIP_GENERATING, element: <GeneratingTripPage /> },
+              { path: CLIENT_ROUTES.TRIP_SUGGESTIONS, element: <SuggestedPlacesPage /> },
+              { path: CLIENT_ROUTES.TRIP_SUGGESTION_DETAIL, element: <SuggestionDetailPage /> },
+              { path: CLIENT_ROUTES.TRIP_ADD_LOCATION, element: <AddLocationPage /> },
+              { path: CLIENT_ROUTES.ITINERARY, element: <ItineraryOverviewPage /> },
+              { path: CLIENT_ROUTES.ITINERARY_DAY, element: <ItineraryDetailPage /> },
+              { path: CLIENT_ROUTES.ITINERARY_LIVE, element: <TripLiveMapPage /> },
+
+              // Đối tác
+              { path: CLIENT_ROUTES.PARTNER, element: <PartnerHomePage /> },
+              { path: CLIENT_ROUTES.PARTNER_APPLY, element: <PartnerApplicationPage /> },
               {
-                path: CLIENT_ROUTES.PARTNER_LOCATION_LEGACY,
-                element: <Navigate to={CLIENT_ROUTES.PARTNER_LOCATIONS} replace />,
+                element: <RequireActivePartner />,
+                children: [
+                  { path: CLIENT_ROUTES.PARTNER_PROFILE, element: <PartnerBusinessProfilePage /> },
+                  { path: CLIENT_ROUTES.PARTNER_LOCATIONS, element: <PartnerLocationsPage /> },
+                  { path: CLIENT_ROUTES.PARTNER_LOCATION_NEW, element: <PartnerNewLocationPage /> },
+                  { path: CLIENT_ROUTES.PARTNER_LOCATION_DETAIL, element: <PartnerLocationPage /> },
+                  {
+                    path: CLIENT_ROUTES.PARTNER_LOCATION_LEGACY,
+                    element: <Navigate to={CLIENT_ROUTES.PARTNER_LOCATIONS} replace />,
+                  },
+                  partnerSoon(
+                    CLIENT_ROUTES.PARTNER_ADS,
+                    'Quản lý quảng cáo',
+                    'Theo dõi nội dung quảng bá cho địa điểm của bạn.',
+                  ),
+                ],
               },
-              partnerSoon(
-                CLIENT_ROUTES.PARTNER_ADS,
-                'Quản lý quảng cáo',
-                'Theo dõi nội dung quảng bá cho địa điểm của bạn.',
-              ),
             ],
           },
         ],

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { ClientApiError, errorMessage } from '@/client/api/http';
 import { placesApi } from '@/client/api/placesApi';
@@ -62,6 +62,11 @@ const googleMapsUrl = (query: string) =>
 /** Chi tiết điểm đến — gọi GET /api/places/{id} (công khai, chỉ ACTIVE) */
 export default function PlaceDetailsPage() {
   const { placeId } = useParams();
+  const location = useLocation();
+  // Route /favorites/:placeId và /explore/:placeId dùng chung trang này — quay lại đúng nơi đã mở
+  const backTo = location.pathname.startsWith('/favorites')
+    ? CLIENT_ROUTES.FAVORITES
+    : CLIENT_ROUTES.EXPLORE;
   const { favorites, toggleFavorite } = useTraveller();
   const [detail, setDetail] = useState<PlaceDetail | null>(null);
   const [notFound, setNotFound] = useState(false);
@@ -98,10 +103,10 @@ export default function PlaceDetailsPage() {
         <Icon name="location_off" className="text-[48px] text-[#72818C]" />
         <p className="mt-3 text-[16px] font-bold text-[#13364A]">Không tìm thấy địa điểm</p>
         <Link
-          to={CLIENT_ROUTES.EXPLORE}
+          to={backTo}
           className="mt-5 rounded-full bg-[#E9EBFF] px-6 py-3 text-[13px] font-semibold text-[#334E68]"
         >
-          Quay lại Khám phá
+          Quay lại
         </Link>
       </div>
     );
@@ -136,7 +141,7 @@ export default function PlaceDetailsPage() {
     <div className="pb-24 md:pb-4">
       <PageBar
         title="Chi Tiết Điểm Đến"
-        backTo={CLIENT_ROUTES.EXPLORE}
+        backTo={backTo}
         actions={<BarIconButton icon="share" label="Chia sẻ" onClick={() => void share()} />}
       />
 

@@ -1,5 +1,14 @@
 import { clientRequest } from './http';
-import type { ClientUser, ProfileInput, TravelPreferences } from './types';
+import type { ClientUser, Paged, PlaceSummary, ProfileInput, TravelPreferences } from './types';
+
+export interface FavoritesQuery {
+  page?: number;
+  size?: number;
+  keyword?: string;
+  /** Mã nhóm dịch vụ (lodging, fnb, attraction, shopping) */
+  group?: string;
+  sort?: 'recent' | 'name';
+}
 
 export const userApi = {
   me: () => clientRequest<ClientUser>('/users/me'),
@@ -32,4 +41,21 @@ export const userApi = {
       method: 'POST',
       body: { currentPassword, newPassword },
     }),
+
+  /** Địa điểm đã lưu, phân trang bằng PageResponse chung của dự án */
+  favorites: ({ page = 0, size = 20, keyword, group, sort }: FavoritesQuery = {}) => {
+    const search = new URLSearchParams({ page: String(page), size: String(size) });
+    if (keyword?.trim()) search.set('keyword', keyword.trim());
+    if (group && group !== 'all') search.set('group', group);
+    if (sort) search.set('sort', sort);
+    return clientRequest<Paged<PlaceSummary>>(`/users/me/favorites?${search.toString()}`);
+  },
+
+  /** Lưu lại lần nữa không lỗi */
+  addFavorite: (placeId: string | number) =>
+    clientRequest<void>(`/users/me/favorites/${placeId}`, { method: 'PUT' }),
+
+  /** Bỏ lại lần nữa cũng không lỗi */
+  removeFavorite: (placeId: string | number) =>
+    clientRequest<void>(`/users/me/favorites/${placeId}`, { method: 'DELETE' }),
 };

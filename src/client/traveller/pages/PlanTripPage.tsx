@@ -1,8 +1,9 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
+import TypePicker from '@/components/common/TypePicker';
 import { referenceApi } from '@/client/api/referenceApi';
-import type { ReferenceItem, TravelPreferences } from '@/client/api/types';
+import type { CategoryGroup, ReferenceItem, TravelPreferences } from '@/client/api/types';
 import { userApi } from '@/client/api/userApi';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import {
@@ -10,9 +11,11 @@ import {
   type CompanionId,
   PACE_OPTIONS,
   type PaceId,
+  DEFAULT_PLAN_TYPES,
   PLAN_BUDGET_OPTIONS,
-  PLAN_INTEREST_OPTIONS,
   type PlanBudgetId,
+  preferencesToTypes,
+  typesToInterests,
 } from '@/client/traveller/data/planTrip';
 import { useTraveller } from '@/client/traveller/travellerContext';
 import PageBar from '@/client/ui/PageBar';
@@ -30,14 +33,6 @@ const addDays = (date: Date, days: number) => {
 
 /** Chuyển sở thích đã lưu (UC-006) sang lựa chọn mặc định của màn này */
 function fromPreferences(preferences: TravelPreferences) {
-  const interestMap: Record<string, string> = {
-    nature: 'nature',
-    culture: 'culture',
-    food: 'food',
-    shopping: 'shopping',
-    nightlife: 'shopping',
-    beach: 'beach',
-  };
   const budgetMap: Record<string, PlanBudgetId> = {
     SAVING: 'saving',
     MEDIUM: 'standard',
@@ -49,13 +44,7 @@ function fromPreferences(preferences: TravelPreferences) {
     FAMILY: 'relaxed',
     ADVENTURE: 'packed',
   };
-  const interests = Array.from(
-    new Set(preferences.interests.map((id) => interestMap[id]).filter(Boolean)),
-  );
-  if (preferences.travelStyle === 'ADVENTURE') interests.push('adventure');
-  if (preferences.travelStyle === 'RELAX') interests.push('relax');
   return {
-    interests: interests.length > 0 ? interests : null,
     budget: preferences.budgetLevel ? budgetMap[preferences.budgetLevel] : null,
     pace: preferences.travelStyle ? (paceMap[preferences.travelStyle] ?? null) : null,
   };
@@ -133,7 +122,10 @@ export default function PlanTripPage() {
   const [companion, setCompanion] = useState<CompanionId>('couple');
   const [members, setMembers] = useState(2);
   const [budget, setBudget] = useState<PlanBudgetId>('standard');
-  const [interests, setInterests] = useState<string[]>(['beach', 'food', 'culture']);
+  /** Nhóm dịch vụ + loại hình lấy từ hệ thống — admin thêm loại hình nào thì ở đây có loại đó */
+  const [typeGroups, setTypeGroups] = useState<CategoryGroup[]>([]);
+  const [groupCodes, setGroupCodes] = useState<string[]>(DEFAULT_PLAN_TYPES.groupCodes);
+  const [typeCodes, setTypeCodes] = useState<string[]>(DEFAULT_PLAN_TYPES.typeCodes);
   const [pace, setPace] = useState<PaceId>('balanced');
   const [error, setError] = useState<string | null>(null);
 
@@ -153,19 +145,27 @@ export default function PlanTripPage() {
     };
   }, []);
 
-  // Điền sẵn theo sở thích đã lưu (nếu người dùng chưa tự chỉnh)
+  // Nhóm / loại hình của hệ thống, rồi điền sẵn theo sở thích đã lưu (nếu người dùng chưa tự chỉnh)
   useEffect(() => {
     let active = true;
-    userApi
-      .preferences()
-      .then((preferences) => {
-        if (!active || touched.current) return;
+    Promise.allSettled([referenceApi.categories(), userApi.preferences()]).then(
+      ([groupsResult, preferencesResult]) => {
+        if (!active) return;
+        const groups = groupsResult.status === 'fulfilled' ? groupsResult.value : [];
+        setTypeGroups(groups);
+        if (preferencesResult.status !== 'fulfilled' || touched.current) return;
+        const preferences = preferencesResult.value;
         const initial = fromPreferences(preferences);
-        if (initial.interests) setInterests(initial.interests);
+        const known = new Set(groups.flatMap((group) => group.subtypes.map((s) => s.code)));
+        const types = preferencesToTypes(preferences.interests, preferences.travelStyle, known);
+        if (types) {
+          setGroupCodes(types.groupCodes);
+          setTypeCodes(types.typeCodes);
+        }
         if (initial.budget) setBudget(initial.budget);
         if (initial.pace) setPace(initial.pace);
-      })
-      .catch(() => undefined);
+      },
+    );
     return () => {
       active = false;
     };
@@ -196,21 +196,23 @@ export default function PlanTripPage() {
     else if (companion === 'solo') setCompanion(next === 2 ? 'couple' : 'friends');
   };
 
-  const toggleInterest = touch((id: string) =>
-    setInterests((previous) =>
-      previous.includes(id) ? previous.filter((item) => item !== id) : [...previous, id],
-    ),
-  );
+  const changeTypes = (groups: string[], types: string[]) => {
+    touched.current = true;
+    setGroupCodes(groups);
+    setTypeCodes(types);
+    setError(null);
+  };
 
   const submit = () => {
     if (!destination) {
       setError('Hãy chọn điểm đến.');
       return;
     }
-    if (interests.length === 0) {
-      setError('Hãy chọn ít nhất một sở thích trải nghiệm.');
+    if (groupCodes.length === 0) {
+      setError('Hãy chọn ít nhất một dịch vụ trong Sở thích trải nghiệm.');
       return;
     }
+    const interests = typesToInterests(typeGroups, groupCodes, typeCodes);
     startPlan({ destinationId, destinationName: destination.name, days, members, interests });
     navigate(CLIENT_ROUTES.TRIP_GENERATING);
   };
@@ -404,30 +406,20 @@ export default function PlanTripPage() {
         <SectionCard
           icon="volunteer_activism"
           title="Sở thích trải nghiệm"
-          subtitle="Chọn nhiều phong cách bạn yêu thích"
+          subtitle="Tích dịch vụ bạn quan tâm, rồi chọn loại hình cụ thể (nếu muốn)"
         >
-          <div className="flex flex-wrap gap-2">
-            {PLAN_INTEREST_OPTIONS.map((item) => {
-              const selected = interests.includes(item.id);
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => toggleInterest(item.id)}
-                  aria-pressed={selected}
-                  className={`flex items-center gap-1.5 rounded-full border px-3 py-2 text-[12px] font-semibold ${
-                    selected
-                      ? 'border-[#087A78] bg-[#C3F8F0] text-[#075C66]'
-                      : 'border-[#E3E7F0] bg-[#F8F8FF] text-[#13364A]'
-                  }`}
-                >
-                  <Icon name={item.icon} className="text-[16px]" />
-                  {item.label}
-                  {selected && <Icon name="check_circle" className="text-[15px]" />}
-                </button>
-              );
-            })}
-          </div>
+          {typeGroups.length === 0 ? (
+            <p className="text-[12px] text-[#72818C]">Đang tải danh mục dịch vụ…</p>
+          ) : (
+            <TypePicker
+              groups={typeGroups}
+              groupCodes={groupCodes}
+              typeCodes={typeCodes}
+              onChange={changeTypes}
+              showMain={false}
+              allWhenEmpty
+            />
+          )}
         </SectionCard>
 
         <SectionCard

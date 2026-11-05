@@ -7,6 +7,10 @@ export interface TypePickerLabels {
   pickGroupFirst: string;
   main: string;
   selected: string;
+  /** Dòng gợi ý dưới nhóm chưa tích loại hình nào (chế độ allWhenEmpty) */
+  wholeGroupHint: string;
+  /** Trong dòng "Đã chọn": cả nhóm, ví dụ "Tất cả Ẩm thực" */
+  wholeGroup: (group: string) => string;
 }
 
 const DEFAULT_LABELS: TypePickerLabels = {
@@ -15,6 +19,8 @@ const DEFAULT_LABELS: TypePickerLabels = {
   pickGroupFirst: 'Tích nhóm dịch vụ bên trái để chọn loại hình',
   main: 'Đại diện',
   selected: 'Đã chọn',
+  wholeGroupHint: 'Không tích loại hình nào = thích tất cả loại hình của nhóm này',
+  wholeGroup: (group) => `Tất cả ${group}`,
 };
 
 /**
@@ -29,6 +35,8 @@ export default function TypePicker({
   onChange,
   error,
   labels,
+  showMain = true,
+  allWhenEmpty = false,
 }: {
   groups: TypePickerGroup[];
   groupCodes: string[];
@@ -37,10 +45,20 @@ export default function TypePicker({
   onChange: (groupCodes: string[], typeCodes: string[]) => void;
   error?: string;
   labels?: Partial<TypePickerLabels>;
+  /** Hiện nhãn "Đại diện" trên loại hình tích đầu tiên (form địa điểm) */
+  showMain?: boolean;
+  /** Nhóm đã tích mà chưa chọn loại hình nào = cả nhóm (sở thích của du khách) */
+  allWhenEmpty?: boolean;
 }) {
   const text = { ...DEFAULT_LABELS, ...labels };
   const typeNames = new Map(groups.flatMap((g) => g.subtypes.map((s) => [s.code, s.name])));
   const pickedGroups = groups.filter((group) => groupCodes.includes(group.code));
+  const summary = allWhenEmpty
+    ? pickedGroups.flatMap((group) => {
+        const picked = group.subtypes.filter((s) => typeCodes.includes(s.code));
+        return picked.length > 0 ? picked.map((s) => s.name) : [text.wholeGroup(group.name)];
+      })
+    : typeCodes.map((code) => typeNames.get(code) ?? code);
 
   const toggleGroup = (group: TypePickerGroup) => {
     if (groupCodes.includes(group.code)) {
@@ -126,7 +144,7 @@ export default function TypePicker({
                   <div className="flex flex-wrap gap-2">
                     {group.subtypes.map((subtype) => {
                       const checked = typeCodes.includes(subtype.code);
-                      const main = typeCodes[0] === subtype.code;
+                      const main = showMain && typeCodes[0] === subtype.code;
                       return (
                         <button
                           key={subtype.code}
@@ -153,6 +171,10 @@ export default function TypePicker({
                       );
                     })}
                   </div>
+                  {allWhenEmpty &&
+                    !group.subtypes.some((subtype) => typeCodes.includes(subtype.code)) && (
+                      <p className="mt-1.5 text-[11px] text-teal-700">{text.wholeGroupHint}</p>
+                    )}
                 </div>
               ))}
             </div>
@@ -164,9 +186,9 @@ export default function TypePicker({
           <Icon name="error" className="text-[14px]" /> {error}
         </p>
       ) : (
-        typeCodes.length > 0 && (
+        summary.length > 0 && (
           <p className="mt-1.5 text-[12px] text-slate-500">
-            {text.selected}: {typeCodes.map((code) => typeNames.get(code) ?? code).join(' · ')}
+            {text.selected}: {summary.join(' · ')}
           </p>
         )
       )}

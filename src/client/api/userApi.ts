@@ -1,5 +1,12 @@
 import { clientRequest } from './http';
-import type { ClientUser, Paged, PlaceSummary, ProfileInput, TravelPreferences } from './types';
+import type {
+  AuthResponse,
+  ClientUser,
+  Paged,
+  PlaceSummary,
+  ProfileInput,
+  TravelPreferences,
+} from './types';
 
 export interface FavoritesQuery {
   page?: number;
@@ -36,8 +43,9 @@ export const userApi = {
     clientRequest<TravelPreferences>('/users/me/preferences', { method: 'PUT', body: input }),
 
   /** Đổi mật khẩu — BE thu hồi mọi phiên đăng nhập nên phải đăng nhập lại */
+  /** Đổi mật khẩu: các thiết bị khác bị đăng xuất, thiết bị này nhận phiên mới */
   changePassword: (currentPassword: string, newPassword: string) =>
-    clientRequest<void>('/auth/password/change', {
+    clientRequest<AuthResponse>('/auth/password/change', {
       method: 'POST',
       body: { currentPassword, newPassword },
     }),

@@ -47,6 +47,43 @@ function Field({
   );
 }
 
+/** Ô mật khẩu có nút con mắt hiện / ẩn */
+function PasswordInput({
+  value,
+  onChange,
+  autoComplete,
+  invalid,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  autoComplete: string;
+  invalid?: boolean;
+}) {
+  const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
+  return (
+    <div className="relative">
+      <input
+        type={visible ? 'text' : 'password'}
+        autoComplete={autoComplete}
+        aria-invalid={invalid}
+        className={`${INPUT_CLASS} pr-11 ${invalid ? 'ring-2 ring-error/50' : ''}`}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      />
+      <button
+        type="button"
+        onClick={() => setVisible((shown) => !shown)}
+        aria-label={visible ? t('adminProfile.hidePassword') : t('adminProfile.showPassword')}
+        title={visible ? t('adminProfile.hidePassword') : t('adminProfile.showPassword')}
+        className="absolute top-1/2 right-2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-outline transition-colors hover:bg-surface-container hover:text-on-surface"
+      >
+        <Icon name={visible ? 'visibility_off' : 'visibility'} className="text-[19px]" />
+      </button>
+    </div>
+  );
+}
+
 /** Hồ sơ quản trị viên: /admin/profile — API thật /users/me + đổi mật khẩu + đăng xuất mọi nơi */
 export default function AdminProfilePage() {
   const { t } = useTranslation();
@@ -65,7 +102,37 @@ export default function AdminProfilePage() {
   const [next, setNext] = useState('');
   const [confirm, setConfirm] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [currentError, setCurrentError] = useState('');
   const [savingPassword, setSavingPassword] = useState(false);
+  const [passwordDone, setPasswordDone] = useState(false);
+
+  // Khớp PasswordPolicy của BE: 8–72 ký tự, chữ hoa, chữ thường, số; và khác mật khẩu cũ
+  const rules = [
+    {
+      id: 'length',
+      label: t('adminProfile.ruleLength'),
+      valid: next.length >= 8 && next.length <= 72,
+    },
+    { id: 'upper', label: t('adminProfile.ruleUpper'), valid: /[A-Z]/.test(next) },
+    { id: 'lower', label: t('adminProfile.ruleLower'), valid: /[a-z]/.test(next) },
+    { id: 'digit', label: t('adminProfile.ruleDigit'), valid: /\d/.test(next) },
+    {
+      id: 'different',
+      label: t('adminProfile.ruleDifferent'),
+      valid: next.length > 0 && next !== current,
+    },
+  ];
+  const strong = rules.every((rule) => rule.valid);
+  const mismatch = confirm.length > 0 && confirm !== next;
+  const matched = confirm.length > 0 && confirm === next;
+  const canChangePassword = current.length > 0 && strong && matched && !savingPassword;
+  // Gõ lại thì ẩn thông báo cũ
+  const typed = (setter: (value: string) => void) => (value: string) => {
+    setter(value);
+    setPasswordError('');
+    setCurrentError('');
+    setPasswordDone(false);
+  };
 
   useEffect(() => {
     let active = true;
@@ -127,20 +194,28 @@ export default function AdminProfilePage() {
       setPasswordError(t('adminProfile.passwordRequired'));
       return;
     }
+    if (!strong) {
+      setPasswordError(t('adminProfile.notStrongEnough'));
+      return;
+    }
     if (next !== confirm) {
       setPasswordError(t('adminProfile.passwordMismatch'));
       return;
     }
     setPasswordError('');
+    setCurrentError('');
     setSavingPassword(true);
     try {
+      // Thiết bị khác bị đăng xuất, admin vẫn đăng nhập ở đây (BE trả phiên mới)
       await changePassword(account.email, current, next);
       setCurrent('');
       setNext('');
       setConfirm('');
+      setPasswordDone(true);
       showToast(t('adminProfile.passwordChanged'));
     } catch (error) {
-      setPasswordError(getErrorMessage(error));
+      // Sai mật khẩu hiện tại → báo ngay dưới ô đó
+      setCurrentError(getErrorMessage(error));
     } finally {
       setSavingPassword(false);
     }
@@ -203,44 +278,92 @@ export default function AdminProfilePage() {
           </Card>
 
           <Card icon="password" title={t('adminProfile.password')}>
+            {passwordDone && (
+              <div
+                role="status"
+                className="flex items-start gap-3 rounded-xl border border-primary/30 bg-primary/10 p-3"
+              >
+                <Icon name="check_circle" filled className="text-[22px] text-primary" />
+                <div>
+                  <p className="font-label-md text-label-md font-bold text-on-surface">
+                    {t('adminProfile.passwordSuccessTitle')}
+                  </p>
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">
+                    {t('adminProfile.passwordSuccessBody')}
+                  </p>
+                </div>
+              </div>
+            )}
             <form
               className="grid gap-4 md:grid-cols-3"
               onSubmit={(event) => void savePassword(event)}
+              noValidate
             >
-              <Field label={t('adminProfile.currentPassword')}>
-                <input
-                  type="password"
+              <Field label={t('adminProfile.currentPassword')} error={currentError}>
+                <PasswordInput
                   autoComplete="current-password"
-                  className={INPUT_CLASS}
                   value={current}
-                  onChange={(event) => setCurrent(event.target.value)}
+                  onChange={typed(setCurrent)}
+                  invalid={Boolean(currentError)}
                 />
               </Field>
-              <Field label={t('adminProfile.newPassword')} hint={t('adminProfile.passwordHint')}>
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  className={INPUT_CLASS}
-                  value={next}
-                  onChange={(event) => setNext(event.target.value)}
-                />
+              <Field label={t('adminProfile.newPassword')}>
+                <PasswordInput autoComplete="new-password" value={next} onChange={typed(setNext)} />
               </Field>
-              <Field label={t('adminProfile.confirmPassword')}>
-                <input
-                  type="password"
+              <Field
+                label={t('adminProfile.confirmPassword')}
+                error={mismatch ? t('adminProfile.passwordMismatch') : undefined}
+              >
+                <PasswordInput
                   autoComplete="new-password"
-                  className={INPUT_CLASS}
                   value={confirm}
-                  onChange={(event) => setConfirm(event.target.value)}
+                  onChange={typed(setConfirm)}
+                  invalid={mismatch}
                 />
+                {matched && (
+                  <span className="flex items-center gap-1 font-body-sm text-body-sm font-semibold text-primary">
+                    <Icon name="check_circle" filled className="text-[15px]" />
+                    {t('adminProfile.passwordsMatch')}
+                  </span>
+                )}
               </Field>
+
+              <div className="rounded-xl bg-surface-container-low p-3 md:col-span-3">
+                <p className="mb-2 font-label-sm text-label-sm font-semibold text-on-surface-variant">
+                  {t('adminProfile.passwordRules')}
+                </p>
+                <ul className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
+                  {rules.map((rule) => (
+                    <li
+                      key={rule.id}
+                      className={`flex items-center gap-1.5 font-body-sm text-body-sm ${
+                        rule.valid ? 'font-semibold text-primary' : 'text-on-surface-variant'
+                      }`}
+                    >
+                      <Icon
+                        name={rule.valid ? 'check_circle' : 'radio_button_unchecked'}
+                        filled={rule.valid}
+                        className="text-[16px]"
+                      />
+                      {rule.label}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
               {passwordError && (
-                <p className="font-body-sm text-body-sm text-error md:col-span-3">
+                <p className="flex items-center gap-1.5 font-body-sm text-body-sm text-error md:col-span-3">
+                  <Icon name="error" className="text-[16px]" />
                   {passwordError}
                 </p>
               )}
               <div className="flex justify-end md:col-span-3">
-                <Button type="submit" icon="key" loading={savingPassword}>
+                <Button
+                  type="submit"
+                  icon="key"
+                  loading={savingPassword}
+                  disabled={!canChangePassword}
+                >
                   {t('adminProfile.changePassword')}
                 </Button>
               </div>

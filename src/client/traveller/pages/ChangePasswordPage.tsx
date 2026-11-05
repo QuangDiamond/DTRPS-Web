@@ -1,8 +1,7 @@
 import { type FormEvent, type ReactNode, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { errorMessage } from '@/client/api/http';
-import { userApi } from '@/client/api/userApi';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import { FormAlert } from '@/client/ui/Blocks';
@@ -78,13 +77,13 @@ function PasswordRule({ title, valid }: { title: string; valid: boolean }) {
 
 /** Đổi mật khẩu — gộp ChangePasswordScreen + ProfileChangePasswordScreen của mobile */
 export default function ChangePasswordPage() {
-  const { logout } = useClientAuth();
-  const navigate = useNavigate();
+  const { changePassword } = useClientAuth();
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
 
   // Khớp PasswordPolicy của BE: 8–72 ký tự, chữ hoa, chữ thường, số
   const rules = [
@@ -116,18 +115,40 @@ export default function ChangePasswordPage() {
     setError(null);
     setBusy(true);
     try {
-      await userApi.changePassword(current, next);
-      // BE đã thu hồi mọi phiên → đăng nhập lại bằng mật khẩu mới
-      logout();
-      navigate(CLIENT_ROUTES.LOGIN, {
-        replace: true,
-        state: { notice: 'Đã đổi mật khẩu. Vui lòng đăng nhập lại bằng mật khẩu mới.' },
-      });
+      // Thiết bị khác bị đăng xuất, tab này nhận phiên mới nên vẫn đăng nhập
+      await changePassword(current, next);
+      setDone(true);
     } catch (saveError) {
       setError(errorMessage(saveError));
+    } finally {
       setBusy(false);
     }
   };
+
+  if (done) {
+    return (
+      <div className="mx-auto max-w-xl">
+        <PageBar title="Đổi mật khẩu" subtitle="Bảo mật tài khoản" backTo={CLIENT_ROUTES.PROFILE} />
+        <div className="flex flex-col items-center rounded-[20px] bg-white px-6 py-10 text-center shadow-[0_10px_30px_rgba(19,54,74,0.06)]">
+          <span className="flex h-20 w-20 items-center justify-center rounded-full bg-[#DDF7EA] text-[#13936B]">
+            <Icon name="check_circle" filled className="text-[52px]" />
+          </span>
+          <p className="mt-4 text-[18px] font-extrabold text-[#16394D]">Đổi mật khẩu thành công!</p>
+          <p className="mt-2 max-w-sm text-[13px] leading-5 text-[#52728A]">
+            Bạn vẫn đang đăng nhập trên thiết bị này. Các thiết bị khác đã được đăng xuất — hãy dùng
+            mật khẩu mới khi đăng nhập lại.
+          </p>
+          <Link
+            to={CLIENT_ROUTES.PROFILE}
+            className="mt-6 flex h-[50px] w-full max-w-xs items-center justify-center gap-2 rounded-full bg-[#006D68] text-[15px] font-bold text-white shadow-md hover:bg-primary-container"
+          >
+            <Icon name="person" className="text-[20px]" />
+            Về trang cá nhân
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-xl">

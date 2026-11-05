@@ -1,5 +1,6 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { authApi } from '@/client/api/authApi';
+import { userApi } from '@/client/api/userApi';
 import { bindSession } from '@/client/api/http';
 import type { AuthResponse, ClientUser, RoleName } from '@/client/api/types';
 import { ClientAuthContext } from './clientAuthContext';
@@ -88,6 +89,15 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
     [save],
   );
 
+  /** Đổi mật khẩu mà vẫn đăng nhập: BE đăng xuất thiết bị khác và cấp phiên mới cho tab này */
+  const changePassword = useCallback(
+    async (currentPassword: string, newPassword: string) => {
+      const response = await userApi.changePassword(currentPassword, newPassword);
+      save(toSession(response, sessionRef.current?.remember ?? true));
+    },
+    [save],
+  );
+
   const logout = useCallback(() => {
     const current = sessionRef.current;
     if (current) authApi.revoke(current.refreshToken).catch(() => undefined);
@@ -119,13 +129,24 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
       user,
       login,
       loginWithGoogle,
+      changePassword,
       logout,
       updateUser,
       refreshSession,
       hasRole,
       lockIdle,
     }),
-    [user, login, loginWithGoogle, logout, updateUser, refreshSession, hasRole, lockIdle],
+    [
+      user,
+      login,
+      loginWithGoogle,
+      changePassword,
+      logout,
+      updateUser,
+      refreshSession,
+      hasRole,
+      lockIdle,
+    ],
   );
 
   return <ClientAuthContext.Provider value={value}>{children}</ClientAuthContext.Provider>;

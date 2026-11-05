@@ -6,6 +6,8 @@ export interface ClientAuthValue {
   login: (email: string, password: string, remember: boolean) => Promise<ClientUser>;
   /** Tiếp tục với Google (không dùng cho admin) */
   loginWithGoogle: (accessToken: string) => Promise<{ user: ClientUser; newAccount: boolean }>;
+  /** Đổi mật khẩu, tab này vẫn đăng nhập (thiết bị khác bị đăng xuất) */
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   logout: () => void;
   /** Ghi thông tin user mới (sau khi sửa hồ sơ) vào phiên hiện tại */
   updateUser: (user: ClientUser) => void;

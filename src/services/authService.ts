@@ -3,7 +3,7 @@ import i18n from 'i18next';
 import type { AdminProfile } from '@/types';
 import { ENDPOINTS } from './endpoints';
 import { ApiError, apiRequest } from './httpClient';
-import { clearAccessToken, setTokens } from './tokenStore';
+import { clearAccessToken, replaceTokens, setTokens } from './tokenStore';
 
 interface LoginResponse {
   /** Chỉ có với tài khoản mang vai trò ADMIN */
@@ -76,13 +76,18 @@ export async function resetPassword(ticket: string, newPassword: string): Promis
 }
 
 /** Đổi mật khẩu khi đã đăng nhập (màn Hồ sơ Admin) */
+/**
+ * Đổi mật khẩu: BE đăng xuất mọi thiết bị khác và trả phiên mới cho thiết bị này — lưu lại để admin
+ * vẫn đăng nhập (không bị đá ra sau vài phút).
+ */
 export async function changePassword(
   email: string,
   currentPassword: string,
   newPassword: string,
 ): Promise<void> {
-  await apiRequest<void>(ENDPOINTS.auth.changePassword, {
+  const session = await apiRequest<LoginResponse>(ENDPOINTS.auth.changePassword, {
     method: 'POST',
     body: { currentPassword, newPassword },
   });
+  replaceTokens(session.accessToken, session.refreshToken);
 }

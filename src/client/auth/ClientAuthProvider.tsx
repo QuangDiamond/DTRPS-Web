@@ -76,18 +76,6 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
     [save],
   );
 
-  /** Bước cuối đăng ký: vé từ mã OTP đã xác thực + họ tên + mật khẩu → tạo tài khoản và đăng nhập */
-  const register = useCallback(
-    async (ticket: string, name: string, password: string) => {
-      const response = await authApi.completeRegistration(ticket, name, password);
-      idleLock.unlock();
-      clientSessionEnd.clear();
-      save(toSession(response, true));
-      return response.user;
-    },
-    [save],
-  );
-
   const logout = useCallback(() => {
     const current = sessionRef.current;
     if (current) authApi.revoke(current.refreshToken).catch(() => undefined);
@@ -115,8 +103,8 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
   const hasRole = useCallback((role: RoleName) => Boolean(user?.roles.includes(role)), [user]);
 
   const value = useMemo(
-    () => ({ user, login, register, logout, updateUser, refreshSession, hasRole, lockIdle }),
-    [user, login, register, logout, updateUser, refreshSession, hasRole, lockIdle],
+    () => ({ user, login, logout, updateUser, refreshSession, hasRole, lockIdle }),
+    [user, login, logout, updateUser, refreshSession, hasRole, lockIdle],
   );
 
   return <ClientAuthContext.Provider value={value}>{children}</ClientAuthContext.Provider>;

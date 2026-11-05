@@ -1,8 +1,9 @@
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Icon } from '@/components/common';
 import { authApi, type OtpSent } from '@/client/api/authApi';
 import { ClientApiError, errorMessage } from '@/client/api/http';
-import { useClientAuth } from '@/client/auth/clientAuthContext';
+import { onboarding } from '@/client/auth/onboarding';
 import ClientAuthLayout from '@/client/layouts/ClientAuthLayout';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import {
@@ -15,6 +16,7 @@ import {
 import { FormAlert } from '@/client/ui/Blocks';
 import { PrimaryButton } from '@/client/ui/Buttons';
 import Field from '@/client/ui/Field';
+import { useCountdown } from '@/client/utils/useCountdown';
 import { isValidEmail, isValidPassword, PASSWORD_HINT } from '@/client/utils/validation';
 
 const STEPS = ['Thông tin', 'Xác thực email', 'Mật khẩu'];
@@ -25,9 +27,8 @@ const TITLES = [
   { title: 'Đặt mật khẩu', subtitle: 'Bước cuối: tạo mật khẩu để đăng nhập lần sau.' },
 ];
 
-/** Đăng ký 3 bước: họ tên + email → mã OTP qua email → mật khẩu (tạo tài khoản, đăng nhập luôn) */
+/** Đăng ký 3 bước: họ tên + email → mã OTP qua email → mật khẩu → về trang đăng nhập */
 export default function RegisterPage() {
-  const { register } = useClientAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
@@ -40,6 +41,7 @@ export default function RegisterPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [emailTaken, setEmailTaken] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [createdEmail, setCreatedEmail] = useState<string | null>(null);
 
   const fail = (error: unknown) => {
     if (error instanceof ClientApiError && Object.keys(error.fieldErrors).length > 0) {
@@ -81,18 +83,42 @@ export default function RegisterPage() {
 
     setBusy(true);
     try {
-      await register(ticket, name, password);
-      // Tài khoản mới → chọn nhanh sở thích (có nút Bỏ qua) để gợi ý đúng gu hơn
-      navigate(CLIENT_ROUTES.PREFERENCES, {
-        replace: true,
-        state: {
-          notice: 'Tạo tài khoản thành công! Chọn nhanh vài sở thích để gợi ý đúng gu bạn.',
-        },
-      });
+      const created = await authApi.completeRegistration(ticket, name, password);
+      // Không tự đăng nhập: bỏ phiên BE vừa cấp, người dùng đăng nhập lại bằng email + mật khẩu
+      authApi.revoke(created.refreshToken).catch(() => undefined);
+      // Lần đăng nhập đầu tiên → trả lời câu hỏi sở thích rồi mới vào trang chủ
+      onboarding.mark(created.user.email);
+      // Hiện màn thành công vài giây rồi mới sang trang đăng nhập
+      setCreatedEmail(created.user.email);
+      setBusy(false);
     } catch (error) {
       fail(error);
     }
   };
+
+  if (createdEmail) {
+    return (
+      <ClientAuthLayout title="Đăng ký thành công">
+        <RegisterSuccess
+          email={createdEmail}
+          onContinue={() =>
+            navigate(CLIENT_ROUTES.LOGIN, {
+              replace: true,
+              state: {
+                email: createdEmail,
+                notice: 'Đăng ký tài khoản thành công! Hãy đăng nhập bằng mật khẩu vừa tạo.',
+              },
+            })
+          }
+        />
+      </ClientAuthLayout>
+    );
+  }
+
+  // Báo ngay khi gõ ô nhập lại (chưa gõ thì chưa báo)
+  const mismatch = confirm.length > 0 && confirm !== password;
+  const matched = confirm.length > 0 && confirm === password;
+  const canFinish = isValidPassword(password) && matched;
 
   return (
     <ClientAuthLayout title="Đăng ký">
@@ -179,9 +205,15 @@ export default function RegisterPage() {
               placeholder="Nhập lại mật khẩu"
               value={confirm}
               onChange={setConfirm}
-              error={errors.confirm}
+              error={mismatch ? 'Mật khẩu nhập lại chưa khớp' : errors.confirm}
             />
-            <PrimaryButton type="submit" loading={busy}>
+            {matched && (
+              <p className="-mt-3 mb-4 flex items-center gap-1 text-[12px] font-semibold text-[#13936B]">
+                <Icon name="check_circle" className="text-[16px]" />
+                Mật khẩu khớp
+              </p>
+            )}
+            <PrimaryButton type="submit" loading={busy} disabled={!canFinish}>
               Tạo tài khoản
             </PrimaryButton>
           </form>
@@ -197,5 +229,39 @@ export default function RegisterPage() {
         </p>
       </AuthCard>
     </ClientAuthLayout>
+  );
+}
+
+const REDIRECT_SECONDS = 3;
+
+/** Tạo tài khoản xong: báo thành công, tự sang trang đăng nhập sau vài giây */
+function RegisterSuccess({ email, onContinue }: { email: string; onContinue: () => void }) {
+  const { left } = useCountdown(REDIRECT_SECONDS);
+  useEffect(() => {
+    if (left === 0) onContinue();
+  }, [left, onContinue]);
+
+  return (
+    <AuthCard title="Đăng ký thành công" subtitle="Tài khoản SmartTravel của bạn đã sẵn sàng.">
+      <div className="flex flex-col items-center py-2 text-center">
+        <span className="flex h-20 w-20 items-center justify-center rounded-full bg-[#DDF7EA] text-[#13936B]">
+          <Icon name="check_circle" filled className="text-[52px]" />
+        </span>
+        <p className="mt-4 text-[16px] font-extrabold text-[#13364A]">
+          Đăng ký tài khoản thành công!
+        </p>
+        <p className="mt-1.5 text-[13px] leading-5 text-[#62737F]">
+          Hãy đăng nhập bằng email
+          <span className="block font-bold break-all text-[#13364A]">{email}</span>
+          và mật khẩu bạn vừa tạo.
+        </p>
+      </div>
+      <PrimaryButton type="button" className="mt-6" onClick={onContinue}>
+        Đăng nhập ngay
+      </PrimaryButton>
+      <p className="mt-3 text-center text-[12px] text-[#8A99A6]">
+        Tự chuyển tới trang đăng nhập sau {left}s
+      </p>
+    </AuthCard>
   );
 }

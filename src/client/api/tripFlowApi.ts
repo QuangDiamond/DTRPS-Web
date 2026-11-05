@@ -12,6 +12,13 @@ import { clientRequest } from './http';
 
 export type TravelPace = 'RELAXED' | 'BALANCED' | 'PACKED';
 
+export type PlanStatus =
+  | 'DRAFT'
+  | 'PLANNED'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'CANCELLED';
+
 export interface CreateTravelPlanInput {
   title: string;
   destination: string;
@@ -24,13 +31,21 @@ export interface CreateTravelPlanInput {
   description: string | null;
   /** Mã danh mục con lấy từ GET /reference/categories */
   categoryCodes: string[];
+  /** Mã sở thích lấy từ GET /reference/interests, lưu vào plan_interests */
+  interestCodes?: string[];
   travelPace: TravelPace;
 }
+
+/** PUT /travel-plans/{planId} gửi đủ các trường như khi tạo. */
+export type UpdateTravelPlanInput = CreateTravelPlanInput;
 
 export interface TravelPlanResponse extends CreateTravelPlanInput {
   planId: number;
   userId: number;
-  status: string;
+  interestCodes: string[];
+  status: PlanStatus;
+  /** Các trạng thái Backend cho phép chuyển tới từ trạng thái hiện tại */
+  allowedNextStatuses: PlanStatus[];
   createdAt: string;
   updatedAt: string;
 }
@@ -176,6 +191,25 @@ export const tripFlowApi = {
 
   plan: (planId: number) =>
     clientRequest<TravelPlanResponse>(planPath(planId)),
+
+  // Chỉ sửa được khi DRAFT hoặc PLANNED.
+  // Đã có lịch trình thì không đổi được điểm đến và ngày đi/về.
+  updatePlan: (planId: number, input: UpdateTravelPlanInput) =>
+    clientRequest<TravelPlanResponse>(planPath(planId), {
+      method: 'PUT',
+      body: input,
+    }),
+
+  // Xóa kế hoạch kèm lịch trình. Không xóa được khi IN_PROGRESS.
+  deletePlan: (planId: number) =>
+    clientRequest<void>(planPath(planId), { method: 'DELETE' }),
+
+  // DRAFT -> PLANNED -> IN_PROGRESS -> COMPLETED, hủy được trước COMPLETED.
+  changeStatus: (planId: number, status: PlanStatus) =>
+    clientRequest<TravelPlanResponse>(`${planPath(planId)}/status`, {
+      method: 'PATCH',
+      body: { status },
+    }),
 
   // BƯỚC 2-3: Ứng viên từ catalogue, chưa phải AI Embedding.
   candidatePlaces: (planId: number) =>

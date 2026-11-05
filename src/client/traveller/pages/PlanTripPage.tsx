@@ -1,5 +1,5 @@
 
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import TypePicker from '@/components/common/TypePicker';
@@ -20,6 +20,9 @@ import {
   preferencesToTypes,
   typesToInterests,
 } from '@/client/traveller/data/planTrip';
+import InterestChips from '@/client/traveller/components/InterestChips';
+import SectionCard from '@/client/traveller/components/SectionCard';
+import { typesToCategoryCodes } from '@/client/traveller/data/planForm';
 import { useTraveller } from '@/client/traveller/travellerContext';
 import PageBar from '@/client/ui/PageBar';
 
@@ -75,40 +78,6 @@ function fromPreferences(preferences: TravelPreferences) {
       ? (paceMap[preferences.travelStyle] ?? null)
       : null,
   };
-}
-
-function SectionCard({
-                       icon,
-                       title,
-                       subtitle,
-                       right,
-                       children,
-                     }: {
-  icon: string;
-  title: string;
-  subtitle: string;
-  right?: ReactNode;
-  children: ReactNode;
-}) {
-  return (
-    <section className="rounded-[20px] bg-white p-4">
-      <div className="mb-3 flex items-center">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EBEDFF] text-[#087A78]">
-          <Icon name={icon} className="text-[19px]" />
-        </span>
-        <div className="ml-2.5 min-w-0 flex-1">
-          <h2 className="text-[14px] font-extrabold text-[#13364A]">
-            {title}
-          </h2>
-          <p className="text-[11px] text-[#72818C]">
-            {subtitle}
-          </p>
-        </div>
-        {right}
-      </div>
-      {children}
-    </section>
-  );
 }
 
 function StepperButton({
@@ -174,6 +143,12 @@ export default function PlanTripPage() {
   );
 
   const [pace, setPace] = useState<PaceId>('balanced');
+
+  // Sở thích của chuyến (bảng interests), lưu vào plan_interests.
+  const [interestOptions, setInterestOptions] = useState<ReferenceItem[]>([]);
+  const [interestCodes, setInterestCodes] = useState<string[]>([]);
+  const [interestsLoading, setInterestsLoading] = useState(true);
+  const [interestsFailed, setInterestsFailed] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
@@ -205,8 +180,15 @@ export default function PlanTripPage() {
     Promise.allSettled([
       referenceApi.categories(),
       userApi.preferences(),
-    ]).then(([groupsResult, preferencesResult]) => {
+      referenceApi.interests(),
+    ]).then(([groupsResult, preferencesResult, interestsResult]) => {
       if (!active) return;
+
+      const interestItems =
+        interestsResult.status === 'fulfilled' ? interestsResult.value : [];
+      setInterestOptions(interestItems);
+      setInterestsFailed(interestsResult.status === 'rejected');
+      setInterestsLoading(false);
 
       const groups =
         groupsResult.status === 'fulfilled'
@@ -246,6 +228,12 @@ export default function PlanTripPage() {
 
       if (initial.budget) setBudget(initial.budget);
       if (initial.pace) setPace(initial.pace);
+
+      // Điền sẵn sở thích của chuyến từ sở thích đã lưu trong hồ sơ.
+      const knownInterests = new Set(interestItems.map((item) => item.code));
+      setInterestCodes(
+        preferences.interests.filter((code) => knownInterests.has(code)),
+      );
     });
 
     return () => {
@@ -333,25 +321,11 @@ export default function PlanTripPage() {
 
     // Backend chỉ nhận mã danh mục con.
     // Nếu chỉ chọn nhóm, lấy tất cả subtype của nhóm đó.
-    const categoryCodes = [
-      ...new Set(
-        typeGroups.flatMap((group) => {
-          if (!groupCodes.includes(group.code)) {
-            return [];
-          }
-
-          const picked = group.subtypes.filter((type) =>
-            typeCodes.includes(type.code),
-          );
-
-          return (
-            picked.length > 0
-              ? picked
-              : group.subtypes
-          ).map((type) => type.code);
-        }),
-      ),
-    ];
+    const categoryCodes = typesToCategoryCodes(
+      typeGroups,
+      groupCodes,
+      typeCodes,
+    );
 
     if (categoryCodes.length === 0) {
       setError(
@@ -390,6 +364,7 @@ export default function PlanTripPage() {
           : null,
 
         categoryCodes,
+        interestCodes,
         travelPace: PACE_TO_API[pace],
       });
 
@@ -718,6 +693,24 @@ export default function PlanTripPage() {
               allWhenEmpty
             />
           )}
+        </SectionCard>
+
+        {/* SỞ THÍCH CỦA CHUYẾN */}
+        <SectionCard
+          icon="favorite"
+          title="Sở thích của chuyến"
+          subtitle="Chọn những gì bạn muốn trải nghiệm trong chuyến này"
+        >
+          <InterestChips
+            options={interestOptions}
+            loading={interestsLoading}
+            failed={interestsFailed}
+            selected={interestCodes}
+            onChange={(codes) => {
+              touched.current = true;
+              setInterestCodes(codes);
+            }}
+          />
         </SectionCard>
 
         {/* NHỊP ĐỘ */}

@@ -15,23 +15,36 @@ import PageBar, { BarIconButton } from '@/client/ui/PageBar';
 
 const DAY_LABELS = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
 
+const PRICE_LABELS: Record<string, string> = {
+  TICKET: 'Vé vào cổng',
+  ROOM_NIGHT: 'Giá phòng / đêm',
+  AVG_MEAL: 'Giá món / bữa ăn',
+  AVG_DRINK: 'Giá đồ uống',
+  OTHER: 'Khác',
+};
+
+/** 0 đ → "Miễn phí" */
 function formatVnd(amount: number): string {
-  return `${Math.round(amount).toLocaleString('vi-VN')}đ`;
+  return amount === 0 ? 'Miễn phí' : `${Math.round(amount).toLocaleString('vi-VN')}đ`;
 }
 
+/** 1 = Thứ 2 … 7 = Chủ nhật */
+const todayOfWeek = () => (new Date().getDay() === 0 ? 7 : new Date().getDay());
+
+/** Không khai báo giờ = mở cả ngày */
 function todayHoursLabel(detail: PlaceDetail): string {
-  const isoDay = new Date().getDay(); // 0 = Chủ nhật … 6 = Thứ 7
-  const dayOfWeek = isoDay === 0 ? 7 : isoDay;
-  const today = detail.openingHours.find((hour) => hour.dayOfWeek === dayOfWeek);
-  if (!today) return 'Chưa cập nhật';
-  if (today.closed) return 'Đóng cửa hôm nay';
+  if (detail.openingHours.length === 0) return 'Mở cả ngày';
+  const today = detail.openingHours.find((hour) => hour.dayOfWeek === todayOfWeek());
+  if (!today || today.closed) return 'Đóng cửa hôm nay';
   return today.openTime && today.closeTime ? `${today.openTime} - ${today.closeTime}` : 'Cả ngày';
 }
 
+/** Mức có phí thấp nhất; toàn bộ 0 đ → Miễn phí */
 function cheapestPriceLabel(detail: PlaceDetail): string {
-  if (detail.prices.length === 0) return 'Liên hệ';
-  const cheapest = [...detail.prices].sort((a, b) => a.amount - b.amount)[0];
-  return `Từ ${formatVnd(cheapest.amount)}`;
+  if (detail.prices.length === 0) return 'Chưa có giá';
+  const paid = detail.prices.filter((price) => price.amount > 0).map((price) => price.amount);
+  if (paid.length === 0) return 'Miễn phí';
+  return `Từ ${formatVnd(Math.min(...paid))}`;
 }
 
 function websiteLabel(website: string | null): string {
@@ -250,7 +263,7 @@ export default function PlaceDetailsPage() {
                 {todayHoursLabel(detail)}
               </p>
               <p className="mt-0.5 truncate text-[10px] text-[#8793AB]">
-                {DAY_LABELS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1]}
+                {DAY_LABELS[todayOfWeek() - 1]}
               </p>
             </div>
             <div className="rounded-2xl bg-white p-3.5">
@@ -280,6 +293,73 @@ export default function PlaceDetailsPage() {
                 {cheapestPriceLabel(detail)}
               </p>
             </div>
+          </div>
+
+          <h2 className="mt-7 mb-3 text-[17px] font-extrabold text-[#13364A]">
+            Bảng giá tham khảo
+          </h2>
+          <div className="rounded-2xl bg-white p-4">
+            {detail.prices.length === 0 ? (
+              <p className="text-[12.5px] text-[#72818C]">Chưa có thông tin giá.</p>
+            ) : (
+              <ul className="divide-y divide-[#EEF1F4]">
+                {detail.prices.map((price, index) => (
+                  <li
+                    key={`${price.priceType}-${index}`}
+                    className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
+                  >
+                    <span className="text-[12.5px] text-[#4F5F6B]">
+                      {price.description ?? PRICE_LABELS[price.priceType] ?? 'Giá'}
+                    </span>
+                    <span
+                      className={`shrink-0 text-[13.5px] font-extrabold ${
+                        price.amount === 0 ? 'text-[#13936B]' : 'text-[#13364A]'
+                      }`}
+                    >
+                      {formatVnd(price.amount)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p className="mt-3 flex items-center gap-1.5 text-[11px] text-[#8793AB]">
+              <Icon name="info" className="text-[14px]" />
+              Giá tham khảo, có thể thay đổi theo thời điểm.
+            </p>
+          </div>
+
+          <h2 className="mt-7 mb-3 text-[17px] font-extrabold text-[#13364A]">Giờ mở cửa</h2>
+          <div className="rounded-2xl bg-white p-4">
+            {detail.openingHours.length === 0 ? (
+              <p className="flex items-center gap-2 text-[13px] font-bold text-[#087A78]">
+                <Icon name="all_inclusive" className="text-[18px]" />
+                Mở cả ngày, tất cả các ngày trong tuần
+              </p>
+            ) : (
+              <ul className="divide-y divide-[#EEF1F4]">
+                {[...detail.openingHours]
+                  .sort((a, b) => a.dayOfWeek - b.dayOfWeek)
+                  .map((hour) => {
+                    const today = hour.dayOfWeek === todayOfWeek();
+                    return (
+                      <li
+                        key={hour.dayOfWeek}
+                        className={`flex items-center justify-between py-2 text-[12.5px] first:pt-0 last:pb-0 ${
+                          today ? 'font-extrabold text-[#087A78]' : 'text-[#4F5F6B]'
+                        }`}
+                      >
+                        <span>
+                          {DAY_LABELS[hour.dayOfWeek - 1]}
+                          {today && ' (hôm nay)'}
+                        </span>
+                        <span className={hour.closed ? 'text-[#C2412D]' : undefined}>
+                          {hour.closed ? 'Đóng cửa' : `${hour.openTime} - ${hour.closeTime}`}
+                        </span>
+                      </li>
+                    );
+                  })}
+              </ul>
+            )}
           </div>
 
           <div className="mt-7 mb-3 flex items-center justify-between">

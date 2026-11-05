@@ -154,7 +154,7 @@ export default function PriceManager({
               )}
             </span>
             <span className="font-title-sm text-title-sm font-bold text-primary">
-              {formatAmount({ ...item })}
+              {formatAmount({ ...item }, t('placeReview.detail.free'))}
             </span>
             <button
               type="button"

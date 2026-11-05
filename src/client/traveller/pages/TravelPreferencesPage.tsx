@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { errorMessage } from '@/client/api/http';
 import { referenceApi } from '@/client/api/referenceApi';
@@ -12,7 +12,8 @@ import {
   toInterestOptions,
   toSpecialNeedOptions,
 } from '@/client/traveller/data/preferenceOptions';
-import { FormAlert, Spinner } from '@/client/ui/Blocks';
+import { FormAlert, Notice, Spinner } from '@/client/ui/Blocks';
+import { routeNotice } from '@/client/ui/useNotice';
 import PageBar from '@/client/ui/PageBar';
 
 const STEPS = [
@@ -146,6 +147,8 @@ function IconList({
 /** Sở thích du lịch 2 bước — theo TravelPreferencesScreen của mobile, lưu qua API */
 export default function TravelPreferencesPage() {
   const navigate = useNavigate();
+  // Vừa tạo tài khoản → lời chào kèm gợi ý chọn sở thích
+  const welcome = routeNotice(useLocation().state);
   const [step, setStep] = useState(0);
   const [preferences, setPreferences] = useState<TravelPreferences | null>(null);
   const [interestOptions, setInterestOptions] = useState<ImageOption[] | null>(null);
@@ -260,6 +263,7 @@ export default function TravelPreferencesPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <PageBar title="Sở thích du lịch" onBack={handleBack} />
+      {welcome && step === 0 && <Notice>{welcome}</Notice>}
 
       <div className="flex items-center gap-3">
         <div className="h-[7px] flex-1 overflow-hidden rounded-full bg-[#E6EAF0]">

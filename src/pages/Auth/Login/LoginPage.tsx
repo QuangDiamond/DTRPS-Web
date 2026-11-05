@@ -5,13 +5,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import AuthAlert from '@/components/auth/AuthAlert';
 import AuthHeading from '@/components/auth/AuthHeading';
 import AuthInput from '@/components/auth/AuthInput';
-import AuthNotice from '@/components/auth/AuthNotice';
 import AuthSubmitButton from '@/components/auth/AuthSubmitButton';
 import PasswordInput from '@/components/auth/PasswordInput';
+import { Icon } from '@/components/common';
 import { LOGIN_BRAND_CONTENT } from '@/constants/auth';
 import { ROUTES } from '@/constants/routes';
 import { useAuth, useToast } from '@/hooks';
+import SessionEndedBanner from '@/components/common/SessionEndedBanner';
 import AuthLayout from '@/layouts/AuthLayout';
+import { adminSessionEnd } from '@/utils/sessionEnd';
 import { getErrorMessage } from '@/utils/error';
 import { getStateString } from '@/utils/routeState';
 
@@ -27,6 +29,8 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Tab vừa bị đăng xuất (không thao tác / phiên hết hạn) — còn khi F5 hay quay lại tab
+  const [ended] = useState(() => adminSessionEnd.get());
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -53,6 +57,16 @@ export default function LoginPage() {
         title={t('auth.login.administratorPortal')}
         description={t('auth.login.signWithYourIssued')}
       />
+
+      {ended && (
+        <SessionEndedBanner
+          reason={ended}
+          title={t(ended === 'idle' ? 'session.idleTitle' : 'session.expiredTitle')}
+          message={t(ended === 'idle' ? 'session.idleMessage' : 'session.expiredMessage', {
+            minutes: 30,
+          })}
+        />
+      )}
 
       <form className="space-y-space-md" onSubmit={(event) => void handleSubmit(event)} noValidate>
         <AuthInput
@@ -104,10 +118,10 @@ export default function LoginPage() {
         </div>
       </form>
 
-      <AuthNotice icon="verified_user" title={t('auth.login.enterpriseGradeSecurity2fa')}>
-        {t('auth.login.secureSignWith2fa')}
-      </AuthNotice>
-
+      <p className="flex items-start gap-2 font-body-sm text-body-sm text-on-surface-variant">
+        <Icon name="info" className="mt-0.5 text-[16px] text-outline" />
+        {t('auth.login.adminOnlyNote')}
+      </p>
     </AuthLayout>
   );
 }

@@ -301,7 +301,11 @@
   },
   "session": {
     "idleLogout": "Phiên đăng nhập đã kết thúc sau {{minutes}} phút không thao tác",
-    "welcome": "Xác thực thành công. Chào mừng {{name}}!"
+    "welcome": "Xác thực thành công. Chào mừng {{name}}!",
+    "idleTitle": "Phiên đăng nhập đã tạm dừng",
+    "idleMessage": "Bạn đã không thao tác trong {{minutes}} phút nên tab này đã được đăng xuất để bảo vệ tài khoản. Đăng nhập lại để tiếp tục — bạn sẽ quay về đúng trang đang xem.",
+    "expiredTitle": "Phiên đăng nhập đã hết hạn",
+    "expiredMessage": "Phiên làm việc đã hết hạn hoặc tài khoản vừa đăng xuất ở nơi khác. Vui lòng đăng nhập lại để tiếp tục."
   },
   "time": {
     "justNow": "Vừa xong",
@@ -835,10 +839,12 @@
       "description": "Mô tả",
       "noDescription": "Chưa có mô tả",
       "hours": "Giờ mở cửa",
-      "noHours": "Chưa khai báo giờ mở cửa",
+      "noHours": "Mở cả ngày — không có giờ đóng/mở cố định",
       "closed": "Đóng cửa",
       "prices": "Giá tham khảo",
-      "noPrices": "Chưa khai báo giá",
+      "noPrices": "Chưa có thông tin giá",
+      "free": "Miễn phí",
+      "priceNote": "Giá tham khảo, có thể thay đổi theo thời điểm.",
       "info": "Thông tin địa điểm",
       "name": "Tên địa điểm",
       "group": "Nhóm dịch vụ",
@@ -2689,8 +2695,7 @@
       "forgotPassword": "Quên mật khẩu?",
       "signAdminPortal": "Đăng nhập Cổng Quản trị",
       "verifyingCredentials": "Đang xác thực thông tin...",
-      "secureSignWith2fa": "Đăng nhập an toàn với chuẩn xác thực 2FA. KHÔNG hỗ trợ đăng nhập qua mạng xã hội nhằm bảo toàn dữ liệu quốc gia.",
-      "enterpriseGradeSecurity2fa": "Bảo mật cấp Doanh nghiệp & 2FA"
+      "adminOnlyNote": "Chỉ dành cho tài khoản quản trị. Tab tự đăng xuất sau 30 phút không thao tác."
     },
     "resetPassword": {
       "theNewPasswordDoes": "Mật khẩu mới chưa đáp ứng đủ yêu cầu bảo mật",
@@ -2728,23 +2733,16 @@
       "anUppercaseLetterZ": "Có chữ in hoa (A-Z)",
       "aNumber09": "Có chữ số (0-9)",
       "aSpecialCharacter": "Có ký tự đặc biệt (!@#...)",
-      "infrastructureV384": "Cơ sở hạ tầng v3.8.4 hoạt động ổn định",
-      "comprehensiveOperationsManagementSystem": "Hệ thống Điều hành & Quản lý Toàn diện",
-      "vietnamSCentralSmart": "Kiến trúc điều phối thông minh trung tâm du lịch Việt Nam, trao quyền kiểm soát và phân tích thời gian thực cho ban quản trị chuyên trách.",
-      "multiLayerSecurityZero": "Bảo mật đa tầng & Mã hoá Zero-Trust",
-      "hardwareCertificateAuthenticationReal": "Xác thực chứng chỉ phần cứng, ghi log hoạt động chống xâm nhập thời gian thực.",
-      "realTimeDataManagement": "Quản lý Dữ liệu Thời gian Thực",
-      "syncsInternationalVisitorFlows": "Đồng bộ dữ liệu địa điểm và luồng khách du lịch quốc tế tại 63 tỉnh thành.",
-      "automatedPartnerListingReview": "Duyệt đối tác & Niêm yết tự động",
-      "aiAssistedReviewHotels": "Quy trình thẩm định khách sạn, đơn vị lữ hành và trải nghiệm ứng dụng AI phân loại.",
-      "adminAccountSecurityRecovery": "Bảo mật & Khôi phục Tài khoản Quản trị",
-      "multiLayerAuthenticationSecure": "Quy trình xác thực đa lớp và mã hóa an toàn bảo vệ quyền điều phối hệ thống du lịch thông minh toàn quốc.",
-      "highlySecure6Digit": "Mã OTP 6 số bảo mật cao",
-      "shortValidityAutomaticallyExpires": "Thời hạn hiệu lực ngắn, tự động vô hiệu hóa sau 5 phút",
-      "temporaryLockAfterMore": "Khóa tạm thời khi nhập sai quá 5 lần",
-      "protectsAdminAccountsAgainst": "Bảo vệ tài khoản quản trị trước nguy cơ dò mã",
-      "twoFactorAuthentication2fa": "Xác thực 2 yếu tố (2FA / Zero-Trust)",
-      "ensuresOnlyRightfulAccount": "Đảm bảo chỉ đúng chủ tài khoản được cấp quyền truy cập"
+      "loginTitle": "Quản trị SmartTravel",
+      "loginDescription": "Quản lý điểm đến, xét duyệt đối tác và theo dõi hoạt động của hệ thống gợi ý lịch trình du lịch.",
+      "featureReviewTitle": "Xét duyệt đối tác & địa điểm",
+      "featureReviewText": "Duyệt hồ sơ đối tác, địa điểm đăng ký và đề xuất chỉnh sửa — cập nhật trực tiếp, không cần tải lại.",
+      "featurePlacesTitle": "Quản lý điểm đến",
+      "featurePlacesText": "Địa điểm, dịch vụ & loại hình, giờ mở cửa, giá và hình ảnh trên bản đồ.",
+      "featureUsersTitle": "Người dùng & báo cáo",
+      "featureUsersText": "Theo dõi tài khoản du khách, đối tác và số liệu hoạt động.",
+      "recoveryTitle": "Khôi phục mật khẩu quản trị",
+      "recoveryDescription": "Làm theo từng bước để đặt lại mật khẩu cho tài khoản quản trị."
     },
     "errors": {
       "invalidCredentials": "Email hoặc mật khẩu không chính xác",
@@ -2764,15 +2762,8 @@
     }
   },
   "layout": {
-    "authBrandPanel": {
-      "viettelTier3Idc": "IDC Viettel Tier-3 Đạt chuẩn ISO 27001"
-    },
     "authLayout": {
-      "privacyPolicy": "Chính sách Bảo mật",
-      "operatingRegulations": "Quy chế Vận hành",
-      "systemAdministrator": "Quản trị viên hệ thống",
-      "n2025SmartTravelVietnam": "© 2025 Smart Travel Vietnam Co., Ltd. Tất cả quyền được bảo lưu.",
-      "isBeingUpdated": "{{label}} đang được cập nhật"
+      "copyright": "© 2025 SmartTravel · Hệ thống quản trị"
     }
   },
   "services": {
@@ -3183,7 +3174,7 @@
       "photos": "Hình ảnh",
       "photosHint": "Tối đa 10 ảnh. Ảnh chính hiển thị đầu tiên với du khách.",
       "hours": "Giờ mở cửa",
-      "hoursHint": "Khai báo đủ 7 ngày; bỏ chọn \"Mở cửa\" cho ngày nghỉ.",
+      "hoursHint": "Mở cả ngày, hoặc khai báo đủ 7 ngày (bỏ chọn \"Mở cửa\" cho ngày nghỉ).",
       "prices": "Bảng giá",
       "pricesHint": "Giá tính bằng VND, không âm, tối đa 20 mức giá.",
       "publish": "Hiển thị",
@@ -3234,7 +3225,11 @@
       "closed": "Đóng cửa",
       "openAt": "Giờ mở cửa {{day}}",
       "closeAt": "Giờ đóng cửa {{day}}",
-      "copyMonday": "Áp dụng giờ của Thứ 2 cho cả tuần"
+      "copyMonday": "Áp dụng giờ của Thứ 2 cho cả tuần",
+      "mode": "Kiểu giờ mở cửa",
+      "allDay": "Mở cả ngày",
+      "custom": "Theo giờ cụ thể",
+      "allDayHint": "Không có giờ đóng/mở cố định — khách sẽ thấy “Mở cả ngày”."
     },
     "photos": {
       "cover": "Ảnh chính",

@@ -3,6 +3,7 @@ import { authApi } from '@/client/api/authApi';
 import { bindSession } from '@/client/api/http';
 import type { AuthResponse, ClientUser, RoleName } from '@/client/api/types';
 import { ClientAuthContext } from './clientAuthContext';
+import { clientSessionEnd } from '@/utils/sessionEnd';
 import { tabLock } from '@/utils/useIdleTimeout';
 import { type ClientSession, clearSession, readSession, writeSession } from './sessionStorage';
 
@@ -55,7 +56,11 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
     bindSession({
       getAccessToken: () => sessionRef.current?.accessToken ?? null,
       refresh: refreshSession,
-      onExpired: () => save(null),
+      onExpired: () => {
+        // Phiên hết hạn / bị thu hồi khi đang dùng → trang đăng nhập giải thích lý do
+        if (sessionRef.current) clientSessionEnd.set('expired');
+        save(null);
+      },
     });
     return () => bindSession(null);
   }, [refreshSession, save]);
@@ -64,16 +69,19 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
     async (email: string, password: string, remember: boolean) => {
       const response = await authApi.login(email, password);
       idleLock.unlock();
+      clientSessionEnd.clear();
       save(toSession(response, remember));
       return response.user;
     },
     [save],
   );
 
+  /** Bước cuối đăng ký: vé từ mã OTP đã xác thực + họ tên + mật khẩu → tạo tài khoản và đăng nhập */
   const register = useCallback(
-    async (name: string, email: string, password: string) => {
-      const response = await authApi.register(name, email, password);
+    async (ticket: string, name: string, password: string) => {
+      const response = await authApi.completeRegistration(ticket, name, password);
       idleLock.unlock();
+      clientSessionEnd.clear();
       save(toSession(response, true));
       return response.user;
     },
@@ -83,11 +91,13 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
   const logout = useCallback(() => {
     const current = sessionRef.current;
     if (current) authApi.revoke(current.refreshToken).catch(() => undefined);
+    clientSessionEnd.clear();
     save(null);
   }, [save]);
 
   const lockIdle = useCallback(() => {
     idleLock.lock();
+    clientSessionEnd.set('idle');
     // Không xoá phiên lưu chung, không thu hồi token: chỉ tab này phải đăng nhập lại
     sessionRef.current = null;
     setSession(null);

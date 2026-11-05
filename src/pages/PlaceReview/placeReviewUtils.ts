@@ -83,8 +83,11 @@ export const DAY_KEYS: Record<number, TranslationKey> = {
 export const displayDate = (iso?: string): string =>
   iso ? formatDate(toIsoDate(new Date(iso))) : '—';
 
-export const formatAmount = (price: PlacePrice): string =>
-  `${new Intl.NumberFormat('vi-VN').format(price.amount)} ${price.currency}`;
+/** 0 đ → "Miễn phí" (hoặc nhãn đã dịch) */
+export const formatAmount = (price: PlacePrice, freeLabel = 'Miễn phí'): string =>
+  price.amount === 0
+    ? freeLabel
+    : `${new Intl.NumberFormat('vi-VN').format(price.amount)} ${price.currency}`;
 
 /** "ROOM_NIGHT" → "Room night" */
 export const priceTypeLabel = (type: string): string => {

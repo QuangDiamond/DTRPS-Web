@@ -111,8 +111,7 @@ export default function ForgotPasswordPage() {
         {step === 1 && sent && (
           <>
             <p className="-mt-2 mb-4 text-[12px] leading-5 text-[#8A99A6]">
-              Nếu email này đã đăng ký, mã sẽ đến trong ít phút. Không thấy? Hãy xem mục Spam /
-              Quảng cáo.
+              Nếu email này đã đăng ký, mã sẽ được gửi tới hộp thư của bạn.
             </p>
             <OtpStep
               email={email}

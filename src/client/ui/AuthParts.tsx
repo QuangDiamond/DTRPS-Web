@@ -288,6 +288,10 @@ export function OtpStep({
           </button>
         )}
       </div>
+      <p className="-mt-2 mb-5 flex items-start gap-1.5 text-[11.5px] leading-[17px] text-[#8A99A6]">
+        <Icon name="info" className="mt-px text-[15px]" />
+        Không thấy mã? Kiểm tra mục Spam / Quảng cáo — mã có thể đến sau 1–2 phút.
+      </p>
 
       <PrimaryButton
         type="button"

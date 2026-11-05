@@ -4,6 +4,7 @@ import { Icon } from '@/components/common';
 import SessionEndedBanner from '@/components/common/SessionEndedBanner';
 import { errorMessage } from '@/client/api/http';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
+import { onboarding } from '@/client/auth/onboarding';
 import ClientAuthLayout from '@/client/layouts/ClientAuthLayout';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import { AuthCard, GoogleButton } from '@/client/ui/AuthParts';
@@ -12,7 +13,7 @@ import { PrimaryButton } from '@/client/ui/Buttons';
 import Field from '@/client/ui/Field';
 import { routeNotice } from '@/client/ui/useNotice';
 import { isValidEmail } from '@/client/utils/validation';
-import { clientSessionEnd } from '@/utils/sessionEnd';
+import type { SessionEndReason } from '@/utils/sessionEnd';
 
 /** Trang được mở trước khi bị chuyển về đăng nhập (RequireClientLogin gửi kèm) */
 function redirectTarget(state: unknown): string {
@@ -23,11 +24,26 @@ function redirectTarget(state: unknown): string {
   return CLIENT_ROUTES.HOME;
 }
 
+/** Email vừa đăng ký do trang Đăng ký gửi kèm (state.email) */
+function emailOf(state: unknown): string {
+  if (typeof state !== 'object' || state === null || !('email' in state)) return '';
+  const { email } = state as { email: unknown };
+  return typeof email === 'string' ? email : '';
+}
+
+/** Lý do bị đưa về đăng nhập do guard gửi kèm (state.ended) */
+function sessionEndOf(state: unknown): SessionEndReason | null {
+  if (typeof state !== 'object' || state === null || !('ended' in state)) return null;
+  const { ended } = state as { ended: unknown };
+  return ended === 'idle' || ended === 'expired' ? ended : null;
+}
+
 export default function LoginPage() {
   const { login } = useClientAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [email, setEmail] = useState('');
+  // Vừa đăng ký xong → điền sẵn email, chỉ cần nhập mật khẩu
+  const [email, setEmail] = useState(() => emailOf(location.state));
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -35,8 +51,9 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
   // Thông báo do trang trước gửi kèm (vd. vừa đặt lại mật khẩu)
   const notice = routeNotice(location.state);
-  // Tab vừa bị đăng xuất (không thao tác 30 phút / phiên hết hạn) — còn khi F5 hay quay lại tab
-  const [ended] = useState(() => clientSessionEnd.get());
+  // Tab vừa bị đá về đây (không thao tác 30 phút / phiên hết hạn): lý do đi kèm lần chuyển trang,
+  // nên vẫn còn khi F5 hay quay lại tab; khách tự bấm Đăng nhập thì không có.
+  const ended = sessionEndOf(location.state);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -49,8 +66,16 @@ export default function LoginPage() {
 
     setBusy(true);
     try {
-      await login(email, password, remember);
-      navigate(redirectTarget(location.state), { replace: true });
+      const user = await login(email, password, remember);
+      if (onboarding.take(user.email)) {
+        // Lần đầu đăng nhập sau khi đăng ký: trả lời vài câu hỏi rồi mới vào trang chủ
+        navigate(CLIENT_ROUTES.PREFERENCES, {
+          replace: true,
+          state: { notice: 'Chào mừng bạn! Trả lời vài câu hỏi để SmartTravel gợi ý đúng gu bạn.' },
+        });
+      } else {
+        navigate(redirectTarget(location.state), { replace: true });
+      }
     } catch (error) {
       setFormError(errorMessage(error));
       setBusy(false);
@@ -76,7 +101,7 @@ export default function LoginPage() {
         subtitle="Chào mừng trở lại! Tiếp tục khám phá và lên kế hoạch chuyến đi của bạn."
       >
         <form onSubmit={(event) => void submit(event)} noValidate>
-          {notice && !ended && !formError && <Notice>{notice}</Notice>}
+          {notice && !ended && !formError && <Notice tone="success">{notice}</Notice>}
           {formError && <FormAlert message={formError} />}
           <Field
             label="Email"

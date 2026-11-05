@@ -44,14 +44,17 @@ export function Notice({
   tone = 'info',
 }: {
   children: ReactNode;
-  tone?: 'info' | 'warning' | 'danger';
+  tone?: 'info' | 'success' | 'warning' | 'danger';
 }) {
   const styles = {
     info: 'bg-[#E5F5F0] text-[#356D64]',
+    success: 'border border-[#8FD9B6] bg-[#DDF7EA] font-semibold text-[#11643F]',
     warning: 'bg-[#FFF4DD] text-[#7A5410]',
     danger: 'bg-[#FCE4E3] text-[#9A2D2D]',
   }[tone];
-  const icon = { info: 'info', warning: 'schedule', danger: 'error' }[tone];
+  const icon = { info: 'info', success: 'check_circle', warning: 'schedule', danger: 'error' }[
+    tone
+  ];
   return (
     <div className={`mb-4 flex items-start gap-2 rounded-2xl p-4 ${styles}`}>
       <Icon name={icon} className="text-[18px]" />

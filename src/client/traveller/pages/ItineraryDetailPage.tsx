@@ -1,197 +1,657 @@
-import { useState } from 'react';
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
-import { Icon } from '@/components/common';
-import { CLIENT_ROUTES, itineraryDayPath, liveMapPath } from '@/client/routePaths';
-import { type Activity, ITINERARY, NOTE_TONES } from '@/client/traveller/data/itinerary';
-import { NoticeToast } from '@/client/ui/Overlay';
-import { useNotice } from '@/client/ui/useNotice';
-import PageBar, { BarIconButton } from '@/client/ui/PageBar';
 
-function ActivityImage({ uri, icon }: { uri: string; icon: string }) {
-  const [failed, setFailed] = useState(false);
-  return (
-    <span className="flex h-[78px] w-[78px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#E6F4F2] text-[#006B65]">
-      {failed ? (
-        <Icon name={icon} className="text-[33px]" />
-      ) : (
-        <img
-          src={uri}
-          alt=""
-          onError={() => setFailed(true)}
-          className="h-full w-full object-cover"
-        />
-      )}
-    </span>
-  );
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Icon } from '@/components/common';
+import { ClientApiError, errorMessage } from '@/client/api/http';
+import {
+  tripFlowApi,
+  type ItineraryActivity,
+  type ItineraryOverview,
+  type ItineraryOverviewDay,
+} from '@/client/api/tripFlowApi';
+import {
+  CLIENT_ROUTES,
+  itineraryDayPath,
+  placePath,
+} from '@/client/routePaths';
+import { NoticeToast } from '@/client/ui/Overlay';
+import PageBar, { BarIconButton } from '@/client/ui/PageBar';
+import { useNotice } from '@/client/ui/useNotice';
+
+const moneyFormatter = new Intl.NumberFormat('vi-VN', {
+  maximumFractionDigits: 0,
+});
+
+function formatMoney(amount: number | null | undefined, currency: string) {
+  if (amount === null || amount === undefined) return 'Chưa có ước tính';
+  return `${moneyFormatter.format(amount)} ${currency}`;
 }
 
-function TimelineItem({ item, isLast }: { item: Activity; isLast: boolean }) {
+function formatDate(value: string) {
+  const parts = value?.split('-') ?? [];
+  if (parts.length !== 3) return value || 'Chưa cập nhật';
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+function formatTime(value: string | null) {
+  return value ? value.slice(0, 5) : '--:--';
+}
+
+// Chỉ tính thời lượng nếu Backend đã trả đủ cả hai mốc thời gian.
+function formatDuration(start: string | null, end: string | null) {
+  if (!start || !end) return null;
+
+  const [startHour, startMinute] = start.split(':').map(Number);
+  const [endHour, endMinute] = end.split(':').map(Number);
+
+  if (
+    ![startHour, startMinute, endHour, endMinute].every(Number.isFinite)
+  ) {
+    return null;
+  }
+
+  const minutes =
+    endHour * 60 + endMinute -
+    (startHour * 60 + startMinute);
+
+  if (minutes <= 0) return null;
+
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+
+  return hours > 0
+    ? `${hours} giờ${remainder ? ` ${remainder} phút` : ''}`
+    : `${remainder} phút`;
+}
+
+function ActivityCard({
+                        activity,
+                        index,
+                        isLast,
+                        currency,
+                      }: {
+  activity: ItineraryActivity;
+  index: number;
+  isLast: boolean;
+  currency: string;
+}) {
+  const duration = formatDuration(
+    activity.startTime,
+    activity.endTime,
+  );
+
+  const travelTime = activity.travelTimeMinutes;
+
   return (
-    <li className="relative mb-3.5 pl-[27px]">
-      {!isLast && <span className="absolute top-3.5 -bottom-3.5 left-2 w-0.5 bg-[#BDECE5]" />}
-      <span
-        className={`absolute top-[9px] left-px h-4 w-4 rounded-md border-[3px] border-[#DBF5F0] ${
-          item.evening ? 'bg-[#B98122]' : 'bg-[#087F78]'
-        }`}
-      />
-      <div className="rounded-[17px] border border-[#EDF0F8] bg-white p-3">
-        <div className="flex items-center justify-between">
-          <span
-            className={`text-[17px] font-extrabold ${item.evening ? 'text-[#AC771B]' : 'text-[#087F78]'}`}
-          >
-            {item.time}
+    <li className="relative pb-4 pl-8 last:pb-0">
+      {!isLast && (
+        <span className="absolute bottom-0 left-[11px] top-5 w-[2px] bg-[#BDECE5]" />
+      )}
+
+      <span className="absolute left-0 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#DDF7EF] text-[11px] font-extrabold text-[#006B65]">
+        {index + 1}
+      </span>
+
+      <article className="rounded-[18px] border border-[#E8EDF1] bg-white p-3.5 shadow-[0_2px_9px_rgba(19,54,74,0.04)]">
+        {/* THỜI GIAN HOẠT ĐỘNG */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="flex items-center gap-1 text-[14px] font-extrabold text-[#087F78]">
+            <Icon
+              name="schedule"
+              className="text-[17px]"
+            />
+            {formatTime(activity.startTime)}
+            {' – '}
+            {formatTime(activity.endTime)}
           </span>
-          <span className="rounded-full bg-[#EFF0FD] px-3 py-1 text-[10px] font-bold text-[#8290B0]">
-            {item.duration}
-          </span>
+
+          {duration && (
+            <span className="rounded-full bg-[#EFF0FD] px-2.5 py-1 text-[10px] font-bold text-[#657796]">
+              {duration}
+            </span>
+          )}
         </div>
-        <div className="mt-2 flex items-start">
-          <ActivityImage uri={item.image} icon={item.icon} />
-          <div className="ml-3 min-w-0 flex-1">
-            <p className="line-clamp-3 text-[13px] leading-[18px] font-extrabold text-[#14364F]">
-              {item.title}
+
+        {/* THÔNG TIN ĐỊA ĐIỂM */}
+        <div className="mt-3 flex gap-3">
+          <span className="flex h-[70px] w-[70px] shrink-0 items-center justify-center rounded-xl bg-[#E6F4F2]">
+            <Icon
+              name="place"
+              className="text-[33px] text-[#087F78]"
+            />
+          </span>
+
+          <div className="min-w-0 flex-1">
+            <Link
+              to={placePath(String(activity.placeId))}
+              className="text-[14px] font-extrabold leading-5 text-[#14364F] hover:text-[#087F78]"
+            >
+              {activity.placeName}
+            </Link>
+
+            <p className="mt-1.5 flex items-start gap-1 text-[11px] leading-4 text-[#7E8DA7]">
+              <Icon
+                name="location_on"
+                className="shrink-0 text-[16px] text-[#087F78]"
+              />
+
+              <span>
+                {activity.placeAddress || 'Chưa cập nhật địa chỉ'}
+              </span>
             </p>
-            <p className="mt-2 flex items-start gap-1 text-[10.5px] leading-[15px] text-[#7E8DA7]">
-              <Icon name="location_on" className="text-[15px] text-[#087F78]" />
-              <span className="line-clamp-2 flex-1">{item.location}</span>
+
+            <p className="mt-2 text-[12px] font-extrabold text-[#087F78]">
+              {formatMoney(activity.estimatedCost, currency)}
             </p>
           </div>
         </div>
-        <p
-          className={`mt-3 flex items-start gap-2 rounded-xl px-3 py-2.5 text-[10.5px] leading-4 font-semibold ${NOTE_TONES[item.noteTone]}`}
-        >
-          <Icon name={item.noteIcon} className="text-[16px]" />
-          <span className="flex-1">{item.note}</span>
-        </p>
-      </div>
-      {item.transfer && (
-        <p className="flex items-center gap-2 px-2 pt-3 pb-0.5 text-[10.5px] leading-[15px] text-[#8690AC]">
-          <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#ECF0FF] text-[#8394BD]">
-            <Icon name="directions_car" className="text-[14px]" />
-          </span>
-          {item.transfer}
-        </p>
-      )}
+
+        {/* THỜI GIAN DI CHUYỂN */}
+        {travelTime !== null && travelTime > 0 && (
+          <p className="mt-3 flex items-center gap-2 rounded-xl bg-[#F4F7FB] px-3 py-2 text-[11px] leading-5 text-[#617388]">
+            <Icon
+              name="directions_car"
+              className="shrink-0 text-[17px]"
+            />
+
+            <span>
+              Thời gian di chuyển ước tính:
+              {' '}
+              <strong>{travelTime} phút</strong>
+
+              {activity.transportModeName
+                ? ` · ${activity.transportModeName}`
+                : ''}
+            </span>
+          </p>
+        )}
+
+        {/* GHI CHÚ */}
+        {activity.notes && (
+          <p className="mt-2 flex items-start gap-2 rounded-xl bg-[#F1FBF8] px-3 py-2.5 text-[11px] leading-5 text-[#4B7470]">
+            <Icon
+              name="info"
+              className="shrink-0 text-[17px]"
+            />
+
+            <span>{activity.notes}</span>
+          </p>
+        )}
+
+        {/* TRẠNG THÁI */}
+        {activity.status &&
+          activity.status !== 'PLANNED' && (
+            <p className="mt-2 text-[10px] font-semibold text-[#72818C]">
+              Trạng thái: {activity.status}
+            </p>
+          )}
+      </article>
     </li>
   );
 }
 
-/** Chi tiết lịch trình theo ngày — theo ItineraryDetailScreen của mobile */
+/**
+ * BƯỚC 6 - CHI TIẾT LỊCH TRÌNH.
+ *
+ * Đọc ngày thật từ:
+ * GET /travel-plans/{planId}/itineraries/active/overview
+ *
+ * Không dùng dữ liệu ITINERARY mẫu.
+ * Không dùng AI để tự xếp lịch.
+ */
 export default function ItineraryDetailPage() {
-  const params = useParams();
-  const navigate = useNavigate();
-  const [bookmarked, setBookmarked] = useState(false);
+  const { day: rawDay } =
+    useParams<{ day: string }>();
+
+  const [searchParams] = useSearchParams();
+
+  const rawPlanId = searchParams.get('planId');
+
+  const planId = rawPlanId
+    ? Number(rawPlanId)
+    : NaN;
+
+  const dayNumber = rawDay
+    ? Number(rawDay)
+    : NaN;
+
+  const validPlanId =
+    Number.isSafeInteger(planId) &&
+    planId > 0;
+
+  const validDayNumber =
+    Number.isSafeInteger(dayNumber) &&
+    dayNumber > 0;
+
+  const [overview, setOverview] =
+    useState<ItineraryOverview | null>(null);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  const [retryCount, setRetryCount] = useState(0);
+
   const [notice, showNotice] = useNotice();
-  const dayNumber = Number(params.day);
-  const currentDay = ITINERARY.find((day) => day.day === dayNumber);
 
-  if (!currentDay) return <Navigate to={CLIENT_ROUTES.ITINERARY} replace />;
+  const overviewUrl = validPlanId
+    ? `${CLIENT_ROUTES.ITINERARY}?planId=${planId}`
+    : CLIENT_ROUTES.TRIPS;
 
-  const share = async () => {
-    const title = `Ngày ${currentDay.day}: ${currentDay.title}`;
-    const text = `${title}\nSmartTravel - Lịch trình du lịch`;
+  // =============================================
+  // LẤY LỊCH TRÌNH THẬT TỪ BACKEND
+  // =============================================
+
+  useEffect(() => {
+    if (!validPlanId || !validDayNumber) {
+      setOverview(null);
+      setLoading(false);
+      setError(
+        'Thiếu mã kế hoạch hoặc số ngày hợp lệ.',
+      );
+      return;
+    }
+
+    let active = true;
+
+    setOverview(null);
+    setLoading(true);
+    setError(null);
+
+    tripFlowApi
+      .overview(planId)
+      .then((data) => {
+        if (active) {
+          setOverview(data);
+        }
+      })
+      .catch((caught: unknown) => {
+        if (!active) return;
+
+        if (
+          caught instanceof ClientApiError &&
+          caught.status === 404
+        ) {
+          setError(
+            'Không tìm thấy lịch trình đang hoạt động của kế hoạch này.',
+          );
+        } else {
+          setError(errorMessage(caught));
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [
+    planId,
+    validPlanId,
+    validDayNumber,
+    retryCount,
+  ]);
+
+  // =============================================
+  // LẤY DANH SÁCH NGÀY VÀ HOẠT ĐỘNG
+  // =============================================
+
+  const days = useMemo(
+    () =>
+      [...(overview?.days ?? [])].sort(
+        (a, b) => a.dayNumber - b.dayNumber,
+      ),
+    [overview],
+  );
+
+  const currentDay:
+    | ItineraryOverviewDay
+    | undefined = days.find(
+    (item) => item.dayNumber === dayNumber,
+  );
+
+  const activities = useMemo(
+    () =>
+      [...(currentDay?.activities ?? [])].sort(
+        (a, b) => a.itemOrder - b.itemOrder,
+      ),
+    [currentDay],
+  );
+
+  const currentIndex = days.findIndex(
+    (item) => item.dayNumber === dayNumber,
+  );
+
+  const previousDay =
+    currentIndex > 0
+      ? days[currentIndex - 1]
+      : null;
+
+  const nextDay =
+    currentIndex >= 0
+      ? (days[currentIndex + 1] ?? null)
+      : null;
+
+  const dayUrl = (number: number) =>
+    `${itineraryDayPath(number)}?planId=${planId}`;
+
+  const currency = overview?.currency ?? 'VND';
+
+  // =============================================
+  // CHIA SẺ NỘI DUNG NGÀY
+  // =============================================
+
+  const shareDay = async () => {
+    if (!overview || !currentDay) return;
+
+    const title =
+      `${overview.itineraryTitle} — Ngày ${currentDay.dayNumber}`;
+
+    const text = [
+      title,
+      `Ngày tham quan: ${formatDate(currentDay.visitDate)}`,
+      ...activities.map(
+        (item) =>
+          `${formatTime(item.startTime)}–${formatTime(item.endTime)}: ${item.placeName}`,
+      ),
+      `Chi phí dự kiến: ${formatMoney(
+        currentDay.estimatedCost,
+        currency,
+      )}`,
+    ].join('\n');
+
     try {
-      if (navigator.share) await navigator.share({ title, text });
-      else {
+      if (navigator.share) {
+        await navigator.share({ title, text });
+      } else if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(text);
-        showNotice('Đã sao chép thông tin lịch trình.');
+        showNotice(
+          'Đã sao chép nội dung lịch trình ngày.',
+        );
+      } else {
+        showNotice(
+          'Trình duyệt không hỗ trợ chia sẻ hoặc sao chép.',
+        );
       }
-    } catch {
-      // Người dùng huỷ chia sẻ
+    } catch (caught) {
+      if (
+        !(
+          caught instanceof DOMException &&
+          caught.name === 'AbortError'
+        )
+      ) {
+        showNotice(
+          'Không thể chia sẻ nội dung lúc này.',
+        );
+      }
     }
   };
 
   return (
-    <div className="mx-auto max-w-3xl pb-24 md:pb-4">
+    <div className="mx-auto max-w-3xl pb-28 md:pb-4">
+      {/* HEADER */}
       <PageBar
-        title="Chi Tiết Lịch Trình"
-        backTo={CLIENT_ROUTES.ITINERARY}
+        title="Chi tiết lịch trình"
+        subtitle={overview?.destination}
+        backTo={overviewUrl}
         actions={
-          <>
-            <BarIconButton icon="share" label="Chia sẻ lịch trình" onClick={() => void share()} />
+          currentDay ? (
             <BarIconButton
-              icon="bookmark"
-              label="Lưu lịch trình"
-              active={bookmarked}
-              onClick={() => setBookmarked((previous) => !previous)}
+              icon="share"
+              label="Chia sẻ lịch trình ngày"
+              onClick={() => void shareDay()}
             />
-          </>
+          ) : undefined
         }
       />
 
-      <div className="flex flex-wrap gap-2">
-        <span className="flex items-center gap-1 rounded-full bg-[#D9F8F0] px-3 py-1.5 text-[11px] font-bold text-[#006B65]">
-          <Icon name="location_on" className="text-[16px]" />
-          {ITINERARY.length} ngày
-        </span>
-        <span className="flex items-center gap-1 rounded-full bg-[#FFF0DD] px-3 py-1.5 text-[11px] font-bold text-[#B77923]">
-          <Icon name="auto_awesome" className="text-[15px]" /> AI Tối ưu
-        </span>
-      </div>
-      <div className="mt-6 mb-3 flex items-center justify-between">
-        <h3 className="text-[17px] font-extrabold text-[#14364F]">Lịch trình chi tiết</h3>
-        <span className="text-[11px] font-semibold text-[#087F78]">
-          {ITINERARY.length} ngày trong lịch trình
-        </span>
-      </div>
+      {/* ĐANG TẢI */}
+      {loading && (
+        <div
+          role="status"
+          className="rounded-[20px] bg-white p-8 text-center text-[13px] text-[#087F78]"
+        >
+          <span className="mx-auto mb-3 block h-8 w-8 animate-spin rounded-full border-2 border-[#C3F8F0] border-t-[#087F78]" />
 
-      <div className="-mx-4 mb-5 flex gap-2 overflow-x-auto px-4" role="tablist">
-        {ITINERARY.map((day) => {
-          const active = day.day === dayNumber;
-          return (
+          Đang tải lịch trình từ Backend...
+        </div>
+      )}
+
+      {/* LỖI API */}
+      {!loading && error && (
+        <div
+          role="alert"
+          className="rounded-[20px] border border-red-100 bg-red-50 p-5"
+        >
+          <p className="text-[13px] text-red-700">
+            {error}
+          </p>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {validPlanId && validDayNumber && (
+              <button
+                type="button"
+                onClick={() =>
+                  setRetryCount(
+                    (value) => value + 1,
+                  )
+                }
+                className="rounded-full bg-white px-4 py-2 text-[12px] font-bold text-[#006B65]"
+              >
+                Thử lại
+              </button>
+            )}
+
             <Link
-              key={day.day}
-              to={itineraryDayPath(day.day)}
-              replace
-              role="tab"
-              aria-selected={active}
-              className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-3 text-[12px] font-extrabold ${
-                active ? 'bg-[#006B65] text-white' : 'bg-[#F0F1FF] text-[#667895]'
-              }`}
+              to={overviewUrl}
+              className="rounded-full bg-white px-4 py-2 text-[12px] font-bold text-[#006B65]"
             >
-              <Icon name="today" className="text-[16px]" />
-              Ngày {day.day} - {day.title}
+              Về tổng quan
             </Link>
-          );
-        })}
-      </div>
+          </div>
+        </div>
+      )}
 
-      <div className="mb-4">
-        <p className="text-[14px] font-extrabold text-[#14364F]">
-          Ngày {currentDay.day}: {currentDay.title}
-        </p>
-        <p className="mt-1 text-[11px] text-[#7E8DA7]">
-          {currentDay.description} · {currentDay.activities.length} hoạt động
-        </p>
-      </div>
+      {/* NGÀY KHÔNG TỒN TẠI */}
+      {!loading &&
+        !error &&
+        overview &&
+        !currentDay && (
+          <div className="rounded-[20px] bg-white p-8 text-center">
+            <Icon
+              name="event_busy"
+              className="text-[40px] text-[#94B5B6]"
+            />
 
-      <ol>
-        {currentDay.activities.map((activity, index) => (
-          <TimelineItem
-            key={activity.id}
-            item={activity}
-            isLast={index === currentDay.activities.length - 1}
-          />
-        ))}
-      </ol>
+            <h2 className="mt-3 text-[16px] font-extrabold text-[#14364F]">
+              Không tìm thấy ngày {dayNumber}
+            </h2>
 
-      <div className="fixed inset-x-0 bottom-[62px] z-20 flex items-center gap-2 border-t border-[#E7EAF5] bg-white px-3 py-2.5 md:static md:mt-4 md:rounded-[20px] md:border-0">
-        <button
-          type="button"
-          onClick={() => showNotice('Chức năng chỉnh sửa lịch trình sẽ được tích hợp sau.')}
-          className="flex h-[52px] w-[52px] flex-col items-center justify-center rounded-2xl bg-[#EFF0FF] text-[#7283AC]"
-        >
-          <Icon name="edit" className="text-[20px]" />
-          <span className="mt-0.5 text-[9px] font-bold">Sửa</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate(liveMapPath(currentDay.day))}
-          className="flex h-[52px] min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-[#006B65] text-[14px] font-extrabold text-white shadow hover:bg-primary"
-        >
-          Bắt đầu chuyến đi <Icon name="arrow_forward" className="text-[21px]" />
-        </button>
-      </div>
+            <p className="mt-2 text-[12px] text-[#72818C]">
+              Ngày này không thuộc lịch trình đang hoạt động.
+            </p>
+
+            <Link
+              to={overviewUrl}
+              className="mt-4 inline-flex rounded-full bg-[#006B65] px-5 py-3 text-[12px] font-bold text-white"
+            >
+              Xem tất cả các ngày
+            </Link>
+          </div>
+        )}
+
+      {/* NỘI DUNG LỊCH TRÌNH */}
+      {!loading &&
+        !error &&
+        overview &&
+        currentDay && (
+          <>
+            {/* THÔNG TIN NGÀY */}
+            <div className="rounded-[20px] bg-gradient-to-br from-[#DDF9F1] to-[#EDF9FB] p-4">
+              <p className="flex items-center gap-1 text-[11px] font-semibold text-[#006B65]">
+                <Icon
+                  name="event_note"
+                  className="text-[17px]"
+                />
+                Lịch trình Backend · Phiên bản
+                {' '}
+                {overview.versionNumber}
+              </p>
+
+              <h1 className="mt-2 text-[20px] font-extrabold text-[#14364F]">
+                Ngày {currentDay.dayNumber}:
+                {' '}
+                {currentDay.title || overview.destination}
+              </h1>
+
+              <p className="mt-1 text-[12px] text-[#617388]">
+                {formatDate(currentDay.visitDate)}
+                {' · '}
+                {activities.length} hoạt động
+              </p>
+
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-bold text-[#006B65]">
+                  Chi phí ngày:
+                  {' '}
+                  {formatMoney(
+                    currentDay.estimatedCost,
+                    currency,
+                  )}
+                </span>
+
+                <span className="rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-bold text-[#506775]">
+                  Tổng chuyến đi:
+                  {' '}
+                  {formatMoney(
+                    overview.totalEstimatedCost,
+                    currency,
+                  )}
+                </span>
+              </div>
+
+              {currentDay.notes && (
+                <p className="mt-3 text-[12px] leading-5 text-[#506775]">
+                  {currentDay.notes}
+                </p>
+              )}
+            </div>
+
+            {/* CHỌN NGÀY */}
+            <div
+              className="-mx-4 mb-5 mt-5 flex gap-2 overflow-x-auto px-4"
+              role="tablist"
+              aria-label="Chọn ngày tham quan"
+            >
+              {days.map((day) => (
+                <Link
+                  key={day.dayId}
+                  to={dayUrl(day.dayNumber)}
+                  replace
+                  role="tab"
+                  aria-selected={
+                    day.dayNumber === dayNumber
+                  }
+                  className={`flex shrink-0 items-center gap-1.5 rounded-xl px-4 py-3 text-[12px] font-extrabold ${
+                    day.dayNumber === dayNumber
+                      ? 'bg-[#006B65] text-white'
+                      : 'bg-[#F0F1FF] text-[#667895]'
+                  }`}
+                >
+                  <Icon
+                    name="today"
+                    className="text-[16px]"
+                  />
+                  Ngày {day.dayNumber}
+                </Link>
+              ))}
+            </div>
+
+            {/* TIÊU ĐỀ DANH SÁCH */}
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-[17px] font-extrabold text-[#14364F]">
+                Các hoạt động trong ngày
+              </h2>
+
+              <span className="text-[11px] font-semibold text-[#087F78]">
+                {activities.length} hoạt động
+              </span>
+            </div>
+
+            {/* HOẠT ĐỘNG */}
+            {activities.length === 0 ? (
+              <div className="rounded-[18px] bg-white p-6 text-center text-[12px] text-[#72818C]">
+                Ngày này chưa có hoạt động được sắp xếp.
+              </div>
+            ) : (
+              <ol>
+                {activities.map((activity, index) => (
+                  <ActivityCard
+                    key={activity.itemId}
+                    activity={activity}
+                    index={index}
+                    isLast={
+                      index === activities.length - 1
+                    }
+                    currency={currency}
+                  />
+                ))}
+              </ol>
+            )}
+
+            {/* LƯU Ý */}
+            <p className="mt-4 rounded-xl bg-[#F5F7FC] px-4 py-3 text-[11px] leading-5 text-[#72818C]">
+              Giờ tham quan, thời gian di chuyển và chi phí
+              do Backend ước tính. Lịch trình được sắp bằng
+              thuật toán, không phải AI.
+            </p>
+
+            {/* ĐIỀU HƯỚNG */}
+            <div className="mt-5 flex flex-wrap gap-2">
+              {previousDay && (
+                <Link
+                  to={dayUrl(previousDay.dayNumber)}
+                  className="flex h-12 flex-1 items-center justify-center gap-1 rounded-full bg-[#EFF0FF] px-4 text-[12px] font-extrabold text-[#14364F]"
+                >
+                  <Icon
+                    name="chevron_left"
+                    className="text-[18px]"
+                  />
+                  Ngày trước
+                </Link>
+              )}
+
+              {nextDay ? (
+                <Link
+                  to={dayUrl(nextDay.dayNumber)}
+                  className="flex h-12 flex-1 items-center justify-center gap-1 rounded-full bg-[#006B65] px-4 text-[12px] font-extrabold text-white"
+                >
+                  Ngày tiếp theo
+                  <Icon
+                    name="arrow_forward"
+                    className="text-[18px]"
+                  />
+                </Link>
+              ) : (
+                <Link
+                  to={overviewUrl}
+                  className="flex h-12 flex-1 items-center justify-center gap-1 rounded-full bg-[#006B65] px-4 text-[12px] font-extrabold text-white"
+                >
+                  Về tổng quan
+                  <Icon
+                    name="arrow_forward"
+                    className="text-[18px]"
+                  />
+                </Link>
+              )}
+            </div>
+          </>
+        )}
+
       <NoticeToast message={notice} />
     </div>
   );

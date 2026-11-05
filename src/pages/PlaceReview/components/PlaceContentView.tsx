@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/common';
 import PlaceMap from '@/components/common/PlaceMap';
+import TypeChips from '@/components/common/TypeChips';
+import { placeTypesOf } from '@/components/common/typePickerUtils';
 import {
   DAY_KEYS,
   formatAmount,
@@ -132,18 +134,17 @@ export default function PlaceContentView({
       </div>
 
       <div className="flex flex-col gap-6 xl:col-span-5">
+        <Section icon="category" title={t('placeReview.detail.types')}>
+          <TypeChips
+            {...placeTypesOf(place)}
+            labels={{
+              main: t('placeReview.detail.typeMain'),
+              empty: t('placeReview.detail.noTypes'),
+            }}
+          />
+        </Section>
         <Section icon="storefront" title={t('placeReview.detail.info')}>
           <dl>
-            <Row label={t('placeReview.detail.group')} value={place.group?.name ?? '—'} />
-            <Row label={t('placeReview.detail.category')} value={place.category?.name ?? '—'} />
-            {place.secondaryCategory && (
-              <Row
-                label={t('placeReview.detail.secondaryCategory')}
-                value={[place.secondaryGroup?.name, place.secondaryCategory.name]
-                  .filter(Boolean)
-                  .join(' › ')}
-              />
-            )}
             <Row label={t('placeReview.detail.province')} value={place.province?.name ?? '—'} />
             <Row label={t('placeReview.detail.address')} value={place.address} />
             <Row label={t('placeReview.detail.phone')} value={place.phone ?? '—'} />

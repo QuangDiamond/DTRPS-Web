@@ -114,9 +114,9 @@ export interface PlaceContent {
   website: string | null;
   group: ReferenceItem | null;
   category: ReferenceItem | null;
-  /** Loại hình phụ (không bắt buộc), có thể thuộc nhóm khác */
-  secondaryGroup?: ReferenceItem | null;
-  secondaryCategory?: ReferenceItem | null;
+  /** Mọi nhóm / loại hình của địa điểm, loại hình đại diện đứng đầu */
+  groups?: ReferenceItem[];
+  categories?: (ReferenceItem & { groupCode?: string | null })[];
   province: ReferenceItem | null;
   openingHours: OpeningHour[];
   prices: PlacePrice[];
@@ -143,8 +143,8 @@ export interface BusinessListingInput {
   name: string;
   /** Mã loại con, ví dụ "homestay" */
   categoryCode: string;
-  /** Loại hình phụ — bỏ trống / null = không có */
-  secondaryCategoryCode?: string | null;
+  /** Mọi loại hình đã tích, phần tử đầu là loại hình đại diện */
+  categoryCodes?: string[];
   provinceCode: string;
   address: string;
   description: string;
@@ -175,8 +175,8 @@ export interface PlaceSummary {
   name: string;
   group: ReferenceItem | null;
   category: ReferenceItem | null;
-  secondaryGroup?: ReferenceItem | null;
-  secondaryCategory?: ReferenceItem | null;
+  groups?: ReferenceItem[];
+  categories?: (ReferenceItem & { groupCode?: string | null })[];
   province: ReferenceItem | null;
   address: string | null;
   coverUrl: string | null;

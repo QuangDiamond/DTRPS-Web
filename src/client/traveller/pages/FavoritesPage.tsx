@@ -31,7 +31,11 @@ function FavoriteCard({ place, onRemove }: { place: PlaceSummary; onRemove: () =
       <Link to={placePath(String(place.id))} className="block">
         <div className="relative h-[170px] bg-[#CFE9E6]">
           {place.coverUrl ? (
-            <img src={place.coverUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <img
+              src={place.coverUrl}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
               <Icon name="image" className="text-[36px] text-white/70" />
@@ -67,9 +71,13 @@ function FavoriteCard({ place, onRemove }: { place: PlaceSummary; onRemove: () =
               <p className="max-w-[110px] truncate text-[13px] font-extrabold text-[#C2410C]">
                 {place.category.name}
               </p>
-              {place.secondaryCategory && (
+              {(place.categories?.length ?? 0) > 1 && (
                 <p className="max-w-[110px] truncate text-[11px] font-bold text-[#C2410C]/80">
-                  + {place.secondaryCategory.name}
+                  +{' '}
+                  {place.categories
+                    ?.slice(1)
+                    .map((type) => type.name)
+                    .join(', ')}
                 </p>
               )}
             </div>
@@ -145,7 +153,8 @@ export default function FavoritesPage() {
         (!keyword ||
           normalizeText(`${place.name} ${place.province?.name ?? ''}`).includes(keyword)),
     );
-    if (sortMode === 'rating') return [...filtered].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    if (sortMode === 'rating')
+      return [...filtered].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
     return [...filtered].sort((a, b) => a.name.localeCompare(b.name, 'vi'));
   }, [places, groupFilter, query, sortMode]);
 
@@ -226,7 +235,7 @@ export default function FavoritesPage() {
                 selected ? 'bg-[#075C66] text-white' : 'bg-white text-[#13364A]'
               }`}
             >
-              {id === 'all' ? 'Tất cả' : GROUP_LABELS[id] ?? id} ({countByGroup(id)})
+              {id === 'all' ? 'Tất cả' : (GROUP_LABELS[id] ?? id)} ({countByGroup(id)})
             </button>
           );
         })}

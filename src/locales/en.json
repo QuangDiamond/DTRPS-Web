@@ -862,7 +862,6 @@
       "name": "Place name",
       "group": "Service group",
       "category": "Type",
-      "secondaryCategory": "Second type",
       "province": "Province",
       "address": "Address",
       "coordinates": "Coordinates",
@@ -882,7 +881,14 @@
       "suspendedNotice": "This place is hidden from travellers.",
       "previous": "Previous photo",
       "next": "Next photo",
-      "close": "Close"
+      "close": "Close",
+      "categories": "Types",
+      "groups": "Service groups",
+      "types": "Services & types",
+      "typeMain": "Main",
+      "noTypes": "No type chosen",
+      "typeAdded": "Added",
+      "typeRemoved": "Removed"
     },
     "days": {
       "d1": "Monday",
@@ -3254,7 +3260,9 @@
       "prices": "Prices",
       "pricesHint": "Prices in VND, not negative, up to 20 prices.",
       "publish": "Visibility",
-      "contact": "Contact"
+      "contact": "Contact",
+      "types": "Services & types",
+      "typesHint": "Tick the services the place offers, then tick the types. The first type ticked is the main one."
     },
     "fields": {
       "name": "Place name",
@@ -3263,9 +3271,6 @@
       "category": "Type",
       "choose": "Choose…",
       "groupFirst": "Choose a group first",
-      "secondary": "Second type (optional)",
-      "secondaryNone": "No second type",
-      "secondaryHint": "When the place also offers another service, e.g. a resort with a restaurant → Food & drink › Restaurant",
       "description": "Description",
       "descriptionPlaceholder": "A short introduction, highlights…",
       "province": "Province / City",
@@ -3290,7 +3295,8 @@
       "longitude": "Longitude must be between -180 and 180",
       "phone": "Invalid phone number",
       "website": "The website must start with http:// or https://",
-      "hours": "{{day}}: needs different opening and closing times (or untick \"Open\")"
+      "hours": "{{day}}: needs different opening and closing times (or untick \"Open\")",
+      "groupWithoutType": "Pick a type for \"{{group}}\" or untick that group"
     },
     "hours": {
       "declare": "Set opening hours",
@@ -3353,6 +3359,13 @@
       "hintNoPoint": "Search an address and pick a result, or click the exact spot on the map.",
       "pinAddress": "Address at the pin",
       "useAddress": "Use this address"
+    },
+    "types": {
+      "groups": "Service groups",
+      "types": "Types",
+      "pickGroupFirst": "Tick a service group on the left to choose types",
+      "main": "Main",
+      "selected": "Selected"
     }
   },
   "placeCategories": {

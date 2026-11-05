@@ -2,6 +2,8 @@ import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, ErrorState, Icon, PageHeader, PageLoader } from '@/components/common';
+import TypePicker from '@/components/common/TypePicker';
+import { checkTypes } from '@/components/common/typePickerUtils';
 import LocationPicker, { type LocationPickerLabels } from '@/components/common/LocationPicker';
 import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
 import { placeDetailPath, ROUTES } from '@/constants/routes';
@@ -35,9 +37,10 @@ import {
 
 interface Values {
   name: string;
-  groupCode: string;
-  categoryCode: string;
-  secondaryCategoryCode: string;
+  /** Nhóm dịch vụ đã tích (cột trái) */
+  groupCodes: string[];
+  /** Loại hình đã tích theo thứ tự tích — phần tử đầu là loại hình đại diện */
+  categoryCodes: string[];
   provinceCode: string;
   address: string;
   description: string;
@@ -59,9 +62,10 @@ function initialValues(detail: CatalogPlaceDetail | null): Values {
   const content = detail?.content;
   return {
     name: content?.name ?? '',
-    groupCode: content?.group?.code ?? '',
-    categoryCode: content?.category?.code ?? '',
-    secondaryCategoryCode: content?.secondaryCategory?.code ?? '',
+    groupCodes: (content?.groups ?? (content?.group ? [content.group] : [])).map((g) => g.code),
+    categoryCodes: (content?.categories ?? (content?.category ? [content.category] : [])).map(
+      (c) => c.code,
+    ),
     provinceCode: content?.province?.code ?? '',
     address: content?.address ?? '',
     description: content?.description ?? '',
@@ -137,19 +141,6 @@ export default function PlaceEditorPage() {
     };
   }, [id, retry]);
 
-  const subtypes = useMemo(() => {
-    const list = refs?.groups.find((group) => group.code === values.groupCode)?.subtypes ?? [];
-    // Loại đã bị tắt vẫn hiện cho địa điểm đang dùng nó
-    const current = detail?.content.category;
-    if (
-      current &&
-      values.categoryCode === current.code &&
-      !list.some((s) => s.code === current.code)
-    )
-      return [...list, current];
-    return list;
-  }, [refs, values.groupCode, values.categoryCode, detail]);
-
   const mapLabels = useMemo<Partial<LocationPickerLabels>>(
     () => ({
       title: t('placeEditor.map.title'),
@@ -194,10 +185,6 @@ export default function PlaceEditorPage() {
   const update = (key: keyof Values) => (value: string) => {
     setValues((current) => {
       const next = { ...current, [key]: value };
-      if (key === 'groupCode') next.categoryCode = '';
-      // Loại hình phụ không được trùng loại hình chính
-      if (next.secondaryCategoryCode && next.secondaryCategoryCode === next.categoryCode)
-        next.secondaryCategoryCode = '';
       // Dán "15.8794, 108.335" vào ô vĩ độ → tự tách
       if (key === 'latitude' && COORDINATE_PAIR.test(value)) {
         const [lat, lng] = value.split(',');
@@ -215,8 +202,11 @@ export default function PlaceEditorPage() {
     const longitude = parseNumber(values.longitude);
     const phone = values.phone.replace(/[\s.-]/g, '');
     if (values.name.trim().length < 2) next.name = t('placeEditor.errors.name');
-    if (!values.groupCode) next.groupCode = t('placeEditor.errors.group');
-    if (!values.categoryCode) next.categoryCode = t('placeEditor.errors.category');
+    const typesError = checkTypes(refs.groups, values.groupCodes, values.categoryCodes, {
+      empty: t('placeEditor.errors.category'),
+      groupWithoutType: (group) => t('placeEditor.errors.groupWithoutType', { group }),
+    });
+    if (typesError) next.categoryCodes = typesError;
     if (!values.provinceCode) next.provinceCode = t('placeEditor.errors.province');
     if (!values.address.trim()) next.address = t('placeEditor.errors.address');
     if (latitude === null || Math.abs(latitude) > 90)
@@ -245,8 +235,8 @@ export default function PlaceEditorPage() {
     }
     const input: CatalogPlaceInput = {
       name: values.name.trim(),
-      categoryCode: values.categoryCode,
-      secondaryCategoryCode: values.secondaryCategoryCode || null,
+      categoryCode: values.categoryCodes[0],
+      categoryCodes: values.categoryCodes,
       provinceCode: values.provinceCode,
       address: values.address.trim(),
       description: values.description.trim() || null,
@@ -331,79 +321,6 @@ export default function PlaceEditorPage() {
                 className={INPUT_CLASS}
               />
             </FormField>
-            <div className="grid gap-4 md:grid-cols-2">
-              <FormField label={t('placeEditor.fields.group')} required error={errors.groupCode}>
-                <select
-                  value={values.groupCode}
-                  onChange={(event) => update('groupCode')(event.target.value)}
-                  className={INPUT_CLASS}
-                >
-                  <option value="">{t('placeEditor.fields.choose')}</option>
-                  {refs.groups.map((group) => (
-                    <option key={group.code} value={group.code}>
-                      {group.name}
-                    </option>
-                  ))}
-                </select>
-              </FormField>
-              <FormField
-                label={t('placeEditor.fields.category')}
-                required
-                error={errors.categoryCode}
-              >
-                <select
-                  value={values.categoryCode}
-                  disabled={!values.groupCode}
-                  onChange={(event) => update('categoryCode')(event.target.value)}
-                  className={INPUT_CLASS}
-                >
-                  <option value="">
-                    {values.groupCode
-                      ? t('placeEditor.fields.choose')
-                      : t('placeEditor.fields.groupFirst')}
-                  </option>
-                  {subtypes.map((subtype) => (
-                    <option key={subtype.code} value={subtype.code}>
-                      {subtype.name}
-                    </option>
-                  ))}
-                </select>
-              </FormField>
-            </div>
-            <FormField
-              label={t('placeEditor.fields.secondary')}
-              hint={t('placeEditor.fields.secondaryHint')}
-            >
-              <select
-                value={values.secondaryCategoryCode}
-                disabled={!values.categoryCode}
-                onChange={(event) => update('secondaryCategoryCode')(event.target.value)}
-                className={INPUT_CLASS}
-              >
-                <option value="">{t('placeEditor.fields.secondaryNone')}</option>
-                {refs.groups.map((group) => (
-                  <optgroup key={group.code} label={group.name}>
-                    {group.subtypes
-                      .filter((subtype) => subtype.code !== values.categoryCode)
-                      .map((subtype) => (
-                        <option key={subtype.code} value={subtype.code}>
-                          {subtype.name}
-                        </option>
-                      ))}
-                  </optgroup>
-                ))}
-                {/* Loại đã bị tắt vẫn hiện cho địa điểm đang dùng nó */}
-                {detail?.content.secondaryCategory &&
-                  values.secondaryCategoryCode === detail.content.secondaryCategory.code &&
-                  !refs.groups.some((group) =>
-                    group.subtypes.some((s) => s.code === values.secondaryCategoryCode),
-                  ) && (
-                    <option value={detail.content.secondaryCategory.code}>
-                      {detail.content.secondaryCategory.name}
-                    </option>
-                  )}
-              </select>
-            </FormField>
             <FormField label={t('placeEditor.fields.description')} error={errors.description}>
               <textarea
                 rows={5}
@@ -414,6 +331,30 @@ export default function PlaceEditorPage() {
                 className={`${INPUT_CLASS} resize-y`}
               />
             </FormField>
+          </EditorSection>
+
+          <EditorSection
+            icon="category"
+            title={t('placeEditor.sections.types')}
+            hint={t('placeEditor.sections.typesHint')}
+          >
+            <TypePicker
+              groups={refs.groups}
+              groupCodes={values.groupCodes}
+              typeCodes={values.categoryCodes}
+              onChange={(groupCodes, categoryCodes) => {
+                setValues((current) => ({ ...current, groupCodes, categoryCodes }));
+                setErrors((current) => ({ ...current, categoryCodes: undefined }));
+              }}
+              error={errors.categoryCodes}
+              labels={{
+                groups: t('placeEditor.types.groups'),
+                types: t('placeEditor.types.types'),
+                pickGroupFirst: t('placeEditor.types.pickGroupFirst'),
+                main: t('placeEditor.types.main'),
+                selected: t('placeEditor.types.selected'),
+              }}
+            />
           </EditorSection>
 
           <EditorSection

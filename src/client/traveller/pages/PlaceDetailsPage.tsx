@@ -174,7 +174,7 @@ export default function PlaceDetailsPage() {
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {/* Tag loại hình — bấm để xem các địa điểm cùng loại ở trang Khám phá */}
-            {[place.category, place.secondaryCategory].map(
+            {(place.categories ?? (place.category ? [place.category] : [])).map(
               (type, index) =>
                 type && (
                   <Link

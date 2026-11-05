@@ -134,7 +134,9 @@ function PlaceGridCard({
             <span className="font-bold text-[#8A6100]">{place.rating ?? '—'}</span>
           </p>
           <p className="mt-1.5 truncate text-[12px] font-extrabold text-[#087A78]">
-            {[place.category?.name, place.secondaryCategory?.name].filter(Boolean).join(' · ')}
+            {(place.categories ?? (place.category ? [place.category] : []))
+              .map((type) => type.name)
+              .join(' · ')}
           </p>
         </div>
       </Link>
@@ -345,10 +347,8 @@ export default function ExplorePage() {
         place.group?.name ?? '',
         categoryCode,
         place.category?.name ?? '',
-        place.secondaryGroup?.code ?? '',
-        place.secondaryGroup?.name ?? '',
-        place.secondaryCategory?.code ?? '',
-        place.secondaryCategory?.name ?? '',
+        ...(place.groups ?? []).flatMap((group) => [group.code, group.name]),
+        ...(place.categories ?? []).flatMap((type) => [type.code, type.name]),
       ].map(normalizeText);
       if (!selectedCategories.some((item) => {
         const code = normalizeText(item.code);

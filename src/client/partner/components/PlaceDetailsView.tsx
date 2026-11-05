@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Icon } from '@/components/common';
 import PlaceMap from '@/components/common/PlaceMap';
+import TypeChips from '@/components/common/TypeChips';
+import { placeTypesOf } from '@/components/common/typePickerUtils';
 import type { PlaceContent } from '@/client/api/types';
 import PartnerSection from '@/client/partner/components/PartnerSection';
 import { formatMoney, hourText, DAY_LABELS, priceLabel } from '@/client/partner/placeFormat';
@@ -126,18 +128,11 @@ export default function PlaceDetailsView({
       </div>
 
       <div className="flex min-w-0 flex-col gap-4 lg:col-span-5">
+        <PartnerSection icon="category" title="Dịch vụ & loại hình">
+          <TypeChips {...placeTypesOf(place)} />
+        </PartnerSection>
         <PartnerSection icon="storefront" title="Thông tin địa điểm">
           <dl>
-            <Row label="Nhóm dịch vụ" value={place.group?.name ?? '—'} />
-            <Row label="Loại hình" value={place.category?.name ?? '—'} />
-            {place.secondaryCategory && (
-              <Row
-                label="Loại hình phụ"
-                value={[place.secondaryGroup?.name, place.secondaryCategory.name]
-                  .filter(Boolean)
-                  .join(' › ')}
-              />
-            )}
             <Row label="Tỉnh/thành" value={place.province?.name ?? '—'} />
             <Row label="Địa chỉ" value={place.address} />
             <Row label="Số điện thoại" value={place.phone ?? '—'} />

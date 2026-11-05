@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/common';
+import TypeChips from '@/components/common/TypeChips';
+import { placeTypesOf } from '@/components/common/typePickerUtils';
 import {
   DAY_KEYS,
   formatAmount,
@@ -50,6 +52,9 @@ function Cell({ text, changed, tone }: { text: ReactNode; changed: boolean; tone
   );
 }
 
+/** Đánh dấu chỗ chèn dòng Dịch vụ & loại hình trong bảng */
+const TYPES_ROW = { labelKey: 'placeReview.detail.types', current: '', proposed: '' } as const;
+
 /** Bảng so sánh từng trường: đang công khai ↔ đề xuất (tô màu ô thay đổi) */
 export default function RevisionCompare({
   current,
@@ -61,6 +66,12 @@ export default function RevisionCompare({
   const { t } = useTranslation();
   const empty = t('placeReview.compare.empty');
   const closed = t('placeReview.detail.closed');
+  const typeLabels = {
+    main: t('placeReview.detail.typeMain'),
+    added: t('placeReview.detail.typeAdded'),
+    removed: t('placeReview.detail.typeRemoved'),
+    empty: t('placeReview.compare.empty'),
+  };
   const value = (text: string | null | undefined) => (text && text.trim() ? text : empty);
   const hours = (place: PlaceContent) =>
     place.openingHours.length === 0
@@ -80,21 +91,6 @@ export default function RevisionCompare({
 
   const rows: CompareRow[] = [
     { labelKey: 'placeReview.detail.name', current: current.name, proposed: proposed.name },
-    {
-      labelKey: 'placeReview.detail.group',
-      current: value(current.group?.name),
-      proposed: value(proposed.group?.name),
-    },
-    {
-      labelKey: 'placeReview.detail.category',
-      current: value(current.category?.name),
-      proposed: value(proposed.category?.name),
-    },
-    {
-      labelKey: 'placeReview.detail.secondaryCategory',
-      current: value(current.secondaryCategory?.name),
-      proposed: value(proposed.secondaryCategory?.name),
-    },
     {
       labelKey: 'placeReview.detail.province',
       current: value(current.province?.name),
@@ -131,8 +127,15 @@ export default function RevisionCompare({
   const imagesKey = (place: PlaceContent) =>
     place.images.map((image) => `${image.url}|${image.primary}`).join(',');
   const imagesChanged = imagesKey(current) !== imagesKey(proposed);
+  const currentTypes = placeTypesOf(current);
+  const proposedTypes = placeTypesOf(proposed);
+  const typesKey = (types: { categories: { code: string }[] }) =>
+    types.categories.map((type) => type.code).join(',');
+  const typesChanged = typesKey(currentTypes) !== typesKey(proposedTypes);
   const changedCount =
-    rows.filter((row) => row.current !== row.proposed).length + Number(imagesChanged);
+    rows.filter((row) => row.current !== row.proposed).length +
+    Number(imagesChanged) +
+    Number(typesChanged);
 
   return (
     <section className="overflow-hidden rounded-2xl bg-surface-container-lowest shadow-sm">
@@ -163,7 +166,34 @@ export default function RevisionCompare({
             </tr>
           </thead>
           <tbody className="divide-y divide-surface-container">
-            {rows.map((row) => {
+            {[rows[0], TYPES_ROW, ...rows.slice(1)].map((row) => {
+              if (row === TYPES_ROW)
+                return (
+                  <tr key="types">
+                    <th className="px-5 py-3 align-top font-label-md text-label-md text-on-surface-variant">
+                      <span className="flex items-center gap-1.5">
+                        {t('placeReview.detail.types')}
+                        {typesChanged && <span className="h-2 w-2 rounded-full bg-tertiary" />}
+                      </span>
+                    </th>
+                    <Cell
+                      text={<TypeChips {...currentTypes} labels={typeLabels} />}
+                      changed={false}
+                      tone="old"
+                    />
+                    <Cell
+                      text={
+                        <TypeChips
+                          {...proposedTypes}
+                          previous={typesChanged ? currentTypes : undefined}
+                          labels={typeLabels}
+                        />
+                      }
+                      changed={false}
+                      tone="new"
+                    />
+                  </tr>
+                );
               const changed = row.current !== row.proposed;
               return (
                 <tr key={row.labelKey}>

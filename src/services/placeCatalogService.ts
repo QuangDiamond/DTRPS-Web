@@ -25,8 +25,8 @@ interface ApiSummary {
   name: string;
   group: RefItem | null;
   category: RefItem | null;
-  secondaryGroup: RefItem | null;
-  secondaryCategory: RefItem | null;
+  groups?: RefItem[];
+  categories?: (RefItem & { groupCode?: string | null })[];
   province: RefItem | null;
   address: string | null;
   status: string;
@@ -85,8 +85,8 @@ function toPlace(place: ApiSummary): CatalogPlace {
     name: place.name,
     group: place.group,
     category: place.category,
-    secondaryGroup: place.secondaryGroup ?? null,
-    secondaryCategory: place.secondaryCategory ?? null,
+    groups: place.groups ?? (place.group ? [place.group] : []),
+    categories: place.categories ?? (place.category ? [place.category] : []),
     province: place.province,
     address: place.address,
     status: place.status.toLowerCase() as CatalogPlaceStatus,
@@ -240,8 +240,8 @@ function toDetail(detail: ApiDetail): CatalogPlaceDetail {
       longitude: detail.longitude,
       group: place.group,
       category: place.category,
-      secondaryGroup: place.secondaryGroup,
-      secondaryCategory: place.secondaryCategory,
+      groups: place.groups,
+      categories: place.categories,
       province: place.province,
       phone: detail.phone,
       website: detail.website,

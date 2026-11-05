@@ -1,5 +1,7 @@
-import { type FormEvent, useMemo, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import LocationPicker from '@/components/common/LocationPicker';
+import TypePicker from '@/components/common/TypePicker';
+import { checkTypes } from '@/components/common/typePickerUtils';
 import { businessListingApi } from '@/client/api/businessListingApi';
 import { ClientApiError, errorMessage } from '@/client/api/http';
 import { mapsApi } from '@/client/api/mapsApi';
@@ -30,10 +32,13 @@ type Values = Omit<
   | 'prices'
   | 'phone'
   | 'website'
-  | 'secondaryCategoryCode'
+  | 'categoryCode'
+  | 'categoryCodes'
 > & {
-  groupCode: string;
-  secondaryCategoryCode: string;
+  /** Nhóm dịch vụ đã tích (cột trái) */
+  groupCodes: string[];
+  /** Loại hình đã tích theo thứ tự tích — phần tử đầu là loại hình đại diện */
+  categoryCodes: string[];
   phone: string;
   website: string;
   latitude: string;
@@ -44,9 +49,6 @@ type Values = Omit<
 };
 type TextKey =
   | 'name'
-  | 'groupCode'
-  | 'categoryCode'
-  | 'secondaryCategoryCode'
   | 'provinceCode'
   | 'address'
   | 'description'
@@ -54,7 +56,7 @@ type TextKey =
   | 'longitude'
   | 'phone'
   | 'website';
-type ErrorKey = TextKey | 'openingHours' | 'prices' | 'images';
+type ErrorKey = TextKey | 'categoryCodes' | 'openingHours' | 'prices' | 'images';
 type Errors = Partial<Record<ErrorKey, string>>;
 
 /** create: đăng ký mới · edit: sửa khi chờ duyệt / bị từ chối · revision: đề xuất sửa địa điểm đã duyệt */
@@ -62,21 +64,13 @@ export type ListingFormMode = 'create' | 'edit' | 'revision';
 
 const MAX_DESCRIPTION = 2000;
 
-/** Mọi loại hình của 4 nhóm (trừ loại hình chính) để chọn làm loại hình phụ */
-function secondaryOptions(groups: CategoryGroup[], primary: string) {
-  return groups.flatMap((group) =>
-    group.subtypes
-      .filter((subtype) => subtype.code !== primary)
-      .map((subtype) => ({ value: subtype.code, label: `${group.name} › ${subtype.name}` })),
-  );
-}
-
 function initialValues(listing: BusinessListing | null): Values {
   return {
     name: listing?.name ?? '',
-    groupCode: listing?.group?.code ?? '',
-    categoryCode: listing?.category?.code ?? '',
-    secondaryCategoryCode: listing?.secondaryCategory?.code ?? '',
+    groupCodes: (listing?.groups ?? (listing?.group ? [listing.group] : [])).map((g) => g.code),
+    categoryCodes: (listing?.categories ?? (listing?.category ? [listing.category] : [])).map(
+      (c) => c.code,
+    ),
     provinceCode: listing?.province?.code ?? '',
     address: listing?.address ?? '',
     description: listing?.description ?? '',
@@ -137,11 +131,6 @@ export default function ListingForm({
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  const subtypes = useMemo(
-    () => groups.find((group) => group.code === values.groupCode)?.subtypes ?? [],
-    [groups, values.groupCode],
-  );
-
   const setField = <K extends keyof Values>(key: K, value: Values[K], errorKey: ErrorKey) => {
     setValues((current) => ({ ...current, [key]: value }));
     setErrors((current) => ({ ...current, [errorKey]: undefined }));
@@ -150,11 +139,6 @@ export default function ListingForm({
   const update = (key: TextKey) => (value: string) => {
     setValues((current) => {
       const next = { ...current, [key]: value };
-      // Đổi nhóm → chọn lại loại con
-      if (key === 'groupCode') next.categoryCode = '';
-      // Loại hình phụ không được trùng loại hình chính
-      if (next.secondaryCategoryCode && next.secondaryCategoryCode === next.categoryCode)
-        next.secondaryCategoryCode = '';
       // Dán "15.8794, 108.335" vào ô vĩ độ → tự tách ra hai ô
       if (key === 'latitude' && /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(value)) {
         const [lat, lng] = value.split(',');
@@ -171,8 +155,8 @@ export default function ListingForm({
     const latitude = parseNumber(values.latitude);
     const longitude = parseNumber(values.longitude);
     if (values.name.trim().length < 2) next.name = 'Tên địa điểm phải có ít nhất 2 ký tự';
-    if (!values.groupCode) next.groupCode = 'Vui lòng chọn nhóm dịch vụ';
-    if (!values.categoryCode) next.categoryCode = 'Vui lòng chọn loại hình';
+    const typesError = checkTypes(groups, values.groupCodes, values.categoryCodes);
+    if (typesError) next.categoryCodes = typesError;
     if (!values.provinceCode) next.provinceCode = 'Vui lòng chọn tỉnh/thành';
     if (!values.address.trim()) next.address = 'Vui lòng nhập địa chỉ';
     if (latitude === null || Math.abs(latitude) > 90) next.latitude = 'Vĩ độ phải từ -90 đến 90';
@@ -207,8 +191,8 @@ export default function ListingForm({
 
     const input: BusinessListingInput = {
       name: values.name.trim(),
-      categoryCode: values.categoryCode,
-      secondaryCategoryCode: values.secondaryCategoryCode || null,
+      categoryCode: values.categoryCodes[0],
+      categoryCodes: values.categoryCodes,
       provinceCode: values.provinceCode,
       address: values.address.trim(),
       description: values.description.trim(),
@@ -283,37 +267,6 @@ export default function ListingForm({
               onChange={update('name')}
               error={errors.name}
             />
-            <div className="grid gap-x-4 md:grid-cols-2">
-              <SelectField
-                label="Nhóm dịch vụ"
-                icon="category"
-                placeholder="Chọn nhóm"
-                value={values.groupCode}
-                onChange={update('groupCode')}
-                options={groups.map((group) => ({ value: group.code, label: group.name }))}
-                error={errors.groupCode}
-              />
-              <SelectField
-                label="Loại hình"
-                icon="sell"
-                placeholder={values.groupCode ? 'Chọn loại hình' : 'Chọn nhóm trước'}
-                value={values.categoryCode}
-                onChange={update('categoryCode')}
-                options={subtypes.map((subtype) => ({ value: subtype.code, label: subtype.name }))}
-                error={errors.categoryCode}
-                disabled={!values.groupCode}
-              />
-            </div>
-            <SelectField
-              label="Loại hình phụ (không bắt buộc)"
-              icon="add_circle"
-              placeholder="Không có loại hình phụ"
-              value={values.secondaryCategoryCode}
-              onChange={update('secondaryCategoryCode')}
-              options={secondaryOptions(groups, values.categoryCode)}
-              hint="Địa điểm có thêm dịch vụ khác, ví dụ resort có nhà hàng → Ẩm thực › Nhà hàng"
-              disabled={!values.categoryCode}
-            />
             <TextAreaField
               label="Mô tả"
               placeholder="Giới thiệu ngắn về địa điểm, không gian, điểm nổi bật…"
@@ -321,6 +274,23 @@ export default function ListingForm({
               onChange={update('description')}
               maxLength={MAX_DESCRIPTION}
               error={errors.description}
+            />
+          </PartnerSection>
+
+          <PartnerSection
+            icon="category"
+            title="Dịch vụ & loại hình"
+            hint="Tích các dịch vụ địa điểm có, rồi tích loại hình. Loại hình tích đầu tiên là loại hình đại diện."
+          >
+            <TypePicker
+              groups={groups}
+              groupCodes={values.groupCodes}
+              typeCodes={values.categoryCodes}
+              onChange={(groupCodes, categoryCodes) => {
+                setValues((current) => ({ ...current, groupCodes, categoryCodes }));
+                setErrors((current) => ({ ...current, categoryCodes: undefined }));
+              }}
+              error={errors.categoryCodes}
             />
           </PartnerSection>
 

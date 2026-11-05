@@ -38,8 +38,9 @@ export interface PlaceContent {
   longitude: number;
   group: RefItem | null;
   category: RefItem | null;
-  secondaryGroup?: RefItem | null;
-  secondaryCategory?: RefItem | null;
+  /** Mọi nhóm / loại hình, loại hình đại diện đứng đầu */
+  groups?: RefItem[];
+  categories?: (RefItem & { groupCode?: string | null })[];
   province: RefItem | null;
   phone: string | null;
   website: string | null;

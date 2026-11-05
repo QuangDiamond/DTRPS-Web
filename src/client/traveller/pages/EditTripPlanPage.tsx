@@ -7,7 +7,6 @@ import { referenceApi } from '@/client/api/referenceApi';
 import { tripFlowApi, type TravelPace, type TravelPlanResponse } from '@/client/api/tripFlowApi';
 import type { CategoryGroup, ReferenceItem } from '@/client/api/types';
 import { CLIENT_ROUTES } from '@/client/routePaths';
-import InterestChips from '@/client/traveller/components/InterestChips';
 import SectionCard from '@/client/traveller/components/SectionCard';
 import { categoryCodesToTypes, typesToCategoryCodes } from '@/client/traveller/data/planForm';
 import { canEditPlan, planStatusInfo } from '@/client/traveller/data/planStatus';
@@ -36,15 +35,12 @@ interface FormState {
   travelPace: TravelPace;
   groupCodes: string[];
   typeCodes: string[];
-  interestCodes: string[];
 }
 
 interface LoadedData {
   plan: TravelPlanResponse;
   provinces: ReferenceItem[];
   groups: CategoryGroup[];
-  interests: ReferenceItem[];
-  interestsFailed: boolean;
   hasItinerary: boolean;
 }
 
@@ -61,7 +57,6 @@ function toForm(plan: TravelPlanResponse, groups: CategoryGroup[]): FormState {
     travelPace: plan.travelPace,
     groupCodes: types.groupCodes,
     typeCodes: types.typeCodes,
-    interestCodes: plan.interestCodes ?? [],
   };
 }
 
@@ -102,20 +97,14 @@ export default function EditTripPlanPage() {
       tripFlowApi.plan(planId),
       referenceApi.provinces(),
       referenceApi.categories(),
-      referenceApi.interests().then(
-        (items) => ({ items, failed: false }),
-        () => ({ items: [] as ReferenceItem[], failed: true }),
-      ),
       hasActiveItinerary(planId),
     ])
-      .then(([plan, provinces, groups, interests, hasItinerary]) => {
+      .then(([plan, provinces, groups, hasItinerary]) => {
         if (!active) return;
         setData({
           plan,
           provinces,
           groups,
-          interests: interests.items,
-          interestsFailed: interests.failed,
           hasItinerary,
         });
         setForm(toForm(plan, groups));
@@ -166,7 +155,7 @@ export default function EditTripPlanPage() {
     );
   }
 
-  const { plan, provinces, groups, interests, interestsFailed, hasItinerary } = data;
+  const { plan, provinces, groups, hasItinerary } = data;
 
   if (!canEditPlan(plan)) {
     return (
@@ -233,7 +222,6 @@ export default function EditTripPlanPage() {
         groupSize: form.groupSize,
         description: form.description.trim() || null,
         categoryCodes,
-        interestCodes: form.interestCodes,
         travelPace: form.travelPace,
       });
       navigate(CLIENT_ROUTES.TRIPS, {
@@ -408,25 +396,11 @@ export default function EditTripPlanPage() {
           </div>
         </SectionCard>
 
-        {/* SỞ THÍCH CỦA CHUYẾN */}
-        <SectionCard
-          icon="favorite"
-          title="Sở thích của chuyến"
-          subtitle="Chọn những gì bạn muốn trải nghiệm"
-        >
-          <InterestChips
-            options={interests}
-            failed={interestsFailed}
-            selected={form.interestCodes}
-            onChange={(codes) => update('interestCodes', codes)}
-          />
-        </SectionCard>
-
-        {/* LOẠI HÌNH DỊCH VỤ */}
+        {/* SỞ THÍCH TRẢI NGHIỆM (loại hình địa điểm) */}
         <SectionCard
           icon="volunteer_activism"
-          title="Loại hình trải nghiệm"
-          subtitle="Dùng để gợi ý địa điểm cho chuyến đi"
+          title="Sở thích trải nghiệm"
+          subtitle="Loại hình bạn quan tâm, dùng để gợi ý địa điểm"
         >
           {groups.length === 0 ? (
             <p className="text-[12px] text-[#72818C]">Hiện chưa có danh mục trải nghiệm.</p>

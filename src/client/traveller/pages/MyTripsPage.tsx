@@ -266,12 +266,8 @@ function PlanCard({
             {formatMoney(plan.budget, plan.currency)}
           </span>
           <span className="flex items-center gap-1 text-[11px] text-[#72818C]">
-            <Icon name="favorite" className="text-[17px] text-[#087A78]" />
-            {plan.interestCodes?.length ?? 0} sở thích
-          </span>
-          <span className="flex items-center gap-1 text-[11px] text-[#72818C]">
             <Icon name="category" className="text-[17px] text-[#087A78]" />
-            {plan.categoryCodes?.length ?? 0} loại hình
+            {plan.categoryCodes?.length ?? 0} sở thích
           </span>
         </div>
 

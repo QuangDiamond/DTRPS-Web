@@ -29,10 +29,8 @@ export interface CreateTravelPlanInput {
   currency: string;
   groupSize: number;
   description: string | null;
-  /** Mã danh mục con lấy từ GET /reference/categories */
+  /** Sở thích của chuyến: mã loại hình con lấy từ GET /reference/categories */
   categoryCodes: string[];
-  /** Mã sở thích lấy từ GET /reference/interests, lưu vào plan_interests */
-  interestCodes?: string[];
   travelPace: TravelPace;
 }
 
@@ -42,7 +40,6 @@ export type UpdateTravelPlanInput = CreateTravelPlanInput;
 export interface TravelPlanResponse extends CreateTravelPlanInput {
   planId: number;
   userId: number;
-  interestCodes: string[];
   status: PlanStatus;
   /** Các trạng thái Backend cho phép chuyển tới từ trạng thái hiện tại */
   allowedNextStatuses: PlanStatus[];

@@ -23,6 +23,8 @@ export const CLIENT_ROUTES = {
   TRIP_PLAN: '/trips/plan',
   /** Kế hoạch của tôi (các địa điểm gợi ý đã chọn) */
   TRIP_PLAN_SELECTED: '/trips/plan/selected',
+  /** Sửa một kế hoạch */
+  TRIP_PLAN_EDIT: '/trips/plan/:planId/edit',
   TRIP_GENERATING: '/trips/generating',
   TRIP_SUGGESTIONS: '/trips/suggestions',
   TRIP_SUGGESTION_DETAIL: '/trips/suggestions/:placeId',
@@ -45,6 +47,7 @@ export const CLIENT_ROUTES = {
 export const placePath = (placeId: string): string => `/explore/${placeId}`;
 export const favoritePlacePath = (placeId: string): string => `/favorites/${placeId}`;
 export const suggestionPath = (placeId: string): string => `/trips/suggestions/${placeId}`;
+export const editPlanPath = (planId: number): string => `/trips/plan/${planId}/edit`;
 export const addLocationPath = (tripId: string): string => `/trips/${tripId}/add-location`;
 export const itineraryDayPath = (day: number): string => `/trips/itinerary/day/${day}`;
 export const liveMapPath = (day: number): string => `/trips/itinerary/day/${day}/live`;

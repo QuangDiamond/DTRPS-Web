@@ -14,6 +14,7 @@ import {
   type PaceId,
   typesToInterests,
 } from '@/client/traveller/data/planTrip';
+import InterestChips from '@/client/traveller/components/InterestChips';
 import { useTraveller } from '@/client/traveller/travellerContext';
 import PageBar from '@/client/ui/PageBar';
 
@@ -139,6 +140,13 @@ export default function PlanTripPage() {
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesFailed, setCategoriesFailed] = useState(false);
   const [pace, setPace] = useState<PaceId>('balanced');
+
+  // Sở thích của chuyến (bảng interests), lưu vào plan_interests.
+  const interestTouched = useRef(false);
+  const [interestOptions, setInterestOptions] = useState<ReferenceItem[]>([]);
+  const [interestCodes, setInterestCodes] = useState<string[]>([]);
+  const [interestsLoading, setInterestsLoading] = useState(true);
+  const [interestsFailed, setInterestsFailed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -159,9 +167,26 @@ export default function PlanTripPage() {
 
   useEffect(() => {
     let active = true;
-    Promise.allSettled([referenceApi.categories(), userApi.preferences()]).then(
-      ([groupsResult, preferencesResult]) => {
+    Promise.allSettled([
+      referenceApi.categories(),
+      userApi.preferences(),
+      referenceApi.interests(),
+    ]).then(
+      ([groupsResult, preferencesResult, interestsResult]) => {
         if (!active) return;
+
+        // Danh sách sở thích của chuyến, điền sẵn những mã trùng với sở thích đã lưu.
+        const interestItems =
+          interestsResult.status === 'fulfilled' ? interestsResult.value : [];
+        setInterestOptions(interestItems);
+        setInterestsFailed(interestsResult.status === 'rejected');
+        setInterestsLoading(false);
+        if (preferencesResult.status === 'fulfilled' && !interestTouched.current) {
+          const known = new Set(interestItems.map((item) => item.code));
+          setInterestCodes(
+            preferencesResult.value.interests.filter((code) => known.has(code)),
+          );
+        }
 
         setCategoriesLoading(false);
         if (groupsResult.status === 'rejected') {
@@ -295,6 +320,7 @@ export default function PlanTripPage() {
         groupSize: members,
         description: companionLabel ? `Hình thức đồng hành: ${companionLabel}` : null,
         categoryCodes,
+        interestCodes,
         travelPace: PACE_TO_API[pace],
       });
 
@@ -708,6 +734,24 @@ export default function PlanTripPage() {
               )}
             </div>
           )}
+        </SectionCard>
+
+        {/* SỞ THÍCH CỦA CHUYẾN */}
+        <SectionCard
+          icon="favorite"
+          title="Sở thích của chuyến"
+          subtitle="Chọn những gì bạn muốn trải nghiệm trong chuyến này"
+        >
+          <InterestChips
+            options={interestOptions}
+            loading={interestsLoading}
+            failed={interestsFailed}
+            selected={interestCodes}
+            onChange={(codes) => {
+              interestTouched.current = true;
+              setInterestCodes(codes);
+            }}
+          />
         </SectionCard>
 
         {/* NHỊP ĐỘ CHUYẾN ĐI */}

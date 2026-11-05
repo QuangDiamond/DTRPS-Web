@@ -30,6 +30,7 @@ const ChangePasswordPage = lazy(() => import('@/client/traveller/pages/ChangePas
 const SettingsPage = lazy(() => import('@/client/traveller/pages/SettingsPage'));
 const MyTripsPage = lazy(() => import('@/client/traveller/pages/MyTripsPage'));
 const PlanTripPage = lazy(() => import('@/client/traveller/pages/PlanTripPage'));
+const EditTripPlanPage = lazy(() => import('@/client/traveller/pages/EditTripPlanPage'));
 const GeneratingTripPage = lazy(() => import('@/client/traveller/pages/GeneratingTripPage'));
 const SuggestedPlacesPage = lazy(() => import('@/client/traveller/pages/SuggestedPlacesPage'));
 const SuggestionDetailPage = lazy(() => import('@/client/traveller/pages/SuggestionDetailPage'));
@@ -100,6 +101,7 @@ export const clientRoutes: RouteObject[] = [
               { path: CLIENT_ROUTES.TRIPS, element: <MyTripsPage /> },
               { path: CLIENT_ROUTES.TRIP_PLAN, element: <PlanTripPage /> },
               { path: CLIENT_ROUTES.TRIP_PLAN_SELECTED, element: <SelectedPlacesPage /> },
+              { path: CLIENT_ROUTES.TRIP_PLAN_EDIT, element: <EditTripPlanPage /> },
               { path: CLIENT_ROUTES.TRIP_GENERATING, element: <GeneratingTripPage /> },
               { path: CLIENT_ROUTES.TRIP_SUGGESTIONS, element: <SuggestedPlacesPage /> },
               { path: CLIENT_ROUTES.TRIP_SUGGESTION_DETAIL, element: <SuggestionDetailPage /> },

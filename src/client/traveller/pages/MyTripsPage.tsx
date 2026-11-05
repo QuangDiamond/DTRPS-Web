@@ -5,56 +5,27 @@ import { Icon } from '@/components/common';
 import { ClientApiError, errorMessage } from '@/client/api/http';
 import {
   tripFlowApi,
+  type PlanStatus,
   type TravelPlanResponse,
 } from '@/client/api/tripFlowApi';
-import { CLIENT_ROUTES } from '@/client/routePaths';
-import { NoticeToast } from '@/client/ui/Overlay';
+import { CLIENT_ROUTES, editPlanPath } from '@/client/routePaths';
+import {
+  PLAN_STATUS_ACTION,
+  PLAN_STATUS_INFO,
+  canDeletePlan,
+  canEditPlan,
+  isPlanFinished as isFinished,
+  planStatusInfo as planStatus,
+} from '@/client/traveller/data/planStatus';
+import { ConfirmDialog, NoticeToast } from '@/client/ui/Overlay';
 import { routeNotice, useNotice } from '@/client/ui/useNotice';
 
 type TripFilter = 'ongoing' | 'finished';
-
-type PlanStatus =
-  | 'DRAFT'
-  | 'PLANNED'
-  | 'IN_PROGRESS'
-  | 'COMPLETED'
-  | 'CANCELLED';
 
 const FILTERS: { id: TripFilter; label: string }[] = [
   { id: 'ongoing', label: 'Chưa hoàn tất' },
   { id: 'finished', label: 'Đã kết thúc' },
 ];
-
-const STATUS_INFO: Record<
-  PlanStatus,
-  { label: string; icon: string; className: string }
-> = {
-  DRAFT: {
-    label: 'Bản nháp',
-    icon: 'edit_note',
-    className: 'bg-[#FFE8C7] text-[#8A4B00]',
-  },
-  PLANNED: {
-    label: 'Đã lên kế hoạch',
-    icon: 'calendar_today',
-    className: 'bg-[#D7FBF3] text-[#06695F]',
-  },
-  IN_PROGRESS: {
-    label: 'Đang diễn ra',
-    icon: 'directions_walk',
-    className: 'bg-[#D9F4FF] text-[#156486]',
-  },
-  COMPLETED: {
-    label: 'Đã hoàn thành',
-    icon: 'check_circle',
-    className: 'bg-[#E3F6E5] text-[#23793A]',
-  },
-  CANCELLED: {
-    label: 'Đã hủy',
-    icon: 'cancel',
-    className: 'bg-[#FCE4E3] text-[#AD3232]',
-  },
-};
 
 const moneyFormatter = new Intl.NumberFormat('vi-VN', {
   maximumFractionDigits: 0,
@@ -81,28 +52,130 @@ function countDays(startDate: string, endDate: string): number {
   return Math.max(0, Math.round((end - start) / 86_400_000) + 1);
 }
 
-function planStatus(status: string) {
-  return STATUS_INFO[status as PlanStatus] ?? {
-    label: status || 'Chưa rõ',
-    icon: 'info',
-    className: 'bg-[#EBEDFF] text-[#506581]',
-  };
-}
+/** Menu thao tác của một kế hoạch: sửa, đổi trạng thái, xóa. */
+function PlanMenu({
+  plan,
+  busy,
+  onEdit,
+  onChangeStatus,
+  onDelete,
+}: {
+  plan: TravelPlanResponse;
+  busy: boolean;
+  onEdit: () => void;
+  onChangeStatus: (status: PlanStatus) => void;
+  onDelete: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const nextStatuses = plan.allowedNextStatuses ?? [];
+  const editable = canEditPlan(plan);
+  const deletable = canDeletePlan(plan);
 
-function isFinished(plan: TravelPlanResponse) {
-  return plan.status === 'COMPLETED' || plan.status === 'CANCELLED';
+  if (!editable && !deletable && nextStatuses.length === 0) return null;
+
+  const pick = (action: () => void) => () => {
+    setOpen(false);
+    action();
+  };
+
+  const itemClass =
+    'flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[12px] font-semibold hover:bg-[#F3F4FF]';
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        disabled={busy}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label={`Thao tác với ${plan.title}`}
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30 disabled:cursor-wait disabled:opacity-60"
+      >
+        {busy ? (
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+        ) : (
+          <Icon name="more_vert" className="text-[18px]" />
+        )}
+      </button>
+
+      {open && (
+        <>
+          {/* Bấm ra ngoài để đóng menu */}
+          <button
+            type="button"
+            aria-hidden="true"
+            tabIndex={-1}
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 z-30 cursor-default"
+          />
+          <div
+            role="menu"
+            className="absolute right-0 z-40 mt-1.5 w-56 overflow-hidden rounded-2xl bg-white py-1 text-[#13364A] shadow-[0_8px_24px_rgba(19,54,74,0.18)]"
+          >
+            {editable && (
+              <button type="button" role="menuitem" onClick={pick(onEdit)} className={itemClass}>
+                <Icon name="edit" className="text-[18px] text-[#087A78]" />
+                Sửa kế hoạch
+              </button>
+            )}
+
+            {nextStatuses.map((status) => {
+              const action = PLAN_STATUS_ACTION[status];
+              if (!action) return null;
+              return (
+                <button
+                  key={status}
+                  type="button"
+                  role="menuitem"
+                  onClick={pick(() => onChangeStatus(status))}
+                  className={`${itemClass} ${action.danger ? 'text-[#AD3232]' : ''}`}
+                >
+                  <Icon
+                    name={action.icon}
+                    className={`text-[18px] ${action.danger ? '' : 'text-[#087A78]'}`}
+                  />
+                  {action.label}
+                </button>
+              );
+            })}
+
+            {deletable && (
+              <button
+                type="button"
+                role="menuitem"
+                onClick={pick(onDelete)}
+                className={`${itemClass} border-t border-[#EEF0F6] text-[#AD3232]`}
+              >
+                <Icon name="delete" className="text-[18px]" />
+                Xóa kế hoạch
+              </button>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
 
 function PlanCard({
-                    plan,
-                    opening,
-                    onOpen,
-                    onShare,
-                  }: {
+  plan,
+  opening,
+  busy,
+  onOpen,
+  onShare,
+  onEdit,
+  onChangeStatus,
+  onDelete,
+}: {
   plan: TravelPlanResponse;
   opening: boolean;
+  busy: boolean;
   onOpen: () => void;
   onShare: () => void;
+  onEdit: () => void;
+  onChangeStatus: (status: PlanStatus) => void;
+  onDelete: () => void;
 }) {
   const status = planStatus(plan.status);
   const days = countDays(plan.startDate, plan.endDate);
@@ -112,14 +185,17 @@ function PlanCard({
     `${CLIENT_ROUTES.TRIP_SUGGESTIONS}?planId=${plan.planId}`;
 
   return (
-    <article className="overflow-hidden rounded-[22px] bg-white p-2.5 shadow-[0_3px_12px_rgba(19,54,74,0.04)]">
+    <article className="rounded-[22px] bg-white p-2.5 shadow-[0_3px_12px_rgba(19,54,74,0.04)]">
       {/* Backend chưa trả ảnh bìa Travel Plan, nên dùng nền minh họa thay ảnh giả. */}
-      <div className="relative flex h-[165px] flex-col justify-between overflow-hidden rounded-[18px] bg-gradient-to-br from-[#0F8D86] via-[#087A78] to-[#13364A] p-3 text-white">
-        <span className="pointer-events-none absolute -right-6 -top-8 opacity-15">
-          <Icon name="travel_explore" className="text-[170px]" />
+      {/* Không đặt overflow-hidden ở khung này để menu thao tác không bị cắt. */}
+      <div className="relative flex h-[165px] flex-col justify-between rounded-[18px] bg-gradient-to-br from-[#0F8D86] via-[#087A78] to-[#13364A] p-3 text-white">
+        <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-[18px]">
+          <span className="absolute -right-6 -top-8 opacity-15">
+            <Icon name="travel_explore" className="text-[170px]" />
+          </span>
         </span>
 
-        <div className="relative flex items-start justify-between gap-2">
+        <div className="relative z-10 flex items-start justify-between gap-2">
           <span
             className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold ${status.className}`}
           >
@@ -127,14 +203,23 @@ function PlanCard({
             {status.label}
           </span>
 
-          <button
-            type="button"
-            onClick={onShare}
-            aria-label={`Chia sẻ ${plan.title}`}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30"
-          >
-            <Icon name="share" className="text-[18px]" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={onShare}
+              aria-label={`Chia sẻ ${plan.title}`}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30"
+            >
+              <Icon name="share" className="text-[18px]" />
+            </button>
+            <PlanMenu
+              plan={plan}
+              busy={busy}
+              onEdit={onEdit}
+              onChangeStatus={onChangeStatus}
+              onDelete={onDelete}
+            />
+          </div>
         </div>
 
         <div className="relative">
@@ -181,8 +266,12 @@ function PlanCard({
             {formatMoney(plan.budget, plan.currency)}
           </span>
           <span className="flex items-center gap-1 text-[11px] text-[#72818C]">
+            <Icon name="favorite" className="text-[17px] text-[#087A78]" />
+            {plan.interestCodes?.length ?? 0} sở thích
+          </span>
+          <span className="flex items-center gap-1 text-[11px] text-[#72818C]">
             <Icon name="category" className="text-[17px] text-[#087A78]" />
-            {plan.categoryCodes?.length ?? 0} sở thích
+            {plan.categoryCodes?.length ?? 0} loại hình
           </span>
         </div>
 
@@ -235,6 +324,12 @@ export default function MyTripsPage() {
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [openingPlanId, setOpeningPlanId] = useState<number | null>(null);
+  const [busyPlanId, setBusyPlanId] = useState<number | null>(null);
+  const [pending, setPending] = useState<
+    | { kind: 'status'; plan: TravelPlanResponse; status: PlanStatus }
+    | { kind: 'delete'; plan: TravelPlanResponse }
+    | null
+  >(null);
 
   useEffect(() => {
     let active = true;
@@ -289,6 +384,39 @@ export default function MyTripsPage() {
       }
     } finally {
       setOpeningPlanId(null);
+    }
+  };
+
+  const changeStatus = async (plan: TravelPlanResponse, status: PlanStatus) => {
+    setBusyPlanId(plan.planId);
+    try {
+      const updated = await tripFlowApi.changeStatus(plan.planId, status);
+      setPlans((current) =>
+        current.map((item) => (item.planId === updated.planId ? updated : item)),
+      );
+      const label = PLAN_STATUS_INFO[updated.status]?.label ?? updated.status;
+      showNotice(
+        isFinished(updated)
+          ? `Đã chuyển “${updated.title}” sang ${label}. Xem trong mục Đã kết thúc.`
+          : `Đã chuyển “${updated.title}” sang ${label}.`,
+      );
+    } catch (caught: unknown) {
+      showNotice(errorMessage(caught));
+    } finally {
+      setBusyPlanId(null);
+    }
+  };
+
+  const deletePlan = async (plan: TravelPlanResponse) => {
+    setBusyPlanId(plan.planId);
+    try {
+      await tripFlowApi.deletePlan(plan.planId);
+      setPlans((current) => current.filter((item) => item.planId !== plan.planId));
+      showNotice(`Đã xóa kế hoạch “${plan.title}”.`);
+    } catch (caught: unknown) {
+      showNotice(errorMessage(caught));
+    } finally {
+      setBusyPlanId(null);
     }
   };
 
@@ -405,8 +533,12 @@ export default function MyTripsPage() {
                 key={plan.planId}
                 plan={plan}
                 opening={openingPlanId !== null}
+                busy={busyPlanId === plan.planId}
                 onOpen={() => void openPlan(plan)}
                 onShare={() => void sharePlan(plan)}
+                onEdit={() => navigate(editPlanPath(plan.planId))}
+                onChangeStatus={(status) => setPending({ kind: 'status', plan, status })}
+                onDelete={() => setPending({ kind: 'delete', plan })}
               />
             ))}
           </div>
@@ -446,7 +578,41 @@ export default function MyTripsPage() {
         </Link>
       </div>
 
-      {/* Không hiển thị thao tác xóa: Backend chưa có DELETE /travel-plans/{id}. */}
+      {/* XÁC NHẬN ĐỔI TRẠNG THÁI / XÓA */}
+      {pending?.kind === 'status' && (
+        <ConfirmDialog
+          title={PLAN_STATUS_ACTION[pending.status].label}
+          message={
+            <>
+              <span className="font-bold text-[#13364A]">{pending.plan.title}</span>
+              <br />
+              {PLAN_STATUS_ACTION[pending.status].confirm}
+            </>
+          }
+          confirmLabel={PLAN_STATUS_ACTION[pending.status].label}
+          cancelLabel="Quay lại"
+          danger={PLAN_STATUS_ACTION[pending.status].danger}
+          onConfirm={() => void changeStatus(pending.plan, pending.status)}
+          onClose={() => setPending(null)}
+        />
+      )}
+      {pending?.kind === 'delete' && (
+        <ConfirmDialog
+          title="Xóa kế hoạch"
+          message={
+            <>
+              Xóa <span className="font-bold text-[#13364A]">{pending.plan.title}</span>?
+              Lịch trình và các địa điểm đã chọn của kế hoạch cũng bị xóa. Không thể hoàn tác.
+            </>
+          }
+          confirmLabel="Xóa"
+          cancelLabel="Quay lại"
+          danger
+          onConfirm={() => void deletePlan(pending.plan)}
+          onClose={() => setPending(null)}
+        />
+      )}
+
       <NoticeToast message={notice} />
     </div>
   );

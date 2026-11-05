@@ -1,294 +1,678 @@
-import { useMemo, useRef, useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Icon } from '@/components/common';
-import { CLIENT_ROUTES, suggestionPath } from '@/client/routePaths';
-import TravelMap, { type TravelMapHandle } from '@/client/traveller/components/TravelMap';
+import { errorMessage } from '@/client/api/http';
 import {
-  rankSuggestions,
-  type RankedSuggestion,
-  SUGGESTION_CATEGORY_LABELS,
-  type SuggestionCategory,
-} from '@/client/traveller/data/suggestedPlaces';
-import { useTraveller } from '@/client/traveller/travellerContext';
-import { ConfirmDialog } from '@/client/ui/Overlay';
+  tripFlowApi,
+  type TravelPlanResponse,
+  type TripPlace,
+} from '@/client/api/tripFlowApi';
+import { CLIENT_ROUTES, suggestionPath } from '@/client/routePaths';
+import TravelMap, {
+  type TravelMapHandle,
+} from '@/client/traveller/components/TravelMap';
 import PageBar from '@/client/ui/PageBar';
 
 const FLOW_STEPS = 6;
 const CURRENT_FLOW_STEP = 3;
 
-const CARD_CLASS =
-  'flex h-[286px] min-w-0 flex-1 flex-col overflow-hidden rounded-[18px] bg-white shadow-[0_3px_9px_rgba(13,69,67,0.07)]';
+const hasCoordinate = (
+  place: TripPlace,
+): place is TripPlace & { latitude: number; longitude: number } =>
+  typeof place.latitude === 'number' &&
+  Number.isFinite(place.latitude) &&
+  place.latitude >= -90 &&
+  place.latitude <= 90 &&
+  typeof place.longitude === 'number' &&
+  Number.isFinite(place.longitude) &&
+  place.longitude >= -180 &&
+  place.longitude <= 180;
 
-function MatchCard({
-  place,
-  index,
-  favorite,
-  inPlan,
-  active,
-  onHover,
-  onToggleFavorite,
-  onTogglePlan,
-}: {
-  place: RankedSuggestion;
+const priceLabel = (place: TripPlace) => {
+  if (place.estimatedCost === null) return 'Chưa có giá tham khảo';
+  if (place.estimatedCost === 0) return 'Miễn phí';
+
+  return `${new Intl.NumberFormat('vi-VN').format(
+    place.estimatedCost,
+  )} ${place.currency ?? 'VND'}`;
+};
+
+const tripDays = (plan: TravelPlanResponse) => {
+  const start = Date.parse(`${plan.startDate}T00:00:00Z`);
+  const end = Date.parse(`${plan.endDate}T00:00:00Z`);
+
+  if (!Number.isFinite(start) || !Number.isFinite(end)) {
+    return 0;
+  }
+
+  return Math.max(
+    0,
+    Math.round((end - start) / 86_400_000) + 1,
+  );
+};
+
+function PlaceCard({
+                     place,
+                     index,
+                     planId,
+                     selected,
+                     active,
+                     busy,
+                     onHover,
+                     onToggle,
+                   }: {
+  place: TripPlace;
   index: number;
-  favorite: boolean;
-  inPlan: boolean;
+  planId: number;
+  selected: boolean;
   active: boolean;
+  busy: boolean;
   onHover: () => void;
-  onToggleFavorite: () => void;
-  onTogglePlan: () => void;
+  onToggle: () => void;
 }) {
   return (
     <div
-      id={`suggestion-${place.id}`}
+      id={`suggestion-${place.placeId}`}
       onMouseEnter={onHover}
-      className={`${CARD_CLASS} relative border ${active ? 'border-[1.5px] border-[#087A78]' : 'border-[#E7EBEF]'}`}
+      className={`relative flex min-w-0 flex-col overflow-hidden rounded-[18px] border bg-white shadow-[0_3px_9px_rgba(13,69,67,0.07)] transition-shadow hover:shadow-md ${
+        active
+          ? 'border-[#087A78]'
+          : 'border-[#E7EBEF]'
+      }`}
     >
-      <Link to={suggestionPath(place.id)} className="flex flex-1 flex-col">
-        <div className="relative h-[122px] shrink-0">
-          <img src={place.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-linear-to-b from-black/35 via-black/0 to-black/35" />
-          <span className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-white/95 px-2 py-1.5 text-[9px] font-extrabold text-[#075C66]">
-            <Icon name="auto_awesome" className="text-[12px]" /> AI GỢI Ý
-          </span>
-          <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-[#DAFAF0] px-2.5 py-1.5 text-[10px] font-extrabold text-[#075C66]">
-            <Icon name="auto_awesome" className="text-[12px]" /> {place.match}% phù hợp
+      <Link
+        to={`${suggestionPath(String(place.placeId))}?planId=${planId}`}
+        className="block"
+        aria-label={`Xem chi tiết ${place.name}`}
+      >
+        <div className="relative h-[140px] overflow-hidden bg-[#DCEFEB]">
+          {place.imageUrl ? (
+            <img
+              src={place.imageUrl}
+              alt={place.name}
+              loading="lazy"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#E5F7F2] to-[#C9E5E5]">
+              <Icon
+                name="landscape"
+                className="text-[47px] text-[#73B8AD]"
+              />
+            </div>
+          )}
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+
+          <span className="absolute bottom-2 left-2 max-w-[90%] truncate rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-[#075C66]">
+            {place.categoryName ?? 'Địa điểm du lịch'}
           </span>
         </div>
-        <div className="flex flex-1 flex-col px-[11px] pt-[9px] pb-2">
-          <p className="line-clamp-2 h-[37px] text-[13.5px] leading-[18px] font-extrabold text-[#13364A]">
+
+        <div className="px-3 pb-2 pt-3">
+          <p className="line-clamp-2 min-h-9 text-[13px] font-extrabold leading-[18px] text-[#13364A]">
             {place.name}
           </p>
-          <p className="mt-0.5 flex items-center gap-0.5 text-[10px] text-[#72818C]">
-            <Icon name="location_on" className="text-[13px]" />
-            <span className="truncate">{place.location}</span>
+
+          <p className="mt-1 flex items-start gap-1 text-[11px] text-[#72818C]">
+            <Icon
+              name="location_on"
+              className="shrink-0 text-[15px]"
+            />
+
+            <span className="line-clamp-2">
+              {place.address ||
+                place.province ||
+                'Chưa có địa chỉ'}
+            </span>
           </p>
-          <p className="mt-2 flex items-center justify-between text-[11px]">
-            <span className="flex items-center gap-1 font-bold text-[#13364A]">
-              <Icon name="star" filled className="text-[14px] text-[#E6A332]" />
-              {place.rating.toFixed(1)}
-            </span>
-            <span className="text-[10px] font-semibold text-[#72818C]">
-              #{index + 1} theo sở thích
-            </span>
+
+          <p className="mt-2 text-[12px] font-extrabold text-[#087A78]">
+            {priceLabel(place)}
+          </p>
+
+          <p className="mt-1 text-[10px] text-[#8C9AA3]">
+            Địa điểm #{index + 1} trong danh sách
           </p>
         </div>
       </Link>
-      <button
-        type="button"
-        onClick={onToggleFavorite}
-        aria-label={favorite ? 'Bỏ yêu thích' : 'Lưu yêu thích'}
-        aria-pressed={favorite}
-        className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/95"
-      >
-        <Icon
-          name="favorite"
-          filled={favorite}
-          className={`text-[18px] ${favorite ? 'text-[#E5484D]' : 'text-[#075C66]'}`}
-        />
-      </button>
-      <div className="px-[11px] pb-2.5">
+
+      <div className="mt-auto px-3 pb-3 pt-1">
         <button
           type="button"
-          onClick={onTogglePlan}
-          aria-pressed={inPlan}
-          className={`flex h-9 w-full items-center justify-center gap-1 rounded-xl text-[10px] font-extrabold ${
-            inPlan ? 'bg-[#DAF5EA] text-[#075C66]' : 'bg-[#075C66] text-white hover:bg-primary'
+          disabled={busy}
+          onClick={onToggle}
+          aria-pressed={selected}
+          className={`flex h-10 w-full items-center justify-center gap-1.5 rounded-xl text-[11px] font-extrabold transition-colors disabled:cursor-wait disabled:opacity-60 ${
+            selected
+              ? 'bg-[#DAF5EA] text-[#075C66] hover:bg-[#C5ECDE]'
+              : 'bg-[#075C66] text-white hover:bg-[#087A78]'
           }`}
         >
-          <Icon name={inPlan ? 'check_circle' : 'add'} className="text-[16px]" />
-          {inPlan ? 'Đã thêm' : 'Thêm vào kế hoạch'}
+          <Icon
+            name={
+              busy
+                ? 'hourglass_empty'
+                : selected
+                  ? 'check_circle'
+                  : 'add'
+            }
+            className="text-[18px]"
+          />
+
+          {busy
+            ? 'Đang cập nhật...'
+            : selected
+              ? 'Đã chọn · Bỏ chọn'
+              : 'Thêm vào kế hoạch'}
         </button>
       </div>
     </div>
   );
 }
 
-/** Gợi ý điểm đến — theo SuggestedPlacesScreen của mobile (bản đồ Leaflet thay react-native-maps) */
+/**
+ * Danh sách địa điểm thật từ Backend.
+ * Hiện lấy từ catalogue, chưa phải AI Embedding.
+ */
 export default function SuggestedPlacesPage() {
   const navigate = useNavigate();
-  const { plan, togglePlanPlace, savedSuggestions, toggleSavedSuggestion, savePlan } =
-    useTraveller();
-  const mapRef = useRef<TravelMapHandle>(null);
-  const [category, setCategory] = useState<SuggestionCategory | 'all'>('all');
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [confirmLeave, setConfirmLeave] = useState(false);
+  const [searchParams] = useSearchParams();
 
-  const places = useMemo(
-    () => (plan ? rankSuggestions(plan.destinationId, plan.interests) : []),
-    [plan],
+  const planId = Number(searchParams.get('planId') ?? '');
+  const validPlanId =
+    Number.isSafeInteger(planId) &&
+    planId > 0;
+
+  const mapRef = useRef<TravelMapHandle>(null);
+
+  const [plan, setPlan] =
+    useState<TravelPlanResponse | null>(null);
+
+  const [places, setPlaces] =
+    useState<TripPlace[]>([]);
+
+  const [selectedIds, setSelectedIds] =
+    useState<Set<number>>(new Set());
+
+  const [category, setCategory] = useState('all');
+
+  const [activeId, setActiveId] =
+    useState<string | null>(null);
+
+  const [busyPlaceId, setBusyPlaceId] =
+    useState<number | null>(null);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  const [actionError, setActionError] =
+    useState<string | null>(null);
+
+  const [retryCount, setRetryCount] = useState(0);
+
+  // ==========================================
+  // LẤY KẾ HOẠCH, ĐỊA ĐIỂM VÀ GIỎ TỪ BACKEND
+  // ==========================================
+
+  useEffect(() => {
+    if (!validPlanId) {
+      setError(
+        'Không có planId hợp lệ. Hãy tạo kế hoạch trước.',
+      );
+      setLoading(false);
+      return;
+    }
+
+    let active = true;
+
+    setLoading(true);
+    setError(null);
+    setActionError(null);
+    setPlan(null);
+    setPlaces([]);
+    setSelectedIds(new Set());
+
+    Promise.all([
+      tripFlowApi.plan(planId),
+      tripFlowApi.candidatePlaces(planId),
+      tripFlowApi.selectedPlaces(planId),
+    ])
+      .then(([savedPlan, candidates, selected]) => {
+        if (!active) return;
+
+        setPlan(savedPlan);
+        setPlaces(candidates);
+
+        setSelectedIds(
+          new Set(
+            selected.places.map(
+              (item) => item.placeId,
+            ),
+          ),
+        );
+      })
+      .catch((caught: unknown) => {
+        if (active) {
+          setError(errorMessage(caught));
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [planId, validPlanId, retryCount]);
+
+  // ==========================================
+  // LỌC ĐỊA ĐIỂM THEO CATEGORY TỪ BACKEND
+  // ==========================================
+
+  const categories = useMemo(() => {
+    const grouped = new Map<
+      string,
+      { label: string; count: number }
+    >();
+
+    for (const place of places) {
+      const key =
+        place.categoryCode ?? 'uncategorized';
+
+      const previous = grouped.get(key);
+
+      grouped.set(key, {
+        label: place.categoryName ?? 'Khác',
+        count: (previous?.count ?? 0) + 1,
+      });
+    }
+
+    return [
+      {
+        id: 'all',
+        label: 'Tất cả',
+        count: places.length,
+      },
+      ...Array.from(grouped, ([id, value]) => ({
+        id,
+        ...value,
+      })),
+    ];
+  }, [places]);
+
+  const visiblePlaces = useMemo(
+    () =>
+      category === 'all'
+        ? places
+        : places.filter(
+          (place) =>
+            (place.categoryCode ?? 'uncategorized') ===
+            category,
+        ),
+    [places, category],
   );
 
-  if (!plan) return <Navigate to={CLIENT_ROUTES.TRIP_PLAN} replace />;
+  // ==========================================
+  // HIỂN THỊ BẢN ĐỒ THEO TỌA ĐỘ THẬT
+  // ==========================================
 
-  const categories = [
-    { id: 'all' as const, label: 'Tất cả', count: places.length },
-    ...Array.from(new Set(places.map((place) => place.category))).map((id) => ({
-      id,
-      label: SUGGESTION_CATEGORY_LABELS[id],
-      count: places.filter((place) => place.category === id).length,
-    })),
-  ];
-  const visiblePlaces =
-    category === 'all' ? places : places.filter((place) => place.category === category);
-  const currentActive = activeId ?? visiblePlaces[0]?.id ?? null;
+  const mapPlaces = useMemo(
+    () => visiblePlaces.filter(hasCoordinate),
+    [visiblePlaces],
+  );
 
-  const focusPlace = (place: RankedSuggestion) => {
-    setActiveId(place.id);
-    mapRef.current?.focus(place.coordinate, 14);
+  const mapPoints = useMemo(
+    () =>
+      mapPlaces.map((place, index) => ({
+        id: String(place.placeId),
+
+        coordinate: [
+          place.latitude,
+          place.longitude,
+        ] as [number, number],
+
+        label: String(index + 1),
+        title: place.name,
+      })),
+    [mapPlaces],
+  );
+
+  const currentActive =
+    activeId ?? mapPoints[0]?.id ?? null;
+
+  const focusPlace = (place: TripPlace) => {
+    setActiveId(String(place.placeId));
+
+    if (hasCoordinate(place)) {
+      mapRef.current?.focus(
+        [place.latitude, place.longitude],
+        14,
+      );
+    }
   };
 
   const selectMarker = (id: string) => {
-    const place = visiblePlaces.find((item) => item.id === id);
-    if (!place) return;
-    focusPlace(place);
+    const found = visiblePlaces.find(
+      (place) =>
+        String(place.placeId) === id,
+    );
+
+    if (!found) return;
+
+    focusPlace(found);
+
     document
       .getElementById(`suggestion-${id}`)
-      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      ?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
   };
 
-  const handleBack = () =>
-    plan.placeIds.length > 0 ? setConfirmLeave(true) : navigate(CLIENT_ROUTES.TRIP_PLAN);
+  // ==========================================
+  // THÊM / XÓA ĐỊA ĐIỂM KHỎI GIỎ
+  // ==========================================
 
-  const save = () => {
-    const count = savePlan();
-    navigate(CLIENT_ROUTES.TRIPS, {
-      replace: true,
-      state: { notice: `Đã lưu kế hoạch: thêm ${count} địa điểm vào chuyến đi của bạn.` },
-    });
+  const togglePlace = async (place: TripPlace) => {
+    if (!validPlanId || busyPlaceId !== null) {
+      return;
+    }
+
+    const wasSelected =
+      selectedIds.has(place.placeId);
+
+    setBusyPlaceId(place.placeId);
+    setActionError(null);
+
+    try {
+      if (wasSelected) {
+        await tripFlowApi.removePlace(
+          planId,
+          place.placeId,
+        );
+      } else {
+        await tripFlowApi.addPlace(
+          planId,
+          place.placeId,
+        );
+      }
+
+      // Chỉ cập nhật giao diện sau khi Backend thành công.
+      setSelectedIds((current) => {
+        const next = new Set(current);
+
+        if (wasSelected) {
+          next.delete(place.placeId);
+        } else {
+          next.add(place.placeId);
+        }
+
+        return next;
+      });
+    } catch (caught) {
+      setActionError(errorMessage(caught));
+    } finally {
+      setBusyPlaceId(null);
+    }
   };
+
+  const selectedUrl =
+    `${CLIENT_ROUTES.TRIP_PLAN_SELECTED}?planId=${planId}`;
 
   return (
     <div className="pb-24 md:pb-4">
+      {/* THANH TIÊU ĐỀ */}
       <PageBar
-        title="Gợi ý điểm đến cho bạn"
-        subtitle={`${plan.destinationName} • ${plan.days} ngày • ${plan.members} người`}
-        onBack={handleBack}
+        title="Địa điểm dành cho chuyến đi"
+        subtitle={
+          plan
+            ? `${plan.destination} • ${tripDays(plan)} ngày • ${plan.groupSize} người`
+            : undefined
+        }
+        backTo={CLIENT_ROUTES.TRIPS}
         actions={
           <Link
-            to={CLIENT_ROUTES.TRIP_PLAN_SELECTED}
+            to={
+              validPlanId
+                ? selectedUrl
+                : CLIENT_ROUTES.TRIP_PLAN
+            }
             className="flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[12px] font-bold text-[#075C66]"
           >
-            <Icon name="assignment" className="text-[18px]" />
-            <span className="hidden sm:inline">Kế hoạch</span> ({plan.placeIds.length})
+            <Icon
+              name="shopping_basket"
+              className="text-[18px]"
+            />
+
+            <span className="hidden sm:inline">
+              Đã chọn
+            </span>
+
+            ({selectedIds.size})
           </Link>
         }
       />
 
+      {/* THANH TIẾN TRÌNH */}
       <div className="mb-3 flex gap-1.5">
-        {Array.from({ length: FLOW_STEPS }, (_, index) => (
-          <span
-            key={index}
-            className={`h-[5px] flex-1 rounded-full ${index < CURRENT_FLOW_STEP ? 'bg-[#075C66]' : 'bg-[#E3E8EF]'}`}
-          />
-        ))}
+        {Array.from(
+          { length: FLOW_STEPS },
+          (_, index) => (
+            <span
+              key={index}
+              className={`h-[5px] flex-1 rounded-full ${
+                index < CURRENT_FLOW_STEP
+                  ? 'bg-[#075C66]'
+                  : 'bg-[#E3E8EF]'
+              }`}
+            />
+          ),
+        )}
       </div>
 
-      <div className="lg:grid lg:grid-cols-[1fr_1.15fr] lg:gap-5">
-        <div className="lg:sticky lg:top-20 lg:self-start">
-          <div className="relative overflow-hidden rounded-[20px] bg-[#E0EEE9]">
-            <TravelMap
-              ref={mapRef}
-              className="h-[225px] lg:h-[480px]"
-              points={visiblePlaces.map((place, index) => ({
-                id: place.id,
-                coordinate: place.coordinate,
-                label: String(index + 1),
-                title: place.name,
-              }))}
-              activeId={currentActive}
-              onSelect={selectMarker}
-            />
-            <span className="pointer-events-none absolute top-3 left-3 z-[400] rounded-full bg-white px-3 py-2 text-[11px] font-bold text-[#075C66] shadow">
-              {visiblePlaces.length} địa điểm trên bản đồ
-            </span>
-            <span className="pointer-events-none absolute bottom-2 left-3 z-[400] rounded-lg bg-white/95 px-2 py-1 text-[10px] text-[#65798A]">
-              Vị trí tham khảo, không dùng để dẫn đường
-            </span>
+      {/* TRẠNG THÁI ĐANG TẢI */}
+      {loading && (
+        <div
+          role="status"
+          className="rounded-2xl bg-white p-8 text-center text-sm text-[#087A78]"
+        >
+          Đang tải kế hoạch và các địa điểm từ Backend...
+        </div>
+      )}
+
+      {/* THÔNG BÁO LỖI */}
+      {!loading && error && (
+        <div
+          role="alert"
+          className="rounded-2xl border border-red-100 bg-red-50 p-5 text-sm text-red-700"
+        >
+          <p>{error}</p>
+
+          <div className="mt-4 flex gap-3">
+            {validPlanId && (
+              <button
+                type="button"
+                onClick={() =>
+                  setRetryCount((count) => count + 1)
+                }
+                className="rounded-full bg-white px-4 py-2 font-bold text-[#075C66]"
+              >
+                Thử lại
+              </button>
+            )}
+
+            <Link
+              to={CLIENT_ROUTES.TRIP_PLAN}
+              className="rounded-full bg-white px-4 py-2 font-bold text-[#075C66]"
+            >
+              Tạo kế hoạch
+            </Link>
           </div>
         </div>
+      )}
 
-        <div>
-          <div className="sticky top-16 z-10 -mx-4 mt-3 bg-client-bg px-4 py-3 lg:mt-0 lg:pt-0">
-            <div className="flex gap-2 overflow-x-auto">
-              {categories.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => {
-                    setCategory(item.id);
-                    setActiveId(null);
-                  }}
-                  aria-pressed={item.id === category}
-                  className={`shrink-0 rounded-full px-4 py-2.5 text-[12px] font-semibold ${
-                    item.id === category ? 'bg-[#075C66] text-white' : 'bg-[#EBEDFF] text-[#13364A]'
-                  }`}
-                >
-                  {item.label} ({item.count})
-                </button>
-              ))}
-            </div>
-          </div>
-
+      {!loading && !error && plan && (
+        <>
+          {/* THÔNG TIN NGUỒN ĐỊA ĐIỂM */}
           <div className="mb-3 rounded-2xl border border-[#DDEDE7] bg-[#F4FBF8] p-3">
             <p className="flex items-center gap-1.5 text-[13px] font-extrabold text-[#13364A]">
-              <Icon name="auto_awesome" className="text-[17px] text-[#075C66]" />
-              Địa điểm đề xuất
+              <Icon
+                name="travel_explore"
+                className="text-[18px] text-[#075C66]"
+              />
+
+              Danh sách địa điểm phù hợp sơ bộ
             </p>
-            <p className="mt-1 text-[10px] text-[#72818C]">
-              {visiblePlaces.length} địa điểm • Theo sở thích
+
+            <p className="mt-1 text-[11px] leading-5 text-[#72818C]">
+              Dữ liệu từ catalogue Backend, lọc theo điểm đến
+              và sở thích. Chưa phải kết quả AI Embedding.
+              Bạn có thể thêm hoặc bỏ địa điểm; lựa chọn
+              được lưu ngay trên Backend.
             </p>
           </div>
 
-          {visiblePlaces.length === 0 ? (
-            <div className="flex flex-col items-center rounded-2xl bg-white px-4 py-8">
-              <Icon name="travel_explore" className="text-[32px] text-[#94B5B6]" />
-              <p className="mt-2 text-[12px] text-[#72818C]">Chưa có kết quả để hiển thị.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-2.5">
-              {visiblePlaces.map((place, index) => (
-                <MatchCard
-                  key={place.id}
-                  place={place}
-                  index={index}
-                  favorite={savedSuggestions.includes(place.id)}
-                  inPlan={plan.placeIds.includes(place.id)}
-                  active={place.id === currentActive}
-                  onHover={() => setActiveId(place.id)}
-                  onToggleFavorite={() => toggleSavedSuggestion(place.id)}
-                  onTogglePlan={() => togglePlanPlace(place.id)}
-                />
-              ))}
+          {actionError && (
+            <div
+              role="alert"
+              className="mb-3 rounded-xl border border-red-100 bg-red-50 p-3 text-[12px] text-red-700"
+            >
+              {actionError}
             </div>
           )}
-        </div>
-      </div>
 
-      <div className="fixed inset-x-0 bottom-[62px] z-20 border-t border-[#EEF1F5] bg-white px-4 pt-2.5 pb-2.5 md:static md:mt-4 md:rounded-[20px] md:border-0">
-        <button
-          type="button"
-          onClick={save}
-          disabled={plan.placeIds.length === 0}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#075C66] text-[14px] font-bold text-white hover:bg-primary disabled:bg-[#E3E8EF] disabled:text-[#72818C]"
-        >
-          <Icon name="save" className="text-[19px]" />
-          {plan.placeIds.length > 0
-            ? `Lưu kế hoạch (${plan.placeIds.length} địa điểm)`
-            : 'Chọn địa điểm để thêm vào kế hoạch'}
-        </button>
-      </div>
+          <div className="lg:grid lg:grid-cols-[1fr_1.15fr] lg:gap-5">
+            {/* BẢN ĐỒ */}
+            <div className="lg:sticky lg:top-20 lg:self-start">
+              <div className="relative overflow-hidden rounded-[20px] bg-[#E0EEE9]">
+                <TravelMap
+                  ref={mapRef}
+                  className="h-[225px] lg:h-[480px]"
+                  points={mapPoints}
+                  activeId={currentActive}
+                  onSelect={selectMarker}
+                />
 
-      {confirmLeave && (
-        <ConfirmDialog
-          title="Bỏ các địa điểm đã chọn?"
-          message="Kế hoạch của bạn chưa được lưu."
-          cancelLabel="Ở lại"
-          confirmLabel="Bỏ"
-          danger
-          onConfirm={() => navigate(CLIENT_ROUTES.TRIP_PLAN)}
-          onClose={() => setConfirmLeave(false)}
-        />
+                <span className="pointer-events-none absolute left-3 top-3 z-[400] rounded-full bg-white px-3 py-2 text-[11px] font-bold text-[#075C66] shadow">
+                  {mapPoints.length} địa điểm có tọa độ
+                </span>
+
+                {mapPoints.length === 0 && (
+                  <span className="pointer-events-none absolute bottom-3 left-3 right-3 z-[400] rounded-xl bg-white/90 px-3 py-2 text-center text-[11px] text-[#72818C]">
+                    Danh sách này chưa có địa điểm với
+                    tọa độ hợp lệ.
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* DANH SÁCH ĐỊA ĐIỂM */}
+            <div>
+              {/* LỌC CATEGORY */}
+              <div className="sticky top-16 z-10 -mx-4 mt-3 bg-client-bg px-4 py-3 lg:mt-0 lg:pt-0">
+                <div className="flex gap-2 overflow-x-auto">
+                  {categories.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        setCategory(item.id);
+                        setActiveId(null);
+                      }}
+                      aria-pressed={item.id === category}
+                      className={`shrink-0 rounded-full px-4 py-2.5 text-[12px] font-semibold ${
+                        item.id === category
+                          ? 'bg-[#075C66] text-white'
+                          : 'bg-[#EBEDFF] text-[#13364A]'
+                      }`}
+                    >
+                      {item.label} ({item.count})
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* CHƯA CÓ ĐỊA ĐIỂM */}
+              {visiblePlaces.length === 0 ? (
+                <div className="flex flex-col items-center rounded-2xl bg-white px-4 py-10 text-center">
+                  <Icon
+                    name="travel_explore"
+                    className="text-[35px] text-[#94B5B6]"
+                  />
+
+                  <p className="mt-2 text-[13px] font-bold text-[#13364A]">
+                    Chưa có địa điểm phù hợp
+                  </p>
+
+                  <p className="mt-1 text-[11px] leading-5 text-[#72818C]">
+                    Catalogue hiện chưa có địa điểm ACTIVE
+                    khớp điểm đến và danh mục đã chọn.
+                    Bạn vẫn có thể mở danh sách địa điểm
+                    đã chọn ở nút bên trên.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2.5">
+                  {visiblePlaces.map((place, index) => (
+                    <PlaceCard
+                      key={place.placeId}
+                      place={place}
+                      index={index}
+                      planId={planId}
+                      selected={selectedIds.has(
+                        place.placeId,
+                      )}
+                      active={
+                        String(place.placeId) ===
+                        currentActive
+                      }
+                      busy={busyPlaceId !== null}
+                      onHover={() => focusPlace(place)}
+                      onToggle={() => {
+                        void togglePlace(place);
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* NÚT ĐẾN GIỎ ĐỊA ĐIỂM */}
+          <div className="fixed inset-x-0 bottom-[62px] z-20 border-t border-[#EEF1F5] bg-white px-4 pb-2.5 pt-2.5 md:static md:mt-4 md:rounded-[20px] md:border-0">
+            <button
+              type="button"
+              onClick={() =>
+                navigate(selectedUrl)
+              }
+              disabled={
+                selectedIds.size === 0 ||
+                busyPlaceId !== null
+              }
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#075C66] text-[14px] font-bold text-white hover:bg-primary disabled:bg-[#E3E8EF] disabled:text-[#72818C]"
+            >
+              <Icon
+                name="shopping_basket"
+                className="text-[19px]"
+              />
+
+              {selectedIds.size > 0
+                ? `Xem ${selectedIds.size} địa điểm đã chọn`
+                : 'Chọn địa điểm để tiếp tục'}
+
+              <Icon
+                name="arrow_forward"
+                className="text-[18px]"
+              />
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

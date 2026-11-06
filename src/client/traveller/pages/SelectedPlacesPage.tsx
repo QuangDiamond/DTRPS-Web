@@ -296,7 +296,7 @@ export default function SelectedPlacesPage() {
           role="status"
           className="rounded-[20px] bg-white p-8 text-center text-[13px] text-[#087A78]"
         >
-          Đang tải các địa điểm đã chọn từ Backend...
+          Đang tải các địa điểm đã chọn ...
         </div>
       )}
 
@@ -543,7 +543,7 @@ export default function SelectedPlacesPage() {
                 và các chi phí khác.
                 {costSummary.unknownCount > 0 &&
                   ` Có ${costSummary.unknownCount} địa điểm chưa có giá.`}
-                {' '}Backend sẽ tính chi phí dự kiến khi tạo lịch trình.
+                {' '} tính chi phí dự kiến khi tạo lịch trình.
               </p>
             </div>
           )}
@@ -557,7 +557,7 @@ export default function SelectedPlacesPage() {
 
             <p className="flex-1 text-[12px] leading-[19px] text-[#5C6F87]">
               Chỉ những địa điểm đã chọn mới được đưa vào
-              lịch trình. Backend sẽ xếp theo ngày, giờ mở
+              lịch trình. sẽ xếp theo ngày, giờ mở
               cửa, khoảng cách ước lượng và nhịp độ;
               không dùng AI để xếp lịch.
             </p>

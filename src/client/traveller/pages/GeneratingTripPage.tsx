@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { errorMessage } from '@/client/api/http';
-import { tripFlowApi, type TravelPlanResponse } from '@/client/api/tripFlowApi';
+
+import {
+  tripFlowApi,
+  type AiRecommendationResponse,
+  type TravelPlanResponse,
+} from '@/client/api/tripFlowApi';
+
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import { ConfirmDialog } from '@/client/ui/Overlay';
 
@@ -19,10 +25,12 @@ const STEPS = [
     doing: 'Đang đọc sở thích trải nghiệm của bạn',
     done: 'Đã tải sở thích trải nghiệm',
   },
-  {
-    doing: 'Đang tìm địa điểm phù hợp trong hệ thống',
-    done: 'Đã tải danh sách địa điểm từ hệ thống',
-  },
+ 
+{
+  doing: 'SmartTravel đang tìm và xếp hạng địa điểm phù hợp',
+  done: 'SmartTravel đã xếp hạng các địa điểm',
+},
+
   {
     doing: 'Đang chuẩn bị màn hình lựa chọn địa điểm',
     done: 'Sẵn sàng để bạn chọn địa điểm',
@@ -72,6 +80,10 @@ export default function GeneratingTripPage() {
   const [planLoaded, setPlanLoaded] = useState(false);
   const [placesLoaded, setPlacesLoaded] = useState(false);
   const [candidateCount, setCandidateCount] = useState<number | null>(null);
+  
+const [recommendation, setRecommendation] =
+  useState<AiRecommendationResponse | null>(null);
+
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
@@ -102,9 +114,12 @@ export default function GeneratingTripPage() {
     let active = true;
     setPlan(null);
     setPlanLoaded(false);
-    setPlacesLoaded(false);
-    setCandidateCount(null);
-    setError(null);
+   
+setPlacesLoaded(false);
+setCandidateCount(null);
+setRecommendation(null);
+setError(null);
+
 
     const load = async () => {
       try {
@@ -113,10 +128,14 @@ export default function GeneratingTripPage() {
         setPlan(savedPlan);
         setPlanLoaded(true);
 
-        const candidates = await tripFlowApi.candidatePlaces(planId);
-        if (!active) return;
-        setCandidateCount(candidates.length);
-        setPlacesLoaded(true);
+       
+const recommended = await tripFlowApi.recommendedPlaces(planId);
+if (!active) return;
+
+setRecommendation(recommended);
+setCandidateCount(recommended.items.length);
+setPlacesLoaded(true);
+
       } catch (caught: unknown) {
         if (active) setError(errorMessage(caught));
       }
@@ -137,12 +156,18 @@ export default function GeneratingTripPage() {
   const doneSteps = finished ? 4 : planLoaded ? (placesLoaded ? 3 : 2) : 0;
   const currentStep = Math.min(doneSteps, STEPS.length - 1);
 
-  const openSuggestions = () => {
-    if (!finished || !plan) return;
-    navigate(`${CLIENT_ROUTES.TRIP_SUGGESTIONS}?planId=${plan.planId}`, {
+  
+const openSuggestions = () => {
+  if (!finished || !plan) return;
+
+  navigate(
+    `${CLIENT_ROUTES.TRIP_SUGGESTIONS}?planId=${plan.planId}`,
+    {
       replace: true,
-    });
-  };
+      state: { recommendation },
+    },
+  );
+};
 
   const retry = () => {
     setError(null);
@@ -289,7 +314,7 @@ export default function GeneratingTripPage() {
             </p>
             {candidateCount !== null && (
               <p className="mt-1 text-[11px] text-[#087A78]">
-                {candidateCount} địa điểm trong danh sách hiện có
+                {candidateCount} địa điểm được SmartTravel gợi ý
               </p>
             )}
           </div>
@@ -297,8 +322,8 @@ export default function GeneratingTripPage() {
       )}
 
       <p className="mt-3 text-center text-[10px] leading-4 text-[#8795A1]">
-        Hiện danh sách lấy từ catalogue Backend. Khi thành viên AI hoàn thiện API
-        Embedding, màn hình này vẫn được giữ để hiển thị quá trình tải gợi ý AI.
+      SmartTravel đang gợi ý địa điểm phù hợp với sở thích và ngân sách.
+Lịch trình sẽ được tạo sau khi bạn chọn địa điểm.
       </p>
 
       <button
@@ -326,7 +351,7 @@ export default function GeneratingTripPage() {
       {confirmCancel && (
         <ConfirmDialog
           title="Quay lại trang chuyến đi?"
-          message="Kế hoạch đã được lưu trên Backend. Quay lại sẽ không xóa kế hoạch này."
+          message="Kế hoạch đã được lưu . Quay lại sẽ không xóa kế hoạch này."
           cancelLabel="Tiếp tục"
           confirmLabel="Quay lại"
           onConfirm={() => navigate(CLIENT_ROUTES.TRIPS)}

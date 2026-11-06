@@ -1,13 +1,25 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
+
 import { Icon } from '@/components/common';
 import { errorMessage } from '@/client/api/http';
+import { referenceApi } from '@/client/api/referenceApi';
+
 import {
   tripFlowApi,
+  toAiTripPlace,
+  type AiRecommendationResponse,
   type TravelPlanResponse,
   type TripPlace,
 } from '@/client/api/tripFlowApi';
+
 import { CLIENT_ROUTES, suggestionPath } from '@/client/routePaths';
 import TravelMap, {
   type TravelMapHandle,
@@ -16,6 +28,7 @@ import PageBar from '@/client/ui/PageBar';
 
 const FLOW_STEPS = 6;
 const CURRENT_FLOW_STEP = 3;
+const PAGE_SIZE = 6;
 
 const hasCoordinate = (
   place: TripPlace,
@@ -132,9 +145,14 @@ function PlaceCard({
             {priceLabel(place)}
           </p>
 
-          <p className="mt-1 text-[10px] text-[#8C9AA3]">
-            Địa điểm #{index + 1} trong danh sách
-          </p>
+         
+<p className="mt-1 text-[10px] text-[#8C9AA3]">
+  {place.aiRank !== undefined &&
+  place.aiScore !== undefined
+    ? `SmartTravel xếp hạng #${place.aiRank} · Điểm ${place.aiScore.toFixed(4)}`
+    : `Địa điểm đã chọn #${index + 1}`}
+</p>
+
         </div>
       </Link>
 
@@ -178,6 +196,7 @@ function PlaceCard({
  */
 export default function SuggestedPlacesPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
 
   const planId = Number(searchParams.get('planId') ?? '');
@@ -186,18 +205,22 @@ export default function SuggestedPlacesPage() {
     planId > 0;
 
   const mapRef = useRef<TravelMapHandle>(null);
-
+const listRef = useRef<HTMLDivElement>(null);
   const [plan, setPlan] =
     useState<TravelPlanResponse | null>(null);
 
   const [places, setPlaces] =
     useState<TripPlace[]>([]);
+    
+const [aiSummary, setAiSummary] =
+  useState<AiRecommendationResponse | null>(null);
+
 
   const [selectedIds, setSelectedIds] =
     useState<Set<number>>(new Set());
 
   const [category, setCategory] = useState('all');
-
+const [page, setPage] = useState(1);
   const [activeId, setActiveId] =
     useState<string | null>(null);
 
@@ -218,58 +241,119 @@ export default function SuggestedPlacesPage() {
   // LẤY KẾ HOẠCH, ĐỊA ĐIỂM VÀ GIỎ TỪ BACKEND
   // ==========================================
 
-  useEffect(() => {
-    if (!validPlanId) {
-      setError(
-        'Không có planId hợp lệ. Hãy tạo kế hoạch trước.',
-      );
-      setLoading(false);
-      return;
-    }
+  
+useEffect(() => {
+  if (!validPlanId) {
+    setError(
+      'Không có planId hợp lệ. Hãy tạo kế hoạch trước.',
+    );
+    setLoading(false);
+    return;
+  }
 
-    let active = true;
+  let active = true;
 
-    setLoading(true);
-    setError(null);
-    setActionError(null);
-    setPlan(null);
-    setPlaces([]);
-    setSelectedIds(new Set());
+  setLoading(true);
+  setError(null);
+  setActionError(null);
+  setPlan(null);
+  setPlaces([]);
+  setAiSummary(null);
+  setSelectedIds(new Set());
+  setPage(1);
 
-    Promise.all([
-      tripFlowApi.plan(planId),
-      tripFlowApi.candidatePlaces(planId),
-      tripFlowApi.selectedPlaces(planId),
-    ])
-      .then(([savedPlan, candidates, selected]) => {
-        if (!active) return;
+  // Lấy kết quả AI từ trang Generating nếu có.
+  const navigationState = location.state as {
+    recommendation?: AiRecommendationResponse;
+  } | null;
 
-        setPlan(savedPlan);
-        setPlaces(candidates);
+  const preloaded =
+    retryCount === 0 &&
+    navigationState?.recommendation?.planId === planId &&
+    Array.isArray(navigationState.recommendation.items)
+      ? navigationState.recommendation
+      : null;
 
-        setSelectedIds(
-          new Set(
-            selected.places.map(
-              (item) => item.placeId,
-            ),
+  Promise.all([
+    // Travel Plan đã lưu.
+    tripFlowApi.plan(planId),
+
+    // Dùng kết quả AI có sẵn, hoặc gọi API nếu refresh trang.
+    preloaded
+      ? Promise.resolve(preloaded)
+      : tripFlowApi.recommendedPlaces(planId),
+
+    // Những địa điểm đã chọn trước đó.
+    tripFlowApi.selectedPlaces(planId),
+
+    // Lấy tên danh mục để hiển thị bằng tiếng Việt.
+    referenceApi.categories().catch(() => []),
+  ])
+    .then(([savedPlan, recommended, selected, groups]) => {
+      if (!active) return;
+
+      const categoryNames = new Map(
+        groups
+          .flatMap((group) => [group, ...group.subtypes])
+          .map(
+            (category) =>
+              [category.code, category.name] as const,
           ),
-        );
-      })
-      .catch((caught: unknown) => {
-        if (active) {
-          setError(errorMessage(caught));
-        }
-      })
-      .finally(() => {
-        if (active) {
-          setLoading(false);
-        }
-      });
+      );
 
-    return () => {
-      active = false;
-    };
-  }, [planId, validPlanId, retryCount]);
+      // Chuyển dữ liệu AI về cấu trúc card Web đang dùng.
+      const aiPlaces = recommended.items.map((item) => ({
+        ...toAiTripPlace(item, savedPlan.destination),
+        categoryName:
+          categoryNames.get(item.categoryCode ?? '') ??
+          item.categoryCode,
+      }));
+
+      // Giữ các Place đã chọn để người dùng có thể bỏ chọn.
+      const aiIds = new Set(
+        aiPlaces.map((item) => item.placeId),
+      );
+
+      const alreadySelected = selected.places.filter(
+        (item) => !aiIds.has(item.placeId),
+      );
+
+      setPlan(savedPlan);
+      setAiSummary(recommended);
+
+      setPlaces([
+        ...aiPlaces,
+        ...alreadySelected,
+      ]);
+
+      setSelectedIds(
+        new Set(
+          selected.places.map((item) => item.placeId),
+        ),
+      );
+    })
+    .catch((caught: unknown) => {
+      if (active) {
+        setError(errorMessage(caught));
+      }
+    })
+    .finally(() => {
+      if (active) {
+        setLoading(false);
+      }
+    });
+
+  return () => {
+    active = false;
+  };
+}, [
+  planId,
+  validPlanId,
+  retryCount,
+  location.key,
+  location.state,
+]);
+
 
   // ==========================================
   // LỌC ĐỊA ĐIỂM THEO CATEGORY TỪ BACKEND
@@ -317,15 +401,46 @@ export default function SuggestedPlacesPage() {
         ),
     [places, category],
   );
+  
+  // PHÂN TRANG SAU KHI LỌC DANH MỤC
+  const totalPages = Math.max(
+    1,
+    Math.ceil(visiblePlaces.length / PAGE_SIZE),
+  );
+
+  const currentPage = Math.min(page, totalPages);
+
+  const pagePlaces = useMemo(
+    () =>
+      visiblePlaces.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE,
+      ),
+    [visiblePlaces, currentPage],
+  );
+
+  const changePage = (nextPage: number) => {
+    setPage(
+      Math.max(1, Math.min(nextPage, totalPages)),
+    );
+
+    setActiveId(null);
+
+    listRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  };
+
 
   // ==========================================
   // HIỂN THỊ BẢN ĐỒ THEO TỌA ĐỘ THẬT
   // ==========================================
 
-  const mapPlaces = useMemo(
-    () => visiblePlaces.filter(hasCoordinate),
-    [visiblePlaces],
-  );
+ const mapPlaces = useMemo(
+  () => pagePlaces.filter(hasCoordinate),
+  [pagePlaces],
+);
 
   const mapPoints = useMemo(
     () =>
@@ -337,10 +452,13 @@ export default function SuggestedPlacesPage() {
           place.longitude,
         ] as [number, number],
 
-        label: String(index + 1),
+       label: String(
+  place.aiRank ??
+    (currentPage - 1) * PAGE_SIZE + index + 1,
+),
         title: place.name,
       })),
-    [mapPlaces],
+    [mapPlaces, currentPage],
   );
 
   const currentActive =
@@ -358,7 +476,7 @@ export default function SuggestedPlacesPage() {
   };
 
   const selectMarker = (id: string) => {
-    const found = visiblePlaces.find(
+    const found = pagePlaces.find(
       (place) =>
         String(place.placeId) === id,
     );
@@ -482,7 +600,7 @@ export default function SuggestedPlacesPage() {
           role="status"
           className="rounded-2xl bg-white p-8 text-center text-sm text-[#087A78]"
         >
-          Đang tải kế hoạch và các địa điểm từ Backend...
+          Đang tải kế hoạch và các địa điểm ...
         </div>
       )}
 
@@ -527,16 +645,38 @@ export default function SuggestedPlacesPage() {
                 className="text-[18px] text-[#075C66]"
               />
 
-              Danh sách địa điểm phù hợp sơ bộ
+             Địa điểm  gợi ý cho chuyến đi
             </p>
 
-            <p className="mt-1 text-[11px] leading-5 text-[#72818C]">
-              Dữ liệu từ catalogue Backend, lọc theo điểm đến
-              và sở thích. Chưa phải kết quả AI Embedding.
-              Bạn có thể thêm hoặc bỏ địa điểm; lựa chọn
-              được lưu ngay trên Backend.
-            </p>
+            
+<p className="mt-1 text-[11px] leading-5 text-[#72818C]">
+  {aiSummary?.degraded
+    ? 'SmartTravel tạm thời không khả dụng; hệ thống dùng loại hình và ngân sách để xếp hạng.'
+    : 'Địa điểm được xếp hạng theo Embedding, sở thích, ngân sách và MMR.'}
+
+  {' '}Bạn có thể thêm hoặc bỏ địa điểm.
+
+  {aiSummary && (
+    <span className="mt-1 block font-semibold">
+      Cần khoảng {aiSummary.needed} điểm ·
+      Có {aiSummary.available} ứng viên ·
+      SmartTravel gợi ý {aiSummary.items.length} địa điểm
+    </span>
+  )}
+</p>
+
           </div>
+
+{aiSummary && aiSummary.warnings.length > 0 && (
+  <div
+    role="status"
+    className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800"
+  >
+    {aiSummary.warnings.map((warning, index) => (
+      <p key={index}>{warning}</p>
+    ))}
+  </div>
+)}
 
           {actionError && (
             <div
@@ -573,7 +713,7 @@ export default function SuggestedPlacesPage() {
             </div>
 
             {/* DANH SÁCH ĐỊA ĐIỂM */}
-            <div>
+<div ref={listRef} className="scroll-mt-24">
               {/* LỌC CATEGORY */}
               <div className="sticky top-16 z-10 -mx-4 mt-3 bg-client-bg px-4 py-3 lg:mt-0 lg:pt-0">
                 <div className="flex gap-2 overflow-x-auto">
@@ -581,10 +721,11 @@ export default function SuggestedPlacesPage() {
                     <button
                       key={item.id}
                       type="button"
-                      onClick={() => {
-                        setCategory(item.id);
-                        setActiveId(null);
-                      }}
+                     onClick={() => {
+  setCategory(item.id);
+  setPage(1);
+  setActiveId(null);
+}}
                       aria-pressed={item.id === category}
                       className={`shrink-0 rounded-full px-4 py-2.5 text-[12px] font-semibold ${
                         item.id === category
@@ -611,7 +752,7 @@ export default function SuggestedPlacesPage() {
                   </p>
 
                   <p className="mt-1 text-[11px] leading-5 text-[#72818C]">
-                    Catalogue hiện chưa có địa điểm ACTIVE
+                  SmartTravel chưa tìm thấy địa điểm phù hợp với kế hoạch này.
                     khớp điểm đến và danh mục đã chọn.
                     Bạn vẫn có thể mở danh sách địa điểm
                     đã chọn ở nút bên trên.
@@ -619,11 +760,11 @@ export default function SuggestedPlacesPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-2.5">
-                  {visiblePlaces.map((place, index) => (
+                 {pagePlaces.map((place, index) => (
                     <PlaceCard
                       key={place.placeId}
                       place={place}
-                      index={index}
+                      index={(currentPage - 1) * PAGE_SIZE + index}
                       planId={planId}
                       selected={selectedIds.has(
                         place.placeId,
@@ -641,6 +782,70 @@ export default function SuggestedPlacesPage() {
                   ))}
                 </div>
               )}
+              
+              {totalPages > 1 && (
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-2 rounded-2xl bg-white p-3 shadow-sm">
+
+                  <span className="w-full text-center text-xs text-[#72818C]">
+                    Hiển thị{' '}
+                    {(currentPage - 1) * PAGE_SIZE + 1}
+                    –
+                    {Math.min(
+                      currentPage * PAGE_SIZE,
+                      visiblePlaces.length,
+                    )}
+                    {' / '}
+                    {visiblePlaces.length} địa điểm
+                  </span>
+
+                  <button
+                    type="button"
+                    disabled={currentPage === 1}
+                    onClick={() =>
+                      changePage(currentPage - 1)
+                    }
+                    className="rounded-lg border px-3 py-2 text-xs font-semibold text-[#075C66] disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Trước
+                  </button>
+
+                  {Array.from(
+                    { length: totalPages },
+                    (_, index) => index + 1,
+                  ).map((number) => (
+                    <button
+                      key={number}
+                      type="button"
+                      onClick={() => changePage(number)}
+                      aria-current={
+                        number === currentPage
+                          ? 'page'
+                          : undefined
+                      }
+                      className={`h-9 w-9 rounded-lg text-xs font-bold ${
+                        number === currentPage
+                          ? 'bg-[#075C66] text-white'
+                          : 'bg-[#F1F5F5] text-[#075C66] hover:bg-[#DCEFEB]'
+                      }`}
+                    >
+                      {number}
+                    </button>
+                  ))}
+
+                  <button
+                    type="button"
+                    disabled={currentPage === totalPages}
+                    onClick={() =>
+                      changePage(currentPage + 1)
+                    }
+                    className="rounded-lg border px-3 py-2 text-xs font-semibold text-[#075C66] disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Sau
+                  </button>
+
+                </div>
+              )}
+
             </div>
           </div>
 

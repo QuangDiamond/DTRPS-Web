@@ -394,7 +394,7 @@ export default function ItineraryOverviewPage() {
           <span className="mx-auto block h-8 w-8 animate-spin rounded-full border-2 border-[#C3F8F0] border-t-[#087A78]" />
 
           <p className="mt-3 text-[13px] font-semibold text-[#087A78]">
-            Đang tải lịch trình từ Backend...
+            Đang tải lịch trình ...
           </p>
         </div>
       )}
@@ -554,10 +554,10 @@ export default function ItineraryOverviewPage() {
             {/* LƯU Ý CHI PHÍ */}
             <p className="mt-3 text-[11px] leading-5 text-[#72818C]">
               Chi phí và thời gian di chuyển là ước lượng
-              từ Backend; tổng tiền có thể chưa bao gồm
+              từ ; tổng tiền có thể chưa bao gồm
               lưu trú, ăn uống, đi lại hoặc dịch vụ chưa
               có giá. Lịch trình được sắp xếp bằng thuật
-              toán Backend, không phải AI.
+              toán , không phải AI.
             </p>
 
             {/* DANH SÁCH CÁC NGÀY */}

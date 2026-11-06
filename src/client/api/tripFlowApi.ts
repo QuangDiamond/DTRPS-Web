@@ -63,9 +63,69 @@ export interface TripPlace {
   currency: string | null;
   latitude: number | null;
   longitude: number | null;
+ 
   selected: boolean;
-  /** CATALOG hoặc SELECTED; CATALOG không phải kết quả AI. */
+  /** CATALOG, SELECTED hoặc AI. */
   source: string;
+
+  aiRank?: number;
+  aiScore?: number;
+  aiBreakdown?: AiScoreBreakdown;
+}
+
+export interface AiScoreBreakdown {
+  semanticScore: number | null;
+  categoryScore: number;
+  budgetScore: number;
+}
+
+export interface AiRecommendedPlace {
+  rank: number;
+  placeId: number;
+  name: string;
+  address: string | null;
+  categoryCode: string | null;
+  categoryCodes: string[];
+  imageUrl: string | null;
+  priceType: string | null;
+  referencePrice: number | null;
+  latitude: number | null;
+  longitude: number | null;
+  score: number;
+  breakdown: AiScoreBreakdown;
+}
+
+export interface AiRecommendationResponse {
+  planId: number;
+  needed: number;
+  available: number;
+  degraded: boolean;
+  items: AiRecommendedPlace[];
+  warnings: string[];
+}
+
+export function toAiTripPlace(
+  place: AiRecommendedPlace,
+  destination: string,
+): TripPlace {
+  return {
+    placeId: place.placeId,
+    name: place.name,
+    address: place.address,
+    province: destination,
+    categoryCode: place.categoryCode,
+    categoryName: place.categoryCode,
+    imageUrl: place.imageUrl,
+    estimatedCost: place.referencePrice,
+    currency: 'VND',
+    latitude: place.latitude,
+    longitude: place.longitude,
+    selected: false,
+    source: 'AI',
+    aiRank: place.rank,
+    aiScore: place.score,
+    aiBreakdown: place.breakdown,
+  };
 }
 
 export interface SelectedPlacesResponse {
@@ -191,6 +251,16 @@ export const tripFlowApi = {
 
   plan: (planId: number) =>
     clientRequest<TravelPlanResponse>(planPath(planId)),
+  
+  // AI Recommendation: Embedding + Weighted Score + MMR.
+  recommendedPlaces: (planId: number) =>
+    clientRequest<AiRecommendationResponse>(
+      `${planPath(planId)}/recommended-places`,
+      {
+        timeoutMs: 60_000,
+      },
+    ),
+
 
   // Chỉ sửa được khi DRAFT hoặc PLANNED.
   // Đã có lịch trình thì không đổi được điểm đến và ngày đi/về.

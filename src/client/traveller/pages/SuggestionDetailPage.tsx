@@ -305,7 +305,7 @@ export default function SuggestionDetailPage() {
           role="status"
           className="rounded-2xl bg-white p-8 text-center text-[13px] text-[#087A78]"
         >
-          Đang tải thông tin địa điểm từ Backend...
+          Đang tải thông tin địa điểm ...
         </div>
       )}
 
@@ -623,7 +623,7 @@ export default function SuggestionDetailPage() {
                 </h2>
 
                 <p className="mt-1 text-[11px] text-[#72818C]">
-                  {photos.length} ảnh từ Backend
+                  {photos.length} 
                 </p>
 
                 {photos.length ? (

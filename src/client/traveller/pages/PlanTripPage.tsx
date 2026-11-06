@@ -284,7 +284,7 @@ export default function PlanTripPage() {
       return;
     }
     if (categoriesLoading || categoriesFailed || typeGroups.length === 0) {
-      setError('Không tải được danh mục trải nghiệm từ Backend.');
+      setError('Không tải được danh mục trải nghiệm.');
       return;
     }
     if (selectedCategoryCodes.length === 0) {
@@ -593,11 +593,11 @@ export default function PlanTripPage() {
         >
           {categoriesLoading ? (
             <p className="rounded-xl bg-[#F8F8FF] p-4 text-[12px] text-[#72818C]">
-              Đang tải loại hình từ Backend…
+              Đang tải loại hình…
             </p>
           ) : categoriesFailed ? (
             <p role="alert" className="rounded-xl bg-red-50 p-4 text-[12px] text-red-600">
-              Không tải được danh mục từ Backend. Vui lòng tải lại trang.
+              Không tải được danh mục. Vui lòng tải lại trang.
             </p>
           ) : typeGroups.length === 0 ? (
             <p className="rounded-xl bg-[#F8F8FF] p-4 text-[12px] text-[#72818C]">
@@ -729,7 +729,7 @@ export default function PlanTripPage() {
               )}
               {selectedCategoryCodes.length > 50 && (
                 <p role="alert" className="text-[11px] font-semibold text-red-600">
-                  Backend chỉ cho phép tối đa 50 loại hình; vui lòng bỏ bớt.
+                  Chỉ được chọn tối đa 50 loại hình; vui lòng bỏ bớt.
                 </p>
               )}
             </div>

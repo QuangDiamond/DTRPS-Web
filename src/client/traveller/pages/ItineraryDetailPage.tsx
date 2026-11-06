@@ -417,7 +417,7 @@ export default function ItineraryDetailPage() {
         >
           <span className="mx-auto mb-3 block h-8 w-8 animate-spin rounded-full border-2 border-[#C3F8F0] border-t-[#087F78]" />
 
-          Đang tải lịch trình từ Backend...
+          Đang tải lịch trình  ...
         </div>
       )}
 
@@ -497,7 +497,7 @@ export default function ItineraryDetailPage() {
                   name="event_note"
                   className="text-[17px]"
                 />
-                Lịch trình Backend · Phiên bản
+                Lịch trình · Phiên bản
                 {' '}
                 {overview.versionNumber}
               </p>
@@ -606,7 +606,7 @@ export default function ItineraryDetailPage() {
             {/* LƯU Ý */}
             <p className="mt-4 rounded-xl bg-[#F5F7FC] px-4 py-3 text-[11px] leading-5 text-[#72818C]">
               Giờ tham quan, thời gian di chuyển và chi phí
-              do Backend ước tính. Lịch trình được sắp bằng
+              do ước tính. Lịch trình được sắp bằng
               thuật toán, không phải AI.
             </p>
 

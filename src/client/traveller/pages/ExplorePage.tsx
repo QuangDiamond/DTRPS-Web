@@ -4,16 +4,28 @@ import { Icon } from '@/components/common';
 import { errorMessage } from '@/client/api/http';
 import { placesApi } from '@/client/api/placesApi';
 import { referenceApi } from '@/client/api/referenceApi';
-import type { PlaceSummary, ReferenceItem, CategoryGroup } from '@/client/api/types';
+import type { CategoryGroup, PlaceSummary } from '@/client/api/types';
 import { placePath } from '@/client/routePaths';
 import FavoriteButton from '@/client/traveller/components/FavoriteButton';
 import { useTraveller } from '@/client/traveller/travellerContext';
-import { FormAlert, Spinner } from '@/client/ui/Blocks';
+import { FormAlert } from '@/client/ui/Blocks';
 
-type ViewMode = 'list' | 'grid';
+type ViewMode = 'grid' | 'list';
+type SortMode = 'default' | 'rating' | 'popular';
+
+const PAGE_SIZE = 60;
+const RATINGS = [0, 3.5, 4, 4.5] as const;
+
+const GROUP_ICONS: Record<string, string> = {
+  lodging: 'hotel',
+  fnb: 'restaurant',
+  attraction: 'attractions',
+  shopping: 'shopping_bag',
+};
 
 function normalizeText(value: string): string {
-  return value.normalize('NFD')
+  return value
+    .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/đ/g, 'd')
     .replace(/Đ/g, 'D')
@@ -21,74 +33,82 @@ function normalizeText(value: string): string {
     .trim();
 }
 
-const GROUP_ICONS: Record<string, string> = {
-  lodging: 'hotel',
-  fnb: 'restaurant',
-  attraction: 'attractions',
-  shopping: 'storefront',
-};
-const DEFAULT_GROUP_ICON = 'place';
-
-function groupIconOf(place: PlaceSummary): string {
-  return place.group ? GROUP_ICONS[place.group.code] ?? DEFAULT_GROUP_ICON : DEFAULT_GROUP_ICON;
+function placeCategory(place: PlaceSummary): string {
+  return place.category?.name ?? place.group?.name ?? 'Khám phá';
 }
 
-function PlaceCard({
-                     place,
-                     favorite,
-                     onToggleFavorite,
-                   }: {
+function placeIcon(place: PlaceSummary): string {
+  return GROUP_ICONS[place.group?.code ?? ''] ?? 'explore';
+}
+
+function DestinationCard({
+                           place,
+                           horizontal,
+                           favorite,
+                           onToggleFavorite,
+                         }: {
   place: PlaceSummary;
+  horizontal: boolean;
   favorite: boolean;
   onToggleFavorite: () => void;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-[20px] bg-white shadow-[0_4px_10px_rgba(19,54,74,0.08)] transition-shadow hover:shadow-lg">
-      <Link to={placePath(String(place.id))} className="block">
-        <div className="relative h-40 bg-[#CFE9E6] md:h-44">
+    <article
+      className={`group relative min-w-0 overflow-hidden rounded-[24px] border border-[#E5EEEB] bg-white shadow-[0_6px_22px_rgba(10,55,62,0.045)] transition-all duration-300 hover:-translate-y-1 hover:border-[#B5DFD3] hover:shadow-[0_20px_42px_rgba(10,55,62,0.12)] ${horizontal ? 'sm:min-h-[205px]' : ''}`}
+    >
+      <Link
+        to={placePath(String(place.id))}
+        className={`block min-w-0 ${horizontal ? 'sm:flex sm:h-full' : ''}`}
+        aria-label={`Xem chi tiết ${place.name}`}
+      >
+        <div
+          className={`relative shrink-0 overflow-hidden bg-[#D7EDE6] ${horizontal ? 'h-[220px] sm:h-auto sm:w-[270px]' : 'aspect-[16/10]'}`}
+        >
           {place.coverUrl ? (
             <img
               src={place.coverUrl}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover"
+              alt={place.name}
+              loading="lazy"
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.07]"
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Icon name="image" className="text-[40px] text-white/70" />
+            <div className="flex h-full min-h-[180px] w-full items-center justify-center bg-gradient-to-br from-[#E7F6ED] via-[#C7E8DF] to-[#A6D7CC]">
+              <Icon name="landscape" className="text-[64px] text-[#5AAB9A]" />
             </div>
           )}
-          <div className="absolute inset-0 flex flex-col justify-between bg-linear-to-b from-black/5 to-black/45 p-2.5">
-            <span className="flex items-center gap-1 self-start rounded-full bg-[#087A78]/90 px-2.5 py-1 text-[10px] font-bold text-white">
-              <Icon name={groupIconOf(place)} className="text-[13px]" />
-              {place.category?.name ?? place.group?.name ?? 'Địa điểm'}
-            </span>
-            <span className="flex items-center gap-1 self-start rounded-full bg-black/40 px-2.5 py-1 text-[11px] font-semibold text-white">
-              <Icon name="location_on" filled className="text-[13px]" />
-              {place.province?.name ?? '—'}
-            </span>
-          </div>
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#092F36]/45 via-transparent to-transparent" />
+          <span className="absolute bottom-3 left-3 inline-flex max-w-[82%] items-center gap-1.5 rounded-full border border-white/30 bg-white/95 px-3 py-1.5 text-[11px] font-bold text-[#23645E] shadow-sm">
+            <Icon name={placeIcon(place)} className="text-[15px]" />
+            <span className="truncate">{placeCategory(place)}</span>
+          </span>
         </div>
-        <div className="px-3.5 pt-3 pb-3.5">
-          <div className="flex items-center justify-between gap-2">
-            <p className="flex-1 truncate text-[17px] font-extrabold text-[#13364A]">
+        <div className={`flex min-w-0 flex-1 flex-col ${horizontal ? 'p-5 sm:py-6 sm:pl-6 sm:pr-12' : 'p-[18px]'}`}>
+          <div className="min-w-0 pr-7">
+            <h3 className="line-clamp-2 text-[17px] font-extrabold leading-[1.4] tracking-[-0.025em] text-[#193E46] transition-colors group-hover:text-[#0B8778]">
               {place.name}
-            </p>
-            <span className="flex items-center gap-0.5 rounded-full bg-[#FFF5DA] px-2 py-0.5 text-[11px] font-bold text-[#8A6100]">
-              <Icon name="star" filled className="text-[13px] text-[#E0A100]" />
-              {place.rating ?? 'Mới'}
-              {place.rating !== null && (
-                <span className="text-[10px] font-normal text-[#A8894A]">
-                  ({place.reviewCount})
-                </span>
+            </h3>
+          </div>
+          <p className="mt-2 flex items-start gap-1.5 text-[12px] leading-5 text-[#6A838C]">
+            <Icon name="location_on" className="mt-0.5 shrink-0 text-[16px] text-[#17A18E]" />
+            <span className="line-clamp-2">
+              {place.address || place.province?.name || 'Địa chỉ đang được cập nhật'}
+            </span>
+          </p>
+          <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-5">
+            <div className="flex items-center gap-1.5 text-[12px] text-[#617781]">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FFF7E6]">
+                <Icon name="star" filled className="text-[16px] text-[#E9A632]" />
+              </span>
+              <strong className="text-[13px] text-[#223F49]">
+                {place.rating == null ? 'Mới' : place.rating.toFixed(1)}
+              </strong>
+              {place.rating != null && (
+                <span className="text-[#98A8AE]">({place.reviewCount} đánh giá)</span>
               )}
-            </span>
-          </div>
-          <p className="mt-1 line-clamp-2 text-[12px] leading-[17px] text-[#72818C]">
-            {place.address ?? ''}
-          </p>
-          <div className="mt-3 flex items-center justify-end">
-            <span className="flex h-9 items-center gap-1 rounded-full bg-[#A0F1E7] px-4 text-[13px] font-bold text-[#006D68]">
-              Chi tiết <Icon name="arrow_forward" className="text-[16px]" />
+            </div>
+            <span className="inline-flex items-center gap-1 text-[12px] font-extrabold text-[#0C897B]">
+              Xem chi tiết
+              <Icon name="arrow_forward" className="text-[17px] transition-transform group-hover:translate-x-1" />
             </span>
           </div>
         </div>
@@ -96,974 +116,598 @@ function PlaceCard({
       <FavoriteButton
         active={favorite}
         onToggle={onToggleFavorite}
-        className="absolute top-2.5 right-2.5"
+        className="absolute right-3 top-3 z-10 border border-white/60 shadow-[0_4px_14px_rgba(0,0,0,0.13)]"
       />
-    </div>
+    </article>
   );
 }
 
-function PlaceGridCard({
-                         place,
-                         favorite,
-                         onToggleFavorite,
-                       }: {
-  place: PlaceSummary;
-  favorite: boolean;
-  onToggleFavorite: () => void;
-}) {
+function PlaceSkeleton({ horizontal }: { horizontal: boolean }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-md">
-      <Link to={placePath(String(place.id))} className="block">
-        {place.coverUrl ? (
-          <img
-            src={place.coverUrl}
-            alt=""
-            className="h-[110px] w-full bg-[#CFE9E6] object-cover"
-          />
-        ) : (
-          <div className="flex h-[110px] w-full items-center justify-center bg-[#CFE9E6]">
-            <Icon name="image" className="text-[28px] text-white/80" />
-          </div>
-        )}
-        <div className="p-2.5">
-          <p className="truncate text-[13px] font-extrabold text-[#13364A]">{place.name}</p>
-          <p className="mt-0.5 flex items-center gap-0.5 text-[10px] text-[#72818C]">
-            <Icon name="location_on" className="text-[12px]" />
-            <span className="flex-1 truncate">{place.province?.name ?? '—'}</span>
-            <Icon name="star" filled className="text-[12px] text-[#E0A100]" />
-            <span className="font-bold text-[#8A6100]">{place.rating ?? '—'}</span>
-          </p>
-          <p className="mt-1.5 truncate text-[12px] font-extrabold text-[#087A78]">
-            {(place.categories ?? (place.category ? [place.category] : []))
-              .map((type) => type.name)
-              .join(' · ')}
-          </p>
-        </div>
-      </Link>
-      <FavoriteButton
-        active={favorite}
-        onToggle={onToggleFavorite}
-        size="sm"
-        className="absolute top-2 right-2"
-      />
+    <div className={`animate-pulse overflow-hidden rounded-[24px] border border-[#E8F0ED] bg-white ${horizontal ? 'sm:flex' : ''}`}>
+      <div className={`bg-[#E2EFEA] ${horizontal ? 'h-44 sm:w-[270px] sm:shrink-0' : 'aspect-[16/10]'}`} />
+      <div className="flex-1 space-y-3 p-5">
+        <div className="h-4 w-3/4 rounded-full bg-[#E2EFEA]" />
+        <div className="h-3 w-full rounded-full bg-[#F0F6F3]" />
+        <div className="h-3 w-2/3 rounded-full bg-[#F0F6F3]" />
+        <div className="mt-8 h-3 w-1/2 rounded-full bg-[#E2EFEA]" />
+      </div>
     </div>
   );
 }
 
-/** Mỗi lần tải bao nhiêu địa điểm (API cho tối đa 100) */
-const PAGE_SIZE = 60;
-
-/** Explore page: bộ lọc & tìm tỉnh từ HuyNgo, dữ liệu địa điểm từ main. */
 export default function ExplorePage() {
   const [params, setParams] = useSearchParams();
   const { favorites, toggleFavorite } = useTraveller();
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-
   const query = params.get('q') ?? '';
-  const minRating = Number(params.get('rating') ?? 0) || 0;
-  const [searchText, setSearchText] = useState(query);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const composingRef = useRef(false);
-
-  const [provinces, setProvinces] = useState<ReferenceItem[]>([]);
-  const [categoryGroups, setCategoryGroups] = useState<CategoryGroup[]>([]);
-  const [loadingReferences, setLoadingReferences] = useState(true);
-  const [referenceError, setReferenceError] = useState('');
-
-  const [selectedProvinceCode, setSelectedProvinceCode] = useState('');
   const typeParam = params.get('type') ?? '';
-  const [selectedCategoryCodes, setSelectedCategoryCodes] = useState<string[]>(() =>
+  const rawRating = Number(params.get('rating') ?? 0);
+  const minRating = RATINGS.includes(rawRating as (typeof RATINGS)[number]) ? rawRating : 0;
+
+  const [searchText, setSearchText] = useState(query);
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [sortMode, setSortMode] = useState<SortMode>('default');
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [categoryGroups, setCategoryGroups] = useState<CategoryGroup[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [categoryError, setCategoryError] = useState('');
+  const [selectedCategoryCodes, setSelectedCategoryCodes] = useState<string[]>(
     typeParam ? [typeParam] : [],
   );
-  // Backend chưa hỗ trợ giá nên UI giữ lại nhưng tạm khóa.
-  const [maxPrice, setMaxPrice] = useState<number | null>(null);
-
   const [places, setPlaces] = useState<PlaceSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  /** Tổng số địa điểm khớp từ khoá / tỉnh (API trả về), trang tiếp theo cần tải */
   const [total, setTotal] = useState(0);
   const [nextPage, setNextPage] = useState(1);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const requestVersionRef = useRef(0);
+  const skipTypeSyncRef = useRef(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const composingRef = useRef(false);
+
+  // Không tải danh sách tỉnh/thành và không gửi tham số province.
+  useEffect(() => {
+    let alive = true;
+    referenceApi.categories()
+      .then((groups) => {
+        if (alive) setCategoryGroups(groups);
+      })
+      .catch((error: unknown) => {
+        if (alive) setCategoryError(errorMessage(error));
+      })
+      .finally(() => {
+        if (alive) setLoadingCategories(false);
+      });
+    return () => { alive = false; };
+  }, []);
 
   useEffect(() => {
-    if (typeParam) setSelectedCategoryCodes([typeParam]);
-  }, [typeParam]);
-
-  useEffect(() => {
-    // Chỉ đồng bộ khi URL thay đổi từ phía ngoài (ví dụ Back/Forward).
-    // Không gọi setParams mỗi lần gõ: tránh lỗi nhảy dấu tiếng Việt.
     setSearchText(query);
   }, [query]);
 
   useEffect(() => {
-    let active = true;
-    Promise.allSettled([
-      referenceApi.provinces(),
-      referenceApi.categories(),
-    ]).then(([provinceResult, categoryResult]) => {
-      if (!active) return;
-      const failures: string[] = [];
-      if (provinceResult.status === 'fulfilled') {
-        setProvinces(provinceResult.value);
-      } else {
-        failures.push(`Tỉnh/thành: ${errorMessage(provinceResult.reason)}`);
-      }
-      if (categoryResult.status === 'fulfilled') {
-        setCategoryGroups(categoryResult.value);
-      } else {
-        failures.push(`Danh mục: ${errorMessage(categoryResult.reason)}`);
-      }
-      setReferenceError(failures.join(' | '));
-      setLoadingReferences(false);
-    });
-    return () => { active = false; };
-  }, []);
+    if (skipTypeSyncRef.current) {
+      skipTypeSyncRef.current = false;
+      return;
+    }
+    setSelectedCategoryCodes(typeParam ? [typeParam] : []);
+  }, [typeParam]);
 
   const serverCategory = useMemo(() => {
     if (selectedCategoryCodes.length !== 1) return undefined;
     const code = selectedCategoryCodes[0];
-    return categoryGroups.some((group) => group.subtypes.some((s) => s.code === code))
+    return categoryGroups.some((group) => group.subtypes.some((child) => child.code === code))
       ? code
       : undefined;
-  }, [selectedCategoryCodes, categoryGroups]);
+  }, [categoryGroups, selectedCategoryCodes]);
 
-  // Tìm kiếm dữ liệu thật từ main; debounce 300ms khi gõ.
-  // Khi chọn tỉnh, truyền province code (không lấy tên tỉnh làm keyword).
+  // Tìm kiếm theo từ khóa trên mọi địa điểm, không lọc tỉnh/thành.
   useEffect(() => {
-    let active = true;
+    let alive = true;
+    const version = ++requestVersionRef.current;
     setLoading(true);
+    setLoadingMore(false);
     setLoadError(null);
+
     const timer = window.setTimeout(() => {
       placesApi.list({
-        keyword: selectedProvinceCode ? '' : searchText.trim(),
-        province: selectedProvinceCode || undefined,
+        keyword: searchText.trim(),
         category: serverCategory,
         page: 0,
         size: PAGE_SIZE,
       }).then((page) => {
-        if (!active) return;
+        if (!alive || requestVersionRef.current !== version) return;
         setPlaces(page.items);
         setTotal(page.total);
         setNextPage(1);
-      }).catch((failure: unknown) => {
-        if (active) {
-          setPlaces([]);
-          setTotal(0);
-          setLoadError(errorMessage(failure));
-        }
+      }).catch((error: unknown) => {
+        if (!alive || requestVersionRef.current !== version) return;
+        setPlaces([]);
+        setTotal(0);
+        setLoadError(errorMessage(error));
       }).finally(() => {
-        if (active) setLoading(false);
+        if (alive && requestVersionRef.current === version) setLoading(false);
       });
-    }, 300);
+    }, 350);
+
     return () => {
-      active = false;
+      alive = false;
       window.clearTimeout(timer);
     };
-  }, [searchText, selectedProvinceCode, serverCategory]);
+  }, [searchText, serverCategory]);
 
-  /** Từ khoá / tỉnh đang tìm — dùng chung cho lần tải đầu và nút "Xem thêm" */
-  function searchParams() {
-    return {
-      keyword: selectedProvinceCode ? '' : searchText.trim(),
-      province: selectedProvinceCode || undefined,
-      category: serverCategory,
-    };
-  }
-
-  const loadMore = () => {
-    setLoadingMore(true);
-    placesApi
-      .list({ ...searchParams(), page: nextPage, size: PAGE_SIZE })
-      .then((page) => {
-        setPlaces((current) => {
-          const seen = new Set(current.map((place) => place.id));
-          return [...current, ...page.items.filter((place) => !seen.has(place.id))];
-        });
-        setTotal(page.total);
-        setNextPage((current) => current + 1);
-      })
-      .catch((failure: unknown) => setLoadError(errorMessage(failure)))
-      .finally(() => setLoadingMore(false));
-  };
-
-  const setQuery = (value: string) => {
-    const next = new URLSearchParams(params);
-    if (value.trim()) next.set('q', value.trim());
-    else next.delete('q');
-    setParams(next, { replace: true });
-  };
-
-  const setRating = (rating: number) => {
-    const next = new URLSearchParams(params);
-    if (rating > 0) next.set('rating', String(rating));
-    else next.delete('rating');
-    setParams(next, { replace: true });
-  };
-
-  const resetFilters = () => {
-    setSelectedProvinceCode('');
-    setSelectedCategoryCodes([]);
-    setMaxPrice(null);
-    setSearchText('');
-    setShowSuggestions(false);
-    const next = new URLSearchParams(params);
-    next.delete('q');
-    next.delete('rating');
-    next.delete('type');
-    setParams(next, { replace: true });
-  };
-
-  const suggestedProvinces = useMemo(() => {
-    const keyword = normalizeText(searchText);
-    if (!keyword) return [];
-    return provinces
-      .filter((province) => normalizeText(province.name).includes(keyword))
-      .sort((a, b) => {
-        const aFirst = normalizeText(a.name).startsWith(keyword) ? 0 : 1;
-        const bFirst = normalizeText(b.name).startsWith(keyword) ? 0 : 1;
-        return aFirst - bFirst || a.name.localeCompare(b.name, 'vi');
-      })
-      .slice(0, 12);
-  }, [provinces, searchText]);
+  const favoriteSet = useMemo(() => new Set(favorites), [favorites]);
 
   const selectedCategories = useMemo(
     () => categoryGroups.flatMap((group) =>
-      [group, ...group.subtypes].filter((item) => selectedCategoryCodes.includes(item.code))
+      [group, ...group.subtypes].filter((category) => selectedCategoryCodes.includes(category.code)),
     ),
     [categoryGroups, selectedCategoryCodes],
   );
 
-  // Rating / danh mục lọc trên 60 địa điểm đã được API trả về.
-  const visiblePlaces = useMemo(() => places.filter((place) => {
-    if ((place.rating ?? 0) < minRating) return false;
-    if (selectedCategories.length > 0) {
-      const categoryCode = place.category && 'code' in place.category
-        ? String(place.category.code ?? '')
-        : '';
+  const visiblePlaces = useMemo(() => {
+    const matched = places.filter((place) => {
+      if ((place.rating ?? 0) < minRating) return false;
+      if (selectedCategories.length === 0) return true;
       const fields = [
         place.group?.code ?? '',
         place.group?.name ?? '',
-        categoryCode,
+        place.category?.code ?? '',
         place.category?.name ?? '',
         ...(place.groups ?? []).flatMap((group) => [group.code, group.name]),
-        ...(place.categories ?? []).flatMap((type) => [type.code, type.name]),
+        ...(place.categories ?? []).flatMap((category) => [category.code, category.name]),
       ].map(normalizeText);
-      if (!selectedCategories.some((item) => {
-        const code = normalizeText(item.code);
-        const name = normalizeText(item.name);
-        return fields.some((field) =>
-          field === code || field === name || (name.length > 0 && field.includes(name))
-        );
-      })) return false;
+      return selectedCategories.some((category) => {
+        const code = normalizeText(category.code);
+        const name = normalizeText(category.name);
+        return fields.some((field) => field === code || field === name);
+      });
+    });
+
+    if (sortMode === 'rating') {
+      return [...matched].sort((a, b) =>
+        (b.rating ?? -1) - (a.rating ?? -1) || b.reviewCount - a.reviewCount,
+      );
     }
-    return true;
-  }), [places, minRating, selectedCategories]);
+    if (sortMode === 'popular') {
+      return [...matched].sort((a, b) => b.reviewCount - a.reviewCount);
+    }
+    return matched;
+  }, [places, minRating, selectedCategories, sortMode]);
 
-  // Chưa chọn bộ lọc bên trái → hiện tổng thật từ API; đang lọc → số địa điểm khớp trong các trang đã tải
-  const filtering =
-    minRating > 0 || (selectedCategories.length > 0 && !serverCategory);
-  const resultCount = filtering ? visiblePlaces.length : total;
+  const isClientFiltered = minRating > 0 || (selectedCategoryCodes.length > 0 && !serverCategory);
+  const resultCount = isClientFiltered ? visiblePlaces.length : total;
   const hasMore = places.length < total;
+  const activeFilterCount = selectedCategoryCodes.length + (minRating > 0 ? 1 : 0);
+  const heroPlaces = places.filter((place) => Boolean(place.coverUrl)).slice(0, 2);
 
-  const toggleCategory = (code: string) => {
+  function updateQuery(value: string) {
+    const next = new URLSearchParams(params);
+    if (value.trim()) next.set('q', value.trim());
+    else next.delete('q');
+    setParams(next, { replace: true });
+  }
+
+  function updateRating(value: number) {
+    const next = new URLSearchParams(params);
+    if (value > 0) next.set('rating', String(value));
+    else next.delete('rating');
+    setParams(next, { replace: true });
+  }
+
+  function toggleCategory(code: string) {
     if (typeParam) {
+      skipTypeSyncRef.current = true;
       const next = new URLSearchParams(params);
       next.delete('type');
       setParams(next, { replace: true });
     }
     setSelectedCategoryCodes((current) =>
-      current.includes(code) ? current.filter((item) => item !== code) : [...current, code]
+      current.includes(code) ? current.filter((item) => item !== code) : [...current, code],
     );
-  };
+  }
+
+  function selectQuickGroup(groupCode: string) {
+    if (typeParam) {
+      skipTypeSyncRef.current = true;
+      const next = new URLSearchParams(params);
+      next.delete('type');
+      setParams(next, { replace: true });
+    }
+    setSelectedCategoryCodes((current) =>
+      current.length === 1 && current[0] === groupCode ? [] : [groupCode],
+    );
+  }
+
+  function resetFilters() {
+    setSelectedCategoryCodes([]);
+    setSortMode('default');
+    setSearchText('');
+    const next = new URLSearchParams(params);
+    next.delete('q');
+    next.delete('type');
+    next.delete('rating');
+    setParams(next, { replace: true });
+  }
+
+  function loadMore() {
+    if (loading || loadingMore || !hasMore) return;
+    const version = requestVersionRef.current;
+    setLoadingMore(true);
+    placesApi.list({
+      keyword: searchText.trim(),
+      category: serverCategory,
+      page: nextPage,
+      size: PAGE_SIZE,
+    }).then((page) => {
+      if (requestVersionRef.current !== version) return;
+      setPlaces((current) => {
+        const ids = new Set(current.map((place) => place.id));
+        return [...current, ...page.items.filter((place) => !ids.has(place.id))];
+      });
+      setTotal(page.total);
+      setNextPage((current) => current + 1);
+    }).catch((error: unknown) => {
+      if (requestVersionRef.current === version) setLoadError(errorMessage(error));
+    }).finally(() => {
+      if (requestVersionRef.current === version) setLoadingMore(false);
+    });
+  }
 
   return (
-    <div className="mx-auto max-w-7xl pb-6">
-
-      {/* Nút mở bộ lọc trên điện thoại */}
-      <button
-        type="button"
-        onClick={() =>
-          setMobileFiltersOpen((value) => !value)
-        }
-        className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#087A78] shadow-sm lg:hidden"
-      >
-        <Icon
-          name="tune"
-          className="text-[20px]"
-        />
-        {mobileFiltersOpen ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
-      </button>
-
-      <div className="grid items-start gap-5 lg:grid-cols-[285px_minmax(0,1fr)]">
-
-
-        {/* BỘ LỌC DỌC BÊN TRÁI           */}
-
-
-
-        {/* ============================= */}
-        {/* BỘ LỌC DỌC BÊN TRÁI - PREMIUM */}
-        {/* ============================= */}
-
-        <aside
-          className={`${
-            mobileFiltersOpen ? 'block' : 'hidden'
-          } min-w-0 overflow-hidden rounded-[26px] border border-[#E3EEEF] bg-white shadow-[0_12px_40px_rgba(14,79,91,0.08)] lg:sticky lg:top-20 lg:block lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto`}
-        >
-          {/* HEADER */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-[#087F79] via-[#087A78] to-[#125A70] px-5 pb-6 pt-5 text-white">
-
-            {/* Họa tiết nền */}
-            <div className="pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full border-[22px] border-white/10" />
-            <div className="pointer-events-none absolute -bottom-14 right-10 h-28 w-28 rounded-full bg-white/5" />
-
-            <div className="relative z-10">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/15 shadow-inner">
-                  <Icon
-                    name="tune"
-                    className="text-[23px] text-white"
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={resetFilters}
-                  className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/15 px-3 py-2 text-[11px] font-bold text-white transition-all hover:bg-white/25"
-                >
-                  <Icon name="refresh" className="text-[15px]" />
-                  Đặt lại
-                </button>
-              </div>
-
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#B8F2EA]">
-                Smart Travel Explorer
-              </p>
-
-              <h2 className="mt-1 text-[21px] font-extrabold tracking-tight">
-                Bộ lọc khám phá
-              </h2>
-
-              <p className="mt-2 text-[12px] leading-[19px] text-[#D3F4F0]">
-                Tùy chỉnh trải nghiệm và tìm những địa điểm phù hợp với bạn.
-              </p>
-
-              <div className="mt-4 flex items-center gap-2">
-        <span className="flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-[11px] font-semibold">
-          <Icon name="check_circle" className="text-[15px]" />
-          {selectedCategoryCodes.length +
-            (maxPrice !== null ? 1 : 0) +
-            (minRating > 0 ? 1 : 0)}{' '}
-          bộ lọc đang chọn
-        </span>
-              </div>
+    <div className="mx-auto max-w-[1400px] pb-12">
+      {/* HERO */}
+      <section className="relative mb-7 overflow-hidden rounded-[28px] bg-[#0B534F] text-white shadow-[0_18px_48px_rgba(5,74,69,0.14)] sm:rounded-[34px]">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#083F44] via-[#0B6D64] to-[#139988]" />
+        <div className="pointer-events-none absolute -left-28 -top-36 h-80 w-80 rounded-full border-[55px] border-white/[0.045]" />
+        <div className="pointer-events-none absolute bottom-[-150px] right-[28%] h-80 w-80 rounded-full border-[55px] border-white/[0.05]" />
+        <div className="relative grid min-h-[350px] gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,.8fr)]">
+          <div className="relative z-10 px-6 pb-8 pt-9 sm:px-10 sm:pt-11 lg:py-12 lg:pl-12">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#D5FFF0]">
+              <Icon name="explore" className="text-[17px]" /> SMART TRAVEL · DISCOVER
             </div>
-          </div>
-
-          <div className="space-y-5 bg-[#FBFDFE] p-4">
-
-            {/* DANH MỤC TRẢI NGHIỆM */}
-            <section className="rounded-[20px] border border-[#EDF1F5] bg-white p-4 shadow-[0_3px_12px_rgba(19,54,74,0.035)]">
-
-              <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-[#E4F6F2]">
-                  <Icon
-                    name="category"
-                    className="text-[21px] text-[#087F79]"
-                  />
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-[13px] font-extrabold text-[#17384B]">
-                    Danh mục trải nghiệm
-                  </h3>
-                  <p className="mt-0.5 text-[10px] text-[#8A9AAB]">
-                    Chọn loại hình bạn yêu thích
-                  </p>
-                </div>
-
-                {selectedCategoryCodes.length > 0 && (
-                  <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-[#087F79] px-1.5 text-[10px] font-bold text-white">
-            {selectedCategoryCodes.length}
-          </span>
-                )}
-              </div>
-
-              {loadingReferences && (
-                <div className="flex items-center gap-2 rounded-xl bg-[#F3F8FA] px-3 py-3 text-[11px] text-[#718394]">
-                  <Icon
-                    name="sync"
-                    className="text-[17px] text-[#087F79]"
-                  />
-                  Đang tải danh mục...
-                </div>
-              )}
-
-              {!loadingReferences && categoryGroups.length === 0 && (
-                <div className="rounded-xl bg-[#F4F7FA] px-3 py-4 text-center text-[11px] text-[#8292A4]">
-                  Chưa có danh mục để hiển thị
-                </div>
-              )}
-
-              <div className="max-h-[300px] space-y-2 overflow-y-auto pr-1">
-                {categoryGroups.map((group) => {
-                  const selectedCount = [
-                    group,
-                    ...group.subtypes,
-                  ].filter((item) =>
-                    selectedCategoryCodes.includes(item.code)
-                  ).length;
-
-                  return (
-                    <details
-                      key={group.code}
-                      className="group overflow-hidden rounded-[14px] border border-[#E8EEF1] bg-[#FAFCFD] transition-colors open:border-[#BCE9E1] open:bg-[#F6FCFA]"
-                    >
-                      <summary className="flex cursor-pointer list-none items-center gap-2.5 px-3 py-3 text-left [&::-webkit-details-marker]:hidden">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-[#E4F6F2]">
-                  <Icon
-                    name="local_activity"
-                    className="text-[17px] text-[#087F79]"
-                  />
-                </span>
-
-                        <span className="min-w-0 flex-1 text-[12px] font-bold leading-[17px] text-[#254458]">
-                  {group.name}
-                </span>
-
-                        {selectedCount > 0 && (
-                          <span className="rounded-full bg-[#D8F5EC] px-2 py-0.5 text-[10px] font-bold text-[#087F79]">
-                    {selectedCount}
-                  </span>
-                        )}
-
-                        <Icon
-                          name="expand_more"
-                          className="text-[19px] text-[#8B9DAA] transition-transform duration-200 group-open:rotate-180"
-                        />
-                      </summary>
-
-                      <div className="space-y-1.5 border-t border-[#E6F0ED] px-2.5 py-3">
-                        {[group, ...group.subtypes].map((item) => {
-                          const checked =
-                            selectedCategoryCodes.includes(item.code);
-
-                          return (
-                            <label
-                              key={`${group.code}-${item.code}`}
-                              className={`flex cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 transition-all duration-200 ${
-                                checked
-                                  ? 'border-[#A8E8DA] bg-[#E8F9F4] text-[#087F79]'
-                                  : 'border-transparent bg-white text-[#576D7D] hover:border-[#D8ECE7] hover:bg-[#F3FAF8]'
-                              }`}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={checked}
-                                onChange={() =>
-                                  toggleCategory(item.code)
-                                }
-                                className="h-4 w-4 shrink-0 cursor-pointer rounded accent-[#087F79]"
-                              />
-
-                              <span className="min-w-0 flex-1 text-[11px] font-semibold leading-[17px]">
-                        {item === group
-                          ? `Tất cả ${item.name}`
-                          : item.name}
-                      </span>
-
-                              {checked && (
-                                <Icon
-                                  name="check_circle"
-                                  className="text-[16px] text-[#087F79]"
-                                />
-                              )}
-                            </label>
-                          );
-                        })}
-                      </div>
-                    </details>
-                  );
-                })}
-              </div>
-            </section>
-
-            {/* KHOẢNG GIÁ */}
-            <section className="rounded-[20px] border border-[#EDF1F5] bg-white p-4 shadow-[0_3px_12px_rgba(19,54,74,0.035)]">
-
-              <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-[#FFF2DC]">
-                  <Icon
-                    name="payments"
-                    className="text-[21px] text-[#D39939]"
-                  />
-                </div>
-
-                <div>
-                  <h3 className="text-[13px] font-extrabold text-[#17384B]">
-                    Khoảng giá dự kiến
-                  </h3>
-
-                  <p className="mt-0.5 text-[10px] text-[#8A9AAB]">
-                    Chi phí phù hợp ngân sách
-                  </p>
-                </div>
-              </div>
-
-              <div className="relative">
-                <select
-                  disabled
-                  title="API địa điểm chưa cung cấp giá để lọc"
-                  value={
-                    maxPrice === null ? 'all' : String(maxPrice)
-                  }
-                  onChange={(event) =>
-                    setMaxPrice(
-                      event.target.value === 'all'
-                        ? null
-                        : Number(event.target.value)
-                    )
-                  }
-                  className="h-12 w-full appearance-none rounded-[13px] border border-[#E0E9ED] bg-[#F7FAFC] pl-3.5 pr-10 text-[12px] font-bold text-[#254458] outline-none transition-all focus:border-[#087F79] focus:bg-white focus:ring-[3px] focus:ring-[#087F79]/10"
-                >
-                  <option value="all">Tất cả mức giá</option>
-                  <option value="0">Miễn phí</option>
-                  <option value="500000">Dưới 500.000đ</option>
-                  <option value="1200000">Dưới 1.200.000đ</option>
-                  <option value="2500000">Dưới 2.500.000đ</option>
-                </select>
-
-                <Icon
-                  name="keyboard_arrow_down"
-                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[21px] text-[#74899A]"
-                />
-              </div>
-
-              <div className="mt-3 flex items-start gap-2 rounded-xl bg-[#FFF9ED] p-3">
-                <Icon
-                  name="info"
-                  className="mt-0.5 text-[16px] text-[#D39939]"
-                />
-                <p className="text-[10px] leading-[16px] text-[#9E8353]">
-                  Bộ lọc giá tạm thời chưa khả dụng vì API địa điểm hiện chưa trả về dữ liệu giá.
-                </p>
-              </div>
-            </section>
-
-            {/* ĐÁNH GIÁ CHẤT LƯỢNG */}
-            <section className="rounded-[20px] border border-[#EDF1F5] bg-white p-4 shadow-[0_3px_12px_rgba(19,54,74,0.035)]">
-
-              <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-[#FFF5DB]">
-                  <Icon
-                    name="star"
-                    filled
-                    className="text-[21px] text-[#E6A62D]"
-                  />
-                </div>
-
-                <div>
-                  <h3 className="text-[13px] font-extrabold text-[#17384B]">
-                    Đánh giá chất lượng
-                  </h3>
-
-                  <p className="mt-0.5 text-[10px] text-[#8A9AAB]">
-                    Ưu tiên địa điểm được yêu thích
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { label: 'Tất cả', value: 0 },
-                  { label: '3.5+', value: 3.5 },
-                  { label: '4.0+', value: 4 },
-                  { label: '4.5+', value: 4.5 },
-                ].map((item) => {
-                  const selected = minRating === item.value;
-
-                  return (
-                    <button
-                      key={item.value}
-                      type="button"
-                      onClick={() => setRating(item.value)}
-                      aria-pressed={selected}
-                      className={`flex min-h-[46px] items-center justify-center gap-1.5 rounded-xl border text-[12px] font-extrabold transition-all duration-200 ${
-                        selected
-                          ? 'border-[#087F79] bg-gradient-to-r from-[#087F79] to-[#0B998C] text-white shadow-[0_4px_12px_rgba(8,127,121,0.22)]'
-                          : 'border-[#E7EDF1] bg-[#F7F9FC] text-[#65798B] hover:border-[#B8E9DE] hover:bg-[#EBF8F4]'
-                      }`}
-                    >
-                      {item.value > 0 && (
-                        <Icon
-                          name="star"
-                          filled
-                          className={`text-[17px] ${
-                            selected
-                              ? 'text-[#FFE3A0]'
-                              : 'text-[#E7AE43]'
-                          }`}
-                        />
-                      )}
-
-                      {item.label}
-
-                      {selected && (
-                        <Icon
-                          name="check"
-                          className="text-[14px] text-white"
-                        />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-
-            {/* TIỆN ÍCH & TRẠNG THÁI */}
-            <section className="rounded-[20px] border border-[#EDF1F5] bg-white p-4 shadow-[0_3px_12px_rgba(19,54,74,0.035)]">
-
-              <div className="mb-3 flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-[#EFF0FF]">
-                  <Icon
-                    name="verified_user"
-                    className="text-[21px] text-[#8175C8]"
-                  />
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-[13px] font-extrabold text-[#17384B]">
-                    Tiện ích & trạng thái
-                  </h3>
-
-                  <p className="mt-0.5 text-[10px] text-[#8A9AAB]">
-                    Thông tin trải nghiệm
-                  </p>
-                </div>
-              </div>
-
-              <div className="rounded-[14px] border border-dashed border-[#D9E2EF] bg-[#F8F9FE] px-3 py-3">
-                <div className="mb-2 flex items-center justify-between gap-2">
-          <span className="text-[11px] font-bold text-[#50617C]">
-            Bộ lọc nâng cao
-          </span>
-
-                  <span className="shrink-0 rounded-full bg-[#E9E8FC] px-2 py-1 text-[9px] font-bold text-[#7A70B8]">
-            Sắp có
-          </span>
-                </div>
-
-                <div className="space-y-2.5">
-                  {[
-                    { icon: 'schedule', title: 'Đang mở cửa' },
-                    { icon: 'local_parking', title: 'Có bãi đỗ xe' },
-                    { icon: 'family_restroom', title: 'Phù hợp gia đình' },
-                  ].map((item) => (
-                    <div
-                      key={item.title}
-                      className="flex items-center gap-2.5 text-[11px] text-[#9BA9B8]"
-                    >
-                      <Icon
-                        name={item.icon}
-                        className="text-[17px] text-[#A4B1C0]"
-                      />
-                      <span>{item.title}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <p className="mt-3 border-t border-[#E6EAF1] pt-2 text-[10px] leading-[16px] text-[#98A5B5]">
-                  Các tiêu chí này sẽ hoạt động khi Backend cung cấp dữ liệu tương ứng.
-                </p>
-              </div>
-            </section>
-
-            {/* HIỂN THỊ LỖI API */}
-            {referenceError && (
-              <div
-                role="alert"
-                className="flex items-start gap-2 rounded-[14px] border border-red-100 bg-red-50 p-3"
-              >
-                <Icon
-                  name="error_outline"
-                  className="mt-0.5 text-[18px] text-red-500"
-                />
-                <p className="text-[11px] leading-5 text-red-700">
-                  {referenceError}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* FOOTER */}
-          <div className="sticky bottom-0 border-t border-[#EAF0F2] bg-white/95 p-4 backdrop-blur-md">
-            <div className="mb-3 flex items-center justify-between">
-      <span className="text-[11px] font-medium text-[#8B9DAA]">
-        Kết quả phù hợp
-      </span>
-
-              <span className="text-[16px] font-extrabold text-[#087F79]">
-        {resultCount}
-                <span className="ml-1 text-[11px] font-medium text-[#8B9DAA]">
-          địa điểm
-        </span>
-      </span>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setMobileFiltersOpen(false)}
-              className="group flex h-[48px] w-full items-center justify-center gap-2 rounded-[14px] bg-gradient-to-r from-[#087F79] to-[#089F92] text-[13px] font-extrabold text-white shadow-[0_5px_16px_rgba(8,127,121,0.2)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_22px_rgba(8,127,121,0.3)] active:translate-y-0"
-            >
-              Xem {resultCount} kết quả
-              <Icon
-                name="arrow_forward"
-                className="text-[19px] transition-transform group-hover:translate-x-1"
-              />
-            </button>
-
-            <p className="mt-3 text-center text-[10px] text-[#A0AEBB]">
-              Khám phá Việt Nam theo cách của bạn
+            <h1 className="mt-5 max-w-[690px] text-[32px] font-extrabold leading-[1.12] tracking-[-0.04em] sm:text-[44px] lg:text-[48px]">
+              Hành trình tuyệt vời<br />
+              <span className="text-[#C4F7D7]">bắt đầu từ đây.</span>
+            </h1>
+            <p className="mt-4 max-w-[560px] text-[13px] leading-6 text-white/80 sm:text-[14px]">
+              Tìm một nơi mới để đến, khám phá những góc đẹp và lưu lại điểm dừng chân bạn yêu thích.
             </p>
-          </div>
-        </aside>
-
-
-        {/* ============================= */}
-        {/* NỘI DUNG EXPLORE BÊN PHẢI    */}
-        {/* ============================= */}
-
-        <main className="min-w-0">
-
-          {/* Thanh tìm kiếm */}
-          <div className="sticky top-16 z-20 -mx-1 bg-client-bg px-1 pt-1 pb-3">
-            <div
-              className="relative"
-              onBlur={(event) => {
-                if (
-                  !event.currentTarget.contains(
-                    event.relatedTarget
-                  )
-                ) {
-                  setShowSuggestions(false);
-                }
-              }}
-            >
-              <div className="flex h-12 items-center rounded-full border border-[#E3E7F0] bg-white px-4 focus-within:ring-2 focus-within:ring-primary/30">
-                <Icon
-                  name="search"
-                  className="text-[21px] text-[#7E8797]"
-                />
-
+            <div className="mt-7 max-w-[680px] rounded-[20px] bg-white p-2 shadow-[0_10px_30px_rgba(0,0,0,0.17)]">
+              <div className="flex items-center gap-2">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7F7F1] text-[#0B8879]">
+                  <Icon name="search" className="text-[23px]" />
+                </span>
                 <input
+                  ref={searchInputRef}
                   value={searchText}
-                  onFocus={() =>
-                    setShowSuggestions(true)
-                  }
-                  onChange={(event) => {
-                    setSearchText(event.target.value);
-                    setSelectedProvinceCode('');
-                    setShowSuggestions(true);
-                  }}
-                  onCompositionStart={() => {
-                    composingRef.current = true;
-                  }}
+                  onChange={(event) => setSearchText(event.target.value)}
+                  onCompositionStart={() => { composingRef.current = true; }}
                   onCompositionEnd={(event) => {
                     composingRef.current = false;
                     setSearchText(event.currentTarget.value);
-                    setShowSuggestions(true);
                   }}
                   onKeyDown={(event) => {
-                    if (event.key === 'Escape') {
-                      setShowSuggestions(false);
-                      return;
-                    }
-                    // Enter khi đang ghép dấu là thao tác của bộ gõ, KHÔNG submit.
-                    if (
-                      event.key === 'Enter' &&
-                      !composingRef.current &&
-                      !event.nativeEvent.isComposing
-                    ) {
+                    if (event.key === 'Enter' && !composingRef.current && !event.nativeEvent.isComposing) {
                       event.preventDefault();
-                      setQuery(searchText);
-                      setShowSuggestions(false);
+                      updateQuery(searchText);
                       event.currentTarget.blur();
                     }
                   }}
-                  placeholder="Tìm tỉnh/thành, điểm đến..."
-                  aria-label="Tìm kiếm điểm đến"
-                  aria-autocomplete="list"
-                  aria-expanded={showSuggestions && searchText.trim().length > 0}
-                  aria-controls="province-suggestions"
+                  placeholder="Tìm tên địa điểm, địa chỉ, điểm du lịch..."
+                  aria-label="Tìm kiếm địa điểm"
                   autoComplete="off"
-                  className="ml-2 h-full min-w-0 flex-1 bg-transparent text-[13px] text-[#13364A] placeholder:text-[#9CA3AF] focus:outline-none"
+                  className="h-11 min-w-0 flex-1 bg-transparent text-[13px] font-semibold text-[#244650] outline-none placeholder:font-normal placeholder:text-[#91A3A8] sm:text-[14px]"
                 />
-
                 {searchText && (
                   <button
                     type="button"
-                    onClick={() => {
-                      setSearchText('');
-                      setSelectedProvinceCode('');
-                      setQuery('');
-                      setShowSuggestions(false);
-                    }}
-                    aria-label="Xóa từ khóa"
+                    onClick={() => { setSearchText(''); updateQuery(''); searchInputRef.current?.focus(); }}
+                    aria-label="Xóa tìm kiếm"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#91A3A8] hover:bg-[#F1F5F4]"
                   >
-                    <Icon
-                      name="cancel"
-                      filled
-                      className="text-[18px] text-[#A4ADC1]"
-                    />
+                    <Icon name="close" className="text-[18px]" />
                   </button>
                 )}
-              </div>
-
-              {/* Gợi ý tỉnh/thành */}
-              {showSuggestions && searchText.trim().length > 0 && (
-                <div
-                  id="province-suggestions"
-                  className="absolute left-0 right-0 top-full z-50 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-[#E3E7F0] bg-white py-2 shadow-xl"
+                <button
+                  type="button"
+                  onClick={() => updateQuery(searchText)}
+                  className="flex h-11 shrink-0 items-center justify-center gap-2 rounded-[13px] bg-[#0C8174] px-4 text-[12px] font-extrabold text-white transition-colors hover:bg-[#08675F] sm:px-6"
                 >
-                  <p className="px-4 py-2 text-xs font-bold text-[#72818C]">
-                    Gợi ý tỉnh/thành
-                  </p>
+                  <Icon name="search" className="text-[19px] sm:hidden" />
+                  <span className="hidden sm:inline">Tìm kiếm</span>
+                </button>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[11px] font-medium text-white/75">
+              <span className="inline-flex items-center gap-1.5"><Icon name="verified" className="text-[17px] text-[#B9F5CE]" /> Địa điểm từ hệ thống</span>
+              <span className="inline-flex items-center gap-1.5"><Icon name="favorite" className="text-[17px] text-[#B9F5CE]" /> Lưu địa điểm yêu thích</span>
+            </div>
+          </div>
 
-                  {loadingReferences ? (
-                    <p className="px-4 py-3 text-sm text-[#72818C]">
-                      Đang tải...
-                    </p>
-                  ) : suggestedProvinces.length === 0 ? (
-                    <p className="px-4 py-3 text-sm text-[#72818C]">
-                      Không có tỉnh/thành phù hợp.
-                    </p>
-                  ) : (
-                    suggestedProvinces.map((province) => (
-                      <button
-                        key={province.code}
-                        type="button"
-                        onMouseDown={(event) => event.preventDefault()}
-                        onClick={() => {
-                          setSearchText(province.name);
-                          setSelectedProvinceCode(
-                            province.code
-                          );
-                          setQuery(province.name);
-                          setShowSuggestions(false);
-                        }}
-                        className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-[#E9F7F4]"
-                      >
-                        <Icon
-                          name="location_on"
-                          className="text-[20px] text-[#087A78]"
-                        />
-                        {province.name}
-                      </button>
-                    ))
-                  )}
-                </div>
+          <div className="pointer-events-none relative hidden min-h-[345px] overflow-hidden lg:block">
+            <div className="absolute -right-14 top-[-45px] h-[420px] w-[420px] rotate-[-12deg] rounded-[52px] border-[24px] border-white/10" />
+            <div className="absolute right-[24%] top-[42px] h-[248px] w-[200px] -rotate-[12deg] overflow-hidden rounded-[25px] border-[6px] border-white/90 bg-[#8CCDC0] shadow-[0_18px_36px_rgba(0,0,0,0.2)]">
+              {heroPlaces[0]?.coverUrl ? (
+                <img src={heroPlaces[0].coverUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#84C5B6] to-[#D2E9AE]"><Icon name="landscape" className="text-[70px] text-white/80" /></div>
               )}
             </div>
+            <div className="absolute right-[3%] top-[96px] h-[228px] w-[185px] rotate-[9deg] overflow-hidden rounded-[25px] border-[6px] border-white/90 bg-[#B9D7B6] shadow-[0_18px_36px_rgba(0,0,0,0.24)]">
+              {heroPlaces[1]?.coverUrl ? (
+                <img src={heroPlaces[1].coverUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#9DD8CF] to-[#F7D5A5]"><Icon name="beach_access" className="text-[70px] text-white/80" /></div>
+              )}
+            </div>
+            <div className="absolute bottom-8 left-[13%] flex items-center gap-2 rounded-2xl border border-white/30 bg-white/95 px-4 py-3 text-[12px] font-extrabold text-[#1A5B53] shadow-lg">
+              <Icon name="location_on" className="text-[21px] text-[#0E9D8C]" /> Việt Nam chờ bạn khám phá
+            </div>
           </div>
+        </div>
+      </section>
 
-          {loadError && <FormAlert message={`Không tải được danh sách địa điểm: ${loadError}`} />}
-
-          <div className="mt-1 mb-3 flex items-center justify-between gap-2">
-            <p className="flex min-w-0 flex-1 items-center gap-1.5 text-[11px] text-[#72818C]">
-              <Icon name="travel_explore" className="text-[16px] text-[#087A78]" />
-              <span className="truncate">
-            Tìm thấy <b className="font-extrabold text-[#13364A]">{resultCount}</b> địa
-            điểm tuyệt vời tại Việt Nam
-          </span>
-            </p>
-            {minRating > 0 && (
-              <button
-                type="button"
-                onClick={() => {
-                  const next = new URLSearchParams(params);
-                  next.delete('rating');
-                  setParams(next, { replace: true });
-                }}
-                className="flex items-center gap-1 rounded-full bg-[#C3F8F0] px-2.5 py-1 text-[10px] font-bold text-[#075C66]"
-              >
-                ⭐ {minRating}+ <Icon name="close" className="text-[13px]" />
+      {/* KHÁM PHÁ NHANH THEO LOẠI HÌNH */}
+      {categoryGroups.length > 0 && (
+        <section className="mb-7">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0D9A88]">Cảm hứng hành trình</p>
+              <h2 className="mt-1 text-[19px] font-extrabold tracking-tight text-[#1D4148] sm:text-[22px]">Khám phá theo sở thích</h2>
+            </div>
+            {selectedCategoryCodes.length > 0 && (
+              <button type="button" onClick={() => setSelectedCategoryCodes([])} className="text-[12px] font-bold text-[#0A897A] hover:underline">
+                Xem tất cả
               </button>
             )}
-            <div className="flex gap-1" role="group" aria-label="Kiểu hiển thị">
-              {(
-                [
-                  { id: 'list', icon: 'view_agenda', label: 'Danh sách' },
-                  { id: 'grid', icon: 'grid_view', label: 'Lưới' },
-                ] as { id: ViewMode; icon: string; label: string }[]
-              ).map((item) => (
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {categoryGroups.map((group) => {
+              const active = selectedCategoryCodes.length === 1 && selectedCategoryCodes[0] === group.code;
+              return (
                 <button
-                  key={item.id}
+                  key={group.code}
                   type="button"
-                  onClick={() => setViewMode(item.id)}
-                  aria-label={item.label}
-                  aria-pressed={viewMode === item.id}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-                    viewMode === item.id ? 'bg-[#C3F8F0] text-[#087A78]' : 'text-[#8C989E]'
-                  }`}
+                  onClick={() => selectQuickGroup(group.code)}
+                  aria-pressed={active}
+                  className={`flex min-w-[145px] shrink-0 items-center gap-3 rounded-[18px] border px-4 py-3.5 text-left transition-all hover:-translate-y-0.5 ${active ? 'border-[#0A9A88] bg-[#E2F7ED] shadow-[0_8px_22px_rgba(12,140,115,0.12)]' : 'border-[#E4EEEB] bg-white hover:border-[#BADFD3] hover:shadow-sm'}`}
                 >
-                  <Icon name={item.icon} className="text-[18px]" />
+                  <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] ${active ? 'bg-[#0D8F80] text-white' : 'bg-[#EAF7F1] text-[#0D8F80]'}`}>
+                    <Icon name={GROUP_ICONS[group.code] ?? 'explore'} className="text-[22px]" />
+                  </span>
+                  <span className={`max-w-[155px] text-[12px] font-extrabold leading-4 ${active ? 'text-[#086C61]' : 'text-[#355862]'}`}>{group.name}</span>
                 </button>
-              ))}
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      <div className="mb-4 flex items-center justify-between lg:hidden">
+        <p className="text-[13px] font-bold text-[#35545C]">Tùy chỉnh kết quả</p>
+        <button
+          type="button"
+          onClick={() => setMobileFiltersOpen((value) => !value)}
+          aria-expanded={mobileFiltersOpen}
+          className="inline-flex h-11 items-center gap-2 rounded-full border border-[#DCE9E4] bg-white px-4 text-[12px] font-extrabold text-[#0A8375] shadow-sm"
+        >
+          <Icon name="tune" className="text-[19px]" /> Bộ lọc
+          {activeFilterCount > 0 && <span className="rounded-full bg-[#DDF5E9] px-2 py-0.5 text-[10px]">{activeFilterCount}</span>}
+        </button>
+      </div>
+
+      <div className="grid items-start gap-7 lg:grid-cols-[265px_minmax(0,1fr)] xl:gap-8">
+        {/* BỘ LỌC: CHỈ DANH MỤC & ĐÁNH GIÁ, KHÔNG LỌC TỈNH/THÀNH */}
+        <aside
+          className={`${mobileFiltersOpen ? 'block' : 'hidden'} min-w-0 overflow-hidden rounded-[24px] border border-[#E2EDE9] bg-white shadow-[0_8px_32px_rgba(18,62,65,0.045)] lg:sticky lg:top-20 lg:block lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto`}
+        >
+          <div className="flex items-center justify-between border-b border-[#EDF2EF] px-5 py-5">
+            <div>
+              <h2 className="text-[17px] font-extrabold text-[#1D424B]">Bộ lọc</h2>
+              <p className="mt-1 text-[11px] text-[#899CA2]">Chọn trải nghiệm phù hợp</p>
+            </div>
+            <button type="button" onClick={resetFilters} className="flex items-center gap-1 rounded-full bg-[#EAF7F1] px-3 py-2 text-[11px] font-extrabold text-[#0B8778] hover:bg-[#D7F2E7]">
+              <Icon name="restart_alt" className="text-[16px]" /> Đặt lại
+            </button>
+          </div>
+          <div className="space-y-7 p-5">
+            <section>
+              <div className="mb-4 flex items-center gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-[12px] bg-[#EAF8F2] text-[#0C907F]">
+                  <Icon name="category" className="text-[20px]" />
+                </span>
+                <div>
+                  <h3 className="text-[13px] font-extrabold text-[#234750]">Loại hình trải nghiệm</h3>
+                  <p className="text-[10px] text-[#91A2A6]">Chọn một hoặc nhiều loại</p>
+                </div>
+              </div>
+              {loadingCategories ? (
+                <p className="py-3 text-[12px] text-[#82969E]">Đang tải danh mục...</p>
+              ) : categoryGroups.length === 0 ? (
+                <p className="py-3 text-[12px] text-[#82969E]">Chưa có danh mục.</p>
+              ) : (
+                <div className="max-h-[355px] space-y-2 overflow-y-auto pr-1">
+                  {categoryGroups.map((group) => {
+                    const selectedCount = [group, ...group.subtypes].filter((cat) => selectedCategoryCodes.includes(cat.code)).length;
+                    return (
+                      <details key={group.code} className="group rounded-[15px] border border-[#E9EFEC] bg-[#FAFCFB] open:border-[#BFE5D8] open:bg-[#F6FCF9]">
+                        <summary className="flex cursor-pointer list-none items-center gap-2.5 px-3 py-3 [&::-webkit-details-marker]:hidden">
+                          <Icon name={GROUP_ICONS[group.code] ?? 'explore'} className="text-[19px] text-[#0C8D80]" />
+                          <span className="min-w-0 flex-1 text-[12px] font-extrabold text-[#355963]">{group.name}</span>
+                          {selectedCount > 0 && <span className="rounded-full bg-[#DDF6EA] px-2 py-0.5 text-[10px] font-bold text-[#0A8276]">{selectedCount}</span>}
+                          <Icon name="expand_more" className="text-[18px] text-[#88A09F] transition-transform group-open:rotate-180" />
+                        </summary>
+                        <div className="space-y-1 border-t border-[#E5F0E9] px-2 pb-2 pt-2">
+                          {[group, ...group.subtypes].map((category) => {
+                            const checked = selectedCategoryCodes.includes(category.code);
+                            return (
+                              <label key={`${group.code}-${category.code}`} className={`flex cursor-pointer items-center gap-2.5 rounded-xl px-2 py-2.5 text-[11px] font-semibold transition-colors ${checked ? 'bg-[#DEF5E9] text-[#0B796C]' : 'text-[#5E7C84] hover:bg-white'}`}>
+                                <input
+                                  type="checkbox"
+                                  checked={checked}
+                                  onChange={() => toggleCategory(category.code)}
+                                  className="h-4 w-4 shrink-0 cursor-pointer accent-[#0C9284]"
+                                />
+                                <span className="leading-4">{category.code === group.code ? `Tất cả ${group.name}` : category.name}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </details>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+            <section className="border-t border-[#EDF2EF] pt-6">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-[12px] bg-[#FFF5DF] text-[#C38C24]">
+                  <Icon name="star" filled className="text-[20px]" />
+                </span>
+                <div>
+                  <h3 className="text-[13px] font-extrabold text-[#234750]">Đánh giá tối thiểu</h3>
+                  <p className="text-[10px] text-[#91A2A6]">Ưu tiên địa điểm chất lượng</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {RATINGS.map((rating) => (
+                  <button
+                    type="button"
+                    key={rating}
+                    onClick={() => updateRating(rating)}
+                    aria-pressed={minRating === rating}
+                    className={`flex h-11 items-center justify-center gap-1 rounded-xl border text-[12px] font-extrabold transition-colors ${minRating === rating ? 'border-[#0B877B] bg-[#0B877B] text-white shadow-[0_5px_14px_rgba(8,139,122,0.15)]' : 'border-[#E6ECE9] bg-[#F8FBFA] text-[#5F7981] hover:border-[#C3E6DA] hover:bg-[#F1F9F5]'}`}
+                  >
+                    {rating > 0 ? <><Icon name="star" filled className="text-[16px] text-[#F5C85D]" /> {rating}+</> : 'Tất cả'}
+                  </button>
+                ))}
+              </div>
+            </section>
+            {categoryError && <div role="alert" className="rounded-xl border border-red-100 bg-red-50 p-3 text-[11px] leading-5 text-red-700">{categoryError}</div>}
+            <div className="rounded-[16px] bg-[#F1F9F5] p-4">
+              <div className="flex items-start gap-2">
+                <Icon name="tips_and_updates" className="text-[21px] text-[#0D9886]" />
+                <p className="text-[11px] leading-[19px] text-[#638078]">Hãy chọn loại hình hoặc mức đánh giá để tìm những điểm đến hợp gu của bạn.</p>
+              </div>
+            </div>
+          </div>
+          <button type="button" onClick={() => setMobileFiltersOpen(false)} className="mx-5 mb-5 flex h-11 w-[calc(100%-2.5rem)] items-center justify-center rounded-[13px] bg-[#0C897B] text-[12px] font-bold text-white lg:hidden">
+            Xem kết quả
+          </button>
+        </aside>
+
+        <main className="min-w-0">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#0A9687]">YOUR NEXT DESTINATION</p>
+              <h2 className="mt-1 text-[24px] font-extrabold tracking-[-0.035em] text-[#1B414A] sm:text-[27px]">Địa điểm dành cho bạn</h2>
+              <p className="mt-1.5 text-[12px] text-[#83979F]">
+                {loading
+                  ? 'Đang tìm những điểm đến thú vị...'
+                  : isClientFiltered
+                    ? `${resultCount} địa điểm phù hợp trong ${places.length} kết quả đã tải`
+                    : `Tìm thấy ${resultCount} địa điểm để khám phá`}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="relative flex h-10 items-center rounded-[12px] border border-[#E0EAE7] bg-white pl-3 text-[11px] font-bold text-[#587780] shadow-sm">
+                <Icon name="swap_vert" className="mr-1 text-[17px] text-[#0E9889]" />
+                <select
+                  aria-label="Sắp xếp địa điểm đã tải"
+                  value={sortMode}
+                  onChange={(event) => setSortMode(event.target.value as SortMode)}
+                  className="h-full cursor-pointer bg-transparent pr-3 text-[11px] font-bold text-[#54717A] outline-none"
+                >
+                  <option value="default">Mặc định</option>
+                  <option value="rating">Đánh giá cao</option>
+                  <option value="popular">Nhiều đánh giá</option>
+                </select>
+              </label>
+              <div className="flex h-10 items-center rounded-[12px] border border-[#E0EAE7] bg-white p-1 shadow-sm" role="group" aria-label="Kiểu hiển thị">
+                {([
+                  { value: 'grid', icon: 'grid_view', label: 'Dạng thẻ' },
+                  { value: 'list', icon: 'view_agenda', label: 'Danh sách' },
+                ] as const).map((item) => (
+                  <button
+                    key={item.value}
+                    type="button"
+                    onClick={() => setViewMode(item.value)}
+                    aria-label={item.label}
+                    aria-pressed={viewMode === item.value}
+                    className={`flex h-8 w-8 items-center justify-center rounded-[9px] transition-colors ${viewMode === item.value ? 'bg-[#E0F5EA] text-[#087F73]' : 'text-[#82979E] hover:bg-[#F5FAF7]'}`}
+                  >
+                    <Icon name={item.icon} className="text-[19px]" />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {loading ? (
-            <Spinner />
-          ) : visiblePlaces.length === 0 ? (
-            <div className="flex flex-col items-center rounded-[20px] bg-white px-6 py-10 text-center">
-          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#C3F8F0]">
-            <Icon name="wrong_location" className="text-[32px] text-[#087A78]" />
-          </span>
-              <p className="mt-3 text-[15px] font-bold text-[#13364A]">Không tìm thấy địa điểm</p>
-              <p className="mt-1 text-[12px] text-[#72818C]">
-                Thử từ khoá khác hoặc chọn danh mục khác nhé.
-              </p>
-            </div>
-          ) : viewMode === 'list' ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {visiblePlaces.map((place) => (
-                <PlaceCard
-                  key={place.id}
-                  place={place}
-                  favorite={favorites.includes(String(place.id))}
-                  onToggleFavorite={() => toggleFavorite(String(place.id))}
-                />
+          {(activeFilterCount > 0 || searchText.trim()) && (
+            <div className="mb-5 flex flex-wrap items-center gap-2">
+              {searchText.trim() && (
+                <button type="button" onClick={() => { setSearchText(''); updateQuery(''); }} className="inline-flex items-center gap-1.5 rounded-full border border-[#CAE6DC] bg-white px-3 py-1.5 text-[11px] font-bold text-[#366B64]">
+                  <Icon name="search" className="text-[15px]" /> {searchText.trim()} <Icon name="close" className="text-[14px]" />
+                </button>
+              )}
+              {selectedCategories.map((category) => (
+                <button type="button" key={category.code} onClick={() => toggleCategory(category.code)} className="inline-flex items-center gap-1.5 rounded-full border border-[#D1E8DE] bg-[#EFF9F3] px-3 py-1.5 text-[11px] font-bold text-[#17796A]">
+                  {category.name} <Icon name="close" className="text-[14px]" />
+                </button>
               ))}
+              {minRating > 0 && (
+                <button type="button" onClick={() => updateRating(0)} className="inline-flex items-center gap-1 rounded-full border border-[#F1E2C4] bg-[#FFFAEE] px-3 py-1.5 text-[11px] font-bold text-[#947020]">
+                  <Icon name="star" filled className="text-[15px]" /> {minRating}+ <Icon name="close" className="text-[14px]" />
+                </button>
+              )}
+              <button type="button" onClick={resetFilters} className="px-2 text-[11px] font-bold text-[#0A8D80] hover:underline">Xóa tất cả</button>
+            </div>
+          )}
+
+          {loadError && <div className="mb-4"><FormAlert message={`Không tải được địa điểm: ${loadError}`} /></div>}
+
+          {loading ? (
+            <div className={viewMode === 'grid' ? 'grid gap-5 sm:grid-cols-2 xl:grid-cols-3' : 'grid gap-4'}>
+              {Array.from({ length: viewMode === 'grid' ? 6 : 3 }, (_, index) => <PlaceSkeleton key={index} horizontal={viewMode === 'list'} />)}
+            </div>
+          ) : visiblePlaces.length === 0 ? (
+            <div className="flex min-h-[350px] flex-col items-center justify-center rounded-[26px] border border-[#E3EEEA] bg-white px-6 py-12 text-center">
+              <div className="flex h-20 w-20 items-center justify-center rounded-[24px] bg-[#E8F7EF]"><Icon name="travel_explore" className="text-[41px] text-[#0D917F]" /></div>
+              <h3 className="mt-5 text-[18px] font-extrabold text-[#224A50]">Chưa tìm thấy địa điểm phù hợp</h3>
+              <p className="mt-2 max-w-[370px] text-[12px] leading-6 text-[#81979D]">Thử một từ khóa khác hoặc thay đổi bộ lọc để khám phá thêm các điểm đến.</p>
+              <button type="button" onClick={resetFilters} className="mt-5 rounded-full bg-[#0B897B] px-6 py-3 text-[12px] font-extrabold text-white hover:bg-[#086C62]">Đặt lại tìm kiếm</button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className={viewMode === 'grid' ? 'grid gap-5 sm:grid-cols-2 xl:grid-cols-3' : 'grid gap-4'}>
               {visiblePlaces.map((place) => (
-                <PlaceGridCard
+                <DestinationCard
                   key={place.id}
                   place={place}
-                  favorite={favorites.includes(String(place.id))}
+                  horizontal={viewMode === 'list'}
+                  favorite={favoriteSet.has(String(place.id))}
                   onToggleFavorite={() => toggleFavorite(String(place.id))}
                 />
               ))}
             </div>
           )}
+
           {!loading && hasMore && (
-            <div className="mt-5 flex flex-col items-center gap-1">
+            <div className="mt-9 flex flex-col items-center gap-2">
               <button
                 type="button"
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="flex h-11 items-center gap-2 rounded-full bg-[#C3F8F0] px-6 text-[13px] font-extrabold text-[#087A78] transition-colors hover:bg-[#A9F0E5] disabled:opacity-60"
+                className="inline-flex h-12 items-center gap-2 rounded-full border border-[#B8DED2] bg-white px-8 text-[12px] font-extrabold text-[#0B8578] shadow-[0_6px_16px_rgba(8,83,75,0.05)] transition-colors hover:bg-[#EBF9F2] disabled:opacity-60"
               >
                 <Icon name={loadingMore ? 'hourglass_top' : 'expand_more'} className="text-[20px]" />
-                {loadingMore ? 'Đang tải…' : 'Xem thêm địa điểm'}
+                {loadingMore ? 'Đang tải thêm...' : 'Khám phá thêm địa điểm'}
               </button>
-              <span className="text-[11px] text-[#8B9DAA]">
-                Đã hiển thị {places.length}/{total} địa điểm
-              </span>
+              <span className="text-[11px] text-[#93A6A8]">Đã tải {places.length}/{total} địa điểm</span>
             </div>
+          )}
+          {sortMode !== 'default' && !loading && (
+            <p className="mt-4 text-center text-[10px] text-[#98A8A8]">Thứ tự sắp xếp chỉ áp dụng cho các địa điểm đã tải.</p>
           )}
         </main>
       </div>

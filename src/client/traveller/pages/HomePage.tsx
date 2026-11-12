@@ -8,7 +8,6 @@ import { CLIENT_ROUTES } from '@/client/routePaths';
 export default function HomePage() {
   const { user } = useClientAuth();
   const [query, setQuery] = useState('');
-  const [note, setNote] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -53,23 +52,7 @@ export default function HomePage() {
           placeholder="Bạn muốn đi đâu ở Việt Nam hôm nay?"
           className="ml-2 h-9 flex-1 bg-transparent text-[13px] text-client-ink placeholder:text-[#87918F] focus:outline-none"
         />
-        <button
-          type="button"
-          onClick={() => setNote('Tìm kiếm giọng nói sẽ tích hợp ở giai đoạn tiếp theo.')}
-          aria-label="Tìm kiếm giọng nói"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-client-soft text-primary"
-        >
-          <Icon name="mic" className="text-[20px]" />
-        </button>
-        <Link
-          to={CLIENT_ROUTES.EXPLORE_FILTERS}
-          aria-label="Bộ lọc"
-          className="ml-1 flex h-10 w-10 items-center justify-center rounded-full bg-client-soft text-primary"
-        >
-          <Icon name="tune" className="text-[20px]" />
-        </Link>
       </form>
-      {note && <p className="mt-2 text-[11px] text-client-muted">{note}</p>}
 
       <div className="relative mt-4 h-56 overflow-hidden rounded-2xl bg-linear-to-br from-[#075C66] to-[#0E8C86] md:h-72">
         <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-8">

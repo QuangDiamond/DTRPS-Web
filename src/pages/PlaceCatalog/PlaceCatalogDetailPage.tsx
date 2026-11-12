@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, ErrorState, Icon, PageHeader, PageLoader } from '@/components/common';
 import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
-import { listingReviewPath, poiEditPath, ROUTES } from '@/constants/routes';
+import { listingReviewPath, poiEditPath } from '@/constants/routes';
 import { useToast } from '@/hooks/useToast';
 import PlaceContentView, { Row, Section } from '@/pages/PlaceReview/components/PlaceContentView';
 import { ListingStatusBadge } from '@/pages/PlaceReview/components/StatusBadges';
@@ -18,6 +18,7 @@ import PhotoManager from './components/PhotoManager';
 import PriceManager from './components/PriceManager';
 import {
   CATALOG_STATUSES,
+  catalogListPath,
   INPUT_CLASS_SELECT,
   placeCode,
   SOURCE_STYLE,
@@ -262,11 +263,21 @@ export default function PlaceCatalogDetailPage() {
 
   return (
     <div className="flex flex-col gap-6 pb-12">
-      <div className="border-b border-surface-container-high/60 pb-6">
+      <div className="flex flex-col gap-4 border-b border-surface-container-high/60 pb-6">
+        {/* Về đúng trang + bộ lọc đang xem trước đó, không phải từ trang 1 */}
+        <Button
+          variant="neutral"
+          size="sm"
+          icon="arrow_back"
+          className="self-start"
+          onClick={() => navigate(catalogListPath())}
+        >
+          {t('placeCatalog.detail.backToList')}
+        </Button>
         <PageHeader
           breadcrumbs={[
             ADMIN_ROOT_CRUMB,
-            { label: t('placeCatalog.detail.back'), icon: 'location_on', to: ROUTES.POIS },
+            { label: t('placeCatalog.detail.back'), icon: 'location_on', to: catalogListPath() },
             { label: place.name },
           ]}
           title={place.name}

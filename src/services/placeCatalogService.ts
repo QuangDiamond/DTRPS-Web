@@ -112,6 +112,8 @@ function query(params: CatalogQuery): string {
     province: params.province && params.province !== 'all' ? params.province : undefined,
     status: upper(params.status),
     source: upper(params.source),
+    // Mặc định (theo mã địa điểm) thì không gửi
+    sort: params.sort && params.sort !== 'code' ? params.sort : undefined,
   };
   Object.entries(optional).forEach(([key, value]) => {
     if (value) search.set(key, value);
@@ -210,17 +212,9 @@ export const placeCatalogService = {
     return result.url;
   },
 
-  provinces: () =>
-    apiRequest<RefItem[]>(
-      ENDPOINTS.reference.provinces,
-      { auth: false },
-    ),
+  provinces: () => apiRequest<RefItem[]>(ENDPOINTS.reference.provinces, { auth: false }),
 
-  categories: () =>
-    apiRequest<CategoryGroupRef[]>(
-      ENDPOINTS.reference.categories,
-      { auth: false },
-    ),
+  categories: () => apiRequest<CategoryGroupRef[]>(ENDPOINTS.reference.categories, { auth: false }),
 };
 
 function toDetail(detail: ApiDetail): CatalogPlaceDetail {

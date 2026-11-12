@@ -91,14 +91,21 @@ async function send(path: string, options: RequestOptions): Promise<Response> {
 
 export async function clientRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const auth = options.auth ?? true;
+  // Chỉ xử lý "hết phiên" khi request có gửi token; khách gọi API cần đăng nhập thì báo lỗi bình thường
+  const sentToken = auth && Boolean(session?.getAccessToken());
   let response = await send(path, options);
 
   // Access token hết hạn (mặc định 15 phút): làm mới một lần rồi gửi lại
-  if (response.status === 401 && auth && session) {
+  if (response.status === 401 && sentToken && session) {
     if (await session.refresh()) {
       response = await send(path, options);
     }
-    if (response.status === 401) session.onExpired();
+    if (response.status === 401) {
+      // Phiên không còn dùng được (bị thu hồi, đổi DB…): đăng xuất rồi gửi lại như khách.
+      // Trang công khai vẫn hiện bình thường; trang cần đăng nhập thì guard chuyển về đăng nhập.
+      session.onExpired();
+      response = await send(path, { ...options, auth: false });
+    }
   }
 
   if (response.status === 204) return undefined as T;

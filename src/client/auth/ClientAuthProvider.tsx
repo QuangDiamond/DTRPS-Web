@@ -1,4 +1,4 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import { authApi } from '@/client/api/authApi';
 import { userApi } from '@/client/api/userApi';
 import { bindSession } from '@/client/api/http';
@@ -53,7 +53,12 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
     return refreshing.current;
   }, [save]);
 
-  useEffect(() => {
+  // Gắn phiên vào HTTP client NGAY lần render đầu và KHÔNG gỡ ra trong cleanup của effect:
+  // effect của component con (vd. PartnerProfileProvider tải hồ sơ đối tác) chạy TRƯỚC effect của
+  // provider này. Nếu gắn trong useEffect / gỡ khi cleanup thì lúc StrictMode tháo-gắn lại (dev) hay
+  // lúc mới mở trang, request của con đi không kèm token → 401 "Bạn cần đăng nhập" và lỗi bị giữ lại.
+  // Binding chỉ đọc qua ref nên giữ nguyên suốt vòng đời app là an toàn (provider này nằm ở gốc).
+  useState(() => {
     bindSession({
       getAccessToken: () => sessionRef.current?.accessToken ?? null,
       refresh: refreshSession,
@@ -63,8 +68,8 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
         save(null);
       },
     });
-    return () => bindSession(null);
-  }, [refreshSession, save]);
+    return true;
+  });
 
   const login = useCallback(
     async (email: string, password: string, remember: boolean) => {

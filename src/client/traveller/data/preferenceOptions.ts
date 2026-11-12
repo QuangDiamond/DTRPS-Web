@@ -19,30 +19,40 @@ export interface IconOption<T extends string = string> {
   note?: string;
 }
 
-const img = (id: string) => `https://images.unsplash.com/photo-${id}?w=600&q=80`;
+/** Ảnh địa điểm thật trên Cloudinary của dự án, thu nhỏ còn rộng 600px cho thẻ chọn */
+const img = (path: string) =>
+  `https://res.cloudinary.com/f3wrjuzb/image/upload/c_fill,w_600,h_300,q_auto,f_auto/${path}`;
 
-/** Bước 1 – Trải nghiệm: ảnh minh họa theo mã loại hình địa điểm (place_categories) */
+/**
+ * Bước 1 – Trải nghiệm: mỗi loại hình (place_categories) một ảnh riêng, lấy từ một địa điểm tiêu
+ * biểu của đúng loại đó.
+ */
 const INTEREST_IMAGES: Record<string, string> = {
   // Lưu trú
-  resort: img('1507525428034-b723cf961d3e'),
-  homestay: img('1528127269322-539801943592'),
+  hotel: img('v1793798505/dtrps/places/lpiwpivvr1fhhiafnxp5.jpg'), // Sofitel Legend Metropole
+  resort: img('v1794472572/dtrps/preferences/resort.png'), // Resort ven biển (ảnh do nhóm chọn)
+  homestay: img('v1794472468/dtrps/preferences/homestay.png'), // Homestay trên đồi (ảnh do nhóm chọn)
+  villa: img('v1793801036/dtrps/places/ydmb2rfshg2vjra580t4.jpg'), // Six Senses Côn Đảo
   // Ẩm thực
-  restaurant: img('1555126634-323283e090fa'),
-  cafe: img('1555126634-323283e090fa'),
-  localEatery: img('1555126634-323283e090fa'),
-  barPub: img('1528181304800-259b08848526'),
+  restaurant: img('v1793801120/dtrps/places/kasz9oscr9pbermbscdv.jpg'), // Chả cá Lã Vọng
+  cafe: img('v1793798501/dtrps/places/kf1y33uj0gxbrq9sggep.jpg'), // Cà phê Giảng
+  localEatery: img('v1793798496/dtrps/places/ky6iuftcisc37wokrgy4.jpg'), // Bún chả Hương Liên
+  barPub: img('v1794472474/dtrps/preferences/barPub.png'), // Rooftop bar Hà Nội (ảnh do nhóm chọn)
   // Vui chơi & Tham quan
-  heritage: img('1559592413-7cec4d0cae2b'),
-  park: img('1528127269322-539801943592'),
-  scenicSpot: img('1528127269322-539801943592'),
-  checkinSpot: img('1490750967868-88aa4486c946'),
+  heritage: img('v1793798465/dtrps/places/jurwen5a4ncepkev2kz2.jpg'), // Văn Miếu
+  amusementPark: img('v1793798512/dtrps/places/ezqi8rntmvvcelnhtbi7.jpg'), // Sun World Hạ Long
+  park: img('v1793801102/dtrps/places/dx614uuehpbpwnbbiyhb.jpg'), // Thảo Cầm Viên
+  scenicSpot: img('v1793798515/dtrps/places/sr4nw9a7mgnblp1ruxmz.jpg'), // Tràng An
+  checkinSpot: img('v1793801420/dtrps/places/eym64uuih6eayv1dfmjc.jpg'), // Cánh đồng điện gió Bạc Liêu
+  beach: img('v1793871966/dtrps/places/nkhvz2ue91qjdef9iwne.jpg'), // Bãi biển Lăng Cô
   // Mua sắm & Đặc sản
-  nightMarket: img('1528181304800-259b08848526'),
-  specialtyStore: img('1583417319070-4a69db38a482'),
-  souvenirShop: img('1583417319070-4a69db38a482'),
-  craftVillage: img('1559592413-7cec4d0cae2b'),
+  nightMarket: img('v1793798483/dtrps/places/qlpqwt99dlb0atb6gfsj.jpg'), // Chợ đêm phố cổ Hà Nội
+  specialtyStore: img('v1793800976/dtrps/places/dmd8pm5fmg80sg1eaqg6.jpg'), // Chợ Đông Ba
+  souvenirShop: img('v1794472475/dtrps/preferences/souvenirShop.png'), // Cửa hàng lưu niệm (ảnh do nhóm chọn)
+  craftVillage: img('v1793798492/dtrps/places/vhsojsuqq3fpd431hn64.jpg'), // Làng gốm Bát Tràng
 };
-const DEFAULT_INTEREST_IMAGE = img('1488646953014-85cb44e25828');
+/** Loại hình admin thêm sau mà chưa có ảnh riêng: ảnh Vịnh Lan Hạ (cảnh du lịch chung) */
+const DEFAULT_INTEREST_IMAGE = img('v1793800956/dtrps/places/rx2j27dvo4sggx9fam6n.jpg');
 
 /** Bước 2 – Yêu cầu đặc biệt: icon theo mã của BE */
 const SPECIAL_NEED_ICONS: Record<string, string> = {

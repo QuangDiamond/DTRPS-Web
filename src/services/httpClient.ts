@@ -27,10 +27,13 @@ export interface RequestOptions {
   auth?: boolean;
 }
 
-let unauthorizedHandler: (() => void) | null = null;
+/** Trả true khi đây là phiên đăng nhập vừa kết thúc (đã đăng xuất và chuyển về trang đăng nhập) */
+type UnauthorizedHandler = () => boolean;
+
+let unauthorizedHandler: UnauthorizedHandler | null = null;
 
 /** Đăng ký hành động khi API trả 401 (AuthProvider dùng để đăng xuất) */
-export function onUnauthorized(handler: (() => void) | null): void {
+export function onUnauthorized(handler: UnauthorizedHandler | null): void {
   unauthorizedHandler = handler;
 }
 
@@ -125,15 +128,14 @@ export async function apiRequest<T>(
 
   if (await refreshTokens()) {
     const retried = await send(path, options);
-
-    if (retried.status !== 401) {
-      return parseResponse<T>(retried);
-    }
-
-    return parseResponse<T>(retried, true);
+    if (retried.status !== 401) return parseResponse<T>(retried);
   }
 
-  return parseResponse<T>(response, true);
+  // Không làm mới được: phiên đã hết. Nhiều request cùng gặp 401 chỉ đăng xuất một lần, và các
+  // request đó không báo lỗi (tránh một loạt thông báo) vì trang sắp chuyển về đăng nhập,
+  // nơi có banner giải thích lý do.
+  if (unauthorizedHandler?.()) return new Promise<T>(() => {});
+  return parseResponse<T>(response);
 }
 
 
@@ -183,8 +185,7 @@ async function send(path: string, options: RequestOptions): Promise<Response> {
   }
 }
 
-/** expired = true: phiên đã hết hạn và không làm mới được → đăng xuất */
-async function parseResponse<T>(response: Response, expired = false): Promise<T> {
+async function parseResponse<T>(response: Response): Promise<T> {
   if (response.status === 204) return undefined as T;
 
   const text = await response.text();
@@ -198,7 +199,6 @@ async function parseResponse<T>(response: Response, expired = false): Promise<T>
   }
 
   if (!response.ok) {
-    if (expired) unauthorizedHandler?.();
     throw new ApiError(
       messageFromPayload(payload) ??
         STATUS_MESSAGES[response.status] ??

@@ -2917,7 +2917,12 @@
       "source": "Nguồn",
       "all": "Tất cả",
       "category": "Loại hình",
-      "allTypes": "Tất cả loại hình"
+      "allTypes": "Tất cả loại hình",
+      "sort": "Sắp xếp theo",
+      "sortCode": "Mã địa điểm",
+      "sortUpdated": "Mới cập nhật",
+      "sortCreated": "Mới tạo",
+      "sortName": "Tên A → Z"
     },
     "status": {
       "draft": "Chưa công khai",
@@ -2947,6 +2952,7 @@
     },
     "detail": {
       "back": "Kho địa điểm",
+      "backToList": "Quay lại danh sách",
       "loadError": "Không tải được địa điểm",
       "sourceTitle": "Nguồn & trạng thái",
       "business": "Doanh nghiệp",

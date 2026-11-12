@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Button,
   ErrorState,
@@ -18,6 +18,7 @@ import { displayDate } from '@/pages/PlaceReview/placeReviewUtils';
 import { placeCatalogService } from '@/services/placeCatalogService';
 import type {
   CatalogPlace,
+  CatalogSort,
   CatalogPlaceStatus,
   CatalogStats,
   CategoryGroupRef,
@@ -29,7 +30,15 @@ import type {
 import { getErrorMessage } from '@/utils/error';
 import CatalogStatusBadge from './components/CatalogStatusBadge';
 import { formatNumber } from '@/utils/format';
-import { CATALOG_STATUSES, PLACE_SOURCES, SOURCE_STYLE, STATUS_STYLE } from './placeCatalogUtils';
+import {
+  CATALOG_SORTS,
+  CATALOG_STATUSES,
+  PLACE_SOURCES,
+  rememberCatalogListSearch,
+  SORT_LABEL_KEYS,
+  SOURCE_STYLE,
+  STATUS_STYLE,
+} from './placeCatalogUtils';
 
 const SEARCH_DELAY_MS = 350;
 const EMPTY_STATS: CatalogStats = {
@@ -62,15 +71,53 @@ export default function PlaceCatalogPage() {
   const [groups, setGroups] = useState<CategoryGroupRef[]>([]);
   const [provinces, setProvinces] = useState<RefItem[]>([]);
 
-  const [group, setGroup] = useState('all');
-  const [category, setCategory] = useState('all');
-  const [province, setProvince] = useState('all');
-  const [status, setStatus] = useState<CatalogPlaceStatus | 'all'>('all');
-  const [source, setSource] = useState<PlaceSource | 'all'>('all');
-  const [keyword, setKeyword] = useState('');
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
+  // Trang, bộ lọc, từ khoá nằm trên URL: mở chi tiết rồi quay lại (hay F5) vẫn đúng trang đang xem
+  const [params, setParams] = useSearchParams();
+  const location = useLocation();
+  const group = params.get('group') ?? 'all';
+  const category = params.get('category') ?? 'all';
+  const province = params.get('province') ?? 'all';
+  const status = (params.get('status') ?? 'all') as CatalogPlaceStatus | 'all';
+  const source = (params.get('source') ?? 'all') as PlaceSource | 'all';
+  const search = params.get('q') ?? '';
+  const sortParam = params.get('sort');
+  const sort: CatalogSort = CATALOG_SORTS.some((value) => value === sortParam)
+    ? (sortParam as CatalogSort)
+    : 'code';
+  const page = Math.max(1, Number(params.get('page')) || 1);
+  const sizeParam = Number(params.get('size'));
+  const pageSize: number = PAGE_SIZE_OPTIONS.some((size) => size === sizeParam)
+    ? sizeParam
+    : PAGE_SIZE_OPTIONS[0];
+  const [keyword, setKeyword] = useState(search);
+
+  /** Ghi các giá trị lên URL (giá trị mặc định thì bỏ khỏi URL cho gọn); không thêm lịch sử */
+  const update = useCallback(
+    (changes: Record<string, string | number>) =>
+      setParams(
+        (current) => {
+          const next = new URLSearchParams(current);
+          Object.entries(changes).forEach(([key, value]) => {
+            const text = String(value);
+            const isDefault =
+              text === '' ||
+              text === 'all' ||
+              (key === 'page' && text === '1') ||
+              (key === 'sort' && text === 'code');
+            if (isDefault) next.delete(key);
+            else next.set(key, text);
+          });
+          return next;
+        },
+        { replace: true },
+      ),
+    [setParams],
+  );
+
+  // Nhớ danh sách đang xem để nút "Quay lại" ở trang chi tiết trở về đúng chỗ
+  useEffect(() => {
+    rememberCatalogListSearch(location.search);
+  }, [location.search]);
 
   const [result, setResult] = useState<Paged<CatalogPlace> | null>(null);
   const [loading, setLoading] = useState(true);
@@ -97,13 +144,12 @@ export default function PlaceCatalogPage() {
     };
   }, [retry]);
 
+  // Gõ xong mới tìm; chỉ về trang 1 khi từ khoá thật sự đổi (quay lại từ trang chi tiết thì giữ trang)
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setSearch(keyword);
-      setPage(1);
-    }, SEARCH_DELAY_MS);
+    if (keyword.trim() === search) return;
+    const timer = window.setTimeout(() => update({ q: keyword.trim(), page: 1 }), SEARCH_DELAY_MS);
     return () => window.clearTimeout(timer);
-  }, [keyword]);
+  }, [keyword, search, update]);
 
   useEffect(() => {
     let active = true;
@@ -116,6 +162,7 @@ export default function PlaceCatalogPage() {
         province,
         status,
         source,
+        sort,
         page: page - 1,
         size: pageSize,
       })
@@ -133,14 +180,13 @@ export default function PlaceCatalogPage() {
     return () => {
       active = false;
     };
-  }, [search, group, category, province, status, source, page, pageSize, retry]);
+  }, [search, group, category, province, status, source, sort, page, pageSize, retry]);
 
+  /** Đổi bộ lọc → về trang 1 */
   const resetPage =
-    <T,>(setter: (value: T) => void) =>
-    (value: T) => {
-      setter(value);
-      setPage(1);
-    };
+    <T extends string>(key: string) =>
+    (value: T) =>
+      update({ [key]: value, page: 1 });
 
   const provinceOptions = useMemo<SelectOption<string>[]>(
     () => [
@@ -163,6 +209,10 @@ export default function PlaceCatalogPage() {
     ],
     [t],
   );
+  const sortOptions = useMemo<SelectOption<CatalogSort>[]>(
+    () => CATALOG_SORTS.map((value) => ({ value, label: t(SORT_LABEL_KEYS[value]) })),
+    [t],
+  );
 
   /** Loại hình của nhóm đang chọn (giống ô "Loại hình" khi đăng ký địa điểm) */
   const subtypes = groups.find((item) => item.code === group)?.subtypes ?? [];
@@ -173,8 +223,7 @@ export default function PlaceCatalogPage() {
       type="button"
       onClick={() => {
         // Đổi nhóm dịch vụ → chọn lại loại hình (giống form đăng ký địa điểm)
-        setCategory('all');
-        resetPage(setGroup)(code);
+        update({ group: code, category: 'all', page: 1 });
       }}
       className={`flex items-center gap-2 rounded-full px-4 py-2 font-label-md text-label-md transition-colors ${
         group === code
@@ -283,7 +332,7 @@ export default function PlaceCatalogPage() {
                 <button
                   key={item.code}
                   type="button"
-                  onClick={() => resetPage(setCategory)(item.code)}
+                  onClick={() => resetPage('category')(item.code)}
                   className={`rounded-full border px-3 py-1 font-label-md text-label-md transition-colors ${
                     category === item.code
                       ? 'border-primary bg-primary-fixed font-semibold text-on-primary-fixed'
@@ -317,7 +366,7 @@ export default function PlaceCatalogPage() {
               icon="map"
               value={province}
               options={provinceOptions}
-              onChange={resetPage(setProvince)}
+              onChange={resetPage('province')}
             />
           </div>
           <div className="lg:w-48">
@@ -326,7 +375,7 @@ export default function PlaceCatalogPage() {
               icon="toggle_on"
               value={status}
               options={statusOptions}
-              onChange={resetPage(setStatus)}
+              onChange={resetPage<CatalogPlaceStatus | 'all'>('status')}
             />
           </div>
           <div className="lg:w-48">
@@ -335,7 +384,16 @@ export default function PlaceCatalogPage() {
               icon="hub"
               value={source}
               options={sourceOptions}
-              onChange={resetPage(setSource)}
+              onChange={resetPage<PlaceSource | 'all'>('source')}
+            />
+          </div>
+          <div className="lg:w-52">
+            <FilterSelect
+              label={t('placeCatalog.filters.sort')}
+              icon="sort"
+              value={sort}
+              options={sortOptions}
+              onChange={resetPage<CatalogSort>('sort')}
             />
           </div>
         </div>
@@ -460,11 +518,10 @@ export default function PlaceCatalogPage() {
             totalItems={result.total}
             itemLabel={t('placeCatalog.table.items')}
             pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageChange={setPage}
-            onPageSizeChange={(size) => {
-              setPageSize(size);
-              setPage(1);
-            }}
+            onPageChange={(next) => update({ page: next })}
+            onPageSizeChange={(size) =>
+              update({ size: size === PAGE_SIZE_OPTIONS[0] ? '' : size, page: 1 })
+            }
           />
         </div>
       )}

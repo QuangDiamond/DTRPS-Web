@@ -101,10 +101,10 @@ function todosOf({ listing, revisions }: Place): Todo[] {
     });
   }
 
-  // Thiếu thông tin — gộp thành một dòng cho mỗi địa điểm
+  // Thiếu thông tin — gộp thành một dòng cho mỗi địa điểm.
+  // Không xét giờ mở cửa: không khai báo giờ nghĩa là "Mở cả ngày", không phải thiếu.
   const missing = [
     listing.images.length === 0 && 'ảnh',
-    listing.openingHours.length === 0 && 'giờ mở cửa',
     listing.prices.length === 0 && 'bảng giá',
   ].filter(Boolean);
   if (missing.length > 0 && listing.status !== 'SUSPENDED') {
@@ -123,12 +123,13 @@ function todosOf({ listing, revisions }: Place): Todo[] {
 function PlaceCard({ listing }: { listing: BusinessListing }) {
   const status = LISTING_STATUS[listing.status];
   const cover = listing.images.find((image) => image.primary) ?? listing.images[0];
-  const filled = [
+  // Giờ mở cửa không tính: để trống = "Mở cả ngày" cũng là thông tin đầy đủ
+  const checks = [
     listing.images.length > 0,
-    listing.openingHours.length > 0,
     listing.prices.length > 0,
     Boolean(listing.phone || listing.website),
-  ].filter(Boolean).length;
+  ];
+  const filled = checks.filter(Boolean).length;
   return (
     <Link
       to={partnerLocationPath(listing.id)}
@@ -152,7 +153,7 @@ function PlaceCard({ listing }: { listing: BusinessListing }) {
           {[listing.category?.name, listing.province?.name].filter(Boolean).join(' · ')}
         </p>
         <p className="mt-auto text-[11px] text-client-muted">
-          {listing.images.length}/{MAX_IMAGES} ảnh · Thông tin đầy đủ {filled}/4
+          {listing.images.length}/{MAX_IMAGES} ảnh · Thông tin đầy đủ {filled}/{checks.length}
         </p>
       </div>
     </Link>

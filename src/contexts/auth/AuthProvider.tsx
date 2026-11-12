@@ -1,6 +1,4 @@
-import i18n from 'i18next';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useToast } from '@/hooks';
 import * as authService from '@/services/authService';
 import { onUnauthorized } from '@/services/httpClient';
 import { clearAccessToken } from '@/services/tokenStore';
@@ -67,10 +65,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   );
   const adminRef = useRef(admin);
   adminRef.current = admin;
-  const { showToast } = useToast();
+  /** Phiên vừa bị kết thúc do 401; đăng nhập lại thì xoá */
+  const sessionEndedRef = useRef(false);
 
   const login = useCallback(async (email: string, password: string, remember: boolean) => {
     const profile = await authService.login(email, password, remember);
+    sessionEndedRef.current = false;
     idleLock.unlock();
     adminSessionEnd.clear();
     clearStoredAdmin();
@@ -99,18 +99,24 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     setAdmin(null);
   }, []);
 
-  // API trả 401 (token hết hạn / bị thu hồi) → đăng xuất và báo cho người dùng
+  // API trả 401 mà không làm mới được (token hết hạn / bị thu hồi / DB đổi) → đăng xuất một lần.
+  // Không bật toast: trang đăng nhập đã có banner "Phiên đăng nhập đã hết hạn".
   useEffect(() => {
     onUnauthorized(() => {
-      // Chỉ khi đang đăng nhập (không phải lỗi 401 ở chính trang đăng nhập)
-      if (adminRef.current) adminSessionEnd.set('expired');
       clearAccessToken();
       clearStoredAdmin();
-      setAdmin(null);
-      showToast(i18n.t('stores.auth.yourSessionHasExpired'), 'info');
+      if (adminRef.current) {
+        // Gặp 401 đầu tiên: đánh dấu ngay để các request 401 song song không xử lý lại
+        adminRef.current = null;
+        sessionEndedRef.current = true;
+        adminSessionEnd.set('expired');
+        setAdmin(null);
+      }
+      // true: là phiên vừa kết thúc → httpClient không ném lỗi cho từng request
+      return sessionEndedRef.current;
     });
     return () => onUnauthorized(null);
-  }, [showToast]);
+  }, []);
 
   const value = useMemo(
     () => ({ admin, login, logout, lockIdle }),

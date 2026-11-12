@@ -6,7 +6,7 @@ import TypePicker from '@/components/common/TypePicker';
 import { checkTypes } from '@/components/common/typePickerUtils';
 import LocationPicker, { type LocationPickerLabels } from '@/components/common/LocationPicker';
 import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
-import { placeDetailPath, ROUTES } from '@/constants/routes';
+import { placeDetailPath } from '@/constants/routes';
 import { useToast } from '@/hooks/useToast';
 import { ApiError } from '@/services/httpClient';
 import { mapService } from '@/services/mapService';
@@ -25,7 +25,7 @@ import EditorSection, { FormField } from './components/EditorSection';
 import HoursEditor from './components/HoursEditor';
 import PhotoManager, { type PhotoItem } from './components/PhotoManager';
 import PriceManager, { type PriceItem } from './components/PriceManager';
-import { CATALOG_STATUSES, STATUS_STYLE } from './placeCatalogUtils';
+import { CATALOG_STATUSES, catalogListPath, STATUS_STYLE } from './placeCatalogUtils';
 import {
   cleanWeek,
   fullWeek,
@@ -327,7 +327,7 @@ export default function PlaceEditorPage() {
     setImages((list) => list.map((image) => ({ ...image, primary: image.key === item.key })));
 
   const title = creating ? t('placeEditor.createTitle') : t('placeEditor.editTitle');
-  const backTo = detail ? placeDetailPath(detail.place.id) : ROUTES.POIS;
+  const backTo = detail ? placeDetailPath(detail.place.id) : catalogListPath();
 
   return (
     <form onSubmit={(event) => void submit(event)} noValidate className="flex flex-col gap-6 pb-12">
@@ -335,7 +335,7 @@ export default function PlaceEditorPage() {
         <PageHeader
           breadcrumbs={[
             ADMIN_ROOT_CRUMB,
-            { label: t('placeCatalog.detail.back'), icon: 'location_on', to: ROUTES.POIS },
+            { label: t('placeCatalog.detail.back'), icon: 'location_on', to: catalogListPath() },
             ...(detail ? [{ label: detail.place.name, to: backTo }] : []),
             { label: title },
           ]}

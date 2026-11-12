@@ -33,39 +33,31 @@ const PARTNER_NAV: NavItem[] = [
   { to: CLIENT_ROUTES.PARTNER_PROFILE, label: 'Hồ sơ', icon: 'storefront' },
 ];
 
-/** Thanh chuyển "Khách du lịch | Đối tác" giống màn Home của mobile */
-function RoleSwitch({ partnerMode }: { partnerMode: boolean }) {
-  const option = (active: boolean) =>
-    `flex flex-1 items-center justify-center gap-1.5 rounded-full py-2 text-[13px] transition-colors ${
-      active
-        ? 'bg-primary font-bold text-white'
-        : 'font-semibold text-client-muted hover:text-primary'
-    }`;
+/** Chế độ còn lại để chuyển sang (nút trên topbar luôn ghi chế độ KHÔNG đang dùng) */
+const switchTarget = (partnerMode: boolean) =>
+  partnerMode
+    ? { to: CLIENT_ROUTES.HOME, label: 'Chế độ du khách', icon: 'explore' }
+    : { to: CLIENT_ROUTES.PARTNER, label: 'Dành cho đối tác', icon: 'storefront' };
+
+/** Nút chuyển du khách ⇄ đối tác trên topbar (kiểu "Chuyển sang chế độ đón tiếp khách" của Airbnb) */
+function ModeSwitchButton({ partnerMode }: { partnerMode: boolean }) {
+  const target = switchTarget(partnerMode);
   return (
-    <div className="mx-auto flex w-full max-w-md rounded-full bg-client-soft p-1" role="tablist">
-      <Link
-        to={CLIENT_ROUTES.HOME}
-        role="tab"
-        aria-selected={!partnerMode}
-        className={option(!partnerMode)}
-      >
-        <Icon name="explore" className="text-[17px]" />
-        Khách du lịch
-      </Link>
-      <Link
-        to={CLIENT_ROUTES.PARTNER}
-        role="tab"
-        aria-selected={partnerMode}
-        className={option(partnerMode)}
-      >
-        <Icon name="storefront" className="text-[17px]" />
-        Đối tác
-      </Link>
-    </div>
+    <Link
+      to={target.to}
+      title={target.label}
+      aria-label={target.label}
+      // Viên thuốc nền xanh bạc hà (màu chữ "Travel" của logo): nổi trên nền topbar tối mà vẫn hợp tông
+      className="flex h-9 items-center gap-1.5 rounded-full bg-[#99EFE5] px-2.5 text-[13px] font-extrabold whitespace-nowrap text-[#0B3F3B] shadow-sm transition-colors hover:bg-white xl:px-4"
+    >
+      <Icon name={target.icon} className="text-[18px]" />
+      {/* Màn nhỏ chỉ hiện icon cho gọn; menu ảnh đại diện cũng có mục chuyển chế độ */}
+      <span className="hidden xl:inline">{target.label}</span>
+    </Link>
   );
 }
 
-function AccountMenu() {
+function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
   const { user, logout, hasRole } = useClientAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -123,6 +115,14 @@ function AccountMenu() {
             <Link to={CLIENT_ROUTES.PROFILE} className={itemClass} onClick={() => setOpen(false)}>
               <Icon name="account_circle" className="text-[18px] text-primary" /> Hồ sơ của tôi
             </Link>
+            <Link
+              to={switchTarget(partnerMode).to}
+              className={itemClass}
+              onClick={() => setOpen(false)}
+            >
+              <Icon name={switchTarget(partnerMode).icon} className="text-[18px] text-primary" />{' '}
+              {partnerMode ? 'Chuyển sang chế độ du khách' : 'Chuyển sang chế độ đối tác'}
+            </Link>
             {hasRole('ADMIN') && (
               <a href="/admin/dashboard" className={itemClass}>
                 <Icon name="admin_panel_settings" className="text-[18px] text-primary" /> Trang quản
@@ -146,7 +146,7 @@ function AccountMenu() {
   );
 }
 
-/** Khung chung của du khách + đối tác: header, thanh chuyển vai trò, menu và thanh tab dưới (điện thoại) */
+/** Khung chung của du khách + đối tác: header (kèm nút chuyển chế độ), menu và thanh tab dưới (điện thoại) */
 export default function ClientShell() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -168,7 +168,7 @@ export default function ClientShell() {
   }, [notice]);
 
   const tabClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-1.5 rounded-full px-3 py-2 text-[13px] transition-colors ${
+    `flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-2 text-[13px] whitespace-nowrap transition-colors lg:px-2 xl:px-3 ${
       isActive
         ? 'bg-white/15 font-bold text-white'
         : 'font-semibold text-white/75 hover:bg-white/10 hover:text-white'
@@ -181,17 +181,29 @@ export default function ClientShell() {
   return (
     <div className="min-h-screen bg-client-bg pb-20 md:pb-10">
       <header className="sticky top-0 z-30 bg-linear-to-r from-[#0B3F3B] to-[#0F5F57] shadow-[0_2px_12px_rgba(7,42,40,0.18)]">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4">
           <AppLogo subtitle={partnerMode ? 'BUSINESS OWNER' : 'VIETNAM AI PLANNER'} onDark />
-          <nav className="hidden flex-1 justify-center gap-1 md:flex" aria-label="Điều hướng chính">
+          <nav
+            className="hidden min-w-0 flex-1 justify-center gap-0.5 md:flex xl:gap-1"
+            aria-label="Điều hướng chính"
+          >
             {nav.map((item) => (
-              <NavLink key={item.to} to={item.to} end={item.end} className={tabClass}>
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                title={item.label}
+                className={tabClass}
+              >
                 <Icon name={item.icon} className="text-[18px]" />
-                {item.label}
+                {/* Máy tính bảng (768–1023px): chỉ icon để menu không xuống dòng */}
+                <span className="hidden lg:inline">{item.label}</span>
               </NavLink>
             ))}
           </nav>
           <div className="flex items-center gap-2">
+            <ModeSwitchButton partnerMode={partnerMode} />
+            <span aria-hidden className="mx-1 hidden h-6 w-px bg-white/20 sm:block" />
             <button
               type="button"
               onClick={() => setNotice('Tiếng Anh sẽ có trong phiên bản sau.')}
@@ -228,15 +240,12 @@ export default function ClientShell() {
                 <Icon name="notifications" className="text-[21px]" />
               </button>
             )}
-            <AccountMenu />
+            <AccountMenu partnerMode={partnerMode} />
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 pt-4">
-        <div className="mb-5">
-          <RoleSwitch partnerMode={partnerMode} />
-        </div>
+      <main className="mx-auto max-w-6xl px-4 pt-6">
         <Suspense fallback={<Spinner />}>
           <Outlet />
         </Suspense>

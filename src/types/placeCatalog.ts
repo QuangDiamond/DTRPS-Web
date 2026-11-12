@@ -117,6 +117,9 @@ export interface CatalogStats {
   byGroup: Record<string, number>;
 }
 
+/** Thứ tự danh sách Kho địa điểm: mã địa điểm (mặc định), mới cập nhật, mới tạo, tên A→Z */
+export type CatalogSort = 'code' | 'updated' | 'created' | 'name';
+
 export interface CatalogQuery {
   keyword?: string;
   group?: string;
@@ -125,6 +128,7 @@ export interface CatalogQuery {
   province?: string;
   status?: CatalogPlaceStatus | 'all';
   source?: PlaceSource | 'all';
+  sort?: CatalogSort;
   /** Bắt đầu từ 0 */
   page: number;
   size: number;

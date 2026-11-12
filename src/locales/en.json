@@ -2990,7 +2990,12 @@
       "source": "Source",
       "all": "All",
       "category": "Type",
-      "allTypes": "All types"
+      "allTypes": "All types",
+      "sort": "Sort by",
+      "sortCode": "Place code",
+      "sortUpdated": "Recently updated",
+      "sortCreated": "Newest",
+      "sortName": "Name A → Z"
     },
     "status": {
       "draft": "Not published",
@@ -3020,6 +3025,7 @@
     },
     "detail": {
       "back": "Place catalogue",
+      "backToList": "Back to list",
       "loadError": "Could not load the place",
       "sourceTitle": "Source & status",
       "business": "Business",

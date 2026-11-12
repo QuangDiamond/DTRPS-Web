@@ -921,50 +921,48 @@ export default function ExplorePage() {
                 )}
               </div>
 
-              {/* Gợi ý tỉnh/thành */}
-              {showSuggestions && searchText.trim().length > 0 && (
-                <div
-                  id="province-suggestions"
-                  className="absolute left-0 right-0 top-full z-50 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-[#E3E7F0] bg-white py-2 shadow-xl"
-                >
-                  <p className="px-4 py-2 text-xs font-bold text-[#72818C]">
-                    Gợi ý tỉnh/thành
-                  </p>
+              {/* Gợi ý tỉnh/thành — chỉ hiện khi khớp tên tỉnh, không gợi ý cho từ khóa/địa điểm bất kỳ */}
+              {showSuggestions &&
+                searchText.trim().length > 0 &&
+                (loadingReferences || suggestedProvinces.length > 0) && (
+                  <div
+                    id="province-suggestions"
+                    className="absolute left-0 right-0 top-full z-50 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-[#E3E7F0] bg-white py-2 shadow-xl"
+                  >
+                    <p className="px-4 py-2 text-xs font-bold text-[#72818C]">
+                      Gợi ý tỉnh/thành
+                    </p>
 
-                  {loadingReferences ? (
-                    <p className="px-4 py-3 text-sm text-[#72818C]">
-                      Đang tải...
-                    </p>
-                  ) : suggestedProvinces.length === 0 ? (
-                    <p className="px-4 py-3 text-sm text-[#72818C]">
-                      Không có tỉnh/thành phù hợp.
-                    </p>
-                  ) : (
-                    suggestedProvinces.map((province) => (
-                      <button
-                        key={province.code}
-                        type="button"
-                        onMouseDown={(event) => event.preventDefault()}
-                        onClick={() => {
-                          setSearchText(province.name);
-                          setSelectedProvinceCode(
-                            province.code
-                          );
-                          setQuery(province.name);
-                          setShowSuggestions(false);
-                        }}
-                        className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-[#E9F7F4]"
-                      >
-                        <Icon
-                          name="location_on"
-                          className="text-[20px] text-[#087A78]"
-                        />
-                        {province.name}
-                      </button>
-                    ))
-                  )}
-                </div>
-              )}
+                    {loadingReferences ? (
+                      <p className="px-4 py-3 text-sm text-[#72818C]">
+                        Đang tải...
+                      </p>
+                    ) : (
+                      suggestedProvinces.map((province) => (
+                        <button
+                          key={province.code}
+                          type="button"
+                          onMouseDown={(event) => event.preventDefault()}
+                          onClick={() => {
+                            setSearchText(province.name);
+                            setSelectedProvinceCode(
+                              province.code
+                            );
+                            setQuery(province.name);
+                            setShowSuggestions(false);
+                          }}
+                          className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-[#E9F7F4]"
+                        >
+                          <Icon
+                            name="location_on"
+                            className="text-[20px] text-[#087A78]"
+                          />
+                          {province.name}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
             </div>
           </div>
 

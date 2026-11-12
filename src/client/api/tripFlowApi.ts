@@ -22,21 +22,25 @@ export type PlanStatus =
 export interface CreateTravelPlanInput {
   title: string;
   destination: string;
+
   /** Ngày dạng yyyy-MM-dd */
   startDate: string;
   endDate: string;
+
   budget: number | null;
   currency: string;
   groupSize: number;
   description: string | null;
-  /** Mã danh mục con lấy từ GET /reference/categories */
+
+  /** Mã danh mục con */
   categoryCodes: string[];
-  /** Mã sở thích lấy từ GET /reference/interests, lưu vào plan_interests */
+
+  /** Mã sở thích */
   interestCodes?: string[];
+
   travelPace: TravelPace;
 }
 
-/** PUT /travel-plans/{planId} gửi đủ các trường như khi tạo. */
 export type UpdateTravelPlanInput = CreateTravelPlanInput;
 
 export interface TravelPlanResponse extends CreateTravelPlanInput {
@@ -44,13 +48,11 @@ export interface TravelPlanResponse extends CreateTravelPlanInput {
   userId: number;
   interestCodes: string[];
   status: PlanStatus;
-  /** Các trạng thái Backend cho phép chuyển tới từ trạng thái hiện tại */
   allowedNextStatuses: PlanStatus[];
   createdAt: string;
   updatedAt: string;
 }
 
-/** Địa điểm thật từ catalogue hoặc danh sách Traveller đã chọn. */
 export interface TripPlace {
   placeId: number;
   name: string;
@@ -63,9 +65,7 @@ export interface TripPlace {
   currency: string | null;
   latitude: number | null;
   longitude: number | null;
- 
   selected: boolean;
-  /** CATALOG, SELECTED hoặc AI. */
   source: string;
 
   aiRank?: number;
@@ -165,6 +165,14 @@ export interface ItineraryActivity {
   placeId: number;
   placeName: string;
   placeAddress: string | null;
+
+  /**
+   * Tọa độ điểm đến.
+   * Không phải GPS hiện tại của Traveller.
+   */
+  latitude: number | null;
+  longitude: number | null;
+
   startTime: string | null;
   endTime: string | null;
   estimatedCost: number | null;
@@ -198,7 +206,9 @@ export interface ItineraryOverview {
   days: ItineraryOverviewDay[];
 }
 
-/** DTO dành cho các API quản lý hoạt động (Task 46). */
+/**
+ * DTO quản lý hoạt động trong lịch trình.
+ */
 export interface ItineraryItem {
   itemId: number;
   dayId: number;
@@ -236,23 +246,148 @@ export interface UpdateItineraryItemInput {
   status?: string | null;
 }
 
-const planPath = (planId: number) => `/travel-plans/${planId}`;
-const dayItemsPath = (dayId: number) => `/itinerary-days/${dayId}/items`;
+// ==========================================================
+// TRIP PROGRESS — TIẾN ĐỘ CHUYẾN ĐI
+// ==========================================================
+
+export type TripExecutionStatus =
+  | 'NOT_STARTED'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'CANCELLED';
+
+export type TripActivityStatus =
+  | 'PENDING'
+  | 'COMPLETED'
+  | 'SKIPPED';
+
+export type GoongVehicle =
+  | 'car'
+  | 'bike'
+  | 'taxi'
+  | 'truck'
+  | 'hd';
+
+/**
+ * Tiến độ của từng địa điểm.
+ */
+export interface TripActivityProgress {
+  activityProgressId: number | null;
+  itemId: number;
+  itemOrder: number;
+  placeId: number;
+  placeName: string;
+  status: TripActivityStatus;
+  completedAt: string | null;
+  notes: string | null;
+}
+
+/**
+ * Tiến độ của từng ngày.
+ */
+export interface TripDayProgress {
+  dayProgressId: number | null;
+  dayId: number;
+  dayNumber: number;
+  visitDate: string;
+  title: string;
+  status: TripExecutionStatus;
+  startedAt: string | null;
+  completedAt: string | null;
+  activities: TripActivityProgress[];
+}
+
+/**
+ * Tiến độ toàn bộ chuyến đi.
+ */
+export interface TripProgressResponse {
+  progressId: number | null;
+  planId: number;
+  itineraryId: number;
+  status: TripExecutionStatus;
+  startedAt: string | null;
+  completedAt: string | null;
+  days: TripDayProgress[];
+}
+
+// ==========================================================
+// GOONG MAPS — CHỈ ĐƯỜNG
+// ==========================================================
+
+/**
+ * Tuyến đường do Goong Directions API trả về.
+ */
+export interface GoongRoute {
+  distanceMeters: number;
+  durationSeconds: number;
+  distanceText: string | null;
+  durationText: string | null;
+
+  /**
+   * Encoded polyline của tuyến đường.
+   * Frontend giải mã và vẽ trên MapLibre.
+   */
+  polyline: string;
+}
+
+/**
+ * Điểm đến tiếp theo cùng tuyến Goong.
+ */
+export interface NextTripRoute {
+  planId: number;
+  itineraryId: number;
+  dayId: number;
+  dayNumber: number;
+  itemId: number;
+  itemOrder: number;
+  placeId: number;
+  placeName: string;
+  placeAddress: string | null;
+  destinationLatitude: number;
+  destinationLongitude: number;
+  vehicle: GoongVehicle;
+  route: GoongRoute;
+}
+
+// ==========================================================
+// API PATHS
+// ==========================================================
+
+const progressPath = (planId: number) =>
+  `/travel-plans/${planId}/trip-progress`;
+
+const planPath = (planId: number) =>
+  `/travel-plans/${planId}`;
+
+const dayItemsPath = (dayId: number) =>
+  `/itinerary-days/${dayId}/items`;
+
+// ==========================================================
+// TRIP FLOW API
+// ==========================================================
 
 export const tripFlowApi = {
-  // BƯỚC 1: Tạo kế hoạch với sở thích và nhịp độ.
+
+  // ========================================================
+  // 1. TRAVEL PLAN
+  // ========================================================
+
   createPlan: (input: CreateTravelPlanInput) =>
     clientRequest<TravelPlanResponse>('/travel-plans', {
       method: 'POST',
       body: input,
     }),
 
-  plans: () => clientRequest<TravelPlanResponse[]>('/travel-plans'),
+  plans: () =>
+    clientRequest<TravelPlanResponse[]>('/travel-plans'),
 
   plan: (planId: number) =>
     clientRequest<TravelPlanResponse>(planPath(planId)),
-  
-  // AI Recommendation: Embedding + Weighted Score + MMR.
+
+  // ========================================================
+  // 2. AI RECOMMENDATION
+  // ========================================================
+
   recommendedPlaces: (planId: number) =>
     clientRequest<AiRecommendationResponse>(
       `${planPath(planId)}/recommended-places`,
@@ -261,97 +396,269 @@ export const tripFlowApi = {
       },
     ),
 
+  // ========================================================
+  // 3. UPDATE / DELETE / STATUS
+  // ========================================================
 
-  // Chỉ sửa được khi DRAFT hoặc PLANNED.
-  // Đã có lịch trình thì không đổi được điểm đến và ngày đi/về.
-  updatePlan: (planId: number, input: UpdateTravelPlanInput) =>
+  updatePlan: (
+    planId: number,
+    input: UpdateTravelPlanInput,
+  ) =>
     clientRequest<TravelPlanResponse>(planPath(planId), {
       method: 'PUT',
       body: input,
     }),
 
-  // Xóa kế hoạch kèm lịch trình. Không xóa được khi IN_PROGRESS.
   deletePlan: (planId: number) =>
-    clientRequest<void>(planPath(planId), { method: 'DELETE' }),
-
-  // DRAFT -> PLANNED -> IN_PROGRESS -> COMPLETED, hủy được trước COMPLETED.
-  changeStatus: (planId: number, status: PlanStatus) =>
-    clientRequest<TravelPlanResponse>(`${planPath(planId)}/status`, {
-      method: 'PATCH',
-      body: { status },
-    }),
-
-  // BƯỚC 2-3: Ứng viên từ catalogue, chưa phải AI Embedding.
-  candidatePlaces: (planId: number) =>
-    clientRequest<TripPlace[]>(`${planPath(planId)}/candidate-places`),
-
-  // BƯỚC 4: Giỏ địa điểm được lưu trong plan_places.
-  selectedPlaces: (planId: number) =>
-    clientRequest<SelectedPlacesResponse>(`${planPath(planId)}/places`),
-
-  addPlace: (planId: number, placeId: number) =>
-    clientRequest<TripPlace>(`${planPath(planId)}/places`, {
-      method: 'POST',
-      body: { placeId },
-    }),
-
-  removePlace: (planId: number, placeId: number) =>
-    clientRequest<void>(`${planPath(planId)}/places/${placeId}`, {
+    clientRequest<void>(planPath(planId), {
       method: 'DELETE',
     }),
 
-  // BƯỚC 5: Backend tự xếp lịch từ những địa điểm đã chọn.
-  generate: (planId: number, input: GenerateItineraryInput = {}) =>
-    clientRequest<GeneratedItinerary>(`${planPath(planId)}/itineraries`, {
-      method: 'POST',
-      body: input,
-      timeoutMs: 60_000,
-    }),
+  changeStatus: (
+    planId: number,
+    status: PlanStatus,
+  ) =>
+    clientRequest<TravelPlanResponse>(
+      `${planPath(planId)}/status`,
+      {
+        method: 'PATCH',
+        body: { status },
+      },
+    ),
+
+  // ========================================================
+  // 4. PLACES
+  // ========================================================
+
+  candidatePlaces: (planId: number) =>
+    clientRequest<TripPlace[]>(
+      `${planPath(planId)}/candidate-places`,
+    ),
+
+  selectedPlaces: (planId: number) =>
+    clientRequest<SelectedPlacesResponse>(
+      `${planPath(planId)}/places`,
+    ),
+
+  addPlace: (
+    planId: number,
+    placeId: number,
+  ) =>
+    clientRequest<TripPlace>(
+      `${planPath(planId)}/places`,
+      {
+        method: 'POST',
+        body: { placeId },
+      },
+    ),
+
+  removePlace: (
+    planId: number,
+    placeId: number,
+  ) =>
+    clientRequest<void>(
+      `${planPath(planId)}/places/${placeId}`,
+      {
+        method: 'DELETE',
+      },
+    ),
+
+  // ========================================================
+  // 5. GENERATE ITINERARY
+  // ========================================================
+
+  generate: (
+    planId: number,
+    input: GenerateItineraryInput = {},
+  ) =>
+    clientRequest<GeneratedItinerary>(
+      `${planPath(planId)}/itineraries`,
+      {
+        method: 'POST',
+        body: input,
+        timeoutMs: 60_000,
+      },
+    ),
 
   activeItinerary: (planId: number) =>
     clientRequest<GeneratedItinerary>(
       `${planPath(planId)}/itineraries/active`,
     ),
 
-  // BƯỚC 6: Xem các ngày, hoạt động và tổng chi phí.
+  // ========================================================
+  // 6. ITINERARY OVERVIEW
+  // ========================================================
+
   overview: (planId: number) =>
     clientRequest<ItineraryOverview>(
       `${planPath(planId)}/itineraries/active/overview`,
     ),
 
-  overviewById: (planId: number, itineraryId: number) =>
+  overviewById: (
+    planId: number,
+    itineraryId: number,
+  ) =>
     clientRequest<ItineraryOverview>(
       `${planPath(planId)}/itineraries/${itineraryId}/overview`,
     ),
 
-  // Task 46: Xem/chỉnh sửa hoạt động sau khi lịch trình được tạo.
-  dayItems: (dayId: number) =>
-    clientRequest<ItineraryItem[]>(dayItemsPath(dayId)),
+  // ========================================================
+  // 7. TRIP PROGRESS
+  // ========================================================
 
-  addItem: (dayId: number, input: CreateItineraryItemInput) =>
-    clientRequest<ItineraryItem>(dayItemsPath(dayId), {
-      method: 'POST',
-      body: input,
-    }),
+  /**
+   * Lấy tiến độ toàn chuyến.
+   *
+   * GET /travel-plans/{planId}/trip-progress
+   */
+  tripProgress: (planId: number) =>
+    clientRequest<TripProgressResponse>(
+      progressPath(planId),
+    ),
+
+  /**
+   * Bắt đầu một ngày.
+   *
+   * POST /trip-progress/days/{dayNumber}/start
+   */
+  startTripDay: (
+    planId: number,
+    dayNumber: number,
+  ) =>
+    clientRequest<TripProgressResponse>(
+      `${progressPath(planId)}/days/${dayNumber}/start`,
+      {
+        method: 'POST',
+      },
+    ),
+
+  /**
+   * Đánh dấu hoàn thành hoặc bỏ qua địa điểm.
+   *
+   * PATCH /trip-progress/days/{dayNumber}/activities/{itemId}
+   */
+  updateTripActivity: (
+    planId: number,
+    dayNumber: number,
+    itemId: number,
+    status: 'COMPLETED' | 'SKIPPED',
+    notes: string | null = null,
+  ) =>
+    clientRequest<TripProgressResponse>(
+      `${progressPath(planId)}/days/${dayNumber}/activities/${itemId}`,
+      {
+        method: 'PATCH',
+        body: {
+          status,
+          notes,
+        },
+      },
+    ),
+
+  /**
+   * Hoàn thành một ngày.
+   *
+   * POST /trip-progress/days/{dayNumber}/complete
+   */
+  completeTripDay: (
+    planId: number,
+    dayNumber: number,
+  ) =>
+    clientRequest<TripProgressResponse>(
+      `${progressPath(planId)}/days/${dayNumber}/complete`,
+      {
+        method: 'POST',
+      },
+    ),
+
+  // ========================================================
+  // 8. GPS + GOONG MAPS NAVIGATION
+  // ========================================================
+
+  /**
+   * Chỉ đường từ GPS hiện tại đến địa điểm tiếp theo.
+   *
+   * Backend:
+   * GET /travel-plans/{planId}/navigation/days/{dayNumber}/next-route
+   *
+   * Backend tự tìm địa điểm PENDING đầu tiên
+   * và gọi Goong Directions API.
+   */
+  nextTripRoute: (
+    planId: number,
+    dayNumber: number,
+    latitude: number,
+    longitude: number,
+    vehicle: GoongVehicle = 'car',
+  ) => {
+    const query = new URLSearchParams({
+      fromLat: String(latitude),
+      fromLng: String(longitude),
+      vehicle,
+    });
+
+    return clientRequest<NextTripRoute>(
+      `${planPath(planId)}/navigation/days/${dayNumber}/next-route?${query.toString()}`,
+      {
+        timeoutMs: 25_000,
+      },
+    );
+  },
+
+  // ========================================================
+  // 9. ITINERARY ITEM CRUD
+  // ========================================================
+
+  dayItems: (dayId: number) =>
+    clientRequest<ItineraryItem[]>(
+      dayItemsPath(dayId),
+    ),
+
+  addItem: (
+    dayId: number,
+    input: CreateItineraryItemInput,
+  ) =>
+    clientRequest<ItineraryItem>(
+      dayItemsPath(dayId),
+      {
+        method: 'POST',
+        body: input,
+      },
+    ),
 
   updateItem: (
     dayId: number,
     itemId: number,
     input: UpdateItineraryItemInput,
   ) =>
-    clientRequest<ItineraryItem>(`${dayItemsPath(dayId)}/${itemId}`, {
-      method: 'PUT',
-      body: input,
-    }),
+    clientRequest<ItineraryItem>(
+      `${dayItemsPath(dayId)}/${itemId}`,
+      {
+        method: 'PUT',
+        body: input,
+      },
+    ),
 
-  removeItem: (dayId: number, itemId: number) =>
-    clientRequest<void>(`${dayItemsPath(dayId)}/${itemId}`, {
-      method: 'DELETE',
-    }),
+  removeItem: (
+    dayId: number,
+    itemId: number,
+  ) =>
+    clientRequest<void>(
+      `${dayItemsPath(dayId)}/${itemId}`,
+      {
+        method: 'DELETE',
+      },
+    ),
 
-  reorderItems: (dayId: number, itemIds: number[]) =>
-    clientRequest<ItineraryItem[]>(`${dayItemsPath(dayId)}/order`, {
-      method: 'PUT',
-      body: { itemIds },
-    }),
+  reorderItems: (
+    dayId: number,
+    itemIds: number[],
+  ) =>
+    clientRequest<ItineraryItem[]>(
+      `${dayItemsPath(dayId)}/order`,
+      {
+        method: 'PUT',
+        body: { itemIds },
+      },
+    ),
 };

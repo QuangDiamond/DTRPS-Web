@@ -350,6 +350,27 @@ export interface NextTripRoute {
 }
 
 // ==========================================================
+// TRIP FEEDBACK — ĐÁNH GIÁ CHUYẾN ĐI
+// ==========================================================
+
+/**
+ * Đánh giá chuyến đi: 1-5 sao + nhận xét.
+ * Chỉ khi kế hoạch COMPLETED, mỗi khách một lần cho mỗi kế hoạch.
+ */
+export interface TripFeedbackResponse {
+  feedbackId: number;
+  planId: number;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+}
+
+export interface CreateTripFeedbackInput {
+  rating: number;
+  comment?: string | null;
+}
+
+// ==========================================================
 // API PATHS
 // ==========================================================
 
@@ -361,6 +382,9 @@ const planPath = (planId: number) =>
 
 const dayItemsPath = (dayId: number) =>
   `/itinerary-days/${dayId}/items`;
+
+const feedbackPath = (planId: number) =>
+  `${planPath(planId)}/feedback`;
 
 // ==========================================================
 // TRIP FLOW API
@@ -659,6 +683,33 @@ export const tripFlowApi = {
       {
         method: 'PUT',
         body: { itemIds },
+      },
+    ),
+
+  // ========================================================
+  // 10. TRIP FEEDBACK
+  // ========================================================
+
+  /**
+   * Đánh giá đã có của kế hoạch (nếu có).
+   *
+   * GET /travel-plans/{planId}/feedback
+   * Backend trả 404 nếu khách chưa đánh giá kế hoạch này.
+   */
+  feedback: (planId: number) =>
+    clientRequest<TripFeedbackResponse>(
+      feedbackPath(planId),
+    ),
+
+  createFeedback: (
+    planId: number,
+    input: CreateTripFeedbackInput,
+  ) =>
+    clientRequest<TripFeedbackResponse>(
+      feedbackPath(planId),
+      {
+        method: 'POST',
+        body: input,
       },
     ),
 };

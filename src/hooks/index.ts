@@ -1,5 +1,4 @@
 /** Custom hooks — import qua `@/hooks` */
-export * from './useAdminProfile';
 export * from './useAuth';
 export * from './useDismiss';
 export * from './useDocumentTitle';

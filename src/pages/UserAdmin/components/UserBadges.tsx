@@ -27,7 +27,13 @@ export function UserRoleBadges({ roles }: { roles: AdminUserRole[] }) {
 export function UserAvatar({ user, size = 'md' }: { user: AdminUser; size?: 'md' | 'lg' }) {
   const box = size === 'lg' ? 'h-16 w-16 text-[22px]' : 'h-10 w-10 text-[14px]';
   return user.avatarUrl ? (
-    <img src={user.avatarUrl} alt="" className={`${box} shrink-0 rounded-full object-cover`} />
+    // Ảnh Google chặn khi có Referer localhost/domain lạ → không gửi Referer
+    <img
+      src={user.avatarUrl}
+      alt=""
+      referrerPolicy="no-referrer"
+      className={`${box} shrink-0 rounded-full object-cover`}
+    />
   ) : (
     <span
       className={`${box} flex shrink-0 items-center justify-center rounded-full bg-primary-fixed font-semibold text-on-primary-fixed`}

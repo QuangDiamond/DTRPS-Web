@@ -24,9 +24,7 @@ import {
   itineraryDayPath,
 } from '@/client/routePaths';
 
-import StopReviewCard, {
-  type StopReview,
-} from '@/client/traveller/components/StopReviewCard';
+import StopReviewCard from '@/client/traveller/components/StopReviewCard';
 
 import TravelMap, {
   type MapPoint,
@@ -214,9 +212,6 @@ export default function TripLiveMapPage() {
 
   const [dialog, setDialog] =
     useState<Dialog>(null);
-
-  const [reviews, setReviews] =
-    useState<Record<string, StopReview>>({});
 
   // ====================================================
   // STATE — GPS VÀ GOONG
@@ -1322,33 +1317,11 @@ export default function TripLiveMapPage() {
         {/* ========================================== */}
 
         {pendingStop && isRunning && (
-          <>
-
-            <StopReviewCard
-              key={pendingStop.itemId}
-              stopId={String(pendingStop.itemId)}
-              stopTitle={pendingStop.placeName}
-              savedReview={
-                reviews[String(pendingStop.itemId)]
-              }
-              onSubmit={(review) => {
-
-                setReviews((previous) => ({
-                  ...previous,
-                  [review.stopId]: review,
-                }));
-
-                showNotice(
-                  'Đánh giá tạm trên màn hình. Tiến độ chuyến đi đã lưu riêng trên Backend.',
-                );
-              }}
-            />
-
-            <p className="mt-1 text-[10px] text-[#72818C]">
-              Đánh giá tại đây chưa đồng bộ vào Backend.
-            </p>
-
-          </>
+          <StopReviewCard
+            key={pendingStop.placeId}
+            placeId={pendingStop.placeId}
+            stopTitle={pendingStop.placeName}
+          />
         )}
 
         {/* ========================================== */}

@@ -7,10 +7,15 @@ import {
   tripFlowApi,
   type ItineraryOverview,
   type ItineraryOverviewDay,
+  type TripFeedbackResponse,
 } from '@/client/api/tripFlowApi';
 import { CLIENT_ROUTES, itineraryDayPath } from '@/client/routePaths';
 
 import PageBar from '@/client/ui/PageBar';
+import TripFeedbackModal from '@/client/traveller/components/TripFeedbackModal';
+
+/** Thời gian chờ trước khi tự hiện modal đánh giá chuyến đi */
+const FEEDBACK_PROMPT_DELAY_MS = 5_000;
 
 const currencyFormatter = new Intl.NumberFormat('vi-VN', {
   maximumFractionDigits: 0,
@@ -276,6 +281,12 @@ export default function ItineraryOverviewPage() {
 
   const [retryCount, setRetryCount] = useState(0);
 
+  const [showFeedbackModal, setShowFeedbackModal] =
+    useState(false);
+
+  const [tripFeedback, setTripFeedback] =
+    useState<TripFeedbackResponse | null>(null);
+
   const selectedUrl = validPlanId
     ? `${CLIENT_ROUTES.TRIP_PLAN_SELECTED}?planId=${planId}`
     : CLIENT_ROUTES.TRIP_PLAN;
@@ -331,6 +342,57 @@ export default function ItineraryOverviewPage() {
       active = false;
     };
   }, [planId, validPlanId, retryCount]);
+
+  // =============================================
+  // TỰ ĐỘNG HIỆN MODAL ĐÁNH GIÁ CHUYẾN ĐI
+  //
+  // Chỉ khi kế hoạch COMPLETED và khách chưa đánh
+  // giá kế hoạch này (mỗi khách 1 lần/kế hoạch).
+  // =============================================
+
+  useEffect(() => {
+    if (!overview || !validPlanId) return;
+
+    let active = true;
+    let timer: number | undefined;
+
+    Promise.all([
+      tripFlowApi.plan(planId),
+      tripFlowApi.feedback(planId).then(
+        (result) => result,
+        (caught: unknown) => {
+          if (
+            caught instanceof ClientApiError &&
+            caught.status === 404
+          ) {
+            return null;
+          }
+          throw caught;
+        },
+      ),
+    ])
+      .then(([plan, feedback]) => {
+        if (!active) return;
+
+        setTripFeedback(feedback);
+
+        if (feedback || plan.status !== 'COMPLETED') {
+          return;
+        }
+
+        timer = window.setTimeout(() => {
+          if (active) setShowFeedbackModal(true);
+        }, FEEDBACK_PROMPT_DELAY_MS);
+      })
+      .catch(() => {
+        // Không chặn trang nếu kiểm tra đánh giá lỗi
+      });
+
+    return () => {
+      active = false;
+      if (timer) window.clearTimeout(timer);
+    };
+  }, [overview, planId, validPlanId]);
 
   // =============================================
   // TỔNG HỢP THÔNG TIN HIỂN THỊ
@@ -492,6 +554,43 @@ export default function ItineraryOverviewPage() {
               )}
             </div>
 
+            {/* ĐÁNH GIÁ CỦA BẠN */}
+            {tripFeedback && (
+              <div className="mt-4 rounded-[20px] bg-white p-4 shadow-[0_3px_12px_rgba(19,54,74,0.04)]">
+                <div className="flex items-center gap-1.5">
+                  <Icon
+                    name="verified"
+                    filled
+                    className="text-[17px] text-[#087A78]"
+                  />
+
+                  <p className="text-[13px] font-extrabold text-[#13364A]">
+                    Đánh giá của bạn
+                  </p>
+
+                  <span
+                    className="ml-auto flex"
+                    aria-label={`${tripFeedback.rating} sao`}
+                  >
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <Icon
+                        key={value}
+                        name="star"
+                        filled={value <= tripFeedback.rating}
+                        className="text-[16px] text-[#F2B01E]"
+                      />
+                    ))}
+                  </span>
+                </div>
+
+                {tripFeedback.comment && (
+                  <p className="mt-2 text-[12px] leading-5 text-[#506775]">
+                    “{tripFeedback.comment}”
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* THỐNG KÊ TỔNG QUAN */}
             <div className="mt-4 grid grid-cols-2 gap-2.5 md:grid-cols-4">
               <SummaryCard
@@ -592,6 +691,15 @@ export default function ItineraryOverviewPage() {
             )}
           </>
         )}
+
+      {/* MODAL ĐÁNH GIÁ CHUYẾN ĐI */}
+      {showFeedbackModal && validPlanId && (
+        <TripFeedbackModal
+          planId={planId}
+          onClose={() => setShowFeedbackModal(false)}
+          onSubmitted={(feedback) => setTripFeedback(feedback)}
+        />
+      )}
     </div>
   );
 }

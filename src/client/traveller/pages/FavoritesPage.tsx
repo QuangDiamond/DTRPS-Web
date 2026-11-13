@@ -110,14 +110,12 @@ export default function FavoritesPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [groupFilter, setGroupFilter] = useState<GroupFilter>('all');
   const [sortMode, setSortMode] = useState<SortMode>('recent');
-  const [showSearch, setShowSearch] = useState(false);
-  const [query, setQuery] = useState('');
   const [removing, setRemoving] = useState<PlaceSummary | null>(null);
 
-  // Đổi bộ lọc / sắp xếp / từ khoá thì về lại trang 1
+  // Đổi bộ lọc / sắp xếp thì về lại trang 1
   useEffect(() => {
     setPage(1);
-  }, [groupFilter, sortMode, query]);
+  }, [groupFilter, sortMode]);
 
   useEffect(() => {
     let active = true;
@@ -125,7 +123,7 @@ export default function FavoritesPage() {
     setLoadError(null);
     const timer = window.setTimeout(() => {
       userApi
-        .favorites({ page: page - 1, size: PAGE_SIZE, keyword: query, group: groupFilter, sort: sortMode })
+        .favorites({ page: page - 1, size: PAGE_SIZE, group: groupFilter, sort: sortMode })
         .then((result) => {
           if (!active) return;
           setPlaces(result.items);
@@ -138,7 +136,7 @@ export default function FavoritesPage() {
       active = false;
       window.clearTimeout(timer);
     };
-  }, [page, groupFilter, sortMode, query]);
+  }, [page, groupFilter, sortMode]);
 
   // Vừa xoá hết mục cuối cùng của 1 trang sau trang đầu → lùi lại trang trước
   useEffect(() => {
@@ -154,7 +152,7 @@ export default function FavoritesPage() {
     setRemoving(null);
   };
 
-  const hasActiveFilter = groupFilter !== 'all' || query.trim() !== '';
+  const hasActiveFilter = groupFilter !== 'all';
 
   return (
     <div>
@@ -163,35 +161,9 @@ export default function FavoritesPage() {
           <h1 className="text-[22px] font-extrabold text-[#13364A]">Địa điểm yêu thích</h1>
           <span className="text-[12px] font-semibold text-[#087A78]">({total} điểm đã lưu)</span>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            setShowSearch((previous) => !previous);
-            setQuery('');
-          }}
-          aria-label="Tìm kiếm"
-          aria-expanded={showSearch}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EBEDFF] text-[#13364A]"
-        >
-          <Icon name={showSearch ? 'close' : 'search'} className="text-[21px]" />
-        </button>
       </div>
 
       {loadError && <FormAlert message={`Không tải được danh sách yêu thích: ${loadError}`} />}
-
-      {showSearch && (
-        <div className="mt-3 flex h-11 items-center rounded-2xl bg-white px-3 focus-within:ring-2 focus-within:ring-primary/30">
-          <Icon name="search" className="text-[20px] text-[#72818C]" />
-          <input
-            autoFocus
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Tìm trong danh sách yêu thích..."
-            aria-label="Tìm trong danh sách yêu thích"
-            className="ml-2 h-full flex-1 bg-transparent text-[13px] text-[#13364A] placeholder:text-[#9AA6AD] focus:outline-none"
-          />
-        </div>
-      )}
 
       <div className="mt-3 flex items-center justify-between">
         <span className="flex items-center gap-1 text-[12px] text-[#72818C]">
@@ -271,7 +243,7 @@ export default function FavoritesPage() {
           </p>
           <p className="mt-1 text-[12px] text-[#72818C]">
             {hasActiveFilter
-              ? 'Thử chọn danh mục khác hoặc đổi từ khoá tìm kiếm.'
+              ? 'Thử chọn danh mục khác.'
               : 'Bấm vào biểu tượng trái tim ở màn Khám phá để lưu địa điểm.'}
           </p>
           {!hasActiveFilter && (

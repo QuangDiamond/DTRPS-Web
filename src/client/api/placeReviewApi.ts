@@ -15,20 +15,27 @@ export interface PlaceReview {
   updatedAt: string;
 }
 
+/**
+ * Trạng thái đánh giá của chính khách cho một địa điểm. {@code canReview}: được viết đánh giá mới
+ * khi chưa đánh giá và đã từng chọn địa điểm này trong một chuyến đi — false thì chỉ xem được đánh
+ * giá của người khác, không tự đánh giá được (kể cả khi đã đánh giá rồi, vì không sửa/xóa lại được).
+ */
+export interface PlaceReviewStatus {
+  canReview: boolean;
+  review: PlaceReview | null;
+}
+
 export interface PlaceReviewInput {
   rating: number;
   comment?: string | null;
-  /** Ảnh mới chọn từ thư viện, chưa upload */
+  /** Ảnh chọn từ thư viện, chưa upload */
   photos?: File[];
-  /** Chỉ dùng khi sửa: URL ảnh cũ muốn giữ lại (ảnh không có trong danh sách này sẽ bị xóa) */
-  keepImageUrls?: string[];
 }
 
 function toFormData(input: PlaceReviewInput): FormData {
   const form = new FormData();
   form.set('rating', String(input.rating));
   if (input.comment?.trim()) form.set('comment', input.comment.trim());
-  (input.keepImageUrls ?? []).forEach((url) => form.append('keepImageUrls', url));
   (input.photos ?? []).forEach((file) => form.append('photos', file));
   return form;
 }
@@ -42,21 +49,14 @@ export const placeReviewApi = {
       { auth: false },
     ),
 
-  /** Đánh giá của chính khách cho địa điểm này — 404 nếu chưa đánh giá */
-  mine: (placeId: number | string) => clientRequest<PlaceReview>(`${basePath(placeId)}/me`),
+  /** Trạng thái đánh giá của chính khách cho địa điểm này — xem {@link PlaceReviewStatus} */
+  mine: (placeId: number | string) =>
+    clientRequest<PlaceReviewStatus>(`${basePath(placeId)}/me`),
 
+  /** Gửi một lần, không sửa/xóa lại được. */
   create: (placeId: number | string, input: PlaceReviewInput) =>
     clientRequest<PlaceReview>(basePath(placeId), {
       method: 'POST',
       body: toFormData(input),
     }),
-
-  update: (placeId: number | string, input: PlaceReviewInput) =>
-    clientRequest<PlaceReview>(`${basePath(placeId)}/me`, {
-      method: 'PUT',
-      body: toFormData(input),
-    }),
-
-  remove: (placeId: number | string) =>
-    clientRequest<void>(`${basePath(placeId)}/me`, { method: 'DELETE' }),
 };

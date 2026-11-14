@@ -1,17 +1,81 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { Icon } from '@/components/common';
+import Pagination from '@/components/common/Pagination';
+import { useClientAuth } from '@/client/auth/clientAuthContext';
 import { ClientApiError, errorMessage } from '@/client/api/http';
+import { placeReviewApi, type PlaceReview } from '@/client/api/placeReviewApi';
 import { placesApi } from '@/client/api/placesApi';
 import type { PlaceDetail } from '@/client/api/types';
 import { CLIENT_ROUTES } from '@/client/routePaths';
+import Avatar from '@/client/traveller/components/Avatar';
 import FavoriteButton from '@/client/traveller/components/FavoriteButton';
+import StopReviewCard from '@/client/traveller/components/StopReviewCard';
 import TravelMap from '@/client/traveller/components/TravelMap';
 import { useTraveller } from '@/client/traveller/travellerContext';
 import { FormAlert, Spinner } from '@/client/ui/Blocks';
 import { NoticeToast } from '@/client/ui/Overlay';
 import { useNotice } from '@/client/ui/useNotice';
 import PageBar, { BarIconButton } from '@/client/ui/PageBar';
+
+const REVIEWS_PAGE_SIZE = 5;
+
+const reviewDateFormatter = new Intl.DateTimeFormat('vi-VN', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+});
+
+function formatReviewDate(value: string): string {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '' : reviewDateFormatter.format(date);
+}
+
+function ReviewCard({ review }: { review: PlaceReview }) {
+  return (
+    <div className="rounded-2xl bg-white p-5">
+      <div className="flex items-center gap-3">
+        <Avatar
+          url={review.userAvatarUrl}
+          size={48}
+          iconSize={28}
+          className="bg-[#CFE9E6] text-[#087A78]"
+        />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[15px] font-extrabold text-[#13364A]">
+            {review.userName ?? 'Khách Smart Travel'}
+          </p>
+          <p className="text-[12px] text-[#8793AB]">{formatReviewDate(review.createdAt)}</p>
+        </div>
+        <span className="flex shrink-0 items-center gap-0.5">
+          {[1, 2, 3, 4, 5].map((value) => (
+            <Icon
+              key={value}
+              name="star"
+              filled={value <= review.rating}
+              className={`text-[17px] ${value <= review.rating ? 'text-[#E0A100]' : 'text-[#D7DEE5]'}`}
+            />
+          ))}
+        </span>
+      </div>
+      {review.comment && (
+        <p className="mt-3 text-[14.5px] leading-[23px] text-[#3B4B57]">{review.comment}</p>
+      )}
+      {review.imageUrls.length > 0 && (
+        <div className="mt-3 flex gap-2.5 overflow-x-auto">
+          {review.imageUrls.map((url) => (
+            <img
+              key={url}
+              src={url}
+              alt=""
+              className="h-[84px] w-[84px] shrink-0 rounded-2xl object-cover"
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const DAY_LABELS = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
 
@@ -68,12 +132,19 @@ export default function PlaceDetailsPage() {
     ? CLIENT_ROUTES.FAVORITES
     : CLIENT_ROUTES.EXPLORE;
   const { favorites, toggleFavorite } = useTraveller();
+  const { user } = useClientAuth();
   const [detail, setDetail] = useState<PlaceDetail | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [introExpanded, setIntroExpanded] = useState(false);
   const [saved, setSaved] = useState(false);
   const [notice, showNotice] = useNotice();
+
+  const [reviews, setReviews] = useState<PlaceReview[]>([]);
+  const [reviewsTotal, setReviewsTotal] = useState(0);
+  const [reviewsPage, setReviewsPage] = useState(1);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [reviewsError, setReviewsError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!placeId) return;
@@ -96,6 +167,30 @@ export default function PlaceDetailsPage() {
       active = false;
     };
   }, [placeId]);
+
+  // Đổi địa điểm thì về lại trang 1 của danh sách đánh giá.
+  useEffect(() => {
+    setReviewsPage(1);
+  }, [placeId]);
+
+  useEffect(() => {
+    if (!placeId) return;
+    let active = true;
+    setReviewsLoading(true);
+    setReviewsError(null);
+    placeReviewApi
+      .list(placeId, reviewsPage - 1, REVIEWS_PAGE_SIZE)
+      .then((result) => {
+        if (!active) return;
+        setReviews(result.items);
+        setReviewsTotal(result.total);
+      })
+      .catch((failure: unknown) => active && setReviewsError(errorMessage(failure)))
+      .finally(() => active && setReviewsLoading(false));
+    return () => {
+      active = false;
+    };
+  }, [placeId, reviewsPage]);
 
   if (notFound) {
     return (
@@ -432,6 +527,65 @@ export default function PlaceDetailsPage() {
           </div>
         </div>
       </div>
+
+      <div className="mt-7">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-[19px] font-extrabold text-[#13364A]">Đánh giá địa điểm</h2>
+          <span className="flex items-center gap-1.5 text-[15px] font-bold text-[#13364A]">
+            <Icon name="star" filled className="text-[18px] text-[#E0A100]" />
+            {place.rating ?? 'Mới'}
+            {place.rating !== null && (
+              <span className="text-[12.5px] font-normal text-[#72818C]">({place.reviewCount})</span>
+            )}
+          </span>
+        </div>
+
+        {user ? (
+          <StopReviewCard placeId={place.id} stopTitle={place.name} />
+        ) : (
+          <div className="flex items-center justify-between gap-3 rounded-2xl bg-white p-5">
+            <p className="text-[14px] text-[#72818C]">
+              Đăng nhập để viết đánh giá cho địa điểm này.
+            </p>
+            <Link
+              to={CLIENT_ROUTES.LOGIN}
+              className="shrink-0 rounded-full bg-[#075C66] px-5 py-2.5 text-[13.5px] font-bold text-white"
+            >
+              Đăng nhập
+            </Link>
+          </div>
+        )}
+
+        <div className="mt-4 space-y-3">
+          {reviewsLoading ? (
+            <Spinner />
+          ) : reviewsError ? (
+            <FormAlert message={`Không tải được đánh giá: ${reviewsError}`} />
+          ) : reviews.length === 0 ? (
+            <p className="rounded-2xl bg-white p-6 text-center text-[14px] text-[#72818C]">
+              Chưa có đánh giá nào cho địa điểm này. Hãy là người đầu tiên!
+            </p>
+          ) : (
+            reviews.map((review) => <ReviewCard key={review.reviewId} review={review} />)
+          )}
+        </div>
+
+        {reviewsTotal > REVIEWS_PAGE_SIZE && (
+          <div className="mt-4 overflow-hidden rounded-[22px] bg-white">
+            <Pagination
+              page={reviewsPage}
+              pageSize={REVIEWS_PAGE_SIZE}
+              totalItems={reviewsTotal}
+              itemLabel="đánh giá"
+              pageSizeOptions={[REVIEWS_PAGE_SIZE]}
+              onPageChange={setReviewsPage}
+              onPageSizeChange={() => {}}
+              showSummary={false}
+            />
+          </div>
+        )}
+      </div>
+
       <NoticeToast message={notice} />
     </div>
   );

@@ -15,7 +15,7 @@ import PageBar from '@/client/ui/PageBar';
 import TripFeedbackModal from '@/client/traveller/components/TripFeedbackModal';
 
 /** Thời gian chờ trước khi tự hiện modal đánh giá chuyến đi */
-const FEEDBACK_PROMPT_DELAY_MS = 5_000;
+const FEEDBACK_PROMPT_DELAY_MS = 1_000;
 
 const currencyFormatter = new Intl.NumberFormat('vi-VN', {
   maximumFractionDigits: 0,

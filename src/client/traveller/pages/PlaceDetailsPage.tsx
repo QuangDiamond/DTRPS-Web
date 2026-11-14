@@ -561,12 +561,23 @@ export default function PlaceDetailsPage() {
             <Spinner />
           ) : reviewsError ? (
             <FormAlert message={`Không tải được đánh giá: ${reviewsError}`} />
-          ) : reviews.length === 0 ? (
-            <p className="rounded-2xl bg-white p-6 text-center text-[14px] text-[#72818C]">
-              Chưa có đánh giá nào cho địa điểm này. Hãy là người đầu tiên!
-            </p>
           ) : (
-            reviews.map((review) => <ReviewCard key={review.reviewId} review={review} />)
+            // Đánh giá của chính mình đã hiện riêng ở khối phía trên.
+            (() => {
+              const otherReviews = reviews.filter((review) => review.userId !== user?.id);
+              if (otherReviews.length > 0) {
+                return otherReviews.map((review) => (
+                  <ReviewCard key={review.reviewId} review={review} />
+                ));
+              }
+              return (
+                <p className="rounded-2xl bg-white p-6 text-center text-[14px] text-[#72818C]">
+                  {reviews.length === 0
+                    ? 'Chưa có đánh giá nào cho địa điểm này. Hãy là người đầu tiên!'
+                    : 'Chưa có đánh giá nào khác cho địa điểm này.'}
+                </p>
+              );
+            })()
           )}
         </div>
 

@@ -21,6 +21,7 @@ export const ROUTES = {
   POI_EDIT: '/admin/locations/:id/edit',
   POI_DETAIL: '/admin/locations/:id',
   PLACE_CATEGORIES: '/admin/place-categories',
+  REVIEWS: '/admin/reviews',
   REPORTS: '/admin/reports',
   NOTIFICATIONS: '/admin/notifications',
   SETTINGS: '/admin/settings',
@@ -41,6 +42,10 @@ export const listingRevisionPath = (id: string): string => `${ROUTES.LISTINGS}/r
 
 /** Đường dẫn màn Chỉnh sửa điểm đến POI */
 export const poiEditPath = (id: string): string => `${ROUTES.POIS}/${id}/edit`;
+
+/** Quản lý đánh giá, lọc sẵn theo một địa điểm */
+export const placeReviewsPath = (placeId: string): string =>
+  `${ROUTES.REVIEWS}?place=${encodeURIComponent(placeId)}`;
 
 /** Đường dẫn màn Chi tiết địa điểm trong kho */
 export const placeDetailPath = (id: string): string => `${ROUTES.POIS}/${id}`;

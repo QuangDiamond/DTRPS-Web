@@ -10,8 +10,10 @@ import {
   type TripFeedbackResponse,
 } from '@/client/api/tripFlowApi';
 import { CLIENT_ROUTES, itineraryDayPath } from '@/client/routePaths';
+import { useClientAuth } from '@/client/auth/clientAuthContext';
 
 import PageBar from '@/client/ui/PageBar';
+import Avatar from '@/client/traveller/components/Avatar';
 import TripFeedbackModal from '@/client/traveller/components/TripFeedbackModal';
 
 /** Thời gian chờ trước khi tự hiện modal đánh giá chuyến đi */
@@ -258,6 +260,7 @@ function DayCard({
  * Không dùng AI để xếp lịch.
  */
 export default function ItineraryOverviewPage() {
+  const { user } = useClientAuth();
   const [searchParams] = useSearchParams();
 
   const rawPlanId = searchParams.get('planId');
@@ -554,43 +557,6 @@ export default function ItineraryOverviewPage() {
               )}
             </div>
 
-            {/* ĐÁNH GIÁ CỦA BẠN */}
-            {tripFeedback && (
-              <div className="mt-4 rounded-[20px] bg-white p-4 shadow-[0_3px_12px_rgba(19,54,74,0.04)]">
-                <div className="flex items-center gap-1.5">
-                  <Icon
-                    name="verified"
-                    filled
-                    className="text-[17px] text-[#087A78]"
-                  />
-
-                  <p className="text-[13px] font-extrabold text-[#13364A]">
-                    Đánh giá của bạn
-                  </p>
-
-                  <span
-                    className="ml-auto flex"
-                    aria-label={`${tripFeedback.rating} sao`}
-                  >
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <Icon
-                        key={value}
-                        name="star"
-                        filled={value <= tripFeedback.rating}
-                        className="text-[16px] text-[#F2B01E]"
-                      />
-                    ))}
-                  </span>
-                </div>
-
-                {tripFeedback.comment && (
-                  <p className="mt-2 text-[12px] leading-5 text-[#506775]">
-                    “{tripFeedback.comment}”
-                  </p>
-                )}
-              </div>
-            )}
-
             {/* THỐNG KÊ TỔNG QUAN */}
             <div className="mt-4 grid grid-cols-2 gap-2.5 md:grid-cols-4">
               <SummaryCard
@@ -687,6 +653,44 @@ export default function ItineraryOverviewPage() {
                     currency={currency}
                   />
                 ))}
+              </div>
+            )}
+
+            {/* ĐÁNH GIÁ CỦA BẠN */}
+            {tripFeedback && (
+              <div className="mt-6 rounded-[20px] bg-white p-4 shadow-[0_3px_12px_rgba(19,54,74,0.04)]">
+                <div className="flex items-center gap-2.5">
+                  <Avatar url={user?.avatarUrl} size={36} iconSize={21} />
+
+                  <span className="min-w-0 flex-1 truncate text-[13px] font-extrabold text-[#13364A]">
+                    {user?.name ?? 'Bạn'}
+                  </span>
+
+                  <span
+                    className="flex shrink-0"
+                    aria-label={`${tripFeedback.rating} sao`}
+                  >
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <Icon
+                        key={value}
+                        name="star"
+                        filled={value <= tripFeedback.rating}
+                        className="text-[16px] text-[#F2B01E]"
+                      />
+                    ))}
+                  </span>
+                </div>
+
+                <p className="mt-2.5 flex items-center gap-1.5 text-[12px] font-bold text-[#087A78]">
+                  <Icon name="verified" filled className="text-[15px]" />
+                  Đánh giá của bạn
+                </p>
+
+                {tripFeedback.comment && (
+                  <p className="mt-2 text-[12px] leading-5 text-[#506775]">
+                    “{tripFeedback.comment}”
+                  </p>
+                )}
               </div>
             )}
           </>

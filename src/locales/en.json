@@ -31,9 +31,11 @@
       "notifications": "Notifications",
       "systemSettings": "System settings",
       "systemAdministration": "System administration",
-      "placeCategories": "Service types"
+      "placeCategories": "Service types",
+      "reviewManagement": "Review management"
     },
-    "placeCategories": "Service types"
+    "placeCategories": "Service types",
+    "reviews": "Review management"
   },
   "header": {
     "searchPlaceholder": "Search data, users, tours, POIs...",
@@ -3036,7 +3038,8 @@
       "created": "Created",
       "updated": "Last updated",
       "rating": "Rating",
-      "status": "Status"
+      "status": "Status",
+      "viewReviews": "View reviews ({{count}})"
     },
     "notice": {
       "readOnly": "Places created by admins can be edited directly (photos, opening hours, prices, status). Partner places only change through listing review and partner change requests."
@@ -3438,5 +3441,157 @@
     "deleteMessage": "Permanently delete the type \"{{name}}\" ({{code}}). This cannot be undone.",
     "deleted": "Deleted \"{{name}}\"",
     "deleteNote": "Only a type no place uses (0 places) can be deleted — e.g. one added by mistake. A type in use can only be turned off: its places keep it and stay visible to travellers; it just can no longer be chosen for new places."
+  },
+  "reviewAdmin": {
+    "header": {
+      "eyebrow": "Content moderation",
+      "title": "Review management",
+      "description": "Place reviews are public to everyone — hide reviews that break the rules, with a reason sent to the author. Trip reviews are visible only to their user and admins.",
+      "refresh": "Refresh"
+    },
+    "stats": {
+      "placeTotal": "Place reviews",
+      "placeTotalHint": "{{visible}} shown publicly",
+      "placeAverage": "Average rating",
+      "lowRatingHint": "{{count}} 1–2 star reviews in the last 7 days",
+      "hidden": "Hidden",
+      "hiddenHint": "Not shown to travellers, not counted in ratings",
+      "tripTotal": "Trip reviews",
+      "tripAverageHint": "Average rating {{average}} / 5"
+    },
+    "tabs": {
+      "places": "Place reviews",
+      "trips": "Trip reviews",
+      "reports": "Reported"
+    },
+    "filters": {
+      "searchLabel": "Search",
+      "searchPlaces": "Content, author name / email, place name…",
+      "searchTrips": "Content, author name / email, trip name, destination…",
+      "rating": "Rating",
+      "allRatings": "All ratings",
+      "stars": "{{count}} stars",
+      "status": "Status",
+      "allStatuses": "All",
+      "place": "Place",
+      "placePlaceholder": "Type a place name…",
+      "placeSearching": "Searching…",
+      "placeNoMatch": "No matching place",
+      "placeLoading": "Loading place name…",
+      "placeReviews": "{{count}} reviews",
+      "clearPlace": "Clear place filter",
+      "group": "Service group",
+      "allGroups": "All groups",
+      "category": "Type",
+      "allCategories": "All types",
+      "province": "Province / city",
+      "allProvinces": "All provinces",
+      "ratingGroups": {
+        "negative": "Negative (1–2 ★)",
+        "neutral": "Neutral (3 ★)",
+        "positive": "Positive (4–5 ★)"
+      },
+      "period": "Submitted",
+      "periods": {
+        "all": "Any time",
+        "today": "Today",
+        "7d": "Last 7 days",
+        "30d": "Last 30 days",
+        "custom": "Pick dates…"
+      },
+      "from": "From",
+      "to": "To",
+      "sort": "Sort by",
+      "sorts": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "lowest": "Lowest rating first",
+        "highest": "Highest rating first"
+      },
+      "clear": "Clear filters"
+    },
+    "status": {
+      "visible": "Visible",
+      "hidden": "Hidden"
+    },
+    "notice": {
+      "places": "Visible reviews appear on the place page and count towards its average rating. Hiding or showing again both need a reason — the author is notified right away with it.",
+      "trips": "Trip reviews are private feedback to the platform: only the trip's user and admins can see them, they are never public.",
+      "reports": "Users report reviews they think break the rules. Hide: the author gets the reason. Dismiss: the review stays. Reporters are told the outcome either way."
+    },
+    "table": {
+      "author": "Author",
+      "place": "Place",
+      "trip": "Trip",
+      "review": "Review",
+      "date": "Submitted",
+      "status": "Status",
+      "actions": "Actions",
+      "noComment": "No comment",
+      "reason": "Reason: {{reason}}",
+      "empty": "No reviews yet",
+      "emptyHint": "Try other filters or keywords",
+      "items": "reviews",
+      "onlyThisPlace": "Only this place"
+    },
+    "actions": {
+      "hide": "Hide",
+      "show": "Show again"
+    },
+    "statusModal": {
+      "hideTitle": "Hide review",
+      "showTitle": "Show review again",
+      "description": "The reason is sent to the author right away as a notification.",
+      "reasonLabel": "Reason",
+      "required": "Please enter a reason",
+      "hidePlaceholder": "E.g. Inappropriate content, offensive language…",
+      "showPlaceholder": "E.g. Reviewed again, the review does not break the rules…"
+    },
+    "toast": {
+      "hidden": "Review hidden and the author notified",
+      "shown": "Review shown again and the author notified"
+    },
+    "loadError": "Could not load reviews",
+    "reasons": {
+      "SPAM": "Spam / advertising",
+      "OFFENSIVE": "Offensive or hateful language",
+      "INAPPROPRIATE": "Inappropriate content or photos",
+      "MISLEADING": "False or unrelated",
+      "FAKE": "Fake review",
+      "PRIVACY": "Personal information exposed",
+      "OTHER": "Other"
+    },
+    "reports": {
+      "status": {
+        "pending": "Pending",
+        "resolved": "Review hidden",
+        "dismissed": "Dismissed"
+      },
+      "empty": {
+        "pending": "No reports waiting",
+        "resolved": "No reports have led to a hidden review yet",
+        "dismissed": "No dismissed reports yet"
+      },
+      "reason": "Report reason",
+      "allReasons": "All reasons",
+      "period": "Reported",
+      "sortMost": "Most reports",
+      "sortNewest": "Latest report",
+      "count": "{{count}} reports",
+      "latest": "Latest report: {{time}}",
+      "showDetails": "See reporters",
+      "hideDetails": "Collapse",
+      "hide": "Hide review",
+      "dismiss": "Dismiss",
+      "hideTitle": "Hide reported review",
+      "dismissTitle": "Dismiss reports",
+      "hideDescription": "The author gets the reason; {{count}} reporters are told it was handled.",
+      "dismissDescription": "The review stays visible; {{count}} reporters are told it does not break the rules.",
+      "hideReasonLabel": "Reason (sent to the author)",
+      "dismissNoteLabel": "Internal note (optional)",
+      "dismissPlaceholder": "E.g. A genuine experience, no rule broken…",
+      "hidden": "Review hidden; author and reporters notified",
+      "dismissed": "Reports dismissed; reporters notified"
+    }
   }
 }

@@ -13,6 +13,7 @@ export type * from './partner';
 export type * from './poi';
 export type * from './profile';
 export type * from './report';
+export type * from './reviewAdmin';
 export type * from './search';
 export type * from './settings';
 export type * from './user';

@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import Pagination from '@/components/common/Pagination';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import { ClientApiError, errorMessage } from '@/client/api/http';
 import { placeReviewApi, type PlaceReview } from '@/client/api/placeReviewApi';
 import { placesApi } from '@/client/api/placesApi';
+import { useClientLiveRefresh } from '@/client/live/clientLiveContext';
 import type { PlaceDetail } from '@/client/api/types';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import Avatar from '@/client/traveller/components/Avatar';
 import FavoriteButton from '@/client/traveller/components/FavoriteButton';
+import ReportReviewDialog from '@/client/traveller/components/ReportReviewDialog';
 import StopReviewCard from '@/client/traveller/components/StopReviewCard';
 import TravelMap from '@/client/traveller/components/TravelMap';
 import { useTraveller } from '@/client/traveller/travellerContext';
@@ -31,7 +33,69 @@ function formatReviewDate(value: string): string {
   return Number.isNaN(date.getTime()) ? '' : reviewDateFormatter.format(date);
 }
 
-function ReviewCard({ review }: { review: PlaceReview }) {
+/** Menu ⋯ trên thẻ đánh giá: báo cáo đánh giá của người khác */
+function ReviewMenu({ reported, onReport }: { reported: boolean; onReport: () => void }) {
+  const [open, setOpen] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
+  // Bấm ra ngoài hoặc nhấn Esc thì đóng menu
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (event: MouseEvent) => {
+      if (!boxRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setOpen(false);
+    document.addEventListener('mousedown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+  return (
+    <div className="relative shrink-0" ref={boxRef}>
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-label="Tuỳ chọn đánh giá"
+        aria-expanded={open}
+        className="flex h-8 w-8 items-center justify-center rounded-full text-[#8793AB] hover:bg-[#F1F5F8] hover:text-[#13364A]"
+      >
+        <Icon name="more_vert" className="text-[20px]" />
+      </button>
+      {open && (
+        <div className="absolute top-full right-0 z-20 mt-1 w-52 overflow-hidden rounded-2xl bg-white py-1 shadow-lg ring-1 ring-black/5">
+          {reported ? (
+            <p className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-[#8793AB]">
+              <Icon name="check_circle" className="text-[18px]" />
+              Bạn đã báo cáo đánh giá này
+            </p>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                onReport();
+              }}
+              className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-[13px] font-bold text-client-danger hover:bg-[#FDF3F3]"
+            >
+              <Icon name="flag" className="text-[18px]" />
+              Báo cáo đánh giá
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ReviewCard({
+  review,
+  menu,
+}: {
+  review: PlaceReview;
+  /** Không có với đánh giá của chính mình */
+  menu?: { reported: boolean; onReport: () => void };
+}) {
   return (
     <div className="rounded-2xl bg-white p-5">
       <div className="flex items-center gap-3">
@@ -57,6 +121,7 @@ function ReviewCard({ review }: { review: PlaceReview }) {
             />
           ))}
         </span>
+        {menu && <ReviewMenu {...menu} />}
       </div>
       {review.comment && (
         <p className="mt-3 text-[14.5px] leading-[23px] text-[#3B4B57]">{review.comment}</p>
@@ -145,6 +210,43 @@ export default function PlaceDetailsPage() {
   const [reviewsPage, setReviewsPage] = useState(1);
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [reviewsError, setReviewsError] = useState<string | null>(null);
+  const [reviewsVersion, setReviewsVersion] = useState(0);
+  const navigate = useNavigate();
+  // Báo cáo đánh giá: id các đánh giá mình đã báo cáo ở địa điểm này + đánh giá đang báo cáo
+  const [reportedIds, setReportedIds] = useState<Set<number>>(new Set());
+  const [reporting, setReporting] = useState<PlaceReview | null>(null);
+  useEffect(() => {
+    if (!placeId || !user) {
+      setReportedIds(new Set());
+      return;
+    }
+    let active = true;
+    placeReviewApi
+      .reported(placeId)
+      .then((ids) => active && setReportedIds(new Set(ids)))
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [placeId, user]);
+  const startReport = (review: PlaceReview) => {
+    if (!user) {
+      // Khách chưa đăng nhập → đăng nhập xong quay lại đúng trang này
+      navigate(CLIENT_ROUTES.LOGIN, { state: { from: `${location.pathname}${location.search}` } });
+      return;
+    }
+    setReporting(review);
+  };
+
+  // Admin ẩn / hiện lại đánh giá của mình ở địa điểm này → tải lại đánh giá + điểm trung bình
+  useClientLiveRefresh(['REVIEW_'], (event) => {
+    if (!placeId || String(event.data?.placeId) !== String(placeId)) return;
+    setReviewsVersion((n) => n + 1);
+    placesApi
+      .get(placeId)
+      .then(setDetail)
+      .catch(() => undefined);
+  });
 
   useEffect(() => {
     if (!placeId) return;
@@ -190,7 +292,7 @@ export default function PlaceDetailsPage() {
     return () => {
       active = false;
     };
-  }, [placeId, reviewsPage]);
+  }, [placeId, reviewsPage, reviewsVersion]);
 
   if (notFound) {
     return (
@@ -465,7 +567,9 @@ export default function PlaceDetailsPage() {
           <div className="mt-7 mb-3 flex items-center justify-between">
             <h2 className="text-[17px] font-extrabold text-[#13364A]">Vị trí & Đường đi</h2>
           </div>
-          <div className="relative overflow-hidden rounded-[20px]">
+          {/* isolate: z-index của bản đồ (Leaflet ~400) chỉ có tác dụng trong khung này,
+              không đè lên hộp thoại / menu của trang */}
+          <div className="relative isolate overflow-hidden rounded-[20px]">
             <TravelMap
               className="h-[180px]"
               center={[detail.latitude, detail.longitude]}
@@ -535,7 +639,9 @@ export default function PlaceDetailsPage() {
             <Icon name="star" filled className="text-[18px] text-[#E0A100]" />
             {place.rating ?? 'Mới'}
             {place.rating !== null && (
-              <span className="text-[12.5px] font-normal text-[#72818C]">({place.reviewCount})</span>
+              <span className="text-[12.5px] font-normal text-[#72818C]">
+                ({place.reviewCount})
+              </span>
             )}
           </span>
         </div>
@@ -566,8 +672,16 @@ export default function PlaceDetailsPage() {
             (() => {
               const otherReviews = reviews.filter((review) => review.userId !== user?.id);
               if (otherReviews.length > 0) {
+                // Chỉ còn đánh giá của người khác → luôn báo cáo được
                 return otherReviews.map((review) => (
-                  <ReviewCard key={review.reviewId} review={review} />
+                  <ReviewCard
+                    key={review.reviewId}
+                    review={review}
+                    menu={{
+                      reported: reportedIds.has(review.reviewId),
+                      onReport: () => startReport(review),
+                    }}
+                  />
                 ));
               }
               return (
@@ -598,6 +712,18 @@ export default function PlaceDetailsPage() {
       </div>
 
       <NoticeToast message={notice} />
+      {reporting && placeId && (
+        <ReportReviewDialog
+          placeId={placeId}
+          review={reporting}
+          onClose={() => setReporting(null)}
+          onReported={() => {
+            setReportedIds((ids) => new Set(ids).add(reporting.reviewId));
+            setReporting(null);
+            showNotice('Đã gửi báo cáo. Cảm ơn bạn! Admin sẽ xem xét và báo kết quả.');
+          }}
+        />
+      )}
     </div>
   );
 }

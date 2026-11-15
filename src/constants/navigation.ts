@@ -54,6 +54,16 @@ const NAV_ITEMS: (NavItem & { id: string })[] = [
     icon: 'category',
   },
   {
+    id: 'reviews',
+    get label() {
+      return i18n.t('nav.constants.reviewManagement');
+    },
+    path: ROUTES.REVIEWS,
+    icon: 'reviews',
+    // Đánh giá đang bị báo cáo, chờ xử lý
+    badge: { source: 'reportedReviews', tone: 'tertiary' },
+  },
+  {
     id: 'reports',
     get label() {
       return i18n.t('nav.constants.reportsAnalytics');

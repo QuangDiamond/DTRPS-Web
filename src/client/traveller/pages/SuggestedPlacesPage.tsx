@@ -690,7 +690,7 @@ useEffect(() => {
           <div className="lg:grid lg:grid-cols-[1fr_1.15fr] lg:gap-5">
             {/* BẢN ĐỒ */}
             <div className="lg:sticky lg:top-20 lg:self-start">
-              <div className="relative overflow-hidden rounded-[20px] bg-[#E0EEE9]">
+              <div className="relative isolate overflow-hidden rounded-[20px] bg-[#E0EEE9]">
                 <TravelMap
                   ref={mapRef}
                   className="h-[225px] lg:h-[480px]"

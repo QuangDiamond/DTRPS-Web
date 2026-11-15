@@ -31,9 +31,11 @@
       "notifications": "Thông báo",
       "systemSettings": "Cài đặt hệ thống",
       "systemAdministration": "Quản trị hệ thống",
-      "placeCategories": "Loại hình dịch vụ"
+      "placeCategories": "Loại hình dịch vụ",
+      "reviewManagement": "Quản lý đánh giá"
     },
-    "placeCategories": "Loại hình dịch vụ"
+    "placeCategories": "Loại hình dịch vụ",
+    "reviews": "Quản lý đánh giá"
   },
   "header": {
     "searchPlaceholder": "Tìm kiếm dữ liệu, người dùng, tour, POI...",
@@ -2963,7 +2965,8 @@
       "created": "Ngày tạo",
       "updated": "Cập nhật lần cuối",
       "rating": "Đánh giá",
-      "status": "Trạng thái"
+      "status": "Trạng thái",
+      "viewReviews": "Xem đánh giá ({{count}})"
     },
     "notice": {
       "readOnly": "Địa điểm do admin tạo được sửa trực tiếp (ảnh, giờ mở cửa, bảng giá, trạng thái). Địa điểm của đối tác chỉ thay đổi qua luồng duyệt niêm yết và bản sửa của đối tác."
@@ -3365,5 +3368,157 @@
     "deleteMessage": "Xoá hẳn loại hình \"{{name}}\" ({{code}}). Không hoàn tác được.",
     "deleted": "Đã xoá \"{{name}}\"",
     "deleteNote": "Chỉ xoá được loại hình chưa có địa điểm nào dùng (0 địa điểm) — ví dụ loại hình tạo nhầm. Loại hình đang có địa điểm chỉ có thể tắt: địa điểm vẫn giữ nguyên loại hình và vẫn hiển thị với du khách, chỉ không chọn được loại hình đó cho địa điểm mới."
+  },
+  "reviewAdmin": {
+    "header": {
+      "eyebrow": "Kiểm duyệt nội dung",
+      "title": "Quản lý đánh giá",
+      "description": "Đánh giá địa điểm hiển thị công khai cho mọi người — ẩn những đánh giá vi phạm, kèm lý do gửi tới người viết. Đánh giá chuyến đi chỉ người dùng và admin xem được.",
+      "refresh": "Làm mới"
+    },
+    "stats": {
+      "placeTotal": "Đánh giá địa điểm",
+      "placeTotalHint": "{{visible}} đang hiển thị công khai",
+      "placeAverage": "Điểm trung bình",
+      "lowRatingHint": "{{count}} đánh giá 1–2 sao trong 7 ngày qua",
+      "hidden": "Đã ẩn",
+      "hiddenHint": "Không hiện với du khách, không tính vào điểm",
+      "tripTotal": "Đánh giá chuyến đi",
+      "tripAverageHint": "Điểm trung bình {{average}} / 5"
+    },
+    "tabs": {
+      "places": "Đánh giá địa điểm",
+      "trips": "Đánh giá chuyến đi",
+      "reports": "Bị báo cáo"
+    },
+    "filters": {
+      "searchLabel": "Tìm kiếm",
+      "searchPlaces": "Nội dung, tên / email người viết, tên địa điểm…",
+      "searchTrips": "Nội dung, tên / email người viết, tên chuyến đi, điểm đến…",
+      "rating": "Số sao",
+      "allRatings": "Mọi số sao",
+      "stars": "{{count}} sao",
+      "status": "Trạng thái",
+      "allStatuses": "Tất cả",
+      "place": "Địa điểm",
+      "placePlaceholder": "Gõ tên địa điểm…",
+      "placeSearching": "Đang tìm…",
+      "placeNoMatch": "Không có địa điểm phù hợp",
+      "placeLoading": "Đang tải tên địa điểm…",
+      "placeReviews": "{{count}} đánh giá",
+      "clearPlace": "Bỏ lọc địa điểm",
+      "group": "Nhóm dịch vụ",
+      "allGroups": "Mọi nhóm",
+      "category": "Loại hình",
+      "allCategories": "Mọi loại hình",
+      "province": "Tỉnh / thành",
+      "allProvinces": "Mọi tỉnh / thành",
+      "ratingGroups": {
+        "negative": "Tiêu cực (1–2 ★)",
+        "neutral": "Trung bình (3 ★)",
+        "positive": "Tích cực (4–5 ★)"
+      },
+      "period": "Thời gian gửi",
+      "periods": {
+        "all": "Mọi lúc",
+        "today": "Hôm nay",
+        "7d": "7 ngày qua",
+        "30d": "30 ngày qua",
+        "custom": "Tự chọn ngày…"
+      },
+      "from": "Từ ngày",
+      "to": "Đến ngày",
+      "sort": "Sắp xếp",
+      "sorts": {
+        "newest": "Mới nhất",
+        "oldest": "Cũ nhất",
+        "lowest": "Sao thấp → cao",
+        "highest": "Sao cao → thấp"
+      },
+      "clear": "Xoá bộ lọc"
+    },
+    "status": {
+      "visible": "Đang hiện",
+      "hidden": "Đã ẩn"
+    },
+    "notice": {
+      "places": "Đánh giá đang hiện được mọi người xem ở trang địa điểm và được tính vào điểm trung bình. Ẩn / hiện lại đều cần lý do — người viết nhận thông báo ngay kèm lý do đó.",
+      "trips": "Đánh giá chuyến đi là góp ý riêng gửi hệ thống: chỉ người dùng của chuyến đi đó và admin xem được, không hiện công khai.",
+      "reports": "Người dùng báo cáo đánh giá họ thấy vi phạm. Ẩn đánh giá: người viết nhận lý do. Bỏ qua: đánh giá giữ nguyên. Người báo cáo nhận kết quả trong cả hai trường hợp."
+    },
+    "table": {
+      "author": "Người viết",
+      "place": "Địa điểm",
+      "trip": "Chuyến đi",
+      "review": "Đánh giá",
+      "date": "Ngày gửi",
+      "status": "Trạng thái",
+      "actions": "Thao tác",
+      "noComment": "Không có nhận xét",
+      "reason": "Lý do: {{reason}}",
+      "empty": "Chưa có đánh giá nào",
+      "emptyHint": "Thử đổi bộ lọc hoặc từ khoá tìm kiếm",
+      "items": "đánh giá",
+      "onlyThisPlace": "Chỉ xem địa điểm này"
+    },
+    "actions": {
+      "hide": "Ẩn",
+      "show": "Hiện lại"
+    },
+    "statusModal": {
+      "hideTitle": "Ẩn đánh giá",
+      "showTitle": "Hiện lại đánh giá",
+      "description": "Lý do sẽ được gửi ngay tới người viết qua thông báo.",
+      "reasonLabel": "Lý do",
+      "required": "Vui lòng nhập lý do",
+      "hidePlaceholder": "Ví dụ: Nội dung không phù hợp, ngôn từ xúc phạm…",
+      "showPlaceholder": "Ví dụ: Đã xem xét lại, đánh giá không vi phạm…"
+    },
+    "toast": {
+      "hidden": "Đã ẩn đánh giá và thông báo cho người viết",
+      "shown": "Đã hiện lại đánh giá và thông báo cho người viết"
+    },
+    "loadError": "Không tải được danh sách đánh giá",
+    "reasons": {
+      "SPAM": "Spam / quảng cáo",
+      "OFFENSIVE": "Ngôn từ xúc phạm, thù ghét",
+      "INAPPROPRIATE": "Nội dung hoặc ảnh phản cảm",
+      "MISLEADING": "Sai sự thật / không liên quan",
+      "FAKE": "Đánh giá giả",
+      "PRIVACY": "Lộ thông tin cá nhân",
+      "OTHER": "Khác"
+    },
+    "reports": {
+      "status": {
+        "pending": "Chờ xử lý",
+        "resolved": "Đã ẩn đánh giá",
+        "dismissed": "Đã bỏ qua"
+      },
+      "empty": {
+        "pending": "Không có báo cáo nào chờ xử lý",
+        "resolved": "Chưa có báo cáo nào dẫn tới ẩn đánh giá",
+        "dismissed": "Chưa bỏ qua báo cáo nào"
+      },
+      "reason": "Lý do báo cáo",
+      "allReasons": "Mọi lý do",
+      "period": "Thời gian báo cáo",
+      "sortMost": "Nhiều lượt báo cáo nhất",
+      "sortNewest": "Báo cáo gần nhất",
+      "count": "{{count}} lượt báo cáo",
+      "latest": "Báo cáo gần nhất: {{time}}",
+      "showDetails": "Xem người báo cáo",
+      "hideDetails": "Thu gọn",
+      "hide": "Ẩn đánh giá",
+      "dismiss": "Bỏ qua",
+      "hideTitle": "Ẩn đánh giá bị báo cáo",
+      "dismissTitle": "Bỏ qua báo cáo",
+      "hideDescription": "Người viết nhận lý do ẩn; {{count}} người báo cáo nhận thông báo đã xử lý.",
+      "dismissDescription": "Đánh giá vẫn hiển thị; {{count}} người báo cáo nhận thông báo \"không vi phạm\".",
+      "hideReasonLabel": "Lý do ẩn (gửi tới người viết)",
+      "dismissNoteLabel": "Ghi chú nội bộ (không bắt buộc)",
+      "dismissPlaceholder": "Ví dụ: Nội dung là trải nghiệm thật, không vi phạm…",
+      "hidden": "Đã ẩn đánh giá, đã báo người viết và người báo cáo",
+      "dismissed": "Đã bỏ qua báo cáo và báo kết quả cho người báo cáo"
+    }
   }
 }

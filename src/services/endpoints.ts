@@ -85,6 +85,15 @@ export const ENDPOINTS = {
     detail: (categoryId: string) => `/admin/place-categories/${id(categoryId)}`,
     status: (categoryId: string) => `/admin/place-categories/${id(categoryId)}/status`,
   },
+  // Quản lý đánh giá: địa điểm (ẩn / hiện kèm lý do) + chuyến đi (chỉ xem)
+  reviews: {
+    stats: '/admin/reviews/stats',
+    places: '/admin/reviews/places',
+    placeStatus: (reviewId: string) => `/admin/reviews/places/${id(reviewId)}/status`,
+    trips: '/admin/reviews/trips',
+    reports: '/admin/reviews/reports',
+    resolveReports: (reviewId: string) => `/admin/reviews/reports/${id(reviewId)}`,
+  },
   uploads: { image: '/uploads/images' },
   // Bản đồ Goong qua backend
   maps: {

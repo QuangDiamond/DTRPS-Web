@@ -9,6 +9,7 @@ export * from './useListings';
 export * from './useLive';
 export * from './useNotifications';
 export * from './usePartners';
+export * from './usePendingReviewReports';
 export * from './usePersist';
 export * from './usePois';
 export * from './useResource';

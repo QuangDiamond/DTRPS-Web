@@ -863,7 +863,7 @@ export default function TripLiveMapPage() {
       {/* BẢN ĐỒ GOONG                                   */}
       {/* ============================================== */}
 
-      <div className="relative">
+      <div className="relative isolate">
 
         <TravelMap
           ref={mapRef}

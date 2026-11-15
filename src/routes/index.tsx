@@ -24,6 +24,7 @@ const PlaceCatalogPage = lazy(() => import('@/pages/PlaceCatalog/PlaceCatalogPag
 const PlaceCatalogDetailPage = lazy(() => import('@/pages/PlaceCatalog/PlaceCatalogDetailPage'));
 const PlaceEditorPage = lazy(() => import('@/pages/PlaceCatalog/PlaceEditorPage'));
 const PlaceCategoriesPage = lazy(() => import('@/pages/PlaceCategories/PlaceCategoriesPage'));
+const ReviewAdminPage = lazy(() => import('@/pages/ReviewAdmin/ReviewAdminPage'));
 const AdminReportsPage = lazy(() => import('@/pages/AdminMisc/AdminReportsPage'));
 const AdminNotificationsPage = lazy(() => import('@/pages/AdminMisc/AdminNotificationsPage'));
 const AdminSettingsPage = lazy(() => import('@/pages/AdminMisc/AdminSettingsPage'));
@@ -86,6 +87,7 @@ export const router = createBrowserRouter([
           { path: ROUTES.POI_NEW, element: <PlaceEditorPage /> },
           { path: ROUTES.POI_EDIT, element: <PlaceEditorPage /> },
           { path: ROUTES.PLACE_CATEGORIES, element: <PlaceCategoriesPage /> },
+          { path: ROUTES.REVIEWS, element: <ReviewAdminPage /> },
           { path: ROUTES.REPORTS, element: <AdminReportsPage /> },
           { path: ROUTES.NOTIFICATIONS, element: <AdminNotificationsPage /> },
           { path: ROUTES.SETTINGS, element: <AdminSettingsPage /> },

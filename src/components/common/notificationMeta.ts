@@ -17,6 +17,26 @@ const TONES: { match: RegExp; tone: NotificationTone }[] = [
     },
   },
   {
+    match: /_REPORTED$/,
+    tone: { icon: 'flag', badge: 'bg-rose-50 text-rose-600', accent: 'bg-rose-500' },
+  },
+  {
+    match: /_RESOLVED$/,
+    tone: { icon: 'task_alt', badge: 'bg-emerald-50 text-emerald-600', accent: 'bg-emerald-500' },
+  },
+  {
+    match: /_DISMISSED$/,
+    tone: { icon: 'fact_check', badge: 'bg-slate-100 text-slate-600', accent: 'bg-slate-400' },
+  },
+  {
+    match: /_HIDDEN$/,
+    tone: { icon: 'visibility_off', badge: 'bg-amber-50 text-amber-600', accent: 'bg-amber-500' },
+  },
+  {
+    match: /_RESTORED$/,
+    tone: { icon: 'visibility', badge: 'bg-emerald-50 text-emerald-600', accent: 'bg-emerald-500' },
+  },
+  {
     match: /_REJECTED$/,
     tone: { icon: 'cancel', badge: 'bg-rose-50 text-rose-600', accent: 'bg-rose-500' },
   },

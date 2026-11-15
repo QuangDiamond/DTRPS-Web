@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, ErrorState, Icon, PageHeader, PageLoader } from '@/components/common';
 import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
-import { listingReviewPath, poiEditPath } from '@/constants/routes';
+import { listingReviewPath, placeReviewsPath, poiEditPath } from '@/constants/routes';
 import { useToast } from '@/hooks/useToast';
 import PlaceContentView, { Row, Section } from '@/pages/PlaceReview/components/PlaceContentView';
 import { ListingStatusBadge } from '@/pages/PlaceReview/components/StatusBadges';
@@ -284,18 +284,28 @@ export default function PlaceCatalogDetailPage() {
           titleBadge={<CatalogStatusBadge status={place.status} />}
           description={`${t('placeCatalog.detail.placeCode')}: ${placeCode(place.id)}`}
           actions={
-            place.listingId ? (
+            <div className="flex flex-wrap gap-2">
+              {/* Quản lý đánh giá, lọc sẵn theo địa điểm này */}
               <Button
-                icon="fact_check"
-                onClick={() => navigate(listingReviewPath(place.listingId ?? ''))}
+                variant="neutral"
+                icon="reviews"
+                onClick={() => navigate(placeReviewsPath(place.id))}
               >
-                {t('placeCatalog.detail.openReview')}
+                {t('placeCatalog.detail.viewReviews', { count: place.reviewCount })}
               </Button>
-            ) : editable ? (
-              <Button icon="edit" onClick={() => navigate(poiEditPath(place.id))}>
-                {t('placeEditor.editInfo')}
-              </Button>
-            ) : undefined
+              {place.listingId ? (
+                <Button
+                  icon="fact_check"
+                  onClick={() => navigate(listingReviewPath(place.listingId ?? ''))}
+                >
+                  {t('placeCatalog.detail.openReview')}
+                </Button>
+              ) : editable ? (
+                <Button icon="edit" onClick={() => navigate(poiEditPath(place.id))}>
+                  {t('placeEditor.editInfo')}
+                </Button>
+              ) : null}
+            </div>
           }
         />
       </div>

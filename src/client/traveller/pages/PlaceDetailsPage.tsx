@@ -647,7 +647,14 @@ export default function PlaceDetailsPage() {
         </div>
 
         {user ? (
-          <StopReviewCard placeId={place.id} stopTitle={place.name} />
+          <StopReviewCard
+            placeId={place.id}
+            stopTitle={place.name}
+            onSubmitted={() => {
+              setReviewsPage(1);
+              setReviewsVersion((version) => version + 1);
+            }}
+          />
         ) : (
           <div className="flex items-center justify-between gap-3 rounded-2xl bg-white p-5">
             <p className="text-[14px] text-[#72818C]">
@@ -667,31 +674,23 @@ export default function PlaceDetailsPage() {
             <Spinner />
           ) : reviewsError ? (
             <FormAlert message={`Không tải được đánh giá: ${reviewsError}`} />
+          ) : reviews.length === 0 ? (
+            <p className="rounded-2xl bg-white p-6 text-center text-[14px] text-[#72818C]">
+              Chưa có đánh giá nào cho địa điểm này. Hãy là người đầu tiên!
+            </p>
           ) : (
-            // Đánh giá của chính mình đã hiện riêng ở khối phía trên.
-            (() => {
-              const otherReviews = reviews.filter((review) => review.userId !== user?.id);
-              if (otherReviews.length > 0) {
-                // Chỉ còn đánh giá của người khác → luôn báo cáo được
-                return otherReviews.map((review) => (
-                  <ReviewCard
-                    key={review.reviewId}
-                    review={review}
-                    menu={{
-                      reported: reportedIds.has(review.reviewId),
-                      onReport: () => startReport(review),
-                    }}
-                  />
-                ));
-              }
-              return (
-                <p className="rounded-2xl bg-white p-6 text-center text-[14px] text-[#72818C]">
-                  {reviews.length === 0
-                    ? 'Chưa có đánh giá nào cho địa điểm này. Hãy là người đầu tiên!'
-                    : 'Chưa có đánh giá nào khác cho địa điểm này.'}
-                </p>
-              );
-            })()
+            // Mỗi lần khách đi (kể cả đi lại) là một đánh giá riêng — hiện đủ, kể cả của chính mình.
+            reviews.map((review) => (
+              <ReviewCard
+                key={review.reviewId}
+                review={review}
+                menu={
+                  review.userId === user?.id
+                    ? undefined
+                    : { reported: reportedIds.has(review.reviewId), onReport: () => startReport(review) }
+                }
+              />
+            ))
           )}
         </div>
 

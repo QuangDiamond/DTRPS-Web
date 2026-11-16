@@ -23,18 +23,23 @@ function useObjectUrls(files: File[]): string[] {
 }
 
 /**
- * Nhận xét một địa điểm — 1-5 sao + bình luận + tối đa 5 ảnh tải lên, lưu thật vào Backend. Gửi
- * một lần, không sửa/xóa lại được sau đó.
+ * Nhận xét một địa điểm — 1-5 sao + bình luận + tối đa 5 ảnh tải lên, lưu thật vào Backend. Mỗi
+ * lần thực sự đi địa điểm này (kể cả đi lại) được đánh giá thêm một lần; một đánh giá đã gửi thì
+ * không sửa/xóa lại được.
  */
 export default function StopReviewCard({
   stopTitle,
   placeId,
+  onSubmitted,
 }: {
   stopTitle: string;
   placeId: number;
+  /** Gửi đánh giá thành công — để trang cha nạp lại danh sách đánh giá công khai. */
+  onSubmitted?: (review: PlaceReview) => void;
 }) {
   const { user } = useClientAuth();
-  const [review, setReview] = useState<PlaceReview | null>(null);
+  // Xác nhận vừa gửi — chỉ hiện tạm trên màn hình, không phải đánh giá "đang có" từ Backend.
+  const [justSubmitted, setJustSubmitted] = useState<PlaceReview | null>(null);
   const [canReview, setCanReview] = useState(false);
   const [loading, setLoading] = useState(true);
   const [rating, setRating] = useState(0);
@@ -46,22 +51,21 @@ export default function StopReviewCard({
   const libraryRef = useRef<HTMLInputElement>(null);
   const photoPreviews = useObjectUrls(photos);
 
-  // Tải đánh giá đã có (nếu có) mỗi khi chuyển sang địa điểm khác.
+  // Có được viết đánh giá cho địa điểm này không mỗi khi chuyển sang địa điểm khác.
   useEffect(() => {
     let active = true;
     setLoading(true);
     setError(null);
+    setJustSubmitted(null);
+    setRating(0);
+    setComment('');
+    setPhotos([]);
+    setExpanded(false);
 
     placeReviewApi
       .mine(placeId)
       .then((status) => {
-        if (!active) return;
-        setReview(status.review);
-        setCanReview(status.canReview);
-        setRating(0);
-        setComment('');
-        setPhotos([]);
-        setExpanded(false);
+        if (active) setCanReview(status.canReview);
       })
       .catch((caught: unknown) => {
         if (active) setError(errorMessage(caught));
@@ -99,10 +103,11 @@ export default function StopReviewCard({
     placeReviewApi
       .create(placeId, { rating, comment, photos })
       .then((result) => {
-        setReview(result);
+        setJustSubmitted(result);
         setCanReview(false);
         setPhotos([]);
         setExpanded(false);
+        onSubmitted?.(result);
       })
       .catch((caught: unknown) => setError(errorMessage(caught)))
       .finally(() => setSubmitting(false));
@@ -125,54 +130,40 @@ export default function StopReviewCard({
     );
   }
 
-  // Chưa từng chọn địa điểm này trong chuyến đi nào: chỉ xem được đánh giá, không tự viết được.
-  if (!review && !canReview) {
-    return null;
-  }
-
-  if (review) {
+  // Vừa gửi xong: hiện lời cảm ơn tạm thời (đánh giá thật đã nằm trong danh sách công khai).
+  if (justSubmitted) {
     return (
       <div className="rounded-2xl bg-[#F3F6FC] px-4 py-3.5">
         <AuthorRow />
 
         <div className="mt-2.5 flex items-center gap-2">
           <Icon name="verified" filled className="text-[19px] text-[#006B67]" />
-          <span className="text-[13.5px] font-extrabold text-[#006B67]">Đã nhận xét</span>
-          <span className="flex" aria-label={`${review.rating} sao`}>
+          <span className="text-[13.5px] font-extrabold text-[#006B67]">Đã gửi nhận xét</span>
+          <span className="flex" aria-label={`${justSubmitted.rating} sao`}>
             {[1, 2, 3, 4, 5].map((value) => (
               <Icon
                 key={value}
                 name="star"
-                filled={value <= review.rating}
+                filled={value <= justSubmitted.rating}
                 className="text-[18px] text-[#F2B01E]"
               />
             ))}
           </span>
-          {review.imageUrls.length > 0 && (
-            <span className="text-[12px] text-[#75879A]">· {review.imageUrls.length} ảnh</span>
-          )}
         </div>
 
-        {review.comment && (
+        {justSubmitted.comment && (
           <p className="mt-2 text-[14px] leading-[22px] text-[#3B4B57] italic">
-            “{review.comment}”
+            “{justSubmitted.comment}”
           </p>
-        )}
-        {review.imageUrls.length > 0 && (
-          <div className="mt-3 flex gap-2 overflow-x-auto">
-            {review.imageUrls.map((url) => (
-              <img
-                key={url}
-                src={url}
-                alt=""
-                className="h-[72px] w-[72px] shrink-0 rounded-2xl object-cover"
-              />
-            ))}
-          </div>
         )}
         <p className="mt-2 text-[12px] text-[#75879A]">Cảm ơn bạn đã đánh giá “{stopTitle}”.</p>
       </div>
     );
+  }
+
+  // Chưa từng đi địa điểm này, hoặc đã đánh giá đủ số lần đã đi: chỉ xem, không tự viết được.
+  if (!canReview) {
+    return null;
   }
 
   const showForm = expanded || rating > 0;
@@ -264,7 +255,8 @@ export default function StopReviewCard({
           </p>
           {error && <p className="mt-1.5 text-[13px] text-client-danger">{error}</p>}
           <p className="mt-2 text-[11.5px] text-[#9AA8B5]">
-            Đánh giá chỉ gửi được một lần, không sửa/xóa lại được sau đó.
+            Đánh giá không sửa/xóa lại được sau khi gửi. Đi lại địa điểm này bạn sẽ đánh giá
+            thêm được.
           </p>
           <button
             type="button"

@@ -16,13 +16,12 @@ export interface PlaceReview {
 }
 
 /**
- * Trạng thái đánh giá của chính khách cho một địa điểm. {@code canReview}: được viết đánh giá mới
- * khi chưa đánh giá và đã từng chọn địa điểm này trong một chuyến đi — false thì chỉ xem được đánh
- * giá của người khác, không tự đánh giá được (kể cả khi đã đánh giá rồi, vì không sửa/xóa lại được).
+ * {@code canReview}: true nếu khách đã đi địa điểm này (COMPLETED) nhiều lần hơn số đánh giá đã
+ * gửi — mỗi lần đi (kể cả đi lại) được đánh giá thêm một lần. Chưa từng đi, hoặc đã đánh giá đủ số
+ * lần đã đi, thì false — chỉ xem được đánh giá của người khác, không tự đánh giá thêm được.
  */
 export interface PlaceReviewStatus {
   canReview: boolean;
-  review: PlaceReview | null;
 }
 
 export interface PlaceReviewInput {

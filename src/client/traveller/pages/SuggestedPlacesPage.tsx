@@ -713,7 +713,8 @@ useEffect(() => {
             </div>
 
             {/* DANH SÁCH ĐỊA ĐIỂM */}
-<div ref={listRef} className="scroll-mt-24">
+{/* min-w-0: hàng nút lọc dài không được kéo cột này phình ra và ép nhỏ bản đồ */}
+<div ref={listRef} className="min-w-0 scroll-mt-24">
               {/* LỌC CATEGORY */}
               <div className="sticky top-16 z-10 -mx-4 mt-3 bg-client-bg px-4 py-3 lg:mt-0 lg:pt-0">
                 <div className="flex gap-2 overflow-x-auto">

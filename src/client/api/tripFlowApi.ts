@@ -328,6 +328,26 @@ export interface GoongRoute {
    * Frontend giải mã và vẽ trên MapLibre.
    */
   polyline: string;
+
+  /**
+   * Chỉ dẫn từng bước rẽ theo thứ tự đi. Có thể rỗng khi Goong không trả về.
+   */
+  steps?: GoongRouteStep[];
+}
+
+/**
+ * Một bước rẽ của tuyến. Điểm bắt đầu là nơi cần thực hiện chỉ dẫn.
+ */
+export interface GoongRouteStep {
+  instruction: string;
+  maneuver: string | null;
+  distanceMeters: number;
+  durationSeconds: number;
+  distanceText: string | null;
+  startLatitude: number;
+  startLongitude: number;
+  endLatitude: number;
+  endLongitude: number;
 }
 
 /**
@@ -347,6 +367,15 @@ export interface NextTripRoute {
   destinationLongitude: number;
   vehicle: GoongVehicle;
   route: GoongRoute;
+
+  /** Khoảng cách đường chim bay từ GPS tới điểm đến (mét). */
+  straightLineMeters?: number;
+
+  /** Backend thấy GPS đã nằm trong bán kính đến nơi. */
+  arrived?: boolean;
+
+  /** Sai số GPS lớn nên vị trí chỉ mang tính tham khảo. */
+  lowAccuracy?: boolean;
 }
 
 // ==========================================================
@@ -614,12 +643,18 @@ export const tripFlowApi = {
     latitude: number,
     longitude: number,
     vehicle: GoongVehicle = 'car',
+    accuracy?: number,
   ) => {
     const query = new URLSearchParams({
       fromLat: String(latitude),
       fromLng: String(longitude),
       vehicle,
     });
+
+    // Sai số GPS (mét): backend dùng để quyết định bán kính "đã đến nơi".
+    if (typeof accuracy === 'number' && Number.isFinite(accuracy)) {
+      query.set('accuracy', String(Math.round(accuracy)));
+    }
 
     return clientRequest<NextTripRoute>(
       `${planPath(planId)}/navigation/days/${dayNumber}/next-route?${query.toString()}`,

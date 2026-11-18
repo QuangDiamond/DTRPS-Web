@@ -26,6 +26,20 @@ import {
 
 import StopReviewCard from '@/client/traveller/components/StopReviewCard';
 
+import {
+  arrivalRadius,
+  buildRouteIndex,
+  distanceBetween,
+  formatMeters,
+  formatSeconds,
+  maneuverIcon,
+  snapToRoute,
+  stepPositions,
+  upcomingStep,
+} from '@/client/traveller/navigation/geo';
+
+import { useGpsTracker } from '@/client/traveller/navigation/useGpsTracker';
+
 import TravelMap, {
   type MapPoint,
   type TravelMapHandle,
@@ -127,34 +141,10 @@ function hasCoordinates(
   );
 }
 
-// ======================================================
-// THÔNG BÁO LỖI GPS
-// ======================================================
-
-function describeGpsError(
-  error: GeolocationPositionError,
-) {
-  if (error.code === error.PERMISSION_DENIED) {
-    return 'Bạn chưa cấp quyền vị trí. Hãy bật định vị cho trang Web trong trình duyệt.';
-  }
-
-  if (error.code === error.POSITION_UNAVAILABLE) {
-    return 'Thiết bị chưa xác định được vị trí GPS.';
-  }
-
-  return 'Lấy GPS quá thời gian chờ. Bạn có thể thử lại.';
-}
-
 function travelTime(
   value: string | null | undefined,
 ) {
   return value ? value.slice(0, 5) : '--:--';
-}
-
-function distanceLabel(meters: number) {
-  return meters >= 1000
-    ? `${(meters / 1000).toFixed(1)} km`
-    : `${meters} m`;
 }
 
 const VEHICLES: {
@@ -217,11 +207,13 @@ export default function TripLiveMapPage() {
   // STATE — GPS VÀ GOONG
   // ====================================================
 
-  const [myLocation, setMyLocation] =
-    useState<Coordinate | null>(null);
+  // Chế độ dẫn đường: camera bám theo vị trí, xoay theo hướng đi.
+  const [following, setFollowing] =
+    useState(false);
 
-  const [gpsMessage, setGpsMessage] =
-    useState('Chưa bật định vị');
+  // Đang chờ người dùng bấm lên bản đồ để chọn vị trí xuất phát.
+  const [picking, setPicking] =
+    useState(false);
 
   const [vehicle, setVehicle] =
     useState<GoongVehicle>('car');
@@ -248,6 +240,16 @@ export default function TripLiveMapPage() {
     vehicle: GoongVehicle;
     time: number;
   } | null>(null);
+
+  // Vị trí hiện tại đang nằm trên tuyến Goong (cập nhật mỗi lần render).
+  const onRouteRef = useRef(false);
+
+  // Số lần GPS liên tiếp bị lệch khỏi tuyến, và lần tính lại đường vì lệch tuyến gần nhất.
+  const offRouteCount = useRef(0);
+  const lastOffRouteReroute = useRef(0);
+
+  // Địa điểm đã tự căn bản đồ theo toàn tuyến.
+  const fittedItemRef = useRef<number | null>(null);
 
   // ====================================================
   // NGÀY ĐANG XEM VÀ CÁC ĐỊA ĐIỂM
@@ -392,122 +394,32 @@ export default function TripLiveMapPage() {
   // THEO DÕI GPS HIỆN TẠI
   // ====================================================
 
-  useEffect(() => {
-    if (dayStatus !== 'IN_PROGRESS') {
-      return;
-    }
+  // Hook đã lọc vị trí sai số lớn, vị trí nhảy bất thường và vị trí ngoài Việt Nam.
+  const tracker = useGpsTracker(
+    dayStatus === 'IN_PROGRESS',
+  );
 
-    if (!('geolocation' in navigator)) {
-      setGpsMessage(
-        'Trình duyệt không hỗ trợ định vị GPS.',
-      );
-      return;
-    }
+  const fix = tracker.fix;
 
-    if (!window.isSecureContext) {
-      setGpsMessage(
-        'GPS yêu cầu HTTPS hoặc localhost.',
-      );
-      return;
-    }
+  const fixRef = useRef(fix);
+  fixRef.current = fix;
 
-    setGpsMessage('Đang lấy GPS hiện tại...');
+  const myLocation: Coordinate | null =
+    fix?.coordinate ?? null;
 
-    const watchId =
-      navigator.geolocation.watchPosition(
-        (position) => {
-          const {
-            latitude,
-            longitude,
-            accuracy,
-          } = position.coords;
-
-          if (
-            !Number.isFinite(latitude) ||
-            !Number.isFinite(longitude)
-          ) {
-            return;
-          }
-
-          setMyLocation([
-            latitude,
-            longitude,
-          ]);
-
-          setGpsMessage(
-            `GPS đã bật · sai số khoảng ${Math.round(
-              accuracy,
-            )} m`,
-          );
-        },
-
-        (error) => {
-          setGpsMessage(
-            describeGpsError(error),
-          );
-        },
-
-        {
-          enableHighAccuracy: true,
-          maximumAge: 4_000,
-          timeout: 20_000,
-        },
-      );
-
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
-    };
-  }, [dayStatus]);
+  const gpsMessage = tracker.message;
 
   // ====================================================
   // THỬ LẤY LẠI GPS
   // ====================================================
 
   const retryGps = () => {
-    if (
-      !('geolocation' in navigator) ||
-      !window.isSecureContext
-    ) {
-      showNotice(
-        'Hãy mở trang trên HTTPS hoặc localhost và bật quyền vị trí.',
-      );
-      return;
-    }
+    setPicking(false);
 
-    setGpsMessage(
-      'Đang thử lấy lại GPS...',
-    );
+    // Có vị trí mới thì tính lại đường ngay.
+    lastRouteRequest.current = null;
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setMyLocation([
-          position.coords.latitude,
-          position.coords.longitude,
-        ]);
-
-        setGpsMessage(
-          `GPS đã bật · sai số khoảng ${Math.round(
-            position.coords.accuracy,
-          )} m`,
-        );
-
-        lastRouteRequest.current = null;
-
-        setRerouteVersion(
-          (value) => value + 1,
-        );
-      },
-
-      (error) => {
-        setGpsMessage(describeGpsError(error));
-      },
-
-      {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 20_000,
-      },
-    );
+    tracker.retry();
   };
 
   // ====================================================
@@ -547,6 +459,12 @@ export default function TripLiveMapPage() {
       last.vehicle === vehicle;
 
     if (sameTarget && last) {
+      // Đang đi đúng tuyến đã tính: không cần hỏi Goong lại.
+      // Đi chệch tuyến thì bên dưới (hiệu ứng "chệch tuyến") tự yêu cầu tính lại.
+      if (onRouteRef.current) {
+        return;
+      }
+
       const moved = distanceMeters(
         {
           latitude: last.location[0],
@@ -589,6 +507,7 @@ export default function TripLiveMapPage() {
         myLocation[0],
         myLocation[1],
         vehicle,
+        fixRef.current?.accuracy,
       )
       .then((response) => {
         if (
@@ -656,11 +575,254 @@ export default function TripLiveMapPage() {
       : null;
   }, [route, nextItemId]);
 
+  // Xem toàn tuyến một lần cho mỗi địa điểm. Không căn lại ở mỗi lần tính lại đường,
+  // và không làm khi đang bám theo vị trí (camera đã đi theo người dùng).
   useEffect(() => {
-    if (routeCoordinates) {
+    if (!routeCoordinates || nextItemId === null) {
+      return;
+    }
+
+    if (fittedItemRef.current === nextItemId) {
+      return;
+    }
+
+    fittedItemRef.current = nextItemId;
+
+    if (!following) {
       mapRef.current?.fitRoute();
     }
-  }, [routeCoordinates]);
+  }, [routeCoordinates, nextItemId, following]);
+
+  // ====================================================
+  // DẪN ĐƯỜNG: BÁM TUYẾN, CHỈ DẪN, CÒN BAO XA
+  // ====================================================
+
+  const routeForStop =
+    route && route.itemId === nextItemId
+      ? route
+      : null;
+
+  const routeSteps = useMemo(
+    () => routeForStop?.route.steps ?? [],
+    [routeForStop],
+  );
+
+  const routeIndex = useMemo(
+    () =>
+      routeCoordinates
+        ? buildRouteIndex(routeCoordinates)
+        : null,
+    [routeCoordinates],
+  );
+
+  // Mỗi bước rẽ nằm cách đầu tuyến bao nhiêu mét.
+  const stepOffsets = useMemo(
+    () =>
+      routeIndex && routeSteps.length > 0
+        ? stepPositions(routeIndex, routeSteps)
+        : [],
+    [routeIndex, routeSteps],
+  );
+
+  // Chiếu vị trí lên tuyến (như "snap to route" của Google Maps).
+  const snap = useMemo(
+    () =>
+      routeIndex && myLocation
+        ? snapToRoute(routeIndex, myLocation)
+        : null,
+    [routeIndex, myLocation],
+  );
+
+  // GPS lệch tuyến nhỏ hơn mức này (theo sai số GPS) vẫn coi là đang đi đúng đường.
+  const onRouteLimit = Math.min(
+    120,
+    Math.max(35, (fix?.accuracy ?? 0) * 1.2),
+  );
+
+  const onRoute = Boolean(
+    snap && snap.distanceFromRoute <= onRouteLimit,
+  );
+
+  onRouteRef.current = onRoute;
+
+  // Chấm xanh nằm trên đường khi đang đi đúng tuyến, thay vì rung quanh đường.
+  const displayLocation: Coordinate | null =
+    snap && onRoute
+      ? snap.coordinate
+      : myLocation;
+
+  const routeProgress = useMemo(
+    () =>
+      snap && onRoute
+        ? {
+          segmentIndex: snap.segmentIndex,
+          point: snap.coordinate,
+        }
+        : null,
+    [snap, onRoute],
+  );
+
+  // Quãng đường và thời gian còn lại, cập nhật liên tục theo vị trí.
+  const remaining = useMemo(() => {
+    if (!routeForStop) return null;
+
+    const {
+      distanceMeters: totalMeters,
+      durationSeconds,
+    } = routeForStop.route;
+
+    if (snap && onRoute && routeIndex && routeIndex.total > 0) {
+      const left = Math.max(
+        0,
+        1 - snap.along / routeIndex.total,
+      );
+
+      return {
+        meters: totalMeters * left,
+        seconds: durationSeconds * left,
+      };
+    }
+
+    return {
+      meters: totalMeters,
+      seconds: durationSeconds,
+    };
+  }, [routeForStop, snap, onRoute, routeIndex]);
+
+  // Đã đến gần địa điểm (bán kính theo sai số GPS). Chỉ gợi ý;
+  // việc xác nhận "Đã đến" vẫn do Traveller bấm.
+  const destination: Coordinate | null =
+    pendingStop && hasCoordinates(pendingStop)
+      ? [pendingStop.latitude, pendingStop.longitude]
+      : null;
+
+  const arrived = Boolean(
+    dayStatus === 'IN_PROGRESS' &&
+    myLocation &&
+    destination &&
+    distanceBetween(myLocation, destination) <=
+    arrivalRadius(fix?.accuracy),
+  );
+
+  // Chỉ dẫn lớn ở đầu bản đồ: "Sau 200 m — Rẽ phải vào ...".
+  const guidance = useMemo(() => {
+    if (
+      !pendingStop ||
+      dayStatus !== 'IN_PROGRESS'
+    ) {
+      return null;
+    }
+
+    if (arrived) {
+      return {
+        icon: 'flag',
+        title: 'Bạn đã đến nơi',
+        text: pendingStop.placeName,
+      };
+    }
+
+    if (!routeForStop) return null;
+
+    // Đã chệch tuyến, đang chờ tuyến mới.
+    if (snap && !onRoute) {
+      return {
+        icon: 'alt_route',
+        title: 'Bạn đã chệch tuyến',
+        text: routeLoading
+          ? 'Đang tính lại đường...'
+          : 'Đang chờ tuyến đường mới',
+      };
+    }
+
+    if (routeSteps.length === 0) return null;
+
+    if (snap && onRoute) {
+      const next = upcomingStep(
+        routeSteps,
+        stepOffsets,
+        snap.along,
+      );
+
+      if (next) {
+        return {
+          icon: maneuverIcon(next.step.maneuver),
+          title: `Sau ${formatMeters(next.distance)}`,
+          text: next.step.instruction,
+        };
+      }
+
+      // Chặng cuối: đi thẳng tới điểm đến.
+      return {
+        icon: 'straight',
+        title: remaining
+          ? `Còn ${formatMeters(remaining.meters)}`
+          : 'Đi thẳng',
+        text: `Đi tới ${pendingStop.placeName}`,
+      };
+    }
+
+    // Chưa bám được tuyến: hiện chỉ dẫn đầu tiên.
+    const first = routeSteps[0];
+
+    return {
+      icon: maneuverIcon(first.maneuver),
+      title: formatMeters(first.distanceMeters),
+      text: first.instruction,
+    };
+  }, [
+    pendingStop,
+    dayStatus,
+    arrived,
+    routeForStop,
+    routeSteps,
+    stepOffsets,
+    snap,
+    onRoute,
+    remaining,
+    routeLoading,
+  ]);
+
+  // ====================================================
+  // CHỆCH TUYẾN: TỰ TÍNH LẠI ĐƯỜNG
+  // ====================================================
+
+  useEffect(() => {
+    if (
+      !snap ||
+      !routeForStop ||
+      !fix ||
+      dayStatus !== 'IN_PROGRESS'
+    ) {
+      offRouteCount.current = 0;
+      return;
+    }
+
+    if (onRoute) {
+      offRouteCount.current = 0;
+      return;
+    }
+
+    // Cần hai lần GPS liên tiếp cùng lệch để không tính lại vì một điểm GPS nhiễu.
+    offRouteCount.current += 1;
+
+    if (offRouteCount.current < 2 || routeLoading) {
+      return;
+    }
+
+    const now = Date.now();
+
+    // Không hỏi Goong dồn dập khi đang đi vòng.
+    if (now - lastOffRouteReroute.current < 8_000) {
+      return;
+    }
+
+    lastOffRouteReroute.current = now;
+    offRouteCount.current = 0;
+
+    lastRouteRequest.current = null;
+
+    setRerouteVersion((value) => value + 1);
+  }, [snap, onRoute, routeForStop, fix, dayStatus, routeLoading]);
 
   const refreshRoute = () => {
     if (!myLocation) {
@@ -780,6 +942,9 @@ export default function TripLiveMapPage() {
 
   const focusMyPosition = () => {
     if (myLocation) {
+      // Bật lại chế độ bám theo; thao tác kéo bản đồ trước đó đã tắt nó.
+      setFollowing(true);
+
       mapRef.current?.focus(
         myLocation,
         16,
@@ -873,7 +1038,25 @@ export default function TripLiveMapPage() {
           activeId={activeId}
           visitedIds={visitedIds}
           routeCoordinates={routeCoordinates}
-          userLocation={myLocation}
+          userLocation={displayLocation}
+          userHeading={fix?.heading ?? null}
+          userAccuracy={fix?.accuracy ?? null}
+          followUser={following && isRunning}
+          onUserInteract={() => setFollowing(false)}
+          routeProgress={routeProgress}
+          pickMode={picking}
+          showCompass
+          onPick={(coordinate) => {
+            tracker.setManual(coordinate);
+
+            setPicking(false);
+
+            lastRouteRequest.current = null;
+
+            showNotice(
+              'Đã dùng vị trí bạn chọn trên bản đồ để chỉ đường.',
+            );
+          }}
           onSelect={(id) => {
             const stop = stops.find(
               (item) =>
@@ -947,6 +1130,62 @@ export default function TripLiveMapPage() {
           </button>
         </div>
 
+        {/* CHỈ DẪN RẼ / CHỌN VỊ TRÍ */}
+
+        {picking ? (
+
+          <div className="absolute left-3 right-3 top-[78px] z-[400] flex items-center gap-3 rounded-[18px] bg-[#17344A] px-3.5 py-3 text-white shadow-md">
+
+            <Icon
+              name="touch_app"
+              className="text-[28px]"
+            />
+
+            <p className="min-w-0 flex-1 text-[13px] font-bold leading-[18px]">
+              Bấm lên bản đồ để chọn vị trí của bạn
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setPicking(false)}
+              className="rounded-full bg-white/15 px-3 py-1.5 text-[11px] font-extrabold"
+            >
+              Hủy
+            </button>
+
+          </div>
+
+        ) : (
+          guidance && (
+
+            <div
+              className={`absolute left-3 right-3 top-[78px] z-[400] flex items-center gap-3 rounded-[18px] px-3.5 py-3 text-white shadow-md ${
+                arrived ? 'bg-[#087E79]' : 'bg-[#075C66]'
+              }`}
+              aria-live="polite"
+            >
+
+              <Icon
+                name={guidance.icon}
+                className="text-[34px]"
+              />
+
+              <div className="min-w-0 flex-1">
+
+                <p className="text-[18px] font-extrabold leading-[22px]">
+                  {guidance.title}
+                </p>
+
+                <p className="mt-0.5 line-clamp-2 text-[12px] font-semibold leading-4 opacity-90">
+                  {guidance.text}
+                </p>
+
+              </div>
+            </div>
+
+          )
+        )}
+
         {/* NÚT ĐIỀU KHIỂN BẢN ĐỒ */}
 
         <div className="absolute bottom-4 right-3.5 z-[400] flex flex-col gap-2.5">
@@ -969,10 +1208,19 @@ export default function TripLiveMapPage() {
             type="button"
             onClick={focusMyPosition}
             aria-label="Vị trí của tôi"
-            className="flex h-[47px] w-[47px] items-center justify-center rounded-[17px] bg-white text-[#006B67] shadow-md"
+            aria-pressed={following}
+            className={`flex h-[47px] w-[47px] items-center justify-center rounded-[17px] shadow-md ${
+              following
+                ? 'bg-[#006B67] text-white'
+                : 'bg-white text-[#006B67]'
+            }`}
           >
             <Icon
-              name="my_location"
+              name={
+                following
+                  ? 'navigation'
+                  : 'my_location'
+              }
               className="text-[24px]"
             />
           </button>
@@ -1157,22 +1405,17 @@ export default function TripLiveMapPage() {
 
             {/* KHOẢNG CÁCH VÀ THỜI GIAN */}
 
-            {route &&
-            route.itemId === pendingStop.itemId ? (
+            {remaining ? (
 
               <p className="mt-2 text-[12px] font-bold text-[#14364F]">
 
-                {route.route.distanceText ||
-                  distanceLabel(
-                    route.route.distanceMeters,
-                  )}
+                {'Còn '}
+
+                {formatMeters(remaining.meters)}
 
                 {' · '}
 
-                {route.route.durationText ||
-                  `${Math.ceil(
-                    route.route.durationSeconds / 60,
-                  )} phút`}
+                {formatSeconds(remaining.seconds)}
 
                 {' · thời gian dự kiến'}
 
@@ -1201,7 +1444,34 @@ export default function TripLiveMapPage() {
 
             )}
 
-            {!myLocation && (
+            {tracker.suspicious && tracker.rejected && (
+
+              <div
+                role="alert"
+                className="mt-2 rounded-xl bg-[#FFF4E5] px-3 py-2 text-[11px] leading-4 text-[#8A5300]"
+              >
+
+                <p className="font-extrabold">
+                  Vị trí GPS có vẻ không đúng
+                </p>
+
+                <p className="mt-0.5">
+                  {`Trình duyệt báo bạn đang ở (${tracker.rejected[0].toFixed(2)}, ${tracker.rejected[1].toFixed(2)}), ngoài Việt Nam. Có thể do VPN, giả lập vị trí hoặc định vị theo IP. Hãy thử lại hoặc chọn vị trí của bạn trên bản đồ.`}
+                </p>
+
+              </div>
+
+            )}
+
+            {fix?.lowAccuracy && !tracker.manual && (
+
+              <p className="mt-2 text-[11px] text-[#8A5300]">
+                {`GPS chưa chính xác (sai số khoảng ${Math.round(fix.accuracy)} m) nên đường đi có thể lệch. Ra chỗ thoáng hoặc dùng điện thoại để có GPS tốt hơn.`}
+              </p>
+
+            )}
+
+            {!myLocation && !tracker.suspicious && (
 
               <p className="mt-1 text-[11px] text-[#BD4F4F]">
                 Chưa có GPS nên chưa thể chỉ đường.
@@ -1243,6 +1513,74 @@ export default function TripLiveMapPage() {
                 Lấy GPS
 
               </button>
+
+              {myLocation && (
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (following) {
+                      setFollowing(false);
+                    } else {
+                      focusMyPosition();
+                    }
+                  }}
+                  className={`inline-flex items-center gap-1 rounded-full px-3 py-2 text-[11px] font-extrabold ${
+                    following
+                      ? 'bg-[#006B67] text-white'
+                      : 'bg-white text-[#006B67]'
+                  }`}
+                >
+
+                  <Icon
+                    name="navigation"
+                    className="text-[16px]"
+                  />
+
+                  {following
+                    ? 'Dừng bám theo'
+                    : 'Bắt đầu dẫn đường'}
+
+                </button>
+
+              )}
+
+              <button
+                type="button"
+                onClick={() => setPicking((value) => !value)}
+                className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[11px] font-extrabold text-[#006B67]"
+              >
+
+                <Icon
+                  name="pin_drop"
+                  className="text-[16px]"
+                />
+
+                Chọn vị trí của tôi
+
+              </button>
+
+              {tracker.manual && (
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    lastRouteRequest.current = null;
+                    tracker.clearManual();
+                  }}
+                  className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[11px] font-extrabold text-[#006B67]"
+                >
+
+                  <Icon
+                    name="gps_fixed"
+                    className="text-[16px]"
+                  />
+
+                  Dùng GPS thật
+
+                </button>
+
+              )}
 
             </div>
           </section>

@@ -72,6 +72,14 @@ const NAV_ITEMS: (NavItem & { id: string })[] = [
     badge: { source: 'reportedReviews', tone: 'tertiary' },
   },
   {
+    id: 'payments',
+    get label() {
+      return i18n.t('nav.constants.adPayments');
+    },
+    path: ROUTES.PAYMENTS,
+    icon: 'payments',
+  },
+  {
     id: 'reports',
     get label() {
       return i18n.t('nav.constants.reportsAnalytics');

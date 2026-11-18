@@ -17,6 +17,22 @@ const TONES: { match: RegExp; tone: NotificationTone }[] = [
     },
   },
   {
+    match: /^AD_PAYMENT_SUCCESS$/,
+    tone: { icon: 'payments', badge: 'bg-emerald-50 text-emerald-600', accent: 'bg-emerald-500' },
+  },
+  {
+    match: /^AD_(PAYMENT_REVIEW|SUSPENDED|SUBSCRIPTION_CANCELLED)$/,
+    tone: { icon: 'warning', badge: 'bg-rose-50 text-rose-600', accent: 'bg-rose-500' },
+  },
+  {
+    match: /^AD_SUBSCRIPTION_(EXPIRING|EXPIRED)$/,
+    tone: { icon: 'schedule', badge: 'bg-amber-50 text-amber-600', accent: 'bg-amber-500' },
+  },
+  {
+    match: /^AD_/,
+    tone: { icon: 'campaign', badge: 'bg-teal-50 text-teal-700', accent: 'bg-teal-600' },
+  },
+  {
     match: /_REPORTED$/,
     tone: { icon: 'flag', badge: 'bg-rose-50 text-rose-600', accent: 'bg-rose-500' },
   },

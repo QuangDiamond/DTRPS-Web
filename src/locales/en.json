@@ -33,11 +33,13 @@
       "systemAdministration": "System administration",
       "placeCategories": "Service types",
       "reviewManagement": "Review management",
-      "tripManagement": "Trip management"
+      "tripManagement": "Trip management",
+      "adPayments": "Packages & Payments"
     },
     "placeCategories": "Service types",
     "reviews": "Review management",
-    "trips": "Trip management"
+    "trips": "Trip management",
+    "payments": "Packages & Payments"
   },
   "header": {
     "searchPlaceholder": "Search data, users, tours, POIs...",
@@ -3703,5 +3705,115 @@
       "noFeedback": "The user has not reviewed this trip."
     },
     "loadError": "Could not load trips"
+  },
+  "adAdmin": {
+    "header": {
+      "eyebrow": "Advertising revenue",
+      "title": "Packages & Payments",
+      "description": "Track PayOS transactions, partner ad packages, advertised places and pricing.",
+      "refresh": "Refresh"
+    },
+    "tabs": {
+      "payments": "Transactions",
+      "subscriptions": "Active packages",
+      "advertisements": "Ads",
+      "packages": "Pricing"
+    },
+    "all": "All",
+    "statusLabel": "Status",
+    "partner": "Partner",
+    "package": "Package",
+    "actions": "Actions",
+    "empty": "No data yet",
+    "reason": "Reason",
+    "reasonRequired": "Please fill in all fields",
+    "payments": {
+      "revenue": "Revenue this month",
+      "revenueHint": "From successful transactions",
+      "success": "Successful",
+      "successHint": "All time",
+      "pending": "Pending",
+      "pendingHint": "Partner has not finished paying",
+      "review": "Needs review",
+      "reviewHint": "Wrong amount or duplicate payment",
+      "search": "Order code or partner name…",
+      "typeLabel": "Type",
+      "reviewOnly": "Needs review only",
+      "items": "transactions",
+      "order": "Order",
+      "amount": "Amount",
+      "time": "Time",
+      "status": {
+        "PENDING": "Pending",
+        "SUCCESS": "Successful",
+        "FAILED": "Failed",
+        "CANCELLED": "Cancelled",
+        "REFUNDED": "Refunded"
+      },
+      "type": {
+        "INITIAL": "New purchase",
+        "RENEWAL": "Renewal"
+      },
+      "reconcile": "Reconcile",
+      "reconciled": "Reconciled with PayOS",
+      "refund": "Record refund",
+      "refunded": "Refund recorded",
+      "refundTitle": "Refund order #{{order}}",
+      "refundHint": "The system does not send money. Transfer it to the partner first, then record it here. The active package of this transaction will be cancelled.",
+      "refundReference": "Refund transfer reference"
+    },
+    "subscriptions": {
+      "search": "Partner name…",
+      "items": "packages",
+      "period": "Period",
+      "slots": "Slots used",
+      "daysLeft": "{{count}} days left",
+      "status": {
+        "ACTIVE": "Active",
+        "EXPIRED": "Expired",
+        "CANCELLED": "Cancelled"
+      },
+      "cancel": "Cancel package",
+      "cancelled": "Package cancelled and partner notified",
+      "cancelTitle": "Cancel package of {{name}}",
+      "cancelHint": "Ads stop immediately. The partner is told the reason."
+    },
+    "advertisements": {
+      "search": "Place or partner name…",
+      "items": "ads",
+      "place": "Place",
+      "status": {
+        "PUBLISHED": "Live",
+        "SUSPENDED": "Removed",
+        "EXPIRED": "Ended"
+      },
+      "suspend": "Remove",
+      "restore": "Restore",
+      "changed": "Updated and partner notified",
+      "reasonHint": "The partner is told this reason."
+    },
+    "packages": {
+      "hint": "Price changes only apply to future purchases. Sold packages can be disabled, not deleted.",
+      "add": "Add package",
+      "edit": "Edit",
+      "editHint": "Partners who already bought keep their price and slots.",
+      "save": "Save",
+      "saved": "Package saved",
+      "enable": "Enable",
+      "disable": "Disable",
+      "invalid": "Enter a name, a price of at least 1,000 VND, and days and places above 0",
+      "status": {
+        "ACTIVE": "On sale",
+        "INACTIVE": "Disabled"
+      },
+      "fields": {
+        "name": "Package name",
+        "description": "Description",
+        "price": "Price (VND)",
+        "durationDays": "Days",
+        "maxPlaces": "Places",
+        "sortOrder": "Order"
+      }
+    }
   }
 }

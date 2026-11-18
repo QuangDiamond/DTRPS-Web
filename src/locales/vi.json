@@ -33,11 +33,13 @@
       "systemAdministration": "Quản trị hệ thống",
       "placeCategories": "Loại hình dịch vụ",
       "reviewManagement": "Quản lý đánh giá",
-      "tripManagement": "Quản lý chuyến đi"
+      "tripManagement": "Quản lý chuyến đi",
+      "adPayments": "Gói & Thanh toán"
     },
     "placeCategories": "Loại hình dịch vụ",
     "reviews": "Quản lý đánh giá",
-    "trips": "Quản lý chuyến đi"
+    "trips": "Quản lý chuyến đi",
+    "payments": "Gói & Thanh toán"
   },
   "header": {
     "searchPlaceholder": "Tìm kiếm dữ liệu, người dùng, tour, POI...",
@@ -3630,5 +3632,115 @@
       "noFeedback": "Người dùng chưa đánh giá chuyến đi này."
     },
     "loadError": "Không tải được danh sách chuyến đi"
+  },
+  "adAdmin": {
+    "header": {
+      "eyebrow": "Doanh thu quảng cáo",
+      "title": "Gói & Thanh toán",
+      "description": "Theo dõi giao dịch PayOS, gói quảng cáo đang chạy của đối tác, các địa điểm đang được quảng cáo và bảng giá.",
+      "refresh": "Làm mới"
+    },
+    "tabs": {
+      "payments": "Giao dịch",
+      "subscriptions": "Gói đang chạy",
+      "advertisements": "Quảng cáo",
+      "packages": "Bảng giá"
+    },
+    "all": "Tất cả",
+    "statusLabel": "Trạng thái",
+    "partner": "Đối tác",
+    "package": "Gói",
+    "actions": "Thao tác",
+    "empty": "Chưa có dữ liệu",
+    "reason": "Lý do",
+    "reasonRequired": "Vui lòng nhập đầy đủ thông tin",
+    "payments": {
+      "revenue": "Doanh thu tháng này",
+      "revenueHint": "Tính các giao dịch thành công",
+      "success": "Giao dịch thành công",
+      "successHint": "Tổng từ trước tới nay",
+      "pending": "Đang chờ",
+      "pendingHint": "Đối tác chưa thanh toán xong",
+      "review": "Cần kiểm tra",
+      "reviewHint": "Sai số tiền hoặc trả trùng",
+      "search": "Mã đơn hoặc tên đối tác…",
+      "typeLabel": "Loại",
+      "reviewOnly": "Chỉ giao dịch cần kiểm tra",
+      "items": "giao dịch",
+      "order": "Mã đơn",
+      "amount": "Số tiền",
+      "time": "Thời gian",
+      "status": {
+        "PENDING": "Chờ thanh toán",
+        "SUCCESS": "Thành công",
+        "FAILED": "Thất bại",
+        "CANCELLED": "Đã huỷ",
+        "REFUNDED": "Đã hoàn tiền"
+      },
+      "type": {
+        "INITIAL": "Mua mới",
+        "RENEWAL": "Gia hạn"
+      },
+      "reconcile": "Đối soát",
+      "reconciled": "Đã đối soát với PayOS",
+      "refund": "Ghi nhận hoàn tiền",
+      "refunded": "Đã ghi nhận hoàn tiền",
+      "refundTitle": "Hoàn tiền đơn #{{order}}",
+      "refundHint": "Hệ thống không tự chuyển tiền. Hãy chuyển khoản cho đối tác trước, rồi ghi nhận tại đây. Gói đang chạy của giao dịch này sẽ bị huỷ.",
+      "refundReference": "Mã chuyển khoản hoàn tiền"
+    },
+    "subscriptions": {
+      "search": "Tên đối tác…",
+      "items": "gói",
+      "period": "Thời gian",
+      "slots": "Lượt đã dùng",
+      "daysLeft": "Còn {{count}} ngày",
+      "status": {
+        "ACTIVE": "Đang chạy",
+        "EXPIRED": "Hết hạn",
+        "CANCELLED": "Đã huỷ"
+      },
+      "cancel": "Huỷ gói",
+      "cancelled": "Đã huỷ gói và báo cho đối tác",
+      "cancelTitle": "Huỷ gói của {{name}}",
+      "cancelHint": "Quảng cáo dừng ngay. Đối tác nhận thông báo kèm lý do."
+    },
+    "advertisements": {
+      "search": "Tên địa điểm hoặc đối tác…",
+      "items": "quảng cáo",
+      "place": "Địa điểm",
+      "status": {
+        "PUBLISHED": "Đang hiện",
+        "SUSPENDED": "Đã gỡ",
+        "EXPIRED": "Đã kết thúc"
+      },
+      "suspend": "Gỡ",
+      "restore": "Bật lại",
+      "changed": "Đã cập nhật và báo cho đối tác",
+      "reasonHint": "Đối tác nhận thông báo kèm lý do này."
+    },
+    "packages": {
+      "hint": "Sửa giá chỉ áp dụng cho lượt mua sau. Gói đã bán chỉ tắt, không xoá.",
+      "add": "Thêm gói",
+      "edit": "Sửa",
+      "editHint": "Đối tác đã mua vẫn giữ giá và số lượt lúc mua.",
+      "save": "Lưu",
+      "saved": "Đã lưu gói",
+      "enable": "Bật",
+      "disable": "Tắt",
+      "invalid": "Vui lòng nhập tên, giá từ 1.000đ, số ngày và số địa điểm lớn hơn 0",
+      "status": {
+        "ACTIVE": "Đang bán",
+        "INACTIVE": "Đã tắt"
+      },
+      "fields": {
+        "name": "Tên gói",
+        "description": "Mô tả",
+        "price": "Giá (VND)",
+        "durationDays": "Số ngày",
+        "maxPlaces": "Số địa điểm",
+        "sortOrder": "Thứ tự"
+      }
+    }
   }
 }

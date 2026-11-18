@@ -22,6 +22,7 @@ export const ROUTES = {
   POI_DETAIL: '/admin/locations/:id',
   PLACE_CATEGORIES: '/admin/place-categories',
   REVIEWS: '/admin/reviews',
+  PAYMENTS: '/admin/payments',
   TRIPS: '/admin/trips',
   TRIP_DETAIL: '/admin/trips/:id',
   REPORTS: '/admin/reports',

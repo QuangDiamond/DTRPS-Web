@@ -1,4 +1,5 @@
 /** Toàn bộ kiểu dữ liệu của ứng dụng — import qua `@/types` */
+export type * from './adAdmin';
 export type * from './api';
 export type * from './auth';
 export type * from './common';

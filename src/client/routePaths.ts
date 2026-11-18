@@ -41,6 +41,8 @@ export const CLIENT_ROUTES = {
   /** Đường dẫn cũ (một địa điểm) — chuyển về danh sách */
   PARTNER_LOCATION_LEGACY: '/partner/location',
   PARTNER_ADS: '/partner/ads',
+  /** PayOS đưa đối tác về đây sau khi thanh toán hoặc huỷ */
+  PARTNER_ADS_RESULT: '/partner/ads/payment-result',
   PARTNER_PROFILE: '/partner/profile',
 } as const;
 

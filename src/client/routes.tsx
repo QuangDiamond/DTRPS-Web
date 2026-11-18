@@ -15,7 +15,6 @@ const LoginPage = lazy(() => import('@/client/pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/client/pages/auth/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/client/pages/auth/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('@/client/pages/auth/ResetPasswordPage'));
-const ComingSoonPage = lazy(() => import('@/client/pages/ComingSoonPage'));
 
 // Du khách
 const HomePage = lazy(() => import('@/client/traveller/pages/HomePage'));
@@ -46,22 +45,13 @@ const PartnerApplicationPage = lazy(() => import('@/client/partner/pages/Partner
 const PartnerLocationsPage = lazy(() => import('@/client/partner/pages/PartnerLocationsPage'));
 const PartnerNewLocationPage = lazy(() => import('@/client/partner/pages/PartnerNewLocationPage'));
 const PartnerLocationPage = lazy(() => import('@/client/partner/pages/PartnerLocationPage'));
+const PartnerAdsPage = lazy(() => import('@/client/partner/pages/PartnerAdsPage'));
+const PartnerAdPaymentResultPage = lazy(
+  () => import('@/client/partner/pages/PartnerAdPaymentResultPage'),
+);
 const PartnerBusinessProfilePage = lazy(
   () => import('@/client/partner/pages/PartnerBusinessProfilePage'),
 );
-
-const partnerSoon = (path: string, title: string, description: string): RouteObject => ({
-  path,
-  element: (
-    <ComingSoonPage
-      eyebrow="BUSINESS OWNER"
-      title={title}
-      description={description}
-      backTo={CLIENT_ROUTES.PARTNER}
-      backLabel="Về tổng quan đối tác"
-    />
-  ),
-});
 
 /** Khu du khách + đối tác (admin nằm riêng dưới /admin) */
 export const clientRoutes: RouteObject[] = [
@@ -124,11 +114,11 @@ export const clientRoutes: RouteObject[] = [
                     path: CLIENT_ROUTES.PARTNER_LOCATION_LEGACY,
                     element: <Navigate to={CLIENT_ROUTES.PARTNER_LOCATIONS} replace />,
                   },
-                  partnerSoon(
-                    CLIENT_ROUTES.PARTNER_ADS,
-                    'Quản lý quảng cáo',
-                    'Theo dõi nội dung quảng bá cho địa điểm của bạn.',
-                  ),
+                  { path: CLIENT_ROUTES.PARTNER_ADS, element: <PartnerAdsPage /> },
+                  {
+                    path: CLIENT_ROUTES.PARTNER_ADS_RESULT,
+                    element: <PartnerAdPaymentResultPage />,
+                  },
                 ],
               },
             ],

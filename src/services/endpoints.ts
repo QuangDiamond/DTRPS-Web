@@ -101,6 +101,21 @@ export const ENDPOINTS = {
     destinations: '/admin/trips/destinations',
     detail: (tripId: string) => `/admin/trips/${id(tripId)}`,
   },
+  // Gói quảng cáo & thanh toán của đối tác
+  ads: {
+    packages: '/admin/ad-packages',
+    package: (packageId: number) => `/admin/ad-packages/${packageId}`,
+    packageStatus: (packageId: number) => `/admin/ad-packages/${packageId}/status`,
+    payments: '/admin/payments',
+    paymentStats: '/admin/payments/stats',
+    reconcile: (paymentId: number) => `/admin/payments/${paymentId}/reconcile`,
+    refund: (paymentId: number) => `/admin/payments/${paymentId}/refund`,
+    subscriptions: '/admin/ad-subscriptions',
+    cancelSubscription: (subscriptionId: number) =>
+      `/admin/ad-subscriptions/${subscriptionId}/cancel`,
+    advertisements: '/admin/advertisements',
+    advertisementStatus: (adId: number) => `/admin/advertisements/${adId}/status`,
+  },
   uploads: { image: '/uploads/images' },
   // Bản đồ Goong qua backend
   maps: {

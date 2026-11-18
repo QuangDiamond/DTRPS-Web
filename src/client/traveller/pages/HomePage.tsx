@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
+import FeaturedPlaces from '@/client/traveller/components/FeaturedPlaces';
 
 /** Trang chủ du khách — theo HomeScreen của app mobile */
 export default function HomePage() {
@@ -73,6 +74,8 @@ export default function HomePage() {
           </Link>
         </div>
       </div>
+
+      <FeaturedPlaces />
 
       <div className="mt-6 flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-[0_2px_6px_rgba(0,0,0,0.05)] md:flex-row md:items-center">
         <div className="flex flex-1 items-center gap-3">

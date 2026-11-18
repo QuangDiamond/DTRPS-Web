@@ -3728,7 +3728,6 @@
       "saved": "Đã lưu gói",
       "enable": "Bật",
       "disable": "Tắt",
-      "invalid": "Vui lòng nhập tên, giá từ 1.000đ, số ngày và số địa điểm lớn hơn 0",
       "status": {
         "ACTIVE": "Đang bán",
         "INACTIVE": "Đã tắt"
@@ -3740,6 +3739,15 @@
         "durationDays": "Số ngày",
         "maxPlaces": "Số địa điểm",
         "sortOrder": "Thứ tự"
+      },
+      "errors": {
+        "nameRequired": "Vui lòng nhập tên gói",
+        "nameDuplicate": "Tên gói này đã tồn tại",
+        "price": "Giá phải là số nguyên từ 1000 đến 1000000000, không dùng dấu chấm hay phẩy",
+        "durationDays": "Số ngày phải là số nguyên từ 1 đến 3650",
+        "maxPlaces": "Số địa điểm phải là số nguyên từ 1 đến 100",
+        "sortOrder": "Thứ tự phải là số nguyên từ 1 đến 9999",
+        "sortOrderDuplicate": "Thứ tự này đang được dùng cho gói \"{{name}}\""
       }
     }
   }

@@ -3801,7 +3801,6 @@
       "saved": "Package saved",
       "enable": "Enable",
       "disable": "Disable",
-      "invalid": "Enter a name, a price of at least 1,000 VND, and days and places above 0",
       "status": {
         "ACTIVE": "On sale",
         "INACTIVE": "Disabled"
@@ -3813,6 +3812,15 @@
         "durationDays": "Days",
         "maxPlaces": "Places",
         "sortOrder": "Order"
+      },
+      "errors": {
+        "nameRequired": "Please enter a package name",
+        "nameDuplicate": "This package name already exists",
+        "price": "Price must be a whole number from 1000 to 1000000000, without dots or commas",
+        "durationDays": "Days must be a whole number from 1 to 3650",
+        "maxPlaces": "Places must be a whole number from 1 to 100",
+        "sortOrder": "Order must be a whole number from 1 to 9999",
+        "sortOrderDuplicate": "This order is already used by \"{{name}}\""
       }
     }
   }

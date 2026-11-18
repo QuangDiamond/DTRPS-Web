@@ -18,18 +18,30 @@ interface Draft {
   sortOrder: string;
 }
 
-const EMPTY_DRAFT: Draft = {
-  id: null,
-  name: '',
-  description: '',
-  price: '',
-  durationDays: '30',
-  maxPlaces: '3',
-  sortOrder: '0',
+type NumberKey = 'price' | 'durationDays' | 'maxPlaces' | 'sortOrder';
+type FieldKey = 'name' | NumberKey;
+type FieldErrors = Partial<Record<FieldKey, string>>;
+
+/** Giới hạn khớp với BE (AdDtos.PackageRequest) */
+const LIMITS: Record<NumberKey, { min: number; max: number }> = {
+  price: { min: 1000, max: 1_000_000_000 },
+  durationDays: { min: 1, max: 3650 },
+  maxPlaces: { min: 1, max: 100 },
+  sortOrder: { min: 1, max: 9999 },
 };
 
-const FIELD =
-  'h-11 w-full rounded-xl bg-surface-container-low px-3 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:outline-none';
+/** Chỉ nhận số nguyên viết liền: 1.1, 1,5, 1e3, -2 đều không hợp lệ */
+const isWholeInRange = (value: string, key: NumberKey): boolean => {
+  const text = value.trim();
+  if (!/^\d+$/.test(text)) return false;
+  const number = Number(text);
+  return number >= LIMITS[key].min && number <= LIMITS[key].max;
+};
+
+const fieldClass = (error?: string) =>
+  `h-11 w-full rounded-xl bg-surface-container-low px-3 font-body-md text-body-md text-on-surface focus:ring-2 focus:outline-none ${
+    error ? 'ring-2 ring-error' : 'focus:ring-primary'
+  }`;
 
 /** Tab Bảng giá: thêm, sửa, bật / tắt gói. Gói đã bán chỉ tắt, không xoá. */
 export default function PackagesTab({ reload }: { reload: number }) {
@@ -38,6 +50,7 @@ export default function PackagesTab({ reload }: { reload: number }) {
   const [items, setItems] = useState<AdminAdPackage[] | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [formError, setFormError] = useState('');
+  const [errors, setErrors] = useState<FieldErrors>({});
   const [busy, setBusy] = useState(false);
   const [version, setVersion] = useState(0);
 
@@ -52,8 +65,25 @@ export default function PackagesTab({ reload }: { reload: number }) {
     };
   }, [reload, version, showToast]);
 
+  /** Gói mới mặc định đứng cuối danh sách */
+  const add = () => {
+    setFormError('');
+    setErrors({});
+    const lastOrder = Math.max(0, ...(items ?? []).map((item) => item.sortOrder));
+    setDraft({
+      id: null,
+      name: '',
+      description: '',
+      price: '',
+      durationDays: '30',
+      maxPlaces: '3',
+      sortOrder: String(lastOrder + 1),
+    });
+  };
+
   const edit = (item: AdminAdPackage) => {
     setFormError('');
+    setErrors({});
     setDraft({
       id: item.id,
       name: item.name,
@@ -65,28 +95,46 @@ export default function PackagesTab({ reload }: { reload: number }) {
     });
   };
 
+  const validate = (value: Draft): FieldErrors => {
+    const next: FieldErrors = {};
+    const others = (items ?? []).filter((item) => item.id !== value.id);
+    const name = value.name.trim();
+    if (!name) next.name = t('adAdmin.packages.errors.nameRequired');
+    else if (others.some((item) => item.name.toLowerCase() === name.toLowerCase())) {
+      next.name = t('adAdmin.packages.errors.nameDuplicate');
+    }
+    if (!isWholeInRange(value.price, 'price')) next.price = t('adAdmin.packages.errors.price');
+    if (!isWholeInRange(value.durationDays, 'durationDays')) {
+      next.durationDays = t('adAdmin.packages.errors.durationDays');
+    }
+    if (!isWholeInRange(value.maxPlaces, 'maxPlaces')) {
+      next.maxPlaces = t('adAdmin.packages.errors.maxPlaces');
+    }
+    if (!isWholeInRange(value.sortOrder, 'sortOrder')) {
+      next.sortOrder = t('adAdmin.packages.errors.sortOrder');
+    } else {
+      const taken = others.find((item) => item.sortOrder === Number(value.sortOrder));
+      if (taken) {
+        next.sortOrder = t('adAdmin.packages.errors.sortOrderDuplicate', { name: taken.name });
+      }
+    }
+    return next;
+  };
+
   const save = async () => {
     if (!draft) return;
+    const nextErrors = validate(draft);
+    setErrors(nextErrors);
+    setFormError('');
+    if (Object.keys(nextErrors).length > 0) return;
     const input: AdPackageInput = {
       name: draft.name.trim(),
       description: draft.description.trim() || null,
       price: Number(draft.price),
       durationDays: Number(draft.durationDays),
       maxPlaces: Number(draft.maxPlaces),
-      sortOrder: Number(draft.sortOrder) || 0,
+      sortOrder: Number(draft.sortOrder),
     };
-    const valid =
-      input.name &&
-      Number.isInteger(input.price) &&
-      input.price >= 1000 &&
-      Number.isInteger(input.durationDays) &&
-      input.durationDays > 0 &&
-      Number.isInteger(input.maxPlaces) &&
-      input.maxPlaces > 0;
-    if (!valid) {
-      setFormError(t('adAdmin.packages.invalid'));
-      return;
-    }
     setBusy(true);
     try {
       if (draft.id === null) await adAdminService.createPackage(input);
@@ -115,20 +163,27 @@ export default function PackagesTab({ reload }: { reload: number }) {
 
   const set = (key: keyof Draft, value: string) => {
     setFormError('');
+    setErrors((current) => ({ ...current, [key]: undefined }));
     setDraft((current) => current && { ...current, [key]: value });
   };
 
   const th = 'px-4 py-4 font-semibold';
-  const numberField = (key: 'price' | 'durationDays' | 'maxPlaces' | 'sortOrder') => (
+  const fieldError = (key: FieldKey) =>
+    errors[key] && (
+      <span className="font-body-sm text-[12px] font-normal text-error">{errors[key]}</span>
+    );
+  // Ô chữ thay vì type="number": trình duyệt không tự nuốt các giá trị như 1.1 hay 1e3
+  const numberField = (key: NumberKey) => (
     <label className="flex flex-col gap-1.5 font-label-md text-label-md text-on-surface">
       {t(`adAdmin.packages.fields.${key}`)}
       <input
-        type="number"
-        min={0}
+        inputMode="numeric"
+        aria-invalid={Boolean(errors[key])}
         value={draft?.[key] ?? ''}
         onChange={(event) => set(key, event.target.value)}
-        className={FIELD}
+        className={fieldClass(errors[key])}
       />
+      {fieldError(key)}
     </label>
   );
 
@@ -138,13 +193,7 @@ export default function PackagesTab({ reload }: { reload: number }) {
         <p className="font-body-sm text-body-sm text-on-surface-variant">
           {t('adAdmin.packages.hint')}
         </p>
-        <Button
-          icon="add"
-          onClick={() => {
-            setFormError('');
-            setDraft(EMPTY_DRAFT);
-          }}
-        >
+        <Button icon="add" onClick={add}>
           {t('adAdmin.packages.add')}
         </Button>
       </div>
@@ -233,9 +282,11 @@ export default function PackagesTab({ reload }: { reload: number }) {
                 value={draft.name}
                 maxLength={150}
                 autoFocus
+                aria-invalid={Boolean(errors.name)}
                 onChange={(event) => set('name', event.target.value)}
-                className={FIELD}
+                className={fieldClass(errors.name)}
               />
+              {fieldError('name')}
             </label>
             <label className="flex flex-col gap-1.5 font-label-md text-label-md text-on-surface">
               {t('adAdmin.packages.fields.description')}
@@ -247,7 +298,7 @@ export default function PackagesTab({ reload }: { reload: number }) {
                 className="w-full resize-none rounded-xl bg-surface-container-low p-3 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:outline-none"
               />
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 items-start gap-3">
               {numberField('price')}
               {numberField('durationDays')}
               {numberField('maxPlaces')}

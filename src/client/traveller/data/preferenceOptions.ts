@@ -14,11 +14,13 @@ export interface IconOption<T extends string = string> {
 /** Icon theo mã của BE */
 const SPECIAL_NEED_ICONS: Record<string, string> = {
   vegetarian: 'eco',
-  diet: 'no_meals',
   kids: 'child_care',
   elderly: 'elderly',
   pets: 'pets',
-  other: 'more_horiz',
+  disability: 'accessible',
+  largeGroup: 'groups',
+  limitedMobility: 'weekend',
+  quietSpace: 'self_improvement',
 };
 const DEFAULT_SPECIAL_NEED_ICON = 'info';
 

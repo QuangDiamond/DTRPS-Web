@@ -38,6 +38,9 @@ export interface CreateTravelPlanInput {
   /** Mã sở thích */
   interestCodes?: string[];
 
+  /** Mã đáp án của 4 câu hỏi cá nhân hóa chuyến đi. */
+  experiencePreferences?: string[];
+
   travelPace: TravelPace;
 }
 
@@ -47,6 +50,7 @@ export interface TravelPlanResponse extends CreateTravelPlanInput {
   planId: number;
   userId: number;
   interestCodes: string[];
+  experiencePreferences: string[];
   status: PlanStatus;
   allowedNextStatuses: PlanStatus[];
   createdAt: string;

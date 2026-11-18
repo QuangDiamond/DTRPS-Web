@@ -55,6 +55,8 @@ export interface TravelPlanResponse extends CreateTravelPlanInput {
   allowedNextStatuses: PlanStatus[];
   createdAt: string;
   updatedAt: string;
+  /** Tổng chi phí Backend tính từ lịch trình ACTIVE; null nếu chưa có lịch trình. Khác với budget. */
+  estimatedCost: number | null;
 }
 
 export interface TripPlace {

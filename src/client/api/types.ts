@@ -29,6 +29,8 @@ export interface TravelPreferences {
   notes: string | null;
   interests: string[];
   specialNeeds: string[];
+  /** Mã trả lời cá nhân hóa (mục đích/phong cách/trải nghiệm/kỷ niệm) — dùng chung với TravelPlan */
+  experiencePreferences: string[];
 }
 
 export interface AuthResponse {

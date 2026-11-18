@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { errorMessage } from '@/client/api/http';
 import { referenceApi } from '@/client/api/referenceApi';
@@ -10,6 +10,8 @@ import { CLIENT_ROUTES } from '@/client/routePaths';
 import {
   COMPANION_OPTIONS,
   type CompanionId,
+  EXPERIENCE_QUESTIONS,
+  EXPERIENCE_TO_CATEGORIES,
   PACE_OPTIONS,
   type PaceId,
   typesToInterests,
@@ -39,49 +41,6 @@ const addDays = (date: Date, days: number) => {
   return next;
 };
 const formatMoney = (value: number) => `${moneyFormatter.format(value)} ₫`;
-
-const EXPERIENCE_QUESTIONS = [
-  { id: 'purpose', icon: 'favorite', title: 'Bạn mong muốn điều gì từ chuyến đi này?', subtitle: 'Chọn cảm xúc hoặc mục đích bạn hướng đến.', options: [
-      { code: 'PURPOSE_RELAX', emoji: '🌿', label: 'Thư giãn & chữa lành' },
-      { code: 'PURPOSE_ADVENTURE', emoji: '🧭', label: 'Khám phá & phiêu lưu' },
-      { code: 'PURPOSE_BOND', emoji: '💗', label: 'Gắn kết người thân' },
-      { code: 'PURPOSE_FUN', emoji: '🎉', label: 'Vui chơi & giải trí' },
-      { code: 'PURPOSE_CULTURE', emoji: '🏛️', label: 'Tìm hiểu văn hóa' },
-      { code: 'PURPOSE_ROMANCE', emoji: '🌅', label: 'Tạo kỷ niệm lãng mạn' },
-    ] },
-  { id: 'style', icon: 'explore', title: 'Bạn thích du lịch theo phong cách nào?', subtitle: 'Hãy chọn cách bạn thích tận hưởng hành trình.', options: [
-      { code: 'STYLE_QUIET', emoji: '🍃', label: 'Yên tĩnh, nhẹ nhàng' },
-      { code: 'STYLE_ACTIVE', emoji: '⚡', label: 'Năng động, sôi nổi' },
-      { code: 'STYLE_FREE', emoji: '✨', label: 'Tự do, ngẫu hứng' },
-      { code: 'STYLE_PLANNED', emoji: '📋', label: 'Có kế hoạch rõ ràng' },
-      { code: 'STYLE_COMFORT', emoji: '💎', label: 'Thoải mái, tiện nghi' },
-      { code: 'STYLE_LOCAL', emoji: '🎒', label: 'Gần gũi địa phương' },
-    ] },
-  { id: 'experience', icon: 'auto_awesome', title: 'Trải nghiệm nào khiến bạn hào hứng?', subtitle: 'Chọn những hoạt động mà bạn thực sự muốn thử.', options: [
-      { code: 'EXPERIENCE_NATURE', emoji: '🏞️', label: 'Khám phá thiên nhiên' },
-      { code: 'EXPERIENCE_FOOD', emoji: '🍜', label: 'Thưởng thức ẩm thực' },
-      { code: 'EXPERIENCE_PHOTO', emoji: '📸', label: 'Chụp ảnh, check-in' },
-      { code: 'EXPERIENCE_OUTDOOR', emoji: '🚣', label: 'Hoạt động ngoài trời' },
-      { code: 'EXPERIENCE_ART_CULTURE', emoji: '🎨', label: 'Nghệ thuật & văn hóa' },
-      { code: 'EXPERIENCE_WELLNESS', emoji: '🧘', label: 'Nghỉ dưỡng & chăm sóc' },
-    ] },
-  { id: 'memory', icon: 'photo_library', title: 'Bạn muốn mang điều gì về sau chuyến đi?', subtitle: 'Điều khiến một chuyến đi trở nên đáng nhớ.', options: [
-      { code: 'MEMORY_PHOTOS', emoji: '📷', label: 'Những bức ảnh đẹp' },
-      { code: 'MEMORY_STORIES', emoji: '📖', label: 'Câu chuyện & kiến thức' },
-      { code: 'MEMORY_UNFORGETTABLE', emoji: '💫', label: 'Trải nghiệm khó quên' },
-      { code: 'MEMORY_TOGETHER', emoji: '🤝', label: 'Kỷ niệm cùng mọi người' },
-    ] },
-] as const;
-
-// Chỉ ánh xạ các hoạt động cụ thể ở câu 3. Không suy diễn mục đích/phong cách thành danh mục.
-const EXPERIENCE_TO_CATEGORIES: Record<string, readonly string[]> = {
-  EXPERIENCE_NATURE: ['park', 'scenicSpot', 'beach'],
-  EXPERIENCE_FOOD: ['restaurant', 'localEatery', 'cafe'],
-  EXPERIENCE_PHOTO: ['checkinSpot', 'scenicSpot'],
-  EXPERIENCE_OUTDOOR: ['park', 'scenicSpot', 'amusementPark', 'beach'],
-  EXPERIENCE_ART_CULTURE: ['heritage', 'craftVillage'],
-  EXPERIENCE_WELLNESS: ['resort'],
-};
 
 function initialCategories(
   groups: CategoryGroup[],
@@ -177,7 +136,8 @@ export default function PlanTripPage() {
 
   const [typeGroups, setTypeGroups] = useState<CategoryGroup[]>([]);
   const [savedCategoryCodes, setSavedCategoryCodes] = useState<string[]>([]);
-  const [selectedExperiences, setSelectedExperiences] = useState<string[]>([]);
+  // Đã thiết lập ở Sở thích du lịch (UC-006) — không hỏi lại ở đây.
+  const [savedExperiencePreferences, setSavedExperiencePreferences] = useState<string[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesFailed, setCategoriesFailed] = useState(false);
   const [pace, setPace] = useState<PaceId>('balanced');
@@ -221,6 +181,7 @@ export default function PlanTripPage() {
         if (preferencesResult.status !== 'fulfilled') return;
         const preferences = preferencesResult.value;
         setSavedCategoryCodes(initialCategories(groups, preferences));
+        setSavedExperiencePreferences(preferences.experiencePreferences);
       },
     );
     return () => {
@@ -231,10 +192,10 @@ export default function PlanTripPage() {
   const destination = provinces.find((item) => item.code === destinationId);
   const endDate = addDays(startDate, days - 1);
   const minDate = toInputDate(new Date());
-  const selectedSet = new Set(selectedExperiences);
-  const answeredCount = EXPERIENCE_QUESTIONS.filter((question) =>
-    question.options.some((option) => selectedSet.has(option.code)),
-  ).length;
+  const experienceSet = new Set(savedExperiencePreferences);
+  const selectedExperienceOptions = EXPERIENCE_QUESTIONS.flatMap((question) =>
+    [...question.options],
+  ).filter((option) => experienceSet.has(option.code));
 
   const setBudgetValue = (value: string) => {
     // Chỉ nhận chữ số; giới hạn cả nhập tay lẫn kéo ở 1 tỷ.
@@ -257,15 +218,6 @@ export default function PlanTripPage() {
     else if (companion === 'solo') setCompanion(next === 2 ? 'couple' : 'friends');
   };
 
-  const toggleExperience = (code: string) => {
-    setSelectedExperiences((current) =>
-      current.includes(code)
-        ? current.filter((entry) => entry !== code)
-        : [...current, code],
-    );
-    setError(null);
-  };
-
   const submit = async () => {
     if (submitting) return;
     setError(null);
@@ -286,17 +238,15 @@ export default function PlanTripPage() {
       setError('Không tải được danh mục trải nghiệm.');
       return;
     }
-    if (selectedExperiences.length === 0) {
-      setError('Hãy chọn ít nhất một đáp án về sở thích trải nghiệm.');
-      return;
-    }
 
-    // Khi có lựa chọn hoạt động cụ thể, dùng mã tương ứng đang ACTIVE.
-    // Nếu chưa trả lời câu 3, giữ sở thích danh mục đã lưu trong hồ sơ.
-    const hasActivityChoice = selectedExperiences.some((code) => code.startsWith('EXPERIENCE_'));
+    // Khi có lựa chọn hoạt động cụ thể (câu 3, đã trả lời ở Sở thích du lịch), dùng mã tương ứng.
+    // Nếu chưa trả lời, giữ sở thích danh mục đã lưu trong hồ sơ.
+    const hasActivityChoice = savedExperiencePreferences.some((code) =>
+      code.startsWith('EXPERIENCE_'),
+    );
     const compatibleCodes = new Set(
       hasActivityChoice
-        ? selectedExperiences.flatMap((code) => EXPERIENCE_TO_CATEGORIES[code] ?? [])
+        ? savedExperiencePreferences.flatMap((code) => EXPERIENCE_TO_CATEGORIES[code] ?? [])
         : savedCategoryCodes,
     );
     const categoryCodes = [...new Set(typeGroups.flatMap((group) =>
@@ -317,7 +267,7 @@ export default function PlanTripPage() {
         groupSize: members,
         description: companionLabel ? `Hình thức đồng hành: ${companionLabel}` : null,
         categoryCodes,
-        experiencePreferences: selectedExperiences,
+        experiencePreferences: savedExperiencePreferences,
         travelPace: PACE_TO_API[pace],
       });
 
@@ -577,79 +527,53 @@ export default function PlanTripPage() {
           </p>
         </SectionCard>
 
-        {/* SỞ THÍCH: 4 câu hỏi cá nhân hóa, không hiển thị bộ lọc danh mục. */}
+        {/* CÁ NHÂN HÓA: đã thiết lập ở Sở thích du lịch, chỉ hiện tóm tắt + đường dẫn chỉnh sửa. */}
         <div className="min-w-0 md:col-span-2">
           <SectionCard
             icon="auto_awesome"
             title="Cá nhân hóa chuyến đi của bạn"
-            subtitle="Hãy cho Smart Travel biết bạn thích điều gì. Có thể chọn nhiều đáp án."
+            subtitle="Dựa trên sở thích bạn đã thiết lập — dùng cho mọi chuyến đi mới."
             right={
-              <span className="ml-2 shrink-0 rounded-full bg-[#E2FAF5] px-2.5 py-1 text-[11px] font-bold text-[#075C66]">
-                {answeredCount}/4 câu
-              </span>
+              <Link
+                to={CLIENT_ROUTES.PREFERENCES}
+                className="ml-2 shrink-0 rounded-full bg-[#E2FAF5] px-2.5 py-1 text-[11px] font-bold text-[#075C66]"
+              >
+                Chỉnh sửa
+              </Link>
             }
           >
-            <div className="mb-4 flex gap-1.5" aria-hidden="true">
-              {EXPERIENCE_QUESTIONS.map((question) => (
-                <span key={question.id} className={`h-1.5 flex-1 rounded-full transition-colors ${
-                  question.options.some((option) => selectedSet.has(option.code))
-                    ? 'bg-[#087A78]' : 'bg-[#E5ECEC]'
-                }`} />
-              ))}
-            </div>
-            <div className="divide-y divide-[#E6EDED]">
-              {EXPERIENCE_QUESTIONS.map((question, index) => (
-                <fieldset key={question.id} className="min-w-0 py-5 first:pt-1">
-                  <legend className="sr-only">{question.title}</legend>
-                  <div className="mb-3.5 flex items-start gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7F6F2] text-[#087A78]">
-                      <Icon name={question.icon} className="text-[21px]" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#087A78]">Câu {index + 1}</p>
-                      <h3 className="mt-0.5 text-[15px] font-extrabold leading-snug text-[#13364A]">{question.title}</h3>
-                      <p className="mt-1 text-[12px] leading-5 text-[#617580]">{question.subtitle}</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                    {question.options.map((option) => {
-                      const selected = selectedSet.has(option.code);
-                      return (
-                        <label key={option.code} className={`flex min-h-[64px] cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-colors focus-within:ring-2 focus-within:ring-[#087A78]/30 ${
-                          selected ? 'border-[#087A78] bg-[#EAF8F4]' : 'border-[#E3E7F0] bg-white hover:border-[#9DDED1] hover:bg-[#F8FCFA]'
-                        }`}>
-                          <span aria-hidden="true" className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[19px] ${selected ? 'bg-[#D5F2E9]' : 'bg-[#F1F4F6]'}`}>{option.emoji}</span>
-                          <span className="min-w-0 flex-1 text-[13px] font-semibold leading-5 text-[#13364A]">{option.label}</span>
-                          <input type="checkbox" checked={selected} onChange={() => toggleExperience(option.code)} className="h-[18px] w-[18px] shrink-0 cursor-pointer accent-[#087A78]" />
-                        </label>
-                      );
-                    })}
-                  </div>
-                </fieldset>
-              ))}
-            </div>
+            {selectedExperienceOptions.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {selectedExperienceOptions.map((option) => (
+                  <span
+                    key={option.code}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#C9E7DF] bg-[#F0F9F6] px-2.5 py-1.5 text-[11px] font-semibold text-[#075C66]"
+                  >
+                    {option.emoji} {option.label}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-[#F8F8FF] p-3.5">
+                <p className="text-[12px] text-[#617580]">
+                  Bạn chưa thiết lập sở thích cá nhân hóa. Thiết lập ngay để Smart Travel gợi ý đúng
+                  gu của bạn hơn.
+                </p>
+                <Link
+                  to={CLIENT_ROUTES.PREFERENCES}
+                  className="shrink-0 rounded-full bg-[#075C66] px-4 py-2 text-[12px] font-bold text-white"
+                >
+                  Thiết lập ngay
+                </Link>
+              </div>
+            )}
             {(categoriesLoading || categoriesFailed || typeGroups.length === 0) && (
               <p role="status" className="mt-2 rounded-xl bg-[#F8F8FF] p-3 text-[12px] text-[#617580]">
-                {categoriesLoading ? 'Đang tải dữ liệu hỗ trợ...' : 'Không tải được danh mục hỗ trợ. Vui lòng tải lại trang trước khi tạo kế hoạch.'}
+                {categoriesLoading
+                  ? 'Đang tải dữ liệu hỗ trợ...'
+                  : 'Không tải được danh mục hỗ trợ. Vui lòng tải lại trang trước khi tạo kế hoạch.'}
               </p>
             )}
-            <div className="mt-2 rounded-2xl bg-[#F0F9F6] p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-[13px] font-extrabold text-[#075C66]">{selectedExperiences.length} lựa chọn của bạn</p>
-                {selectedExperiences.length > 0 && (
-                  <button type="button" onClick={() => { setSelectedExperiences([]); setError(null); }} className="text-[12px] font-bold text-[#087A78] underline">Xóa tất cả</button>
-                )}
-              </div>
-              {selectedExperiences.length > 0 ? (
-                <div className="mt-2.5 flex flex-wrap gap-1.5">
-                  {EXPERIENCE_QUESTIONS.flatMap((question) => [...question.options]).filter((option) => selectedSet.has(option.code)).map((option) => (
-                    <button type="button" key={option.code} aria-label={`Bỏ chọn ${option.label}`} onClick={() => toggleExperience(option.code)} className="inline-flex items-center gap-1.5 rounded-full border border-[#C9E7DF] bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[#075C66]">
-                      {option.emoji} {option.label}<Icon name="close" className="text-[13px]" />
-                    </button>
-                  ))}
-                </div>
-              ) : <p className="mt-1 text-[12px] text-[#617580]">Chọn ít nhất một đáp án để thể hiện phong cách chuyến đi.</p>}
-            </div>
           </SectionCard>
         </div>
 

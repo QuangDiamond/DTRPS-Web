@@ -6,21 +6,19 @@ import { referenceApi } from '@/client/api/referenceApi';
 import type { TravelPreferences } from '@/client/api/types';
 import { userApi } from '@/client/api/userApi';
 import { CLIENT_ROUTES } from '@/client/routePaths';
-import {
-  type IconOption,
-  type ImageOption,
-  toInterestOptions,
-  toSpecialNeedOptions,
-} from '@/client/traveller/data/preferenceOptions';
+import { type IconOption, toSpecialNeedOptions } from '@/client/traveller/data/preferenceOptions';
+import { EXPERIENCE_QUESTIONS } from '@/client/traveller/data/planTrip';
+import ExperienceQuestions from '@/client/traveller/components/ExperienceQuestions';
 import { FormAlert, Notice, Spinner } from '@/client/ui/Blocks';
 import { routeNotice } from '@/client/ui/useNotice';
 import PageBar from '@/client/ui/PageBar';
 
+// 4 câu hỏi cá nhân hóa, mỗi câu một bước riêng, cộng thêm bước "Yêu cầu đặc biệt".
 const STEPS = [
-  {
-    title: 'Bạn thích trải nghiệm gì?',
-    subtitle: 'Chọn những hoạt động bạn yêu thích nhất (Chọn nhiều mục)',
-  },
+  ...EXPERIENCE_QUESTIONS.map((question) => ({
+    title: question.title,
+    subtitle: question.subtitle,
+  })),
   { title: 'Yêu cầu đặc biệt', subtitle: 'Bạn có yêu cầu đặc biệt nào không? (Chọn nếu có)' },
 ];
 
@@ -28,57 +26,16 @@ const EMPTY: TravelPreferences = {
   notes: null,
   interests: [],
   specialNeeds: [],
+  experiencePreferences: [],
 };
 
-type ListKey = 'interests' | 'specialNeeds';
+type ListKey = 'specialNeeds';
 
 function CheckBadge() {
   return (
     <span className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-primary text-white">
       <Icon name="check" className="text-[15px]" />
     </span>
-  );
-}
-
-/** Thẻ ảnh (bước 1) */
-function ImageGrid({
-  options,
-  isSelected,
-  onToggle,
-}: {
-  options: ImageOption[];
-  isSelected: (id: string) => boolean;
-  onToggle: (id: string) => void;
-}) {
-  return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-      {options.map((option) => {
-        const selected = isSelected(option.id);
-        return (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => onToggle(option.id)}
-            aria-pressed={selected}
-            className={`overflow-hidden rounded-2xl border-2 text-left ${
-              selected ? 'border-primary bg-[#F0FAF8]' : 'border-[#E6EAF0] bg-white'
-            }`}
-          >
-            <span className="relative block h-[105px]">
-              <img src={option.image} alt="" className="h-full w-full object-cover" />
-              {selected && (
-                <span className="absolute top-1.5 right-1.5">
-                  <CheckBadge />
-                </span>
-              )}
-            </span>
-            <span className="flex min-h-[44px] items-center px-2.5 py-2 text-[12px] font-semibold text-client-ink">
-              {option.label}
-            </span>
-          </button>
-        );
-      })}
-    </div>
   );
 }
 
@@ -151,7 +108,6 @@ export default function TravelPreferencesPage() {
   const welcome = routeNotice(useLocation().state);
   const [step, setStep] = useState(0);
   const [preferences, setPreferences] = useState<TravelPreferences | null>(null);
-  const [interestOptions, setInterestOptions] = useState<ImageOption[] | null>(null);
   const [specialNeedOptions, setSpecialNeedOptions] = useState<IconOption[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -168,16 +124,15 @@ export default function TravelPreferencesPage() {
         setLoadError(errorMessage(loadFailure));
         setPreferences(EMPTY);
       });
-    Promise.all([referenceApi.interests(), referenceApi.specialNeeds()])
-      .then(([interests, specialNeeds]) => {
+    referenceApi
+      .specialNeeds()
+      .then((specialNeeds) => {
         if (!active) return;
-        setInterestOptions(toInterestOptions(interests));
         setSpecialNeedOptions(toSpecialNeedOptions(specialNeeds));
       })
       .catch((loadFailure: unknown) => {
         if (!active) return;
         setLoadError(errorMessage(loadFailure));
-        setInterestOptions([]);
         setSpecialNeedOptions([]);
       });
     return () => {
@@ -185,7 +140,7 @@ export default function TravelPreferencesPage() {
     };
   }, []);
 
-  if (!preferences || !interestOptions || !specialNeedOptions) {
+  if (!preferences || !specialNeedOptions) {
     return <Spinner />;
   }
 
@@ -202,8 +157,25 @@ export default function TravelPreferencesPage() {
         : previous,
     );
 
-  // Bước cuối (yêu cầu đặc biệt) không bắt buộc
-  const canContinue = [preferences.interests.length > 0, true][step];
+  const toggleExperience = (code: string) =>
+    setPreferences((previous) =>
+      previous
+        ? {
+            ...previous,
+            experiencePreferences: previous.experiencePreferences.includes(code)
+              ? previous.experiencePreferences.filter((item) => item !== code)
+              : [...previous.experiencePreferences, code],
+          }
+        : previous,
+    );
+
+  // Mỗi câu cá nhân hóa (4 bước đầu) cần chọn ít nhất một đáp án; yêu cầu đặc biệt không bắt buộc.
+  const canContinue =
+    step < EXPERIENCE_QUESTIONS.length
+      ? EXPERIENCE_QUESTIONS[step].options.some((option) =>
+          preferences.experiencePreferences.includes(option.code),
+        )
+      : true;
 
   const finish = async () => {
     setSaving(true);
@@ -239,25 +211,23 @@ export default function TravelPreferencesPage() {
   };
 
   const renderStep = () => {
-    switch (step) {
-      case 0:
-        return (
-          <ImageGrid
-            options={interestOptions}
-            isSelected={(id) => preferences.interests.includes(id)}
-            onToggle={(id) => toggleIn('interests', id)}
-          />
-        );
-      default:
-        return (
-          <IconList
-            variant="multi"
-            options={specialNeedOptions}
-            isSelected={(id) => preferences.specialNeeds.includes(id)}
-            onToggle={(id) => toggleIn('specialNeeds', id)}
-          />
-        );
+    if (step < EXPERIENCE_QUESTIONS.length) {
+      return (
+        <ExperienceQuestions
+          options={EXPERIENCE_QUESTIONS[step].options}
+          selected={preferences.experiencePreferences}
+          onToggle={toggleExperience}
+        />
+      );
     }
+    return (
+      <IconList
+        variant="multi"
+        options={specialNeedOptions}
+        isSelected={(id) => preferences.specialNeeds.includes(id)}
+        onToggle={(id) => toggleIn('specialNeeds', id)}
+      />
+    );
   };
 
   return (

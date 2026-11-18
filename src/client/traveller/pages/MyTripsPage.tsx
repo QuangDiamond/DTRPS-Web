@@ -38,6 +38,14 @@ function formatMoney(amount: number | null, currency: string): string {
   return `${moneyFormatter.format(amount)} ${currency}`;
 }
 
+/** Chi phí Backend tính từ lịch trình ACTIVE — khác với ngân sách người dùng tự nhập. */
+function formatEstimatedCost(amount: number | null, currency: string): string {
+  if (amount === null || amount === undefined) {
+    return 'Chưa có lịch trình';
+  }
+  return `${moneyFormatter.format(amount)} ${currency}`;
+}
+
 function formatDate(date: string): string {
   const parts = date?.split('-') ?? [];
   return parts.length === 3
@@ -263,7 +271,7 @@ function PlanCard({
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
           <span className="flex items-center gap-1 text-[12px] font-semibold text-[#13364A]">
             <Icon name="payments" className="text-[17px] text-[#087A78]" />
-            {formatMoney(plan.budget, plan.currency)}
+            {formatEstimatedCost(plan.estimatedCost, plan.currency)}
           </span>
           <span className="flex items-center gap-1 text-[11px] text-[#72818C]">
             <Icon name="favorite" className="text-[17px] text-[#087A78]" />

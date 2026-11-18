@@ -32,10 +32,12 @@
       "systemSettings": "System settings",
       "systemAdministration": "System administration",
       "placeCategories": "Service types",
-      "reviewManagement": "Review management"
+      "reviewManagement": "Review management",
+      "tripManagement": "Trip management"
     },
     "placeCategories": "Service types",
-    "reviews": "Review management"
+    "reviews": "Review management",
+    "trips": "Trip management"
   },
   "header": {
     "searchPlaceholder": "Search data, users, tours, POIs...",
@@ -3593,5 +3595,113 @@
       "hidden": "Review hidden; author and reporters notified",
       "dismissed": "Reports dismissed; reporters notified"
     }
+  },
+  "tripAdmin": {
+    "header": {
+      "eyebrow": "Trip monitoring",
+      "title": "Trip management",
+      "description": "See every user trip: which are under way, which day they are on, and which have finished. This page is read-only and updates itself as users progress.",
+      "refresh": "Refresh"
+    },
+    "stats": {
+      "total": "Total trips",
+      "totalHint": "{{count}} being planned",
+      "inProgress": "In progress",
+      "inProgressHint": "{{count}} past the planned end date",
+      "completed": "Completed",
+      "completedHint": "Full itinerary finished",
+      "cancelled": "Cancelled",
+      "cancelledHint": "Cancelled by the user"
+    },
+    "tabs": {
+      "all": "All",
+      "inProgress": "In progress",
+      "overdue": "Past end date",
+      "planning": "Planning",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "status": {
+      "DRAFT": "Draft",
+      "PLANNED": "Planned",
+      "IN_PROGRESS": "In progress",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "dayStatus": {
+      "NOT_STARTED": "Not started",
+      "IN_PROGRESS": "In progress",
+      "COMPLETED": "Done"
+    },
+    "stopStatus": {
+      "PENDING": "Not visited",
+      "COMPLETED": "Visited",
+      "SKIPPED": "Skipped"
+    },
+    "overdue": "Past end date",
+    "progress": {
+      "noItinerary": "No itinerary yet",
+      "onDay": "On day {{day}} of {{total}}",
+      "waitingDay": "{{done}} days done, day {{day}} not started",
+      "notStartedDay": "Day {{day}} not started",
+      "finished": "Finished {{done}} of {{total}} days",
+      "stopped": "Cancelled after {{done}} of {{total}} days",
+      "planned": "{{days}}-day itinerary · {{stops}} stops",
+      "stops": "{{done}} of {{total}} stops visited",
+      "skipped": "{{count}} skipped"
+    },
+    "filters": {
+      "searchLabel": "Search",
+      "searchPlaceholder": "Trip name, destination, user name or email…",
+      "destination": "Destination",
+      "allDestinations": "All destinations",
+      "from": "Travelling from",
+      "to": "To",
+      "sort": "Sort by",
+      "clear": "Clear filters"
+    },
+    "sorts": {
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "startSoon": "Earliest start",
+      "startLate": "Latest start"
+    },
+    "table": {
+      "traveller": "User",
+      "trip": "Trip",
+      "dates": "Dates",
+      "status": "Status",
+      "progress": "Progress",
+      "actions": "Actions",
+      "view": "View details",
+      "people": "{{count}} people",
+      "empty": "No trips found",
+      "emptyHint": "Try another tab, filter or keyword",
+      "items": "trips"
+    },
+    "detail": {
+      "back": "Back to list",
+      "loadError": "Could not load this trip",
+      "progressTitle": "Trip progress",
+      "day": "Day {{day}}",
+      "startedAt": "Started {{time}}",
+      "completedAt": "Done {{time}}",
+      "emptyDay": "No stops on this day.",
+      "selectedPlaces": "Selected places",
+      "noPlaces": "The user has not selected any places.",
+      "traveller": "User",
+      "info": "Trip information",
+      "code": "Trip code",
+      "destination": "Destination",
+      "group": "Group size",
+      "budget": "Budget",
+      "noBudget": "Not set",
+      "created": "Created",
+      "tripStarted": "Started",
+      "tripCompleted": "Completed",
+      "feedback": "Trip review",
+      "noFeedback": "The user has not reviewed this trip."
+    },
+    "loadError": "Could not load trips"
   }
 }

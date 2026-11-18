@@ -32,10 +32,12 @@
       "systemSettings": "Cài đặt hệ thống",
       "systemAdministration": "Quản trị hệ thống",
       "placeCategories": "Loại hình dịch vụ",
-      "reviewManagement": "Quản lý đánh giá"
+      "reviewManagement": "Quản lý đánh giá",
+      "tripManagement": "Quản lý chuyến đi"
     },
     "placeCategories": "Loại hình dịch vụ",
-    "reviews": "Quản lý đánh giá"
+    "reviews": "Quản lý đánh giá",
+    "trips": "Quản lý chuyến đi"
   },
   "header": {
     "searchPlaceholder": "Tìm kiếm dữ liệu, người dùng, tour, POI...",
@@ -3520,5 +3522,113 @@
       "hidden": "Đã ẩn đánh giá, đã báo người viết và người báo cáo",
       "dismissed": "Đã bỏ qua báo cáo và báo kết quả cho người báo cáo"
     }
+  },
+  "tripAdmin": {
+    "header": {
+      "eyebrow": "Theo dõi hành trình",
+      "title": "Quản lý chuyến đi",
+      "description": "Xem chuyến đi của mọi người dùng: chuyến nào đang đi, đang ở ngày thứ mấy, chuyến nào đã hoàn thành. Trang này chỉ để xem và tự cập nhật khi người dùng đi tiếp.",
+      "refresh": "Làm mới"
+    },
+    "stats": {
+      "total": "Tổng chuyến đi",
+      "totalHint": "{{count}} chuyến đang lên kế hoạch",
+      "inProgress": "Đang đi",
+      "inProgressHint": "{{count}} chuyến quá ngày dự kiến",
+      "completed": "Đã hoàn thành",
+      "completedHint": "Đã đi xong toàn bộ lịch trình",
+      "cancelled": "Đã hủy",
+      "cancelledHint": "Người dùng đã hủy chuyến"
+    },
+    "tabs": {
+      "all": "Tất cả",
+      "inProgress": "Đang đi",
+      "overdue": "Quá ngày dự kiến",
+      "planning": "Đang lên kế hoạch",
+      "completed": "Đã hoàn thành",
+      "cancelled": "Đã hủy"
+    },
+    "status": {
+      "DRAFT": "Nháp",
+      "PLANNED": "Đã lên kế hoạch",
+      "IN_PROGRESS": "Đang đi",
+      "COMPLETED": "Đã hoàn thành",
+      "CANCELLED": "Đã hủy"
+    },
+    "dayStatus": {
+      "NOT_STARTED": "Chưa đi",
+      "IN_PROGRESS": "Đang đi",
+      "COMPLETED": "Đã xong"
+    },
+    "stopStatus": {
+      "PENDING": "Chưa đến",
+      "COMPLETED": "Đã đến",
+      "SKIPPED": "Bỏ qua"
+    },
+    "overdue": "Quá ngày dự kiến",
+    "progress": {
+      "noItinerary": "Chưa có lịch trình",
+      "onDay": "Đang đi ngày {{day}}/{{total}}",
+      "waitingDay": "Xong {{done}} ngày, chờ bắt đầu ngày {{day}}",
+      "notStartedDay": "Chưa bắt đầu ngày {{day}}",
+      "finished": "Đã đi xong {{done}}/{{total}} ngày",
+      "stopped": "Đã hủy sau {{done}}/{{total}} ngày",
+      "planned": "Lịch trình {{days}} ngày · {{stops}} điểm",
+      "stops": "{{done}}/{{total}} điểm đã đến",
+      "skipped": "bỏ qua {{count}}"
+    },
+    "filters": {
+      "searchLabel": "Tìm kiếm",
+      "searchPlaceholder": "Tên chuyến đi, điểm đến, tên hoặc email người dùng…",
+      "destination": "Điểm đến",
+      "allDestinations": "Mọi điểm đến",
+      "from": "Đi từ ngày",
+      "to": "Đến ngày",
+      "sort": "Sắp xếp",
+      "clear": "Xoá bộ lọc"
+    },
+    "sorts": {
+      "newest": "Mới tạo nhất",
+      "oldest": "Cũ nhất",
+      "startSoon": "Ngày đi sớm nhất",
+      "startLate": "Ngày đi muộn nhất"
+    },
+    "table": {
+      "traveller": "Người dùng",
+      "trip": "Chuyến đi",
+      "dates": "Thời gian",
+      "status": "Trạng thái",
+      "progress": "Tiến độ",
+      "actions": "Thao tác",
+      "view": "Xem chi tiết",
+      "people": "{{count}} người",
+      "empty": "Không có chuyến đi nào",
+      "emptyHint": "Thử đổi tab, bộ lọc hoặc từ khoá tìm kiếm",
+      "items": "chuyến đi"
+    },
+    "detail": {
+      "back": "Quay lại danh sách",
+      "loadError": "Không tải được chuyến đi",
+      "progressTitle": "Tiến độ chuyến đi",
+      "day": "Ngày {{day}}",
+      "startedAt": "Bắt đầu {{time}}",
+      "completedAt": "Xong {{time}}",
+      "emptyDay": "Ngày này chưa có điểm đến.",
+      "selectedPlaces": "Địa điểm đã chọn",
+      "noPlaces": "Người dùng chưa chọn địa điểm nào.",
+      "traveller": "Người dùng",
+      "info": "Thông tin chuyến đi",
+      "code": "Mã chuyến đi",
+      "destination": "Điểm đến",
+      "group": "Số người",
+      "budget": "Ngân sách",
+      "noBudget": "Chưa nhập",
+      "created": "Ngày tạo",
+      "tripStarted": "Bắt đầu đi",
+      "tripCompleted": "Hoàn thành",
+      "feedback": "Đánh giá chuyến đi",
+      "noFeedback": "Người dùng chưa đánh giá chuyến đi này."
+    },
+    "loadError": "Không tải được danh sách chuyến đi"
   }
 }

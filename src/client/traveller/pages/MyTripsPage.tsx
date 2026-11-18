@@ -38,10 +38,13 @@ function formatMoney(amount: number | null, currency: string): string {
   return `${moneyFormatter.format(amount)} ${currency}`;
 }
 
-/** Chi phí Backend tính từ lịch trình ACTIVE — khác với ngân sách người dùng tự nhập. */
+/**
+ * Chi phí Backend tính — ưu tiên lịch trình ACTIVE, chưa có thì ước tính từ các địa điểm đã chọn.
+ * Khác với ngân sách người dùng tự nhập.
+ */
 function formatEstimatedCost(amount: number | null, currency: string): string {
   if (amount === null || amount === undefined) {
-    return 'Chưa có lịch trình';
+    return 'Chưa có chi phí ước tính';
   }
   return `${moneyFormatter.format(amount)} ${currency}`;
 }

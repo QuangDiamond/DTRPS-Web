@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { errorMessage } from '@/client/api/http';
@@ -39,6 +39,49 @@ const addDays = (date: Date, days: number) => {
   return next;
 };
 const formatMoney = (value: number) => `${moneyFormatter.format(value)} ₫`;
+
+const EXPERIENCE_QUESTIONS = [
+  { id: 'purpose', icon: 'favorite', title: 'Bạn mong muốn điều gì từ chuyến đi này?', subtitle: 'Chọn cảm xúc hoặc mục đích bạn hướng đến.', options: [
+      { code: 'PURPOSE_RELAX', emoji: '🌿', label: 'Thư giãn & chữa lành' },
+      { code: 'PURPOSE_ADVENTURE', emoji: '🧭', label: 'Khám phá & phiêu lưu' },
+      { code: 'PURPOSE_BOND', emoji: '💗', label: 'Gắn kết người thân' },
+      { code: 'PURPOSE_FUN', emoji: '🎉', label: 'Vui chơi & giải trí' },
+      { code: 'PURPOSE_CULTURE', emoji: '🏛️', label: 'Tìm hiểu văn hóa' },
+      { code: 'PURPOSE_ROMANCE', emoji: '🌅', label: 'Tạo kỷ niệm lãng mạn' },
+    ] },
+  { id: 'style', icon: 'explore', title: 'Bạn thích du lịch theo phong cách nào?', subtitle: 'Hãy chọn cách bạn thích tận hưởng hành trình.', options: [
+      { code: 'STYLE_QUIET', emoji: '🍃', label: 'Yên tĩnh, nhẹ nhàng' },
+      { code: 'STYLE_ACTIVE', emoji: '⚡', label: 'Năng động, sôi nổi' },
+      { code: 'STYLE_FREE', emoji: '✨', label: 'Tự do, ngẫu hứng' },
+      { code: 'STYLE_PLANNED', emoji: '📋', label: 'Có kế hoạch rõ ràng' },
+      { code: 'STYLE_COMFORT', emoji: '💎', label: 'Thoải mái, tiện nghi' },
+      { code: 'STYLE_LOCAL', emoji: '🎒', label: 'Gần gũi địa phương' },
+    ] },
+  { id: 'experience', icon: 'auto_awesome', title: 'Trải nghiệm nào khiến bạn hào hứng?', subtitle: 'Chọn những hoạt động mà bạn thực sự muốn thử.', options: [
+      { code: 'EXPERIENCE_NATURE', emoji: '🏞️', label: 'Khám phá thiên nhiên' },
+      { code: 'EXPERIENCE_FOOD', emoji: '🍜', label: 'Thưởng thức ẩm thực' },
+      { code: 'EXPERIENCE_PHOTO', emoji: '📸', label: 'Chụp ảnh, check-in' },
+      { code: 'EXPERIENCE_OUTDOOR', emoji: '🚣', label: 'Hoạt động ngoài trời' },
+      { code: 'EXPERIENCE_ART_CULTURE', emoji: '🎨', label: 'Nghệ thuật & văn hóa' },
+      { code: 'EXPERIENCE_WELLNESS', emoji: '🧘', label: 'Nghỉ dưỡng & chăm sóc' },
+    ] },
+  { id: 'memory', icon: 'photo_library', title: 'Bạn muốn mang điều gì về sau chuyến đi?', subtitle: 'Điều khiến một chuyến đi trở nên đáng nhớ.', options: [
+      { code: 'MEMORY_PHOTOS', emoji: '📷', label: 'Những bức ảnh đẹp' },
+      { code: 'MEMORY_STORIES', emoji: '📖', label: 'Câu chuyện & kiến thức' },
+      { code: 'MEMORY_UNFORGETTABLE', emoji: '💫', label: 'Trải nghiệm khó quên' },
+      { code: 'MEMORY_TOGETHER', emoji: '🤝', label: 'Kỷ niệm cùng mọi người' },
+    ] },
+] as const;
+
+// Chỉ ánh xạ các hoạt động cụ thể ở câu 3. Không suy diễn mục đích/phong cách thành danh mục.
+const EXPERIENCE_TO_CATEGORIES: Record<string, readonly string[]> = {
+  EXPERIENCE_NATURE: ['park', 'scenicSpot', 'beach'],
+  EXPERIENCE_FOOD: ['restaurant', 'localEatery', 'cafe'],
+  EXPERIENCE_PHOTO: ['checkinSpot', 'scenicSpot'],
+  EXPERIENCE_OUTDOOR: ['park', 'scenicSpot', 'amusementPark', 'beach'],
+  EXPERIENCE_ART_CULTURE: ['heritage', 'craftVillage'],
+  EXPERIENCE_WELLNESS: ['resort'],
+};
 
 function initialCategories(
   groups: CategoryGroup[],
@@ -119,7 +162,6 @@ function StepperButton({
 export default function PlanTripPage() {
   const navigate = useNavigate();
   const { startPlan } = useTraveller();
-  const categoryTouched = useRef(false);
 
   const [provinces, setProvinces] = useState<ReferenceItem[]>([]);
   const [provincesFailed, setProvincesFailed] = useState(false);
@@ -134,8 +176,8 @@ export default function PlanTripPage() {
   const budget = Math.min(MAX_BUDGET, Math.max(0, Number(budgetInput) || 0));
 
   const [typeGroups, setTypeGroups] = useState<CategoryGroup[]>([]);
-  const [selectedCategoryCodes, setSelectedCategoryCodes] = useState<string[]>([]);
-  const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
+  const [savedCategoryCodes, setSavedCategoryCodes] = useState<string[]>([]);
+  const [selectedExperiences, setSelectedExperiences] = useState<string[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesFailed, setCategoriesFailed] = useState(false);
   const [pace, setPace] = useState<PaceId>('balanced');
@@ -175,13 +217,10 @@ export default function PlanTripPage() {
 
         const groups = groupsResult.value;
         setTypeGroups(groups);
-        setExpandedGroups(groups.slice(0, 2).map((group) => group.code));
 
         if (preferencesResult.status !== 'fulfilled') return;
         const preferences = preferencesResult.value;
-        if (!categoryTouched.current) {
-          setSelectedCategoryCodes(initialCategories(groups, preferences));
-        }
+        setSavedCategoryCodes(initialCategories(groups, preferences));
       },
     );
     return () => {
@@ -192,7 +231,10 @@ export default function PlanTripPage() {
   const destination = provinces.find((item) => item.code === destinationId);
   const endDate = addDays(startDate, days - 1);
   const minDate = toInputDate(new Date());
-  const selectedSet = new Set(selectedCategoryCodes);
+  const selectedSet = new Set(selectedExperiences);
+  const answeredCount = EXPERIENCE_QUESTIONS.filter((question) =>
+    question.options.some((option) => selectedSet.has(option.code)),
+  ).length;
 
   const setBudgetValue = (value: string) => {
     // Chỉ nhận chữ số; giới hạn cả nhập tay lẫn kéo ở 1 tỷ.
@@ -215,34 +257,12 @@ export default function PlanTripPage() {
     else if (companion === 'solo') setCompanion(next === 2 ? 'couple' : 'friends');
   };
 
-  const toggleExpanded = (groupCode: string) => {
-    setExpandedGroups((current) =>
-      current.includes(groupCode)
-        ? current.filter((code) => code !== groupCode)
-        : [...current, groupCode],
+  const toggleExperience = (code: string) => {
+    setSelectedExperiences((current) =>
+      current.includes(code)
+        ? current.filter((entry) => entry !== code)
+        : [...current, code],
     );
-  };
-
-  const toggleCategory = (categoryCode: string) => {
-    categoryTouched.current = true;
-    setSelectedCategoryCodes((current) =>
-      current.includes(categoryCode)
-        ? current.filter((code) => code !== categoryCode)
-        : [...current, categoryCode],
-    );
-    setError(null);
-  };
-
-  const toggleEntireGroup = (group: CategoryGroup) => {
-    categoryTouched.current = true;
-    const codes = group.subtypes.map((subtype) => subtype.code);
-    const allSelected = codes.length > 0 && codes.every((code) => selectedSet.has(code));
-    setSelectedCategoryCodes((current) => {
-      const next = new Set(current);
-      if (allSelected) codes.forEach((code) => next.delete(code));
-      else codes.forEach((code) => next.add(code));
-      return [...next];
-    });
     setError(null);
   };
 
@@ -266,25 +286,23 @@ export default function PlanTripPage() {
       setError('Không tải được danh mục trải nghiệm.');
       return;
     }
-    if (selectedCategoryCodes.length === 0) {
-      setError('Hãy chọn ít nhất một loại hình trải nghiệm.');
-      return;
-    }
-    if (selectedCategoryCodes.length > 50) {
-      setError('Hãy chọn tối đa 50 loại hình trải nghiệm.');
+    if (selectedExperiences.length === 0) {
+      setError('Hãy chọn ít nhất một đáp án về sở thích trải nghiệm.');
       return;
     }
 
-    // Chỉ gửi subtype code thực tế từ place_categories, không gửi group code.
-    const categoryCodes = typeGroups.flatMap((group) =>
-      group.subtypes
-        .filter((subtype) => selectedSet.has(subtype.code))
-        .map((subtype) => subtype.code),
+    // Khi có lựa chọn hoạt động cụ thể, dùng mã tương ứng đang ACTIVE.
+    // Nếu chưa trả lời câu 3, giữ sở thích danh mục đã lưu trong hồ sơ.
+    const hasActivityChoice = selectedExperiences.some((code) => code.startsWith('EXPERIENCE_'));
+    const compatibleCodes = new Set(
+      hasActivityChoice
+        ? selectedExperiences.flatMap((code) => EXPERIENCE_TO_CATEGORIES[code] ?? [])
+        : savedCategoryCodes,
     );
-    if (categoryCodes.length === 0) {
-      setError('Chưa chọn loại hình trải nghiệm hợp lệ.');
-      return;
-    }
+    const categoryCodes = [...new Set(typeGroups.flatMap((group) =>
+      group.subtypes.filter((subtype) => compatibleCodes.has(subtype.code)).map((subtype) => subtype.code),
+    ))].slice(0, 50);
+    const categorySet = new Set(categoryCodes);
 
     setSubmitting(true);
     try {
@@ -299,12 +317,13 @@ export default function PlanTripPage() {
         groupSize: members,
         description: companionLabel ? `Hình thức đồng hành: ${companionLabel}` : null,
         categoryCodes,
+        experiencePreferences: selectedExperiences,
         travelPace: PACE_TO_API[pace],
       });
 
       // Giữ tương thích với state cũ ở các màn khác.
       const groupCodes = typeGroups
-        .filter((group) => group.subtypes.some((subtype) => selectedSet.has(subtype.code)))
+        .filter((group) => group.subtypes.some((subtype) => categorySet.has(subtype.code)))
         .map((group) => group.code);
       const interests = typesToInterests(typeGroups, groupCodes, categoryCodes);
       startPlan({
@@ -558,184 +577,105 @@ export default function PlanTripPage() {
           </p>
         </SectionCard>
 
-        {/* SỞ THÍCH: NHÓM MỞ RỘNG + LOẠI HÌNH CHỌN RÕ RÀNG */}
-        <SectionCard
-          icon="volunteer_activism"
-          title="Sở thích trải nghiệm"
-          subtitle="Chọn từng loại hình phù hợp với chuyến đi của bạn"
-          right={
-            <span className="shrink-0 rounded-full bg-[#E2FAF5] px-2.5 py-1 text-[11px] font-bold text-[#075C66]">
-              {selectedCategoryCodes.length} đã chọn
-            </span>
-          }
-        >
-          {categoriesLoading ? (
-            <p className="rounded-xl bg-[#F8F8FF] p-4 text-[12px] text-[#72818C]">
-              Đang tải loại hình…
-            </p>
-          ) : categoriesFailed ? (
-            <p role="alert" className="rounded-xl bg-red-50 p-4 text-[12px] text-red-600">
-              Không tải được danh mục. Vui lòng tải lại trang.
-            </p>
-          ) : typeGroups.length === 0 ? (
-            <p className="rounded-xl bg-[#F8F8FF] p-4 text-[12px] text-[#72818C]">
-              Hiện chưa có danh mục trải nghiệm đang hoạt động.
-            </p>
-          ) : (
-            <div className="space-y-2.5">
-              <p className="text-[11px] leading-5 text-[#72818C]">
-                Mở một nhóm để chọn các loại hình. Nhấn <strong>Chọn tất cả</strong> nếu bạn quan tâm toàn bộ nhóm đó.
-              </p>
-
-              {typeGroups.map((group) => {
-                const codes = group.subtypes.map((subtype) => subtype.code);
-                const selectedCount = codes.filter((code) => selectedSet.has(code)).length;
-                const isOpen = expandedGroups.includes(group.code);
-                const allSelected = codes.length > 0 && selectedCount === codes.length;
-
-                return (
-                  <div
-                    key={group.code}
-                    className={`overflow-hidden rounded-2xl border transition-colors ${
-                      selectedCount > 0
-                        ? 'border-[#9DDED1] bg-[#F5FFFC]'
-                        : 'border-[#E3E7F0] bg-[#F8F9FD]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 px-3 py-3">
-                      <button
-                        type="button"
-                        onClick={() => toggleExpanded(group.code)}
-                        aria-expanded={isOpen}
-                        aria-controls={`trip-categories-${group.code}`}
-                        className="flex min-w-0 flex-1 items-center gap-2 text-left"
-                      >
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-[#087A78]">
-                          <Icon name="category" className="text-[19px]" />
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block text-[12px] font-extrabold text-[#13364A]">
-                            {group.name}
-                          </span>
-                          <span className="text-[10px] text-[#72818C]">
-                            {selectedCount}/{codes.length} loại hình đã chọn
-                          </span>
-                        </span>
-                        <Icon
-                          name={isOpen ? 'expand_less' : 'expand_more'}
-                          className="text-[20px] text-[#087A78]"
-                        />
-                      </button>
-                      {codes.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => toggleEntireGroup(group)}
-                          className="shrink-0 rounded-full border border-[#BCE9DF] bg-white px-2.5 py-1.5 text-[10px] font-bold text-[#075C66] hover:bg-[#DFF8F1]"
-                        >
-                          {allSelected ? 'Bỏ chọn' : 'Chọn tất cả'}
-                        </button>
-                      )}
-                    </div>
-
-                    {isOpen && (
-                      <div id={`trip-categories-${group.code}`} className="border-t border-[#E4F0EC] bg-white px-3 py-3">
-                        {group.subtypes.length === 0 ? (
-                          <p className="text-[11px] text-[#72818C]">
-                            Nhóm này chưa có loại hình hoạt động.
-                          </p>
-                        ) : (
-                          <div className="flex flex-wrap gap-2">
-                            {group.subtypes.map((subtype) => {
-                              const selected = selectedSet.has(subtype.code);
-                              return (
-                                <button
-                                  key={subtype.code}
-                                  type="button"
-                                  aria-pressed={selected}
-                                  onClick={() => toggleCategory(subtype.code)}
-                                  className={`flex items-center gap-1.5 rounded-full border px-3 py-2 text-[11px] font-semibold transition-colors ${
-                                    selected
-                                      ? 'border-[#087A78] bg-[#075C66] text-white'
-                                      : 'border-[#D8E3E6] bg-white text-[#506581] hover:border-[#087A78]'
-                                  }`}
-                                >
-                                  <Icon
-                                    name={selected ? 'check_circle' : 'add_circle'}
-                                    className="text-[16px]"
-                                  />
-                                  {subtype.name}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-
-              {selectedCategoryCodes.length > 0 && (
-                <div className="rounded-xl bg-[#EAF9F4] px-3 py-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-[11px] font-bold text-[#075C66]">
-                      Đã chọn {selectedCategoryCodes.length} loại hình
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        categoryTouched.current = true;
-                        setSelectedCategoryCodes([]);
-                      }}
-                      className="text-[11px] font-bold text-[#087A78] underline"
-                    >
-                      Xóa tất cả
-                    </button>
-                  </div>
-                  <p className="mt-1.5 text-[11px] leading-5 text-[#506581]">
-                    {typeGroups
-                      .flatMap((group) => group.subtypes)
-                      .filter((subtype) => selectedSet.has(subtype.code))
-                      .slice(0, 8)
-                      .map((subtype) => subtype.name)
-                      .join(' · ')}
-                    {selectedCategoryCodes.length > 8
-                      ? ` · +${selectedCategoryCodes.length - 8} loại hình khác`
-                      : ''}
-                  </p>
-                </div>
-              )}
-              {selectedCategoryCodes.length > 50 && (
-                <p role="alert" className="text-[11px] font-semibold text-red-600">
-                  Chỉ được chọn tối đa 50 loại hình; vui lòng bỏ bớt.
-                </p>
-              )}
+        {/* SỞ THÍCH: 4 câu hỏi cá nhân hóa, không hiển thị bộ lọc danh mục. */}
+        <div className="min-w-0 md:col-span-2">
+          <SectionCard
+            icon="auto_awesome"
+            title="Cá nhân hóa chuyến đi của bạn"
+            subtitle="Hãy cho Smart Travel biết bạn thích điều gì. Có thể chọn nhiều đáp án."
+            right={
+              <span className="ml-2 shrink-0 rounded-full bg-[#E2FAF5] px-2.5 py-1 text-[11px] font-bold text-[#075C66]">
+                {answeredCount}/4 câu
+              </span>
+            }
+          >
+            <div className="mb-4 flex gap-1.5" aria-hidden="true">
+              {EXPERIENCE_QUESTIONS.map((question) => (
+                <span key={question.id} className={`h-1.5 flex-1 rounded-full transition-colors ${
+                  question.options.some((option) => selectedSet.has(option.code))
+                    ? 'bg-[#087A78]' : 'bg-[#E5ECEC]'
+                }`} />
+              ))}
             </div>
-          )}
-        </SectionCard>
+            <div className="divide-y divide-[#E6EDED]">
+              {EXPERIENCE_QUESTIONS.map((question, index) => (
+                <fieldset key={question.id} className="min-w-0 py-5 first:pt-1">
+                  <legend className="sr-only">{question.title}</legend>
+                  <div className="mb-3.5 flex items-start gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7F6F2] text-[#087A78]">
+                      <Icon name={question.icon} className="text-[21px]" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#087A78]">Câu {index + 1}</p>
+                      <h3 className="mt-0.5 text-[15px] font-extrabold leading-snug text-[#13364A]">{question.title}</h3>
+                      <p className="mt-1 text-[12px] leading-5 text-[#617580]">{question.subtitle}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                    {question.options.map((option) => {
+                      const selected = selectedSet.has(option.code);
+                      return (
+                        <label key={option.code} className={`flex min-h-[64px] cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-colors focus-within:ring-2 focus-within:ring-[#087A78]/30 ${
+                          selected ? 'border-[#087A78] bg-[#EAF8F4]' : 'border-[#E3E7F0] bg-white hover:border-[#9DDED1] hover:bg-[#F8FCFA]'
+                        }`}>
+                          <span aria-hidden="true" className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[19px] ${selected ? 'bg-[#D5F2E9]' : 'bg-[#F1F4F6]'}`}>{option.emoji}</span>
+                          <span className="min-w-0 flex-1 text-[13px] font-semibold leading-5 text-[#13364A]">{option.label}</span>
+                          <input type="checkbox" checked={selected} onChange={() => toggleExperience(option.code)} className="h-[18px] w-[18px] shrink-0 cursor-pointer accent-[#087A78]" />
+                        </label>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              ))}
+            </div>
+            {(categoriesLoading || categoriesFailed || typeGroups.length === 0) && (
+              <p role="status" className="mt-2 rounded-xl bg-[#F8F8FF] p-3 text-[12px] text-[#617580]">
+                {categoriesLoading ? 'Đang tải dữ liệu hỗ trợ...' : 'Không tải được danh mục hỗ trợ. Vui lòng tải lại trang trước khi tạo kế hoạch.'}
+              </p>
+            )}
+            <div className="mt-2 rounded-2xl bg-[#F0F9F6] p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-[13px] font-extrabold text-[#075C66]">{selectedExperiences.length} lựa chọn của bạn</p>
+                {selectedExperiences.length > 0 && (
+                  <button type="button" onClick={() => { setSelectedExperiences([]); setError(null); }} className="text-[12px] font-bold text-[#087A78] underline">Xóa tất cả</button>
+                )}
+              </div>
+              {selectedExperiences.length > 0 ? (
+                <div className="mt-2.5 flex flex-wrap gap-1.5">
+                  {EXPERIENCE_QUESTIONS.flatMap((question) => [...question.options]).filter((option) => selectedSet.has(option.code)).map((option) => (
+                    <button type="button" key={option.code} aria-label={`Bỏ chọn ${option.label}`} onClick={() => toggleExperience(option.code)} className="inline-flex items-center gap-1.5 rounded-full border border-[#C9E7DF] bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[#075C66]">
+                      {option.emoji} {option.label}<Icon name="close" className="text-[13px]" />
+                    </button>
+                  ))}
+                </div>
+              ) : <p className="mt-1 text-[12px] text-[#617580]">Chọn ít nhất một đáp án để thể hiện phong cách chuyến đi.</p>}
+            </div>
+          </SectionCard>
+        </div>
 
         {/* NHỊP ĐỘ CHUYẾN ĐI */}
-        <SectionCard
-          icon="speed"
-          title="Nhịp độ chuyến đi (Travel Pace)"
-          subtitle="Tần suất và mật độ hoạt động"
-        >
-          <div role="radiogroup" aria-label="Nhịp độ chuyến đi" className="grid gap-2">
-            {PACE_OPTIONS.map((item) => {
-              const selected = item.id === pace;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  onClick={() => setPace(item.id)}
-                  className={`flex items-start rounded-2xl p-3 text-left ${
-                    selected
-                      ? 'border-[1.5px] border-[#087A78] bg-[#E2FAF5]'
-                      : 'border border-[#E3E7F0] bg-[#F8F8FF]'
-                  }`}
-                >
+        <div className="md:col-span-2">
+          <SectionCard
+            icon="speed"
+            title="Nhịp độ chuyến đi (Travel Pace)"
+            subtitle="Tần suất và mật độ hoạt động"
+          >
+            <div role="radiogroup" aria-label="Nhịp độ chuyến đi" className="grid gap-2">
+              {PACE_OPTIONS.map((item) => {
+                const selected = item.id === pace;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => setPace(item.id)}
+                    className={`flex items-start rounded-2xl p-3 text-left ${
+                      selected
+                        ? 'border-[1.5px] border-[#087A78] bg-[#E2FAF5]'
+                        : 'border border-[#E3E7F0] bg-[#F8F8FF]'
+                    }`}
+                  >
                   <span
                     className={`mr-2.5 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
                       selected ? 'bg-[#087A78] text-white' : 'border-[1.5px] border-[#C5CDD3]'
@@ -743,7 +683,7 @@ export default function PlanTripPage() {
                   >
                     {selected && <Icon name="check" className="text-[14px]" />}
                   </span>
-                  <span className="flex-1">
+                    <span className="flex-1">
                     <span className="flex items-center justify-between gap-2">
                       <span className="text-[13px] font-bold text-[#13364A]">
                         {item.label} ({item.english})
@@ -756,11 +696,12 @@ export default function PlanTripPage() {
                       {item.description}
                     </span>
                   </span>
-                </button>
-              );
-            })}
-          </div>
-        </SectionCard>
+                  </button>
+                );
+              })}
+            </div>
+          </SectionCard>
+        </div>
       </div>
 
       <div className="fixed inset-x-0 bottom-[62px] z-20 bg-white px-4 pb-3 pt-2.5 md:static md:mt-4 md:rounded-[20px]">
@@ -789,3 +730,4 @@ export default function PlanTripPage() {
     </div>
   );
 }
+

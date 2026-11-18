@@ -78,6 +78,8 @@ const NAV_ITEMS: (NavItem & { id: string })[] = [
     },
     path: ROUTES.PAYMENTS,
     icon: 'payments',
+    // Phiếu sự cố thanh toán đang chờ xử lý
+    badge: { source: 'paymentIssues', tone: 'tertiary' },
   },
   {
     id: 'reports',

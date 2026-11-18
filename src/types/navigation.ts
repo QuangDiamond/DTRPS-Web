@@ -1,6 +1,7 @@
 export type BadgeTone = 'tertiary' | 'secondary';
 
-export type NavBadgeSource = 'pendingListings' | 'unreadNotifications' | 'reportedReviews';
+export type NavBadgeSource =
+  'pendingListings' | 'unreadNotifications' | 'reportedReviews' | 'paymentIssues';
 
 export interface NavItem {
   label: string;

@@ -3644,7 +3644,8 @@
       "payments": "Giao dịch",
       "subscriptions": "Gói đang chạy",
       "advertisements": "Quảng cáo",
-      "packages": "Bảng giá"
+      "packages": "Bảng giá",
+      "issues": "Sự cố"
     },
     "all": "Tất cả",
     "statusLabel": "Trạng thái",
@@ -3749,6 +3750,30 @@
         "sortOrder": "Thứ tự phải là số nguyên từ 1 đến 9999",
         "sortOrderDuplicate": "Thứ tự này đang được dùng cho gói \"{{name}}\""
       }
+    },
+    "issues": {
+      "status": {
+        "OPEN": "Chờ xử lý",
+        "RESOLVED": "Đã giải quyết",
+        "REJECTED": "Đã từ chối"
+      },
+      "notice": "Bấm Đối soát trước. Chỉ Kích hoạt thủ công khi PayOS không ghi nhận nhưng bạn đã thấy đúng khoản tiền trong sao kê ngân hàng.",
+      "search": "Mã đơn, mã giao dịch hoặc tên đối tác…",
+      "items": "phiếu",
+      "transfer": "Thông tin chuyển khoản",
+      "receipt": "Biên lai",
+      "amountMismatch": "Khác số tiền của đơn",
+      "reconcilePaid": "PayOS xác nhận đã thanh toán, gói đã được kích hoạt",
+      "reconcileUnpaid": "PayOS chưa ghi nhận thanh toán của đơn này",
+      "activate": "Kích hoạt thủ công",
+      "activated": "Đã kích hoạt gói cho đối tác",
+      "activateTitle": "Kích hoạt thủ công đơn #{{order}}",
+      "activateHint": "Chỉ làm khi đã thấy tiền trong sao kê ngân hàng. Thao tác được ghi vào nhật ký.",
+      "bankReference": "Mã giao dịch trên sao kê ngân hàng",
+      "reject": "Từ chối",
+      "rejected": "Đã từ chối phiếu và báo cho đối tác",
+      "rejectTitle": "Từ chối phiếu đơn #{{order}}",
+      "rejectHint": "Đối tác nhận thông báo kèm lý do này."
     }
   }
 }

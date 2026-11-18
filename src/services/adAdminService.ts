@@ -5,6 +5,7 @@ import type {
   AdminAdPayment,
   AdminAdSubscription,
   AdminAdvertisement,
+  AdminPaymentIssue,
   AdPackageInput,
   AdPackageStatus,
   AdPaymentStats,
@@ -43,6 +44,22 @@ export const adAdminService = {
     apiRequest<AdminAdPayment>(ENDPOINTS.ads.refund(id), {
       method: 'POST',
       body: { reason, reference },
+    }),
+
+  paymentIssues: (params: AdListQuery) =>
+    apiRequest<Paged<AdminPaymentIssue>>(ENDPOINTS.ads.issues, { query: query(params) }),
+  reconcileIssue: (id: number) =>
+    apiRequest<AdminPaymentIssue>(ENDPOINTS.ads.reconcileIssue(id), { method: 'POST' }),
+  /** Chỉ dùng khi đã thấy tiền trong sao kê ngân hàng */
+  activateIssue: (id: number, bankReference: string, reason: string) =>
+    apiRequest<AdminPaymentIssue>(ENDPOINTS.ads.activateIssue(id), {
+      method: 'POST',
+      body: { bankReference, reason },
+    }),
+  rejectIssue: (id: number, reason: string) =>
+    apiRequest<AdminPaymentIssue>(ENDPOINTS.ads.rejectIssue(id), {
+      method: 'POST',
+      body: { reason },
     }),
 
   subscriptions: (params: AdListQuery) =>

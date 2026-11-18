@@ -110,6 +110,10 @@ export const ENDPOINTS = {
     paymentStats: '/admin/payments/stats',
     reconcile: (paymentId: number) => `/admin/payments/${paymentId}/reconcile`,
     refund: (paymentId: number) => `/admin/payments/${paymentId}/refund`,
+    issues: '/admin/payment-issues',
+    reconcileIssue: (issueId: number) => `/admin/payment-issues/${issueId}/reconcile`,
+    activateIssue: (issueId: number) => `/admin/payment-issues/${issueId}/activate`,
+    rejectIssue: (issueId: number) => `/admin/payment-issues/${issueId}/reject`,
     subscriptions: '/admin/ad-subscriptions',
     cancelSubscription: (subscriptionId: number) =>
       `/admin/ad-subscriptions/${subscriptionId}/cancel`,

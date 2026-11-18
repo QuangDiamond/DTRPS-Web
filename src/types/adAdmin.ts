@@ -50,6 +50,32 @@ export interface AdPaymentStats {
   success: number;
   pending: number;
   needsReview: number;
+  /** Phiếu sự cố đang chờ xử lý */
+  openIssues: number;
+}
+
+export type PaymentIssueStatus = 'OPEN' | 'RESOLVED' | 'REJECTED';
+
+export interface AdminPaymentIssue {
+  id: number;
+  paymentId: number;
+  orderCode: string;
+  paymentStatus: AdPaymentStatus;
+  businessId: number;
+  businessName: string;
+  packageName: string;
+  /** Số tiền của đơn */
+  amount: number;
+  /** Số tiền đối tác báo đã chuyển */
+  transferredAmount: number;
+  transferredAt: string;
+  bankReference: string;
+  note: string | null;
+  receiptUrl: string;
+  status: PaymentIssueStatus;
+  resolutionNote: string | null;
+  handledAt: string | null;
+  createdAt: string;
 }
 
 export type AdSubscriptionStatus = 'ACTIVE' | 'EXPIRED' | 'CANCELLED';

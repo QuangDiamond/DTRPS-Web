@@ -3717,7 +3717,8 @@
       "payments": "Transactions",
       "subscriptions": "Active packages",
       "advertisements": "Ads",
-      "packages": "Pricing"
+      "packages": "Pricing",
+      "issues": "Issues"
     },
     "all": "All",
     "statusLabel": "Status",
@@ -3822,6 +3823,30 @@
         "sortOrder": "Order must be a whole number from 1 to 9999",
         "sortOrderDuplicate": "This order is already used by \"{{name}}\""
       }
+    },
+    "issues": {
+      "status": {
+        "OPEN": "Open",
+        "RESOLVED": "Resolved",
+        "REJECTED": "Rejected"
+      },
+      "notice": "Reconcile first. Only activate manually when PayOS has no record but you can see the exact amount on the bank statement.",
+      "search": "Order code, bank reference or partner name…",
+      "items": "issues",
+      "transfer": "Transfer details",
+      "receipt": "Receipt",
+      "amountMismatch": "Differs from the order amount",
+      "reconcilePaid": "PayOS confirmed the payment and the package is active",
+      "reconcileUnpaid": "PayOS has no payment for this order yet",
+      "activate": "Activate manually",
+      "activated": "Package activated for the partner",
+      "activateTitle": "Manually activate order #{{order}}",
+      "activateHint": "Only do this after seeing the money on the bank statement. This action is logged.",
+      "bankReference": "Bank statement reference",
+      "reject": "Reject",
+      "rejected": "Issue rejected and partner notified",
+      "rejectTitle": "Reject issue for order #{{order}}",
+      "rejectHint": "The partner is told this reason."
     }
   }
 }

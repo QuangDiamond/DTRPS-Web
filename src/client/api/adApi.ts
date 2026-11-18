@@ -26,6 +26,21 @@ export interface AdSubscription {
 
 export type AdPaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'REFUNDED';
 
+/** Phiếu sự cố mới nhất của đơn */
+export interface AdPaymentIssue {
+  id: number;
+  status: 'OPEN' | 'RESOLVED' | 'REJECTED';
+  resolutionNote: string | null;
+}
+
+export interface AdPaymentIssueInput {
+  transferredAmount: number;
+  transferredAt: string;
+  bankReference: string;
+  note: string | null;
+  receiptUrl: string;
+}
+
 export interface AdPayment {
   id: number;
   orderCode: string;
@@ -38,6 +53,7 @@ export interface AdPayment {
   linkExpiresAt: string | null;
   paidAt: string | null;
   createdAt: string;
+  issue: AdPaymentIssue | null;
 }
 
 export interface AdPartnerState {
@@ -101,6 +117,16 @@ export const adApi = {
   cancelPayment: (orderCode: string) =>
     clientRequest<AdPayment>(`${BASE}/payments/${encodeURIComponent(orderCode)}/cancel`, {
       method: 'POST',
+    }),
+  /** "Tôi đã thanh toán": hỏi lại PayOS ngay */
+  checkPayment: (orderCode: string) =>
+    clientRequest<AdPayment>(`${BASE}/payments/${encodeURIComponent(orderCode)}/check`, {
+      method: 'POST',
+    }),
+  reportIssue: (orderCode: string, input: AdPaymentIssueInput) =>
+    clientRequest<void>(`${BASE}/payments/${encodeURIComponent(orderCode)}/issues`, {
+      method: 'POST',
+      body: input,
     }),
   slots: () => clientRequest<AdSlots>(`${BASE}/ad-slots`),
   saveSlots: (listingIds: number[]) =>

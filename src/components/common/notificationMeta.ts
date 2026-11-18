@@ -21,7 +21,8 @@ const TONES: { match: RegExp; tone: NotificationTone }[] = [
     tone: { icon: 'payments', badge: 'bg-emerald-50 text-emerald-600', accent: 'bg-emerald-500' },
   },
   {
-    match: /^AD_(PAYMENT_REVIEW|SUSPENDED|SUBSCRIPTION_CANCELLED)$/,
+    match:
+      /^AD_(PAYMENT_REVIEW|PAYMENT_ISSUE_CREATED|PAYMENT_ISSUE_REJECTED|SUSPENDED|SUBSCRIPTION_CANCELLED)$/,
     tone: { icon: 'warning', badge: 'bg-rose-50 text-rose-600', accent: 'bg-rose-500' },
   },
   {

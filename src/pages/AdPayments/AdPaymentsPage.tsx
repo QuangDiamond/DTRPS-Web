@@ -6,6 +6,7 @@ import { ADMIN_ROOT_CRUMB } from '@/constants/navigation';
 import { useLiveRefresh } from '@/hooks';
 import { AD_TAB_ICONS, AD_TABS, type AdTab, isAdTab } from './adPaymentUtils';
 import AdvertisementsTab from './components/AdvertisementsTab';
+import IssuesTab from './components/IssuesTab';
 import PackagesTab from './components/PackagesTab';
 import PaymentsTab from './components/PaymentsTab';
 import SubscriptionsTab from './components/SubscriptionsTab';
@@ -63,6 +64,7 @@ export default function AdPaymentsPage() {
           initialReview={params.get('review') === 'true'}
         />
       )}
+      {tab === 'issues' && <IssuesTab reload={reload} onChanged={refresh} />}
       {tab === 'subscriptions' && <SubscriptionsTab reload={reload} onChanged={refresh} />}
       {tab === 'advertisements' && <AdvertisementsTab reload={reload} onChanged={refresh} />}
       {tab === 'packages' && <PackagesTab reload={reload} />}

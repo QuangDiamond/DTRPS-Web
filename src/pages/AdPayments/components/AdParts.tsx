@@ -73,6 +73,7 @@ interface ReasonModalProps {
   busy: boolean;
   /** Hiện thêm ô mã chuyển khoản (khi ghi nhận hoàn tiền) */
   withReference?: boolean;
+  referenceLabel?: string;
   onConfirm: (reason: string, reference: string) => void;
   onClose: () => void;
 }
@@ -85,6 +86,7 @@ export function ReasonModal({
   danger = false,
   busy,
   withReference = false,
+  referenceLabel,
   onConfirm,
   onClose,
 }: ReasonModalProps) {
@@ -136,7 +138,7 @@ export function ReasonModal({
       </label>
       {withReference && (
         <label className="mt-3 flex flex-col gap-1.5 font-label-md text-label-md text-on-surface">
-          {t('adAdmin.payments.refundReference')}
+          {referenceLabel ?? t('adAdmin.payments.refundReference')}
           <input
             value={reference}
             maxLength={255}

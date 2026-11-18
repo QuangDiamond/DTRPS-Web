@@ -11,6 +11,7 @@ import {
 } from '@/client/api/adApi';
 import { errorMessage } from '@/client/api/http';
 import { useClientLiveRefresh } from '@/client/live/clientLiveContext';
+import AdPaymentActions from '@/client/partner/components/AdPaymentActions';
 import { formatDate } from '@/client/partner/profileStatus';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import {
@@ -305,6 +306,10 @@ export default function PartnerAdsPage() {
           <p className="mt-1 text-[13px] text-client-ink">
             {pendingPayment.packageName} · <b>{money(pendingPayment.amount)}</b>
           </p>
+          <p className="mt-2 text-[12px] leading-[19px] text-[#7A5410]">
+            Quét đúng mã QR, không sửa số tiền và nội dung chuyển khoản để gói được kích hoạt tự
+            động.
+          </p>
           <div className="mt-3 flex flex-col gap-2 md:flex-row">
             <PrimaryButton
               className="md:w-56"
@@ -324,6 +329,7 @@ export default function PartnerAdsPage() {
               Huỷ đơn
             </SecondaryButton>
           </div>
+          <AdPaymentActions payment={pendingPayment} onChanged={() => void load()} />
         </Card>
       )}
 
@@ -378,6 +384,9 @@ export default function PartnerAdsPage() {
                 </Link>
               </Notice>
             )}
+            <Notice>
+              Khi thanh toán, hãy quét đúng mã QR, không sửa số tiền và nội dung chuyển khoản.
+            </Notice>
             {packages.length === 0 ? (
               <Card>
                 <p className="text-[13px] text-client-muted">Hiện chưa có gói nào được mở bán.</p>
@@ -406,8 +415,8 @@ export default function PartnerAdsPage() {
             {history.map((payment) => {
               const status = PAYMENT_STATUS[payment.status];
               return (
-                <li key={payment.id} className="flex items-center justify-between gap-3 py-3">
-                  <span className="min-w-0">
+                <li key={payment.id} className="flex items-start justify-between gap-3 py-3">
+                  <div className="min-w-0">
                     <span className="block truncate text-[13px] font-bold text-client-ink">
                       {payment.packageName}
                       {payment.type === 'RENEWAL' && ' (gia hạn)'}
@@ -415,7 +424,8 @@ export default function PartnerAdsPage() {
                     <span className="block text-[12px] text-client-muted">
                       #{payment.orderCode} · {formatDate(payment.paidAt ?? payment.createdAt)}
                     </span>
-                  </span>
+                    <AdPaymentActions payment={payment} onChanged={() => void load()} />
+                  </div>
                   <span className="flex shrink-0 flex-col items-end gap-1">
                     <span className="text-[13px] font-bold text-client-ink">
                       {money(payment.amount)}

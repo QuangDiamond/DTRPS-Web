@@ -94,6 +94,13 @@ export const ENDPOINTS = {
     reports: '/admin/reviews/reports',
     resolveReports: (reviewId: string) => `/admin/reviews/reports/${id(reviewId)}`,
   },
+  // Quản lý chuyến đi của người dùng (chỉ xem)
+  trips: {
+    list: '/admin/trips',
+    stats: '/admin/trips/stats',
+    destinations: '/admin/trips/destinations',
+    detail: (tripId: string) => `/admin/trips/${id(tripId)}`,
+  },
   uploads: { image: '/uploads/images' },
   // Bản đồ Goong qua backend
   maps: {

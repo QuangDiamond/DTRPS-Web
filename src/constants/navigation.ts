@@ -54,6 +54,14 @@ const NAV_ITEMS: (NavItem & { id: string })[] = [
     icon: 'category',
   },
   {
+    id: 'trips',
+    get label() {
+      return i18n.t('nav.constants.tripManagement');
+    },
+    path: ROUTES.TRIPS,
+    icon: 'luggage',
+  },
+  {
     id: 'reviews',
     get label() {
       return i18n.t('nav.constants.reviewManagement');

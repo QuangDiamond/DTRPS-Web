@@ -2981,7 +2981,7 @@
       "active": "Visible",
       "activeHint": "Travellers can find them",
       "draft": "Not published",
-      "draftHint": "New places awaiting listing review",
+      "draftHint": "{{pending}} awaiting review · {{hidden}} hidden",
       "sources": "Data sources",
       "sourcesHint": "{{partner}} partners · {{admin}} platform POIs"
     },

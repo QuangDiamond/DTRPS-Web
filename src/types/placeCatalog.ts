@@ -110,6 +110,10 @@ export interface CatalogStats {
   draft: number;
   /** PAUSED + MAINTENANCE */
   paused: number;
+  /** Địa điểm đối tác chờ duyệt niêm yết */
+  pendingApproval: number;
+  /** Không hiển thị vì lý do khác: tạm ngưng, bảo trì, nháp của admin… */
+  hidden: number;
   partner: number;
   admin: number;
   newThisMonth: number;

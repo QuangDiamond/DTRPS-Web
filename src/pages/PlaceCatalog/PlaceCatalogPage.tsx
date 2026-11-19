@@ -46,6 +46,8 @@ const EMPTY_STATS: CatalogStats = {
   active: 0,
   draft: 0,
   paused: 0,
+  pendingApproval: 0,
+  hidden: 0,
   partner: 0,
   admin: 0,
   newThisMonth: 0,
@@ -291,12 +293,15 @@ export default function PlaceCatalogPage() {
         />
         <StatCard
           label={t('placeCatalog.stats.draft')}
-          value={formatNumber(stats.draft)}
+          value={formatNumber(stats.pendingApproval + stats.hidden)}
           icon="hourglass_top"
           iconClassName="bg-tertiary-fixed text-on-tertiary-fixed"
           footer={
             <p className="mt-4 font-body-sm text-body-sm text-on-surface-variant">
-              {t('placeCatalog.stats.draftHint')}
+              {t('placeCatalog.stats.draftHint', {
+                pending: formatNumber(stats.pendingApproval),
+                hidden: formatNumber(stats.hidden),
+              })}
             </p>
           }
         />

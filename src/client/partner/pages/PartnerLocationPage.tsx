@@ -244,7 +244,7 @@ export default function PartnerLocationPage() {
         : listing.name;
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div>
       {backLink}
       <Heading
         eyebrow="THÔNG TIN ĐỊA ĐIỂM"

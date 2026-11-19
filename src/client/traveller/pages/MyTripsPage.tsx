@@ -538,7 +538,7 @@ export default function MyTripsPage() {
       {/* CÁC KẾ HOẠCH THẬT */}
       {!loading && !error && (
         visiblePlans.length ? (
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {visiblePlans.map((plan) => (
               <PlanCard
                 key={plan.planId}

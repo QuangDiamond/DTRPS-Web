@@ -1,26 +1,13 @@
-import { type FormEvent, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import FeaturedPlaces from '@/client/traveller/components/FeaturedPlaces';
+import HomePlaceSearch from '@/client/traveller/components/HomePlaceSearch';
 
 /** Trang chủ du khách — theo HomeScreen của app mobile */
 export default function HomePage() {
   const { user } = useClientAuth();
-  const [query, setQuery] = useState('');
-
-  const navigate = useNavigate();
-
-  const search = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const keyword = query.trim();
-    navigate(
-      keyword
-        ? `${CLIENT_ROUTES.EXPLORE}?${new URLSearchParams({ q: keyword })}`
-        : CLIENT_ROUTES.EXPLORE,
-    );
-  };
 
   return (
     <div>
@@ -42,18 +29,8 @@ export default function HomePage() {
         </Link>
       </div>
 
-      <form
-        onSubmit={search}
-        className="mt-4 flex items-center rounded-2xl bg-white px-3 py-2 shadow-[0_2px_6px_rgba(0,0,0,0.05)]"
-      >
-        <Icon name="search" className="text-[23px] text-primary" />
-        <input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Bạn muốn đi đâu ở Việt Nam hôm nay?"
-          className="ml-2 h-9 flex-1 bg-transparent text-[13px] text-client-ink placeholder:text-[#87918F] focus:outline-none"
-        />
-      </form>
+      {/* Tìm địa điểm theo tên (không phân biệt dấu), gợi ý ngay khi gõ */}
+      <HomePlaceSearch />
 
       <div className="relative mt-4 h-56 overflow-hidden rounded-2xl bg-linear-to-br from-[#075C66] to-[#0E8C86] md:h-72">
         <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-8">

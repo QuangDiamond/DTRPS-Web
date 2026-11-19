@@ -181,7 +181,7 @@ export default function ClientShell() {
   return (
     <div className="min-h-screen bg-client-bg pb-20 md:pb-10">
       <header className="sticky top-0 z-30 bg-linear-to-r from-[#0B3F3B] to-[#0F5F57] shadow-[0_2px_12px_rgba(7,42,40,0.18)]">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4">
+        <div className="flex h-16 w-full items-center justify-between gap-3 px-4 md:px-6 lg:px-10">
           <AppLogo subtitle={partnerMode ? 'BUSINESS OWNER' : 'VIETNAM AI PLANNER'} onDark />
           <nav
             className="hidden min-w-0 flex-1 justify-center gap-0.5 md:flex xl:gap-1"
@@ -251,7 +251,7 @@ export default function ClientShell() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 pt-6">
+      <main className="w-full px-4 pt-6 md:px-6 lg:px-10">
         <Suspense fallback={<Spinner />}>
           <Outlet />
         </Suspense>

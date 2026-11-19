@@ -917,7 +917,7 @@ export default function ItineraryOverviewPage() {
   const currency = overview?.currency ?? 'VND';
 
   return (
-    <div className="mx-auto max-w-[1240px] pb-28 md:pb-8">
+    <div className="pb-28 md:pb-8">
       {/* HEADER */}
       <PageBar
         title="Lịch trình của bạn"

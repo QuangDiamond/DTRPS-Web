@@ -409,7 +409,7 @@ export default function ExplorePage() {
   }
 
   return (
-    <div className="mx-auto max-w-[1380px] pb-14">
+    <div className="pb-14">
       {/* HERO — lời mời khám phá & ảnh thật từ API */}
       <section className="relative mb-9 overflow-visible rounded-[28px] bg-[#123F3B] text-white shadow-[0_18px_50px_rgba(14,55,51,0.13)] lg:rounded-[34px]">
         <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[28px] lg:rounded-[34px]">
@@ -685,7 +685,7 @@ export default function ExplorePage() {
         {loadError && <div className="mb-4"><FormAlert message={`Không tải được địa điểm: ${loadError}`} /></div>}
 
         {loading ? (
-          <div className={viewMode === 'grid' ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3' : 'grid gap-4'}>
+          <div className={viewMode === 'grid' ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' : 'grid gap-4'}>
             {Array.from({ length: viewMode === 'grid' ? 6 : 3 }, (_, index) => <PlaceSkeleton key={index} viewMode={viewMode} />)}
           </div>
         ) : visiblePlaces.length === 0 ? (
@@ -696,7 +696,7 @@ export default function ExplorePage() {
             <button type="button" onClick={clearAll} className="mt-5 rounded-xl bg-[#0B8976] px-5 py-3 text-[12px] font-extrabold text-white hover:bg-[#086B5E]">Khám phá tất cả</button>
           </div>
         ) : (
-          <div className={viewMode === 'grid' ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3' : 'grid gap-4'}>
+          <div className={viewMode === 'grid' ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' : 'grid gap-4'}>
             {visiblePlaces.map((place) => (
               <DestinationCard key={place.id} place={place} viewMode={viewMode} favorite={favoriteSet.has(String(place.id))} onToggleFavorite={() => toggleFavorite(String(place.id))} />
             ))}

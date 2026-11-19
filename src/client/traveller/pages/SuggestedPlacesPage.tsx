@@ -807,7 +807,7 @@ useEffect(() => {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-2 gap-2.5 xl:grid-cols-3">
                  {pagePlaces.map((place, index) => (
                     <PlaceCard
                       key={place.placeId}

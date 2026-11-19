@@ -26,7 +26,7 @@ export default function FeaturedPlaces() {
       <h2 className="text-[16px] font-extrabold text-client-ink md:text-[20px]">
         Địa điểm nổi bật
       </h2>
-      <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4 2xl:grid-cols-6">
         {places.map((place) => (
           <Link
             key={place.id}

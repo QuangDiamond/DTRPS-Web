@@ -309,9 +309,14 @@
     "idleLogout": "Your session ended after {{minutes}} minutes of inactivity",
     "welcome": "Signed in successfully. Welcome, {{name}}!",
     "idleTitle": "Your session was paused",
-    "idleMessage": "There was no activity for {{minutes}} minutes, so this tab was signed out to protect your account. Sign in again to continue — you will return to the page you were on.",
+    "idleMessage": "There was no activity for {{minutes}} minutes, so the admin session was signed out to protect your account. Sign in again to continue — you will return to the page you were on.",
     "expiredTitle": "Your session has expired",
-    "expiredMessage": "Your session expired or the account was signed out elsewhere. Please sign in again to continue."
+    "expiredMessage": "Your session expired or the account was signed out elsewhere. Please sign in again to continue.",
+    "warnTitle": "Your session is about to end",
+    "warnMessage": "There has been no activity for almost 30 minutes. To protect your account you will be signed out of every admin tab.",
+    "warnCountdown": "Signing out in {{seconds}} seconds",
+    "warnStay": "Keep working",
+    "warnLogout": "Sign out now"
   },
   "time": {
     "justNow": "Just now",

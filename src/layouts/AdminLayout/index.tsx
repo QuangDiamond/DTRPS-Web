@@ -4,10 +4,11 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { PageLoader } from '@/components/common';
 import { ADMIN_NAV_ITEMS } from '@/constants/navigation';
 import { ROUTES } from '@/constants/routes';
-import { useDocumentTitle, useIdleLogout } from '@/hooks';
+import { useDocumentTitle } from '@/hooks';
 import LiveProvider from '@/contexts/live/LiveProvider';
 import DataStatusGate from './DataStatusGate';
 import Header from './Header';
+import IdleWarning from './IdleWarning';
 import LiveSync from './LiveSync';
 import Sidebar from './Sidebar';
 
@@ -21,7 +22,6 @@ function getPageTitle(pathname: string, profileTitle: string): string | undefine
 
 /** Khung chung cho mọi trang admin: Sidebar cố định bên trái + Header cố định phía trên */
 export default function AdminLayout() {
-  useIdleLogout();
   // Đăng ký theo dõi ngôn ngữ để Sidebar, Header và tiêu đề tab đổi ngay khi chuyển VI / EN
   const { t } = useTranslation();
   useDocumentTitle(getPageTitle(useLocation().pathname, t('nav.profile')));
@@ -29,6 +29,7 @@ export default function AdminLayout() {
   return (
     <LiveProvider>
       <LiveSync />
+      <IdleWarning />
       <Sidebar />
       <div className="flex min-h-screen flex-col bg-[#F3F5F9] pl-72 print:pl-0">
         <Header />

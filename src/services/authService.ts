@@ -12,11 +12,11 @@ interface LoginResponse {
   refreshToken: string;
 }
 
-export async function login(
-  email: string,
-  password: string,
-  remember = true,
-): Promise<AdminProfile> {
+/**
+ * Admin không có "Ghi nhớ đăng nhập": token lưu chung mọi tab (localStorage) nhưng phiên kết thúc
+ * sau 30 phút không thao tác (AuthProvider) và tối đa 8 giờ kể từ lúc đăng nhập (backend).
+ */
+export async function login(email: string, password: string): Promise<AdminProfile> {
   const result = await apiRequest<LoginResponse>(ENDPOINTS.auth.login, {
     method: 'POST',
     body: { email: email.trim().toLowerCase(), password },
@@ -32,7 +32,7 @@ export async function login(
     }).catch(() => undefined);
     throw new Error(i18n.t('auth.errors.notAdministrator'));
   }
-  setTokens(result.accessToken, result.refreshToken, remember);
+  setTokens(result.accessToken, result.refreshToken, true);
   return result.admin;
 }
 

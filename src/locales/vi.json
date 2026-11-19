@@ -309,9 +309,14 @@
     "idleLogout": "Phiên đăng nhập đã kết thúc sau {{minutes}} phút không thao tác",
     "welcome": "Xác thực thành công. Chào mừng {{name}}!",
     "idleTitle": "Phiên đăng nhập đã tạm dừng",
-    "idleMessage": "Bạn đã không thao tác trong {{minutes}} phút nên tab này đã được đăng xuất để bảo vệ tài khoản. Đăng nhập lại để tiếp tục — bạn sẽ quay về đúng trang đang xem.",
+    "idleMessage": "Bạn đã không thao tác trong {{minutes}} phút nên phiên quản trị đã được đăng xuất để bảo vệ tài khoản. Đăng nhập lại để tiếp tục — bạn sẽ quay về đúng trang đang xem.",
     "expiredTitle": "Phiên đăng nhập đã hết hạn",
-    "expiredMessage": "Phiên làm việc đã hết hạn hoặc tài khoản vừa đăng xuất ở nơi khác. Vui lòng đăng nhập lại để tiếp tục."
+    "expiredMessage": "Phiên làm việc đã hết hạn hoặc tài khoản vừa đăng xuất ở nơi khác. Vui lòng đăng nhập lại để tiếp tục.",
+    "warnTitle": "Phiên làm việc sắp kết thúc",
+    "warnMessage": "Bạn đã không thao tác gần 30 phút. Để bảo vệ tài khoản, hệ thống sẽ tự đăng xuất khỏi mọi tab quản trị.",
+    "warnCountdown": "Tự đăng xuất sau {{seconds}} giây",
+    "warnStay": "Tiếp tục làm việc",
+    "warnLogout": "Đăng xuất ngay"
   },
   "time": {
     "justNow": "Vừa xong",

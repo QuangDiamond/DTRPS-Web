@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const ACTIVITY_EVENTS: (keyof WindowEventMap)[] = [
   'mousemove',
@@ -9,73 +9,118 @@ const ACTIVITY_EVENTS: (keyof WindowEventMap)[] = [
   'wheel',
 ];
 
-/** Kiểm tra định kỳ — so theo mốc thời gian thật nên tab nền bị trình duyệt làm chậm vẫn đúng */
-const CHECK_EVERY_MS = 15_000;
+/** Ghi mốc thao tác vào storage tối đa mỗi 5 giây (mousemove bắn rất dày) */
+const WRITE_EVERY_MS = 5_000;
+const CHECK_EVERY_MS = 1_000;
 
 /**
- * Gọi onIdle khi CHÍNH TAB NÀY không có thao tác trong `minutes` phút.
- * Mỗi tab đếm riêng: dùng tab khác không làm tab này "còn hoạt động", và tab này hết giờ
- * cũng không ảnh hưởng tab khác (onIdle chỉ nên khoá tab hiện tại).
+ * Mốc thao tác cuối dùng chung cho MỌI tab (localStorage): đang làm ở tab nào cũng giữ phiên,
+ * và tải lại trang / mở tab mới không làm bộ đếm chạy lại từ đầu.
  */
-export function useIdleTimeout(active: boolean, minutes: number, onIdle: () => void): void {
-  const onIdleRef = useRef(onIdle);
-  onIdleRef.current = onIdle;
-
-  useEffect(() => {
-    if (!active) return;
-    const limit = minutes * 60_000;
-    let lastActivity = Date.now();
-    let fired = false;
-
-    const touch = () => {
-      lastActivity = Date.now();
-    };
-    const check = () => {
-      if (fired || Date.now() - lastActivity < limit) return;
-      fired = true;
-      onIdleRef.current();
-    };
-    // Quay lại tab sau một lúc: kiểm tra ngay trước khi tính là có thao tác mới
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') check();
-    };
-
-    ACTIVITY_EVENTS.forEach((event) => window.addEventListener(event, touch, { passive: true }));
-    document.addEventListener('visibilitychange', onVisible);
-    window.addEventListener('focus', check);
-    const timer = window.setInterval(check, CHECK_EVERY_MS);
-    return () => {
-      ACTIVITY_EVENTS.forEach((event) => window.removeEventListener(event, touch));
-      document.removeEventListener('visibilitychange', onVisible);
-      window.removeEventListener('focus', check);
-      window.clearInterval(timer);
-    };
-  }, [active, minutes]);
-}
-
-/** Cờ "tab này đã bị khoá vì không thao tác" — lưu trong sessionStorage nên chỉ riêng tab hiện tại */
-export function tabLock(key: string) {
+export function activityClock(key: string) {
   return {
-    isLocked(): boolean {
+    read(): number | null {
       try {
-        return window.sessionStorage.getItem(key) === '1';
+        const value = Number(window.localStorage.getItem(key));
+        return Number.isFinite(value) && value > 0 ? value : null;
       } catch {
-        return false;
+        return null;
       }
     },
-    lock(): void {
+    touch(at = Date.now()): void {
       try {
-        window.sessionStorage.setItem(key, '1');
+        window.localStorage.setItem(key, String(at));
       } catch {
-        // storage bị chặn: tab vẫn bị đưa về trang đăng nhập trong lần này
+        // storage bị chặn: chỉ còn bộ đếm trong tab này
       }
     },
-    unlock(): void {
+    clear(): void {
       try {
-        window.sessionStorage.removeItem(key);
+        window.localStorage.removeItem(key);
       } catch {
         // bỏ qua
       }
     },
+    /** Đã quá `minutes` phút kể từ thao tác cuối (chưa có mốc thì coi như chưa quá) */
+    expired(minutes: number, now = Date.now()): boolean {
+      const last = this.read();
+      return last !== null && now - last >= minutes * 60_000;
+    },
   };
+}
+
+export type ActivityClock = ReturnType<typeof activityClock>;
+
+/**
+ * Hết `minutes` phút không thao tác ở bất kỳ tab nào → onIdle. Trước đó `warnSeconds` giây trả về
+ * số giây còn lại để hiện cảnh báo; lúc đang cảnh báo, rê chuột không tính — phải bấm "Tiếp tục"
+ * (stayActive) như các trang ngân hàng / quản trị.
+ */
+export function useIdleTimeout(
+  active: boolean,
+  clock: ActivityClock,
+  minutes: number,
+  warnSeconds: number,
+  onIdle: () => void,
+): { secondsLeft: number | null; stayActive: () => void } {
+  const onIdleRef = useRef(onIdle);
+  onIdleRef.current = onIdle;
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+  const warningRef = useRef(false);
+
+  const stayActive = useCallback(() => {
+    clock.touch();
+    warningRef.current = false;
+    setSecondsLeft(null);
+  }, [clock]);
+
+  useEffect(() => {
+    if (!active) {
+      warningRef.current = false;
+      setSecondsLeft(null);
+      return;
+    }
+    const limit = minutes * 60_000;
+    let lastWrite = 0;
+    let fired = false;
+    if (clock.read() === null) clock.touch();
+
+    const touch = () => {
+      if (warningRef.current) return;
+      const now = Date.now();
+      if (now - lastWrite < WRITE_EVERY_MS) return;
+      lastWrite = now;
+      clock.touch(now);
+    };
+    const check = () => {
+      if (fired) return;
+      const last = clock.read() ?? Date.now();
+      const left = Math.ceil((last + limit - Date.now()) / 1000);
+      if (left <= 0) {
+        fired = true;
+        warningRef.current = false;
+        setSecondsLeft(null);
+        onIdleRef.current();
+      } else if (left <= warnSeconds) {
+        warningRef.current = true;
+        setSecondsLeft(left);
+      } else if (warningRef.current) {
+        // Tab khác vừa có thao tác → bỏ cảnh báo ở tab này
+        warningRef.current = false;
+        setSecondsLeft(null);
+      }
+    };
+
+    ACTIVITY_EVENTS.forEach((event) => window.addEventListener(event, touch, { passive: true }));
+    window.addEventListener('focus', check);
+    const timer = window.setInterval(check, CHECK_EVERY_MS);
+    check();
+    return () => {
+      ACTIVITY_EVENTS.forEach((event) => window.removeEventListener(event, touch));
+      window.removeEventListener('focus', check);
+      window.clearInterval(timer);
+    };
+  }, [active, clock, minutes, warnSeconds]);
+
+  return { secondsLeft, stayActive };
 }

@@ -168,7 +168,40 @@
   }
 }
 
+/* Thanh cuộn mảnh, bo tròn cho cả trang admin và client (Firefox + Chrome/Edge/Safari) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #b7c4c2 transparent;
+}
 ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 9999px;
+  background: #b7c4c2 padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8fa3a0 padding-box;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/*
+ * Hàng chip / tab cuộn ngang (overflow-x-auto, không phải bảng): vẫn vuốt/cuộn được nhưng không
+ * hiện thanh, giữ đúng thiết kế cũ. Bảng (.table-scroll) vẫn có thanh cuộn ngang.
+ */
+.no-scrollbar,
+.overflow-x-auto:not(.table-scroll) {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar,
+.overflow-x-auto:not(.table-scroll)::-webkit-scrollbar {
   display: none;
 }
 

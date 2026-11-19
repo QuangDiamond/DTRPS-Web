@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Icon, LanguageSwitcher } from '@/components/common';
@@ -17,27 +16,12 @@ export default function Header() {
   const { showToast } = useToast();
   const { admin } = useAuth();
   const live = useLive();
-  const [keyword, setKeyword] = useState('');
   const { t } = useTranslation();
 
   return (
     <header className="print:hidden fixed top-0 right-0 left-72 z-40 flex h-[68px] items-center justify-between gap-4 border-b border-[#E3E8EF] bg-white px-space-lg shadow-[0_1px_4px_rgba(15,23,42,0.04)]">
-      {/* Tìm kiếm toàn cục */}
-      <div className="flex max-w-xl flex-1 items-center gap-4">
-        <div className="relative w-full max-w-md">
-          <Icon
-            name="search"
-            className="absolute top-1/2 left-3 -translate-y-1/2 text-[20px] text-on-surface-variant"
-          />
-          <input
-            type="text"
-            value={keyword}
-            onChange={(event) => setKeyword(event.target.value)}
-            placeholder={t('header.searchPlaceholder')}
-            className="h-10 w-full rounded-full border border-transparent bg-[#F1F4F8] pr-4 pl-10 font-body-sm text-body-sm text-on-surface transition-all placeholder:text-outline focus:border-primary/30 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:outline-none"
-          />
-        </div>
-      </div>
+      {/* Đẩy cụm ngôn ngữ / thông báo / tài khoản sang phải */}
+      <div className="flex-1" />
 
       <div className="flex items-center gap-4">
         <LanguageSwitcher />

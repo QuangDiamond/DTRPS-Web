@@ -121,6 +121,17 @@ export const ENDPOINTS = {
     advertisementStatus: (adId: number) => `/admin/advertisements/${adId}/status`,
   },
   uploads: { image: '/uploads/images' },
+  // Cài đặt hệ thống, nhật ký hoạt động, tình trạng dịch vụ ngoài
+  system: {
+    settings: '/admin/settings',
+    settingsSection: (section: 'general' | 'rules' | 'announcement') =>
+      `/admin/settings/${section}`,
+    auditLogs: '/admin/audit-logs',
+    auditFilters: '/admin/audit-logs/filters',
+    integrations: '/admin/integrations',
+    integrationCheck: (key: string) => `/admin/integrations/${id(key)}/check`,
+    siteInfo: '/site-info',
+  },
   // Bản đồ Goong qua backend
   maps: {
     autocomplete: '/maps/autocomplete',

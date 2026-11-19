@@ -30,7 +30,7 @@ const TripAdminPage = lazy(() => import('@/pages/TripAdmin/TripAdminPage'));
 const TripAdminDetailPage = lazy(() => import('@/pages/TripAdmin/TripAdminDetailPage'));
 const AdminReportsPage = lazy(() => import('@/pages/AdminMisc/AdminReportsPage'));
 const AdminNotificationsPage = lazy(() => import('@/pages/AdminMisc/AdminNotificationsPage'));
-const AdminSettingsPage = lazy(() => import('@/pages/AdminMisc/AdminSettingsPage'));
+const AdminSettingsPage = lazy(() => import('@/pages/SystemSettings/SystemSettingsPage'));
 const AdminProfilePage = lazy(() => import('@/pages/AdminMisc/AdminProfilePage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFound/NotFoundPage'));
 

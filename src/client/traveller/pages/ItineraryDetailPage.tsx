@@ -29,6 +29,9 @@ import {
   placePath,
 } from '@/client/routePaths';
 
+import { weatherApi, type WeatherImpactedItem } from '@/client/api/weatherApi';
+import WeatherImpactBanner from '@/client/traveller/components/WeatherImpactBanner';
+
 import { NoticeToast } from '@/client/ui/Overlay';
 import PageBar, {
   BarIconButton,
@@ -341,6 +344,11 @@ export default function ItineraryDetailPage() {
 
   const [retryCount, setRetryCount] = useState(0);
 
+  const [impactItems, setImpactItems] =
+    useState<WeatherImpactedItem[]>([]);
+
+  const [weatherVersion, setWeatherVersion] = useState(0);
+
   const [notice, showNotice] = useNotice();
 
   const overviewUrl = validPlanId
@@ -416,6 +424,31 @@ export default function ItineraryDetailPage() {
   ]);
 
   // ====================================================
+  // CẢNH BÁO THỜI TIẾT (UC-045) — CHỈ ĐỀ XUẤT, KHÔNG TỰ SỬA
+  // ====================================================
+
+  useEffect(() => {
+    const itineraryId = overview?.itineraryId;
+    if (!itineraryId) {
+      setImpactItems([]);
+      return;
+    }
+    let active = true;
+    weatherApi
+      .impact(itineraryId)
+      .then((result) => {
+        if (active) setImpactItems(result.impactedItems);
+      })
+      .catch(() => {
+        // Không chặn trang nếu kiểm tra thời tiết lỗi.
+        if (active) setImpactItems([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [overview?.itineraryId, weatherVersion]);
+
+  // ====================================================
   // LẤY NGÀY VÀ DANH SÁCH HOẠT ĐỘNG
   // ====================================================
 
@@ -439,6 +472,14 @@ export default function ItineraryDetailPage() {
         (a, b) => a.itemOrder - b.itemOrder,
       ),
     [currentDay],
+  );
+
+  const dayImpactItems = useMemo(
+    () =>
+      impactItems.filter(
+        (item) => item.dayNumber === dayNumber,
+      ),
+    [impactItems, dayNumber],
   );
 
   const currentIndex = days.findIndex(
@@ -846,6 +887,19 @@ export default function ItineraryDetailPage() {
                 </Link>
               ))}
             </div>
+
+            {/* CẢNH BÁO THỜI TIẾT */}
+
+            {overview.itineraryId && (
+              <WeatherImpactBanner
+                itineraryId={overview.itineraryId}
+                items={dayImpactItems}
+                onApplied={() => {
+                  setWeatherVersion((version) => version + 1);
+                  setRetryCount((count) => count + 1);
+                }}
+              />
+            )}
 
             {/* DANH SÁCH HOẠT ĐỘNG */}
 

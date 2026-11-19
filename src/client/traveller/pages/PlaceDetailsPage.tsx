@@ -13,6 +13,7 @@ import Avatar from '@/client/traveller/components/Avatar';
 import FavoriteButton from '@/client/traveller/components/FavoriteButton';
 import ReportReviewDialog from '@/client/traveller/components/ReportReviewDialog';
 import StopReviewCard from '@/client/traveller/components/StopReviewCard';
+import TodayWeatherCard from '@/client/traveller/components/TodayWeatherCard';
 import TravelMap from '@/client/traveller/components/TravelMap';
 import { useTraveller } from '@/client/traveller/travellerContext';
 import { FormAlert, Spinner } from '@/client/ui/Blocks';
@@ -343,7 +344,7 @@ export default function PlaceDetailsPage() {
       />
 
       <div className="md:grid md:grid-cols-[1.4fr_1fr] md:gap-6">
-        <div>
+        <div className="min-w-0">
           <div className="relative h-60 overflow-hidden rounded-[24px] bg-[#CFE9E6] md:h-80">
             {place.coverUrl ? (
               <img
@@ -451,7 +452,7 @@ export default function PlaceDetailsPage() {
           )}
         </div>
 
-        <div>
+        <div className="min-w-0">
           <h2 className="mt-7 mb-3 text-[17px] font-extrabold text-[#13364A] md:mt-0">
             Thông tin thực tế
           </h2>
@@ -496,6 +497,11 @@ export default function PlaceDetailsPage() {
               </p>
             </div>
           </div>
+
+          <h2 className="mt-7 mb-3 text-[17px] font-extrabold text-[#13364A]">
+            Thời tiết hôm nay
+          </h2>
+          <TodayWeatherCard placeId={place.id} />
 
           <h2 className="mt-7 mb-3 text-[17px] font-extrabold text-[#13364A]">
             Bảng giá tham khảo

@@ -19,6 +19,7 @@ import { useClientAuth } from '@/client/auth/clientAuthContext';
 import PageBar from '@/client/ui/PageBar';
 import Avatar from '@/client/traveller/components/Avatar';
 import TripFeedbackModal from '@/client/traveller/components/TripFeedbackModal';
+import WeatherForecastStrip from '@/client/traveller/components/WeatherForecastStrip';
 
 /** Thời gian chờ trước khi tự hiện modal đánh giá chuyến đi */
 const FEEDBACK_PROMPT_DELAY_MS = 1_000;
@@ -1009,6 +1010,8 @@ export default function ItineraryOverviewPage() {
               </div>
             </div>
           </section>
+
+          <WeatherForecastStrip itineraryId={overview.itineraryId} />
 
           <div className="mt-4 grid grid-cols-2 gap-3 sm:mt-5 sm:gap-4 lg:grid-cols-4">
             <SummaryCard icon="calendar_month" label="Thời lượng" value={`${days.length} ngày`} />

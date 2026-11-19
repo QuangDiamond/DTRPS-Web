@@ -25,6 +25,7 @@ import {
 } from '@/client/routePaths';
 
 import StopReviewCard from '@/client/traveller/components/StopReviewCard';
+import TodayWeatherCard from '@/client/traveller/components/TodayWeatherCard';
 
 import {
   arrivalRadius,
@@ -1028,7 +1029,7 @@ export default function TripLiveMapPage() {
       {/* BẢN ĐỒ GOONG                                   */}
       {/* ============================================== */}
 
-      <div className="relative isolate">
+      <div className="relative min-w-0 isolate">
 
         <TravelMap
           ref={mapRef}
@@ -1232,7 +1233,7 @@ export default function TripLiveMapPage() {
       {/* THÔNG TIN HÀNH TRÌNH                            */}
       {/* ============================================== */}
 
-      <div className="relative z-10 -mt-5 rounded-t-[27px] bg-white px-[17px] pb-5 pt-2.5 shadow-[0_-6px_18px_rgba(0,0,0,0.08)] md:mt-0 md:rounded-[20px] md:shadow-none">
+      <div className="relative z-10 -mt-5 min-w-0 rounded-t-[27px] bg-white px-[17px] pb-5 pt-2.5 shadow-[0_-6px_18px_rgba(0,0,0,0.08)] md:mt-0 md:rounded-[20px] md:shadow-none">
 
         <span className="mx-auto mb-3.5 block h-[5px] w-[43px] rounded-full bg-[#DCE5E7] md:hidden" />
 
@@ -1351,6 +1352,16 @@ export default function TripLiveMapPage() {
 
           </p>
 
+        )}
+
+        {/* ========================================== */}
+        {/* THỜI TIẾT ĐIỂM TIẾP THEO                  */}
+        {/* ========================================== */}
+
+        {pendingStop && (
+          <div className="mt-3">
+            <TodayWeatherCard placeId={pendingStop.placeId} />
+          </div>
         )}
 
         {/* ========================================== */}

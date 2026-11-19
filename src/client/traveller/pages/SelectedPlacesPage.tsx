@@ -250,9 +250,11 @@ export default function SelectedPlacesPage() {
         },
       );
 
-      // Backend tạo thành công mới được chuyển trang.
+      // Backend luôn tạo lịch trình; chỗ chưa hợp lý (quá nhiều/ít điểm, ngoài giờ mở cửa)
+      // được trả về dạng cảnh báo và hiển thị ở màn lịch trình, không chặn người dùng.
       navigate(
         `${CLIENT_ROUTES.ITINERARY}?planId=${generated.planId}`,
+        { state: { itineraryWarnings: generated.warnings ?? [] } },
       );
     } catch (caught: unknown) {
       // Ví dụ: Backend trả 422 nếu không đủ ngày

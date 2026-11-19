@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { clientRequest, ClientApiError, errorMessage } from '@/client/api/http';
 import {
@@ -365,10 +365,19 @@ function EditActivityModal({
     setSearchError('');
     setResults([]);
     const timer = window.setTimeout(() => {
-      placesApi
-        .list({ province, keyword: keyword.trim(), page: 0, size: 50 })
-        .then((page) => {
-          if (active) setResults(page.items.filter((p) => !usedIds.has(p.id)));
+      // Lấy hết mọi địa điểm phù hợp (không giới hạn số lượng), mỗi lần 100 điểm theo giới hạn trang của BE.
+      const loadAll = async () => {
+        const all: PlaceSummary[] = [];
+        for (let page = 0; active; page += 1) {
+          const result = await placesApi.list({ province, keyword: keyword.trim(), page, size: 100 });
+          all.push(...result.items);
+          if (result.items.length === 0 || all.length >= result.total) break;
+        }
+        return all;
+      };
+      loadAll()
+        .then((items) => {
+          if (active) setResults(items.filter((p) => !usedIds.has(p.id)));
         })
         .catch((e) => {
           if (active) setSearchError(errorMessage(e));
@@ -730,6 +739,15 @@ export default function ItineraryOverviewPage() {
   const { user } = useClientAuth();
   const [searchParams] = useSearchParams();
 
+  // Cảnh báo trả về khi vừa tạo lịch trình (truyền từ màn Địa điểm đã chọn qua navigation state).
+  const location = useLocation();
+  const [creationWarnings, setCreationWarnings] = useState<string[]>(() => {
+    const state = location.state as { itineraryWarnings?: unknown } | null;
+    return Array.isArray(state?.itineraryWarnings)
+      ? state.itineraryWarnings.filter((w): w is string => typeof w === 'string')
+      : [];
+  });
+
   const rawPlanId = searchParams.get('planId');
 
   const planId = rawPlanId === null ? NaN : Number(rawPlanId);
@@ -916,6 +934,30 @@ export default function ItineraryOverviewPage() {
           ) : undefined
         }
       />
+
+      {/* CẢNH BÁO KHI TẠO LỊCH TRÌNH: không chặn, chỉ nhắc người dùng kiểm tra lại */}
+      {creationWarnings.length > 0 && (
+        <div
+          role="status"
+          className="mb-4 flex items-start gap-3 rounded-[20px] border border-amber-200 bg-amber-50 p-4 text-[13px] text-amber-900"
+        >
+          <Icon name="warning" className="mt-0.5 text-[20px] text-amber-600" />
+          <div className="min-w-0 flex-1 space-y-1">
+            <p className="font-extrabold">Lịch trình đã được tạo, nhưng có vài điểm cần lưu ý</p>
+            {creationWarnings.map((warning, index) => (
+              <p key={index}>{warning}</p>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setCreationWarnings([])}
+            aria-label="Đóng cảnh báo"
+            className="rounded-full p-1 text-amber-700 hover:bg-amber-100"
+          >
+            <Icon name="close" className="text-[18px]" />
+          </button>
+        </div>
+      )}
 
       {/* ĐANG TẢI */}
       {loading && (

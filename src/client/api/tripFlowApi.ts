@@ -77,6 +77,10 @@ export interface TripPlace {
   aiRank?: number;
   aiScore?: number;
   aiBreakdown?: AiScoreBreakdown;
+  aiMatchPercent?: number;
+  aiMatchLabel?: string;
+  aiReasons?: string[];
+  aiCautions?: string[];
 }
 
 export interface AiScoreBreakdown {
@@ -99,6 +103,14 @@ export interface AiRecommendedPlace {
   longitude: number | null;
   score: number;
   breakdown: AiScoreBreakdown;
+  /** Độ phù hợp 0–100 */
+  matchPercent?: number;
+  /** Rất phù hợp / Phù hợp / Có thể bạn thích */
+  matchLabel?: string;
+  /** Lý do gợi ý (tối đa 4) */
+  reasons?: string[];
+  /** Lưu ý: chi phí cao, phải leo trèo… */
+  cautions?: string[];
 }
 
 export interface AiRecommendationResponse {
@@ -131,6 +143,10 @@ export function toAiTripPlace(
     aiRank: place.rank,
     aiScore: place.score,
     aiBreakdown: place.breakdown,
+    aiMatchPercent: place.matchPercent ?? Math.round(place.score * 100),
+    aiMatchLabel: place.matchLabel,
+    aiReasons: place.reasons ?? [],
+    aiCautions: place.cautions ?? [],
   };
 }
 
@@ -163,6 +179,8 @@ export interface GeneratedItinerary {
   startDate: string;
   endDate: string;
   days: ItineraryDay[];
+  /** Cảnh báo khi tạo lịch trình (quá nhiều/ít địa điểm, ngoài giờ mở cửa…); không chặn việc tạo. */
+  warnings?: string[];
 }
 
 export interface ItineraryActivity {

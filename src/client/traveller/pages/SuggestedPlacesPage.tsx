@@ -65,6 +65,10 @@ const tripDays = (plan: TravelPlanResponse) => {
   );
 };
 
+/** Màu huy hiệu độ phù hợp: ≥75 rất phù hợp, ≥55 phù hợp, còn lại có thể bạn thích. */
+const matchColor = (percent: number) =>
+  percent >= 75 ? 'bg-[#087A78]' : percent >= 55 ? 'bg-[#2E8B57]' : 'bg-[#6B7C89]';
+
 function PlaceCard({
                      place,
                      index,
@@ -84,6 +88,8 @@ function PlaceCard({
   onHover: () => void;
   onToggle: () => void;
 }) {
+  const [showWhy, setShowWhy] = useState(false);
+
   return (
     <div
       id={`suggestion-${place.placeId}`}
@@ -121,6 +127,15 @@ function PlaceCard({
           <span className="absolute bottom-2 left-2 max-w-[90%] truncate rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-[#075C66]">
             {place.categoryName ?? 'Địa điểm du lịch'}
           </span>
+
+          {place.aiMatchPercent !== undefined && (
+            <span
+              className={`absolute right-2 top-2 flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-extrabold text-white shadow ${matchColor(place.aiMatchPercent)}`}
+            >
+              <Icon name="auto_awesome" className="text-[13px]" />
+              {place.aiMatchPercent}% phù hợp
+            </span>
+          )}
         </div>
 
         <div className="px-3 pb-2 pt-3">
@@ -145,16 +160,48 @@ function PlaceCard({
             {priceLabel(place)}
           </p>
 
-         
-<p className="mt-1 text-[10px] text-[#8C9AA3]">
-  {place.aiRank !== undefined &&
-  place.aiScore !== undefined
-    ? `SmartTravel xếp hạng #${place.aiRank} · Điểm ${place.aiScore.toFixed(4)}`
-    : `Địa điểm đã chọn #${index + 1}`}
-</p>
-
+          <p className="mt-1 text-[10px] text-[#8C9AA3]">
+            {place.aiRank !== undefined
+              ? `${place.aiMatchLabel ?? 'Gợi ý'} · Xếp hạng #${place.aiRank}`
+              : `Địa điểm đã chọn #${index + 1}`}
+          </p>
         </div>
       </Link>
+
+      {/* VÌ SAO GỢI Ý: lý do + lưu ý cho từng địa điểm */}
+      {((place.aiReasons?.length ?? 0) > 0 || (place.aiCautions?.length ?? 0) > 0) && (
+        <div className="px-3">
+          <button
+            type="button"
+            onClick={() => setShowWhy((open) => !open)}
+            aria-expanded={showWhy}
+            className="flex w-full items-center justify-between rounded-lg bg-[#F1FAF8] px-2.5 py-1.5 text-[11px] font-bold text-[#075C66] hover:bg-[#E3F5F1]"
+          >
+            <span className="flex items-center gap-1">
+              <Icon name="lightbulb" className="text-[15px]" />
+              Vì sao gợi ý?
+            </span>
+            <Icon name={showWhy ? 'expand_less' : 'expand_more'} className="text-[17px]" />
+          </button>
+
+          {showWhy && (
+            <ul className="mt-2 space-y-1.5 text-[11px] leading-4">
+              {place.aiReasons?.map((reason) => (
+                <li key={reason} className="flex items-start gap-1.5 text-[#13364A]">
+                  <Icon name="check_circle" className="mt-px shrink-0 text-[14px] text-[#087A78]" />
+                  <span>{reason}</span>
+                </li>
+              ))}
+              {place.aiCautions?.map((caution) => (
+                <li key={caution} className="flex items-start gap-1.5 text-amber-800">
+                  <Icon name="warning" className="mt-px shrink-0 text-[14px] text-amber-600" />
+                  <span>{caution}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       <div className="mt-auto px-3 pb-3 pt-1">
         <button

@@ -5,6 +5,8 @@ import { placeCatalogService } from '@/services/placeCatalogService';
 import { getErrorMessage } from '@/utils/error';
 import {
   ACCEPTED_IMAGE_TYPES,
+  canLoadImage,
+  directImageUrl,
   INPUT_CLASS,
   isHttpsUrl,
   MAX_IMAGE_BYTES,
@@ -42,8 +44,20 @@ export default function PhotoManager({
   const [error, setError] = useState('');
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [uploading, setUploading] = useState(0);
+  /** Link ảnh trình duyệt không hiển thị được (đã lưu từ trước) */
+  const [broken, setBroken] = useState<Set<string>>(new Set());
 
   const full = images.length >= MAX_IMAGES;
+  const brokenCount = images.filter((image) => broken.has(image.url)).length;
+
+  const markBroken = (imageUrl: string, isBroken: boolean) =>
+    setBroken((current) => {
+      if (current.has(imageUrl) === isBroken) return current;
+      const next = new Set(current);
+      if (isBroken) next.add(imageUrl);
+      else next.delete(imageUrl);
+      return next;
+    });
 
   const run = async (key: string, action: () => Promise<void> | void) => {
     setError('');
@@ -60,12 +74,22 @@ export default function PhotoManager({
   };
 
   const addUrl = async () => {
-    const value = url.trim();
+    // Dán link trang Google Hình ảnh thì lấy ra link ảnh gốc
+    const value = directImageUrl(url);
     if (!isHttpsUrl(value)) {
       setError(t('placeEditor.photos.httpsOnly'));
       return;
     }
-    if (await run('url', () => onAdd(value))) setUrl('');
+    if (images.some((image) => image.url === value)) {
+      setError(t('placeEditor.photos.duplicate'));
+      return;
+    }
+    const added = await run('url', async () => {
+      // Thử tải trước: link không ra ảnh thì không lưu, tránh ô ảnh trống cho du khách
+      if (!(await canLoadImage(value))) throw new Error(t('placeEditor.photos.notImage'));
+      await onAdd(value);
+    });
+    if (added) setUrl('');
   };
 
   const changeUploading = (delta: number) =>
@@ -103,45 +127,74 @@ export default function PhotoManager({
   return (
     <div className="flex flex-col gap-3">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {images.map((image) => (
-          <div
-            key={image.key}
-            className="overflow-hidden rounded-xl border border-surface-container bg-surface-container-lowest"
-          >
-            <div className="relative">
-              <img src={image.url} alt="" className="h-28 w-full object-cover" />
-              {image.primary && (
-                <span className="absolute top-2 left-2 rounded-full bg-primary px-2 py-0.5 font-label-sm text-[10px] font-bold text-on-primary">
-                  {t('placeEditor.photos.cover')}
-                </span>
-              )}
-              {busyKey === image.key && (
-                <span className="absolute inset-0 flex items-center justify-center bg-black/30">
-                  <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-white/60 border-t-primary" />
-                </span>
-              )}
+        {images.map((image) => {
+          const isBroken = broken.has(image.url);
+          return (
+            <div
+              key={image.key}
+              className={`overflow-hidden rounded-xl border bg-surface-container-lowest ${
+                isBroken ? 'border-error' : 'border-surface-container'
+              }`}
+            >
+              <div className="relative">
+                {isBroken ? (
+                  <a
+                    href={image.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={image.url}
+                    className="flex h-28 w-full flex-col items-center justify-center gap-1 bg-error-container/40 text-error"
+                  >
+                    <Icon name="broken_image" className="text-[28px]" />
+                    <span className="font-label-sm text-[11px] font-bold">
+                      {t('placeEditor.photos.broken')}
+                    </span>
+                  </a>
+                ) : (
+                  <img
+                    src={image.url}
+                    alt=""
+                    referrerPolicy="no-referrer"
+                    onError={() => markBroken(image.url, true)}
+                    onLoad={() => markBroken(image.url, false)}
+                    className="h-28 w-full object-cover"
+                  />
+                )}
+                {image.primary && (
+                  <span className="absolute top-2 left-2 rounded-full bg-primary px-2 py-0.5 font-label-sm text-[10px] font-bold text-on-primary">
+                    {t('placeEditor.photos.cover')}
+                  </span>
+                )}
+                {busyKey === image.key && (
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-white/60 border-t-primary" />
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center justify-between px-2 py-1.5">
+                <button
+                  type="button"
+                  disabled={image.primary || isBroken || busyKey !== null}
+                  onClick={() => void run(image.key, () => onSetCover(image))}
+                  className="font-label-sm text-[11px] font-bold text-primary hover:underline disabled:text-outline disabled:no-underline"
+                >
+                  {image.primary
+                    ? t('placeEditor.photos.isCover')
+                    : t('placeEditor.photos.setCover')}
+                </button>
+                <button
+                  type="button"
+                  aria-label={t('placeEditor.photos.remove')}
+                  disabled={busyKey !== null}
+                  onClick={() => void run(image.key, () => onRemove(image))}
+                  className="text-outline hover:text-error disabled:opacity-40"
+                >
+                  <Icon name="delete" className="text-[18px]" />
+                </button>
+              </div>
             </div>
-            <div className="flex items-center justify-between px-2 py-1.5">
-              <button
-                type="button"
-                disabled={image.primary || busyKey !== null}
-                onClick={() => void run(image.key, () => onSetCover(image))}
-                className="font-label-sm text-[11px] font-bold text-primary hover:underline disabled:text-outline disabled:no-underline"
-              >
-                {image.primary ? t('placeEditor.photos.isCover') : t('placeEditor.photos.setCover')}
-              </button>
-              <button
-                type="button"
-                aria-label={t('placeEditor.photos.remove')}
-                disabled={busyKey !== null}
-                onClick={() => void run(image.key, () => onRemove(image))}
-                className="text-outline hover:text-error disabled:opacity-40"
-              >
-                <Icon name="delete" className="text-[18px]" />
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
         {Array.from({ length: uploading }, (_, index) => (
           <div
             key={`uploading-${index}`}
@@ -207,6 +260,12 @@ export default function PhotoManager({
       <p className="font-label-sm text-label-sm text-outline">
         {t('placeEditor.photos.hint', { count: images.length, max: MAX_IMAGES })}
       </p>
+      {brokenCount > 0 && (
+        <p className="flex items-center gap-1 font-label-sm text-label-sm text-error">
+          <Icon name="warning" className="text-[16px]" />
+          {t('placeEditor.photos.brokenHint', { count: brokenCount })}
+        </p>
+      )}
       {error && <p className="font-label-sm text-label-sm text-error">{error}</p>}
     </div>
   );

@@ -3363,7 +3363,10 @@
       "tooMany": "Only {{count}} more photos can be added (max 10).",
       "badType": "Only jpg, png or webp images",
       "tooLarge": "Images are limited to 5MB",
-      "hint": "{{count}}/{{max}} photos · jpg, png, webp · up to 5MB each"
+      "hint": "{{count}}/{{max}} photos · jpg, png, webp · up to 5MB each",
+      "notImage": "This link is not an image or cannot be loaded. Open the original image, right-click \"Copy image address\" and paste it again.",
+      "broken": "Broken image",
+      "brokenHint": "{{count}} photos cannot be displayed and travellers will see an empty box. Remove and add them again."
     },
     "prices": {
       "type": "Price type",

@@ -51,6 +51,46 @@ export const parseNumber = (value: string): number | null => {
 
 export const isHttpsUrl = (value: string): boolean => /^https:\/\/\S+$/.test(value.trim());
 
+/**
+ * Link trang kết quả tìm ảnh (Google Hình ảnh, Bing) không phải file ảnh: lấy ra link ảnh gốc nằm
+ * trong tham số imgurl / mediaurl. Link khác giữ nguyên.
+ */
+export function directImageUrl(value: string): string {
+  const text = value.trim();
+  try {
+    const link = new URL(text);
+    const host = link.hostname.replace(/^www\./, '');
+    const fromGoogle = /^google\.[a-z.]+$/.test(host) && link.pathname === '/imgres';
+    const fromBing = host === 'bing.com' && link.pathname.startsWith('/images/');
+    const inner = fromGoogle
+      ? link.searchParams.get('imgurl')
+      : fromBing
+        ? link.searchParams.get('mediaurl')
+        : null;
+    return inner?.trim() || text;
+  } catch {
+    return text;
+  }
+}
+
+/** Trình duyệt tải được link thành một ảnh thật trong thời gian cho phép */
+export function canLoadImage(url: string, timeoutMs = 10_000): Promise<boolean> {
+  return new Promise((resolve) => {
+    const image = new Image();
+    const timer = window.setTimeout(() => finish(false), timeoutMs);
+    function finish(ok: boolean) {
+      window.clearTimeout(timer);
+      image.onload = null;
+      image.onerror = null;
+      resolve(ok);
+    }
+    image.referrerPolicy = 'no-referrer';
+    image.onload = () => finish(image.naturalWidth > 0 && image.naturalHeight > 0);
+    image.onerror = () => finish(false);
+    image.src = url;
+  });
+}
+
 /** Ảnh đọc được trước khi gửi — BE vẫn kiểm tra lại theo nội dung file */
 export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;

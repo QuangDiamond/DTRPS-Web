@@ -3290,7 +3290,10 @@
       "tooMany": "Chỉ thêm được {{count}} ảnh nữa (tối đa 10).",
       "badType": "Chỉ nhận ảnh jpg, png hoặc webp",
       "tooLarge": "Ảnh tối đa 5MB",
-      "hint": "{{count}}/{{max}} ảnh · jpg, png, webp · tối đa 5MB/ảnh"
+      "hint": "{{count}}/{{max}} ảnh · jpg, png, webp · tối đa 5MB/ảnh",
+      "notImage": "Link này không phải ảnh hoặc không tải được. Mở ảnh gốc, chuột phải chọn \"Sao chép địa chỉ hình ảnh\" rồi dán lại.",
+      "broken": "Ảnh lỗi",
+      "brokenHint": "{{count}} ảnh không hiển thị được, du khách sẽ thấy ô trống. Hãy xoá và thêm lại."
     },
     "prices": {
       "type": "Loại giá",

@@ -9,6 +9,7 @@ import { CLIENT_ROUTES } from '@/client/routePaths';
 import { Spinner } from '@/client/ui/Blocks';
 import { AppLogo } from '@/client/ui/Brand';
 import Avatar from '@/client/traveller/components/Avatar';
+import SiteAnnouncementBanner from './SiteAnnouncementBanner';
 
 interface NavItem {
   to: string;
@@ -250,6 +251,8 @@ export default function ClientShell() {
           </div>
         </div>
       </header>
+
+      <SiteAnnouncementBanner partnerMode={partnerMode} />
 
       <main className="w-full px-4 pt-6 md:px-6 lg:px-10">
         <Suspense fallback={<Spinner />}>

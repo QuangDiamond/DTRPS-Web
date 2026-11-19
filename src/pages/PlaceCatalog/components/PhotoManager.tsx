@@ -9,9 +9,8 @@ import {
   directImageUrl,
   INPUT_CLASS,
   isHttpsUrl,
-  MAX_IMAGE_BYTES,
-  MAX_IMAGES,
 } from '@/pages/PlaceCatalog/placeEditorUtils';
+import { usePhotoLimits } from '@/pages/PlaceCatalog/usePhotoLimits';
 
 export interface PhotoItem {
   /** id ảnh (trang chi tiết) hoặc URL (form tạo mới) */
@@ -39,6 +38,8 @@ export default function PhotoManager({
   onUploadingChange?: (uploading: boolean) => void;
 }) {
   const { t } = useTranslation();
+  // Giới hạn do admin chỉnh ở Cài đặt hệ thống
+  const { maxImages, maxBytes, maxMb } = usePhotoLimits();
   const inputRef = useRef<HTMLInputElement>(null);
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
@@ -47,7 +48,7 @@ export default function PhotoManager({
   /** Link ảnh trình duyệt không hiển thị được (đã lưu từ trước) */
   const [broken, setBroken] = useState<Set<string>>(new Set());
 
-  const full = images.length >= MAX_IMAGES;
+  const full = images.length >= maxImages;
   const brokenCount = images.filter((image) => broken.has(image.url)).length;
 
   const markBroken = (imageUrl: string, isBroken: boolean) =>
@@ -101,15 +102,15 @@ export default function PhotoManager({
 
   const uploadFiles = async (files: File[]) => {
     setError('');
-    const room = MAX_IMAGES - images.length;
-    if (files.length > room) setError(t('placeEditor.photos.tooMany', { count: room }));
+    const room = maxImages - images.length;
+    if (files.length > room) setError(t('placeEditor.photos.tooMany', { count: room, max: maxImages }));
     for (const file of files.slice(0, Math.max(room, 0))) {
       if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
         setError(t('placeEditor.photos.badType'));
         continue;
       }
-      if (file.size > MAX_IMAGE_BYTES) {
-        setError(t('placeEditor.photos.tooLarge'));
+      if (file.size > maxBytes) {
+        setError(t('placeEditor.photos.tooLarge', { mb: maxMb }));
         continue;
       }
       changeUploading(1);
@@ -258,7 +259,7 @@ export default function PhotoManager({
         }}
       />
       <p className="font-label-sm text-label-sm text-outline">
-        {t('placeEditor.photos.hint', { count: images.length, max: MAX_IMAGES })}
+        {t('placeEditor.photos.hint', { count: images.length, max: maxImages, mb: maxMb })}
       </p>
       {brokenCount > 0 && (
         <p className="flex items-center gap-1 font-label-sm text-label-sm text-error">

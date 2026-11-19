@@ -251,10 +251,21 @@ export default function PaymentsTab({
                 {money(payment.amount)}
               </td>
               <td className="px-4 py-3">
-                <Pill
-                  label={t(`adAdmin.payments.status.${payment.status}`)}
-                  className={PAYMENT_STATUS_CLASS[payment.status]}
-                />
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <Pill
+                    label={t(`adAdmin.payments.status.${payment.status}`)}
+                    className={PAYMENT_STATUS_CLASS[payment.status]}
+                  />
+                  {payment.gatewayStatus === 'MANUAL' && (
+                    <span
+                      title={t('adAdmin.payments.manualHint')}
+                      className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 font-label-sm text-label-sm font-semibold whitespace-nowrap text-amber-800"
+                    >
+                      <Icon name="back_hand" className="text-[14px]" />
+                      {t('adAdmin.payments.manual')}
+                    </span>
+                  )}
+                </div>
                 {payment.needsReview && (
                   <p className="mt-1.5 flex max-w-[220px] items-start gap-1 font-body-sm text-[12px] text-error">
                     <Icon name="warning" className="text-[15px]" />

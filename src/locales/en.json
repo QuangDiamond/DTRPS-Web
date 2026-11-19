@@ -14,7 +14,7 @@
     "users": "User management",
     "partners": "Partner management",
     "listings": "Listing management",
-    "pois": "POI destinations",
+    "pois": "Places",
     "reports": "Reports & Analytics",
     "notifications": "Notifications",
     "settings": "System settings",
@@ -2981,7 +2981,7 @@
       "active": "Visible",
       "activeHint": "Travellers can find them",
       "draft": "Not published",
-      "draftHint": "New places awaiting listing review",
+      "draftHint": "{{pending}} awaiting review · {{hidden}} hidden",
       "sources": "Data sources",
       "sourcesHint": "{{partner}} partners · {{admin}} platform POIs"
     },
@@ -3363,7 +3363,10 @@
       "tooMany": "Only {{count}} more photos can be added (max 10).",
       "badType": "Only jpg, png or webp images",
       "tooLarge": "Images are limited to 5MB",
-      "hint": "{{count}}/{{max}} photos · jpg, png, webp · up to 5MB each"
+      "hint": "{{count}}/{{max}} photos · jpg, png, webp · up to 5MB each",
+      "notImage": "This link is not an image or cannot be loaded. Open the original image, right-click \"Copy image address\" and paste it again.",
+      "broken": "Broken image",
+      "brokenHint": "{{count}} photos cannot be displayed and travellers will see an empty box. Remove and add them again."
     },
     "prices": {
       "type": "Price type",
@@ -3761,7 +3764,9 @@
       "refunded": "Refund recorded",
       "refundTitle": "Refund order #{{order}}",
       "refundHint": "The system does not send money. Transfer it to the partner first, then record it here. The active package of this transaction will be cancelled.",
-      "refundReference": "Refund transfer reference"
+      "refundReference": "Refund transfer reference",
+      "manual": "Manual",
+      "manualHint": "Activated by an admin from a payment issue — PayOS did not record this order. Check the bank statement."
     },
     "subscriptions": {
       "search": "Partner name…",
@@ -3777,7 +3782,15 @@
       "cancel": "Cancel package",
       "cancelled": "Package cancelled and partner notified",
       "cancelTitle": "Cancel package of {{name}}",
-      "cancelHint": "Ads stop immediately. The partner is told the reason."
+      "cancelHint": "Ads stop immediately. The partner is told the reason.",
+      "manual": {
+        "filter": "Manually activated",
+        "badge": "Manually activated",
+        "issue": "Issue #{{id}} · Order #{{order}}",
+        "order": "Order #{{order}}",
+        "bankRef": "Bank ref: {{ref}}",
+        "by": "By {{name}}"
+      }
     },
     "advertisements": {
       "search": "Place or partner name…",

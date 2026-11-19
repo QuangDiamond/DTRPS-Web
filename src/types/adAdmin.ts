@@ -93,6 +93,18 @@ export interface AdminAdSubscription {
   endDate: string;
   daysLeft: number;
   cancelReason: string | null;
+  /** Có khi admin kích hoạt tay từ phiếu sự cố (PayOS không ghi nhận) */
+  manualActivation: ManualActivation | null;
+}
+
+export interface ManualActivation {
+  paymentId: number;
+  orderCode: string;
+  bankReference: string | null;
+  issueId: number | null;
+  reason: string | null;
+  handledBy: string | null;
+  activatedAt: string | null;
 }
 
 export type AdvertisementStatus = 'PUBLISHED' | 'SUSPENDED' | 'EXPIRED';

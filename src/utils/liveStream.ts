@@ -2,6 +2,8 @@
 export interface LiveEvent {
   /** Ví dụ LISTING_APPROVED, REVISION_SUBMITTED */
   type: string;
+  /** Nhóm (tab chuông): REVIEW, LISTING, ADS, TRIP, OTHER */
+  category: string;
   /** Có giá trị khi sự kiện cũng được lưu thành thông báo; null = chỉ để làm mới màn hình */
   notificationId: number | null;
   title: string;

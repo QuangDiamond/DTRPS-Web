@@ -14,7 +14,7 @@
     "users": "Quản lý người dùng",
     "partners": "Quản lý đối tác",
     "listings": "Quản lý niêm yết",
-    "pois": "Quản lý điểm đến POI",
+    "pois": "Quản lý địa điểm",
     "reports": "Báo cáo & Thống kê",
     "notifications": "Thông báo",
     "settings": "Cài đặt hệ thống",
@@ -2908,7 +2908,7 @@
       "active": "Đang hiển thị",
       "activeHint": "Du khách tìm thấy được",
       "draft": "Chưa công khai",
-      "draftHint": "Địa điểm mới chờ Admin duyệt niêm yết",
+      "draftHint": "{{pending}} chờ duyệt · {{hidden}} đang tạm ẩn",
       "sources": "Nguồn dữ liệu",
       "sourcesHint": "{{partner}} đối tác · {{admin}} POI nền tảng"
     },
@@ -3290,7 +3290,10 @@
       "tooMany": "Chỉ thêm được {{count}} ảnh nữa (tối đa 10).",
       "badType": "Chỉ nhận ảnh jpg, png hoặc webp",
       "tooLarge": "Ảnh tối đa 5MB",
-      "hint": "{{count}}/{{max}} ảnh · jpg, png, webp · tối đa 5MB/ảnh"
+      "hint": "{{count}}/{{max}} ảnh · jpg, png, webp · tối đa 5MB/ảnh",
+      "notImage": "Link này không phải ảnh hoặc không tải được. Mở ảnh gốc, chuột phải chọn \"Sao chép địa chỉ hình ảnh\" rồi dán lại.",
+      "broken": "Ảnh lỗi",
+      "brokenHint": "{{count}} ảnh không hiển thị được, du khách sẽ thấy ô trống. Hãy xoá và thêm lại."
     },
     "prices": {
       "type": "Loại giá",
@@ -3688,7 +3691,9 @@
       "refunded": "Đã ghi nhận hoàn tiền",
       "refundTitle": "Hoàn tiền đơn #{{order}}",
       "refundHint": "Hệ thống không tự chuyển tiền. Hãy chuyển khoản cho đối tác trước, rồi ghi nhận tại đây. Gói đang chạy của giao dịch này sẽ bị huỷ.",
-      "refundReference": "Mã chuyển khoản hoàn tiền"
+      "refundReference": "Mã chuyển khoản hoàn tiền",
+      "manual": "Thủ công",
+      "manualHint": "Admin kích hoạt tay từ phiếu sự cố — PayOS không ghi nhận đơn này. Đối chiếu sao kê ngân hàng."
     },
     "subscriptions": {
       "search": "Tên đối tác…",
@@ -3704,7 +3709,15 @@
       "cancel": "Huỷ gói",
       "cancelled": "Đã huỷ gói và báo cho đối tác",
       "cancelTitle": "Huỷ gói của {{name}}",
-      "cancelHint": "Quảng cáo dừng ngay. Đối tác nhận thông báo kèm lý do."
+      "cancelHint": "Quảng cáo dừng ngay. Đối tác nhận thông báo kèm lý do.",
+      "manual": {
+        "filter": "Kích hoạt thủ công",
+        "badge": "Kích hoạt thủ công",
+        "issue": "Sự cố #{{id}} · Đơn #{{order}}",
+        "order": "Đơn #{{order}}",
+        "bankRef": "Mã GD: {{ref}}",
+        "by": "Bởi {{name}}"
+      }
     },
     "advertisements": {
       "search": "Tên địa điểm hoặc đối tác…",

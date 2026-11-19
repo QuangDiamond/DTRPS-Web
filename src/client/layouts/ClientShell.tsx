@@ -219,6 +219,12 @@ export default function ClientShell() {
                 items={live.items}
                 loading={live.loading}
                 connected={live.connected}
+                filter={live.filter}
+                categories={live.categories}
+                hasMore={live.hasMore}
+                loadingMore={live.loadingMore}
+                onFilter={live.setFilter}
+                onLoadMore={live.loadMore}
                 onOpen={live.loadItems}
                 onMarkAllRead={live.markAllRead}
                 onSelect={(item) => {

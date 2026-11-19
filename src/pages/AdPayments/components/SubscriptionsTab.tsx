@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, FilterSelect, Pagination } from '@/components/common';
+import { Link } from 'react-router-dom';
+import { Button, FilterSelect, Icon, Pagination } from '@/components/common';
 import { useToast } from '@/hooks';
 import {
   money,
@@ -11,9 +12,40 @@ import {
 } from '@/pages/AdPayments/adPaymentUtils';
 import { displayDate } from '@/pages/PlaceReview/placeReviewUtils';
 import { adAdminService } from '@/services/adAdminService';
-import type { AdminAdSubscription, Paged, SelectOption } from '@/types';
+import type { AdminAdSubscription, ManualActivation, Paged, SelectOption } from '@/types';
 import { getErrorMessage } from '@/utils/error';
 import { EmptyRow, Pill, ReasonModal, SearchBox, TableCard } from './AdParts';
+
+/** Ghi chú dưới nhãn: phiếu sự cố, mã giao dịch ngân hàng, ai kích hoạt, lúc nào */
+function ManualNote({ activation }: { activation: ManualActivation }) {
+  const { t } = useTranslation();
+  const parts = [
+    activation.bankReference &&
+      t('adAdmin.subscriptions.manual.bankRef', { ref: activation.bankReference }),
+    activation.handledBy &&
+      t('adAdmin.subscriptions.manual.by', { name: activation.handledBy }),
+    activation.activatedAt && displayDate(activation.activatedAt),
+  ].filter(Boolean);
+  return (
+    <div className="mt-1.5 max-w-[260px] rounded-lg bg-amber-50 px-2.5 py-1.5 font-body-sm text-[12px] leading-[17px] text-amber-900">
+      <Link
+        to={`?tab=issues&q=${encodeURIComponent(activation.orderCode)}`}
+        className="font-semibold underline-offset-2 hover:underline"
+      >
+        {activation.issueId
+          ? t('adAdmin.subscriptions.manual.issue', {
+              id: activation.issueId,
+              order: activation.orderCode,
+            })
+          : t('adAdmin.subscriptions.manual.order', { order: activation.orderCode })}
+      </Link>
+      {parts.length > 0 && <span className="block">{parts.join(' · ')}</span>}
+      {activation.reason && (
+        <span className="mt-0.5 block text-amber-800/80 italic">“{activation.reason}”</span>
+      )}
+    </div>
+  );
+}
 
 /** Tab Gói đang chạy: thời hạn, lượt đã dùng, huỷ gói */
 export default function SubscriptionsTab({
@@ -59,6 +91,8 @@ export default function SubscriptionsTab({
         value,
         label: t(`adAdmin.subscriptions.status.${value}`),
       })),
+      // Lọc gói admin kích hoạt tay, bất kể còn chạy hay đã kết thúc (để đối soát)
+      { value: 'MANUAL', label: t('adAdmin.subscriptions.manual.filter') },
     ],
     [t],
   );
@@ -150,10 +184,24 @@ export default function SubscriptionsTab({
                 {item.usedSlots}/{item.maxPlaces}
               </td>
               <td className="px-4 py-3">
-                <Pill
-                  label={t(`adAdmin.subscriptions.status.${item.status}`)}
-                  className={SUBSCRIPTION_STATUS_CLASS[item.status]}
-                />
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <Pill
+                    label={t(`adAdmin.subscriptions.status.${item.status}`)}
+                    className={SUBSCRIPTION_STATUS_CLASS[item.status]}
+                  />
+                  {item.manualActivation && (
+                    <span
+                      title={item.manualActivation.reason ?? undefined}
+                      className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 font-label-sm text-label-sm font-semibold whitespace-nowrap text-amber-800"
+                    >
+                      <Icon name="back_hand" className="text-[14px]" />
+                      {t('adAdmin.subscriptions.manual.badge')}
+                    </span>
+                  )}
+                </div>
+                {item.manualActivation && (
+                  <ManualNote activation={item.manualActivation} />
+                )}
                 {item.cancelReason && (
                   <p className="mt-1.5 max-w-[220px] font-body-sm text-[12px] text-on-surface-variant">
                     {item.cancelReason}

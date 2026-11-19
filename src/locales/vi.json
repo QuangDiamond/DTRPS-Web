@@ -3691,7 +3691,9 @@
       "refunded": "Đã ghi nhận hoàn tiền",
       "refundTitle": "Hoàn tiền đơn #{{order}}",
       "refundHint": "Hệ thống không tự chuyển tiền. Hãy chuyển khoản cho đối tác trước, rồi ghi nhận tại đây. Gói đang chạy của giao dịch này sẽ bị huỷ.",
-      "refundReference": "Mã chuyển khoản hoàn tiền"
+      "refundReference": "Mã chuyển khoản hoàn tiền",
+      "manual": "Thủ công",
+      "manualHint": "Admin kích hoạt tay từ phiếu sự cố — PayOS không ghi nhận đơn này. Đối chiếu sao kê ngân hàng."
     },
     "subscriptions": {
       "search": "Tên đối tác…",
@@ -3707,7 +3709,15 @@
       "cancel": "Huỷ gói",
       "cancelled": "Đã huỷ gói và báo cho đối tác",
       "cancelTitle": "Huỷ gói của {{name}}",
-      "cancelHint": "Quảng cáo dừng ngay. Đối tác nhận thông báo kèm lý do."
+      "cancelHint": "Quảng cáo dừng ngay. Đối tác nhận thông báo kèm lý do.",
+      "manual": {
+        "filter": "Kích hoạt thủ công",
+        "badge": "Kích hoạt thủ công",
+        "issue": "Sự cố #{{id}} · Đơn #{{order}}",
+        "order": "Đơn #{{order}}",
+        "bankRef": "Mã GD: {{ref}}",
+        "by": "Bởi {{name}}"
+      }
     },
     "advertisements": {
       "search": "Tên địa điểm hoặc đối tác…",

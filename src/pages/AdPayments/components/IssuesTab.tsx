@@ -21,16 +21,19 @@ type Action = { issue: AdminPaymentIssue; type: 'activate' | 'reject' };
 export default function IssuesTab({
   reload,
   onChanged,
+  initialKeyword = '',
 }: {
+  /** Mở từ ghi chú kích hoạt tay: tìm sẵn theo mã đơn, xem mọi trạng thái */
+  initialKeyword?: string;
   reload: number;
   onChanged: () => void;
 }) {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const [result, setResult] = useState<Paged<AdminPaymentIssue> | null>(null);
-  const [keyword, setKeyword] = useState('');
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('OPEN');
+  const [keyword, setKeyword] = useState(initialKeyword);
+  const [search, setSearch] = useState(initialKeyword);
+  const [status, setStatus] = useState(initialKeyword ? 'all' : 'OPEN');
   const [page, setPage] = useState(1);
   const [action, setAction] = useState<Action | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);

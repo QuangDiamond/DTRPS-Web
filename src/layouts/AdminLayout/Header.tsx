@@ -9,6 +9,9 @@ import { useAuth, useLive, useToast } from '@/hooks';
 const ICON_BUTTON_CLASS =
   'flex h-10 w-10 items-center justify-center rounded-full bg-[#F1F4F8] text-on-surface-variant transition-all hover:bg-[#E4EAF1] hover:text-on-surface';
 
+/** Admin nhận hồ sơ đối tác mới, không phải hồ sơ của mình */
+const ADMIN_CATEGORY_LABELS = { LISTING: 'Đối tác', ADS: 'Thanh toán' };
+
 export default function Header() {
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -45,6 +48,13 @@ export default function Header() {
             items={live.items}
             loading={live.loading}
             connected={live.connected}
+            filter={live.filter}
+            categories={live.categories}
+            hasMore={live.hasMore}
+            loadingMore={live.loadingMore}
+            onFilter={live.setFilter}
+            onLoadMore={live.loadMore}
+            categoryLabels={ADMIN_CATEGORY_LABELS}
             onOpen={live.loadItems}
             onMarkAllRead={live.markAllRead}
             onSelect={(item) => {

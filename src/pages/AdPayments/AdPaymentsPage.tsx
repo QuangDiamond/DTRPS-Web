@@ -64,7 +64,14 @@ export default function AdPaymentsPage() {
           initialReview={params.get('review') === 'true'}
         />
       )}
-      {tab === 'issues' && <IssuesTab reload={reload} onChanged={refresh} />}
+      {tab === 'issues' && (
+        <IssuesTab
+          key={params.get('q') ?? ''}
+          initialKeyword={params.get('q') ?? ''}
+          reload={reload}
+          onChanged={refresh}
+        />
+      )}
       {tab === 'subscriptions' && <SubscriptionsTab reload={reload} onChanged={refresh} />}
       {tab === 'advertisements' && <AdvertisementsTab reload={reload} onChanged={refresh} />}
       {tab === 'packages' && <PackagesTab reload={reload} />}

@@ -1,3 +1,12 @@
+/** Tab chuông theo nhóm BE trả về (NotificationCategory) — tên ngắn để vừa một hàng */
+export const NOTIFICATION_CATEGORIES: Record<string, { label: string; icon: string }> = {
+  LISTING: { label: 'Niêm yết', icon: 'storefront' },
+  ADS: { label: 'Quảng cáo', icon: 'campaign' },
+  REVIEW: { label: 'Đánh giá', icon: 'reviews' },
+  TRIP: { label: 'Chuyến đi', icon: 'luggage' },
+  OTHER: { label: 'Khác', icon: 'notifications' },
+};
+
 /** Icon + màu cho từng loại thông báo (theo hậu tố của type, ví dụ LISTING_APPROVED) */
 export interface NotificationTone {
   icon: string;

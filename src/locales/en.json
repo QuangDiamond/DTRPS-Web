@@ -3764,7 +3764,9 @@
       "refunded": "Refund recorded",
       "refundTitle": "Refund order #{{order}}",
       "refundHint": "The system does not send money. Transfer it to the partner first, then record it here. The active package of this transaction will be cancelled.",
-      "refundReference": "Refund transfer reference"
+      "refundReference": "Refund transfer reference",
+      "manual": "Manual",
+      "manualHint": "Activated by an admin from a payment issue — PayOS did not record this order. Check the bank statement."
     },
     "subscriptions": {
       "search": "Partner name…",
@@ -3780,7 +3782,15 @@
       "cancel": "Cancel package",
       "cancelled": "Package cancelled and partner notified",
       "cancelTitle": "Cancel package of {{name}}",
-      "cancelHint": "Ads stop immediately. The partner is told the reason."
+      "cancelHint": "Ads stop immediately. The partner is told the reason.",
+      "manual": {
+        "filter": "Manually activated",
+        "badge": "Manually activated",
+        "issue": "Issue #{{id}} · Order #{{order}}",
+        "order": "Order #{{order}}",
+        "bankRef": "Bank ref: {{ref}}",
+        "by": "By {{name}}"
+      }
     },
     "advertisements": {
       "search": "Place or partner name…",

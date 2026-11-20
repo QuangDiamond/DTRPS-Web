@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '@/components/common';
+import { type AdPartnerState, adApi } from '@/client/api/adApi';
 import { businessListingApi } from '@/client/api/businessListingApi';
 import { useClientLiveRefresh } from '@/client/live/clientLiveContext';
 import { errorMessage } from '@/client/api/http';
@@ -262,6 +263,90 @@ function ProfileCard({ profile }: { profile: BusinessProfile }) {
   );
 }
 
+/** Việc cần làm về quảng cáo: đơn chờ thanh toán, gói sắp hết hạn, còn chỗ trống */
+function adTodos(ads: AdPartnerState | null): Todo[] {
+  if (!ads) return [];
+  const to = CLIENT_ROUTES.PARTNER_ADS;
+  const { subscription, pendingPayment, renewable, eligiblePlaces } = ads;
+  const todos: Todo[] = [];
+  if (pendingPayment) {
+    todos.push({
+      tone: 'info',
+      icon: 'payments',
+      text: `Đơn quảng cáo ${pendingPayment.orderCode} đang chờ thanh toán.`,
+      action: 'Thanh toán',
+      to,
+    });
+  }
+  if (subscription && renewable && !pendingPayment) {
+    todos.push({
+      tone: 'warning',
+      icon: 'event_repeat',
+      text: `Gói «${subscription.packageName}» còn ${subscription.daysLeft} ngày. Gia hạn để địa điểm không bị gỡ khỏi trang chủ.`,
+      action: 'Gia hạn',
+      to,
+    });
+  }
+  const free = subscription ? subscription.maxPlaces - subscription.usedSlots : 0;
+  if (subscription && free > 0 && eligiblePlaces > subscription.usedSlots) {
+    todos.push({
+      tone: 'info',
+      icon: 'add_task',
+      text: `Gói quảng cáo còn ${free} chỗ trống — chọn thêm địa điểm để hiện ở trang chủ.`,
+      action: 'Chọn địa điểm',
+      to,
+    });
+  }
+  return todos;
+}
+
+/** Thẻ quảng cáo ở tổng quan: trạng thái gói thật (đang chạy / chờ thanh toán / chưa có) */
+function AdsCard({ ads }: { ads: AdPartnerState | null | undefined }) {
+  const subscription = ads?.subscription ?? null;
+  const pending = ads?.pendingPayment ?? null;
+  let title = 'Quảng cáo';
+  let detail = 'Đưa địa điểm lên khu nổi bật ở trang chủ cho du khách — xem các gói.';
+  let badge: { tone: 'approved' | 'pending' | 'draft'; label: string } | null = null;
+  let action = 'Xem gói';
+  if (ads === undefined) {
+    detail = 'Đang tải trạng thái gói…';
+  } else if (ads === null) {
+    detail = 'Chưa tải được trạng thái gói quảng cáo.';
+    action = 'Mở trang quảng cáo';
+  } else if (subscription) {
+    title = `Quảng cáo · ${subscription.packageName}`;
+    detail = `Hết hạn ${formatDate(subscription.endDate)} (còn ${subscription.daysLeft} ngày) · ${subscription.usedSlots}/${subscription.maxPlaces} địa điểm đang hiện ở trang chủ`;
+    badge = ads.renewable
+      ? { tone: 'pending', label: 'Sắp hết hạn' }
+      : { tone: 'approved', label: 'Đang chạy' };
+    action = 'Quản lý';
+  } else if (pending) {
+    detail = `Đơn ${pending.orderCode} (${pending.packageName}) đang chờ thanh toán.`;
+    badge = { tone: 'pending', label: 'Chờ thanh toán' };
+    action = 'Thanh toán';
+  }
+  return (
+    <Link
+      to={CLIENT_ROUTES.PARTNER_ADS}
+      className="mt-4 flex items-center justify-between gap-3 rounded-[20px] border border-client-line bg-white p-4 transition-shadow hover:shadow-md"
+    >
+      <span className="flex min-w-0 items-center gap-3">
+        <Icon name="campaign" className="text-[22px] text-primary" />
+        <span className="min-w-0">
+          <span className="block truncate text-[14px] font-bold text-client-ink">{title}</span>
+          <span className="block text-[12px] text-client-muted">{detail}</span>
+        </span>
+      </span>
+      <span className="flex shrink-0 items-center gap-2">
+        {badge && <StatusBadge tone={badge.tone}>{badge.label}</StatusBadge>}
+        <span className="hidden items-center text-[13px] font-bold text-[#007A73] sm:flex">
+          {action} <Icon name="chevron_right" className="text-[18px]" />
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 async function loadPlaces(): Promise<Place[]> {
   const listings = await businessListingApi.list();
   return Promise.all(
@@ -279,6 +364,9 @@ export default function PartnerDashboard({ profile }: { profile: BusinessProfile
   const [error, setError] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
   const [showAllTodos, setShowAllTodos] = useState(false);
+  // undefined: đang tải · null: lỗi (không chặn cả trang tổng quan)
+  const [ads, setAds] = useState<AdPartnerState | null | undefined>(undefined);
+  const [adsRetry, setAdsRetry] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -296,7 +384,23 @@ export default function PartnerDashboard({ profile }: { profile: BusinessProfile
     };
   }, [retry]);
 
+  useEffect(() => {
+    let active = true;
+    adApi
+      .state()
+      .then((state) => {
+        if (active) setAds(state);
+      })
+      .catch(() => {
+        if (active) setAds(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [adsRetry]);
+
   useClientLiveRefresh(['LISTING_', 'REVISION_'], () => setRetry((n) => n + 1));
+  useClientLiveRefresh(['AD_', 'LISTING_'], () => setAdsRetry((n) => n + 1));
 
   const todos: Todo[] = places
     ? places.length === 0
@@ -309,7 +413,9 @@ export default function PartnerDashboard({ profile }: { profile: BusinessProfile
             to: CLIENT_ROUTES.PARTNER_LOCATION_NEW,
           },
         ]
-      : places.flatMap(todosOf).sort((a, b) => TODO_ORDER[a.tone] - TODO_ORDER[b.tone])
+      : [...places.flatMap(todosOf), ...adTodos(ads ?? null)].sort(
+          (a, b) => TODO_ORDER[a.tone] - TODO_ORDER[b.tone],
+        )
     : [];
   const shownTodos = showAllTodos ? todos : todos.slice(0, MAX_TODOS);
 
@@ -371,18 +477,7 @@ export default function PartnerDashboard({ profile }: { profile: BusinessProfile
             <ProfileCard profile={profile} />
           </div>
 
-          <div className="mt-4 flex items-center justify-between rounded-[20px] border border-client-line bg-white p-4">
-            <span className="flex items-center gap-3">
-              <Icon name="campaign" className="text-[22px] text-primary" />
-              <span>
-                <span className="block text-[14px] font-bold text-client-ink">Quảng cáo</span>
-                <span className="text-[12px] text-client-muted">
-                  Đẩy địa điểm lên đầu kết quả tìm kiếm — sắp ra mắt.
-                </span>
-              </span>
-            </span>
-            <StatusBadge tone="draft">Sắp có</StatusBadge>
-          </div>
+          <AdsCard ads={ads} />
         </>
       )}
     </>

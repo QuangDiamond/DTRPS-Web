@@ -59,7 +59,7 @@ export interface AdPayment {
 export interface AdPartnerState {
   subscription: AdSubscription | null;
   pendingPayment: AdPayment | null;
-  /** Đang trong 7 ngày cuối, được gia hạn */
+  /** Đang trong N ngày cuối của gói (admin chỉnh ở Cài đặt hệ thống), được gia hạn */
   renewable: boolean;
   eligiblePlaces: number;
 }

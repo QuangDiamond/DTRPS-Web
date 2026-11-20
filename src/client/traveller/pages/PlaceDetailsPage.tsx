@@ -193,10 +193,15 @@ const googleMapsUrl = (query: string) =>
 export default function PlaceDetailsPage() {
   const { placeId } = useParams();
   const location = useLocation();
-  // Route /favorites/:placeId và /explore/:placeId dùng chung trang này — quay lại đúng nơi đã mở
-  const backTo = location.pathname.startsWith('/favorites')
-    ? CLIENT_ROUTES.FAVORITES
-    : CLIENT_ROUTES.EXPLORE;
+  // Nơi mở trang này có thể gửi kèm state.from (vd. trang chủ → khu "Đối tác nổi bật");
+  // không có thì: /favorites/:placeId về Yêu thích, /explore/:placeId về Khám phá
+  const from = (location.state as { from?: unknown } | null)?.from;
+  const backTo =
+    typeof from === 'string' && from.startsWith('/') && !from.startsWith('//')
+      ? from
+      : location.pathname.startsWith('/favorites')
+        ? CLIENT_ROUTES.FAVORITES
+        : CLIENT_ROUTES.EXPLORE;
   const { favorites, toggleFavorite } = useTraveller();
   const { user } = useClientAuth();
   const [detail, setDetail] = useState<PlaceDetail | null>(null);
@@ -498,9 +503,7 @@ export default function PlaceDetailsPage() {
             </div>
           </div>
 
-          <h2 className="mt-7 mb-3 text-[17px] font-extrabold text-[#13364A]">
-            Thời tiết hôm nay
-          </h2>
+          <h2 className="mt-7 mb-3 text-[17px] font-extrabold text-[#13364A]">Thời tiết hôm nay</h2>
           <TodayWeatherCard placeId={place.id} />
 
           <h2 className="mt-7 mb-3 text-[17px] font-extrabold text-[#13364A]">
@@ -693,7 +696,10 @@ export default function PlaceDetailsPage() {
                 menu={
                   review.userId === user?.id
                     ? undefined
-                    : { reported: reportedIds.has(review.reviewId), onReport: () => startReport(review) }
+                    : {
+                        reported: reportedIds.has(review.reviewId),
+                        onReport: () => startReport(review),
+                      }
                 }
               />
             ))

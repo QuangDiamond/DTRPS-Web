@@ -50,7 +50,7 @@ export default function PartnerAdPaymentResultPage() {
   const backLink = (label: string) => (
     <Link
       to={CLIENT_ROUTES.PARTNER_ADS}
-      className="mt-5 flex h-[50px] w-full items-center justify-center rounded-2xl bg-primary text-[14px] font-extrabold text-white hover:bg-primary-container md:w-72"
+      className="mt-5 flex h-[50px] w-full items-center justify-center rounded-2xl bg-client-primary text-[14px] font-extrabold text-white hover:bg-client-primary-strong md:w-72"
     >
       {label}
     </Link>
@@ -72,7 +72,7 @@ export default function PartnerAdPaymentResultPage() {
     status === 'SUCCESS'
       ? {
           icon: 'check_circle',
-          color: 'text-primary',
+          color: 'text-client-primary',
           title: 'Thanh toán thành công',
           text: 'Gói của bạn đã kích hoạt. Hãy chọn địa điểm để bắt đầu quảng cáo.',
           action: 'Chọn địa điểm quảng cáo',

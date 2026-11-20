@@ -22,7 +22,7 @@ export default function PartnerBusinessProfilePage() {
       />
       <Card>
         <div className="mb-4 flex flex-col items-center gap-1">
-          <Icon name="storefront" className="text-[56px] text-primary" />
+          <Icon name="storefront" className="text-[56px] text-client-primary" />
           <CardTitle>{profile.businessName}</CardTitle>
           <StatusBadge tone={status.tone}>{status.label}</StatusBadge>
         </div>

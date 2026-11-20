@@ -9,7 +9,7 @@ export interface PriceRow {
 }
 
 const INPUT_CLASS =
-  'h-10 rounded-lg border border-[#EBEDF5] bg-client-field px-2 text-[13px] text-[#18333E] placeholder:text-[#98A4AF] focus:ring-2 focus:ring-primary/40 focus:outline-none';
+  'h-10 rounded-lg border border-[#EBEDF5] bg-client-field px-2 text-[13px] text-[#18333E] placeholder:text-[#98A4AF] focus:ring-2 focus:ring-client-primary/40 focus:outline-none';
 
 /** Bảng giá tham khảo: loại giá, số tiền (VND), ghi chú */
 export default function PriceEditor({
@@ -84,7 +84,7 @@ export default function PriceEditor({
           onClick={() =>
             onChange([...rows, { priceType: PRICE_TYPES[0].value, amount: '', description: '' }])
           }
-          className="mt-2 flex items-center gap-1 text-[12px] font-bold text-[#007A73] hover:underline"
+          className="mt-2 flex items-center gap-1 text-[12px] font-bold text-[#0E7490] hover:underline"
         >
           <Icon name="add" className="text-[16px]" /> Thêm mức giá
         </button>

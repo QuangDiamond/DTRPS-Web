@@ -51,7 +51,7 @@ export default function PlaceDetailsView({
                 className="relative block overflow-hidden rounded-xl"
               >
                 <img src={cover.url} alt="" className="h-60 w-full object-cover md:h-72" />
-                <span className="absolute top-3 left-3 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold text-white">
+                <span className="absolute top-3 left-3 rounded-full bg-client-primary px-2.5 py-1 text-[10px] font-bold text-white">
                   Ảnh bìa
                 </span>
               </a>
@@ -92,7 +92,7 @@ export default function PlaceDetailsView({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <PartnerSection icon="schedule" title="Giờ mở cửa">
             {hours.length === 0 ? (
-              <p className="flex items-center gap-2 text-[13px] font-semibold text-primary">
+              <p className="flex items-center gap-2 text-[13px] font-semibold text-client-primary">
                 <Icon name="all_inclusive" className="text-[18px]" />
                 Mở cả ngày — không có giờ đóng/mở cố định
               </p>
@@ -123,7 +123,7 @@ export default function PlaceDetailsView({
                       key={index}
                       label={priceLabel(price)}
                       value={
-                        <span className={price.amount === 0 ? 'text-primary' : undefined}>
+                        <span className={price.amount === 0 ? 'text-client-primary' : undefined}>
                           {formatMoney(price.amount, price.currency)}
                         </span>
                       }
@@ -157,7 +157,7 @@ export default function PlaceDetailsView({
                     href={place.website}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-primary hover:underline"
+                    className="text-client-primary hover:underline"
                   >
                     {place.website}
                   </a>
@@ -178,7 +178,7 @@ export default function PlaceDetailsView({
               href={mapUrl}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-1 font-bold text-primary hover:underline"
+              className="flex items-center gap-1 font-bold text-client-primary hover:underline"
             >
               <Icon name="open_in_new" className="text-[16px]" />
               Mở Google Maps

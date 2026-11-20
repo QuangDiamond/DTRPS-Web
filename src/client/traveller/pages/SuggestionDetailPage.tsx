@@ -287,7 +287,7 @@ export default function SuggestionDetailPage() {
           validPlanId ? (
             <Link
               to={selectedUrl}
-              className="flex h-10 items-center gap-1 rounded-full bg-white px-3 text-[12px] font-bold text-[#075C66]"
+              className="flex h-10 items-center gap-1 rounded-full bg-white px-3 text-[12px] font-bold text-[#0E7490]"
             >
               <Icon
                 name="shopping_basket"
@@ -303,7 +303,7 @@ export default function SuggestionDetailPage() {
       {loading && (
         <div
           role="status"
-          className="rounded-2xl bg-white p-8 text-center text-[13px] text-[#087A78]"
+          className="rounded-2xl bg-white p-8 text-center text-[13px] text-[#0891B2]"
         >
           Đang tải thông tin địa điểm ...
         </div>
@@ -326,7 +326,7 @@ export default function SuggestionDetailPage() {
                 onClick={() =>
                   setRetryCount((count) => count + 1)
                 }
-                className="rounded-full bg-white px-4 py-2 text-[12px] font-bold text-[#075C66]"
+                className="rounded-full bg-white px-4 py-2 text-[12px] font-bold text-[#0E7490]"
               >
                 Thử tải lại
               </button>
@@ -334,7 +334,7 @@ export default function SuggestionDetailPage() {
 
             <Link
               to={suggestionsUrl}
-              className="rounded-full bg-white px-4 py-2 text-[12px] font-bold text-[#075C66]"
+              className="rounded-full bg-white px-4 py-2 text-[12px] font-bold text-[#0E7490]"
             >
               Quay lại danh sách
             </Link>
@@ -345,7 +345,7 @@ export default function SuggestionDetailPage() {
       {!loading && !error && place && (
         <>
           {/* ẢNH ĐỊA ĐIỂM */}
-          <div className="relative h-[300px] overflow-hidden rounded-[24px] bg-[#D8EDE7]">
+          <div className="relative h-[300px] overflow-hidden rounded-[24px] bg-[#D7ECEE]">
             {photos.length ? (
               <img
                 src={
@@ -360,10 +360,10 @@ export default function SuggestionDetailPage() {
                 className="absolute inset-0 h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#E5F7F2] to-[#C9E5E5]">
+              <div className="flex h-full items-center justify-center bg-[#E4F6F8]">
                 <Icon
                   name="landscape"
-                  className="text-[70px] text-[#73B8AD]"
+                  className="text-[70px] text-[#70B4BB]"
                 />
               </div>
             )}
@@ -414,7 +414,7 @@ export default function SuggestionDetailPage() {
               </>
             )}
 
-            <span className="absolute top-3 left-3 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-bold text-[#075C66]">
+            <span className="absolute top-3 left-3 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-bold text-[#0E7490]">
               {place.summary.category?.name ??
                 'Địa điểm du lịch'}
             </span>
@@ -434,7 +434,7 @@ export default function SuggestionDetailPage() {
                 onClick={() => setTab(item.id)}
                 className={`border-b-2 px-2.5 py-3.5 text-[12px] font-bold ${
                   tab === item.id
-                    ? 'border-[#087A78] text-[#087A78]'
+                    ? 'border-[#0891B2] text-[#0891B2]'
                     : 'border-transparent text-[#13364A]'
                 }`}
               >
@@ -473,7 +473,7 @@ export default function SuggestionDetailPage() {
                 <p className="mt-3 flex items-start gap-1 text-[13px] text-[#72818C]">
                   <Icon
                     name="location_on"
-                    className="shrink-0 text-[19px] text-[#087A78]"
+                    className="shrink-0 text-[19px] text-[#0891B2]"
                   />
 
                   {place.summary.address ||
@@ -497,12 +497,12 @@ export default function SuggestionDetailPage() {
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-[#E2FAF5] p-3">
+                  <div className="rounded-2xl bg-[#E1F9FB] p-3">
                     <p className="text-[11px] text-[#72818C]">
                       Giá từ
                     </p>
 
-                    <p className="mt-1 text-[13px] font-extrabold text-[#075C66]">
+                    <p className="mt-1 text-[13px] font-extrabold text-[#0E7490]">
                       {minPrice
                         ? money(
                           minPrice.amount,
@@ -533,7 +533,7 @@ export default function SuggestionDetailPage() {
                               {info.label}
                             </span>
 
-                            <span className="text-right text-[12px] font-bold text-[#075C66]">
+                            <span className="text-right text-[12px] font-bold text-[#0E7490]">
                               {info.value}
                             </span>
                           </div>
@@ -635,7 +635,7 @@ export default function SuggestionDetailPage() {
                         onClick={() =>
                           setViewerIndex(index)
                         }
-                        className="overflow-hidden rounded-xl bg-[#E5F7F2]"
+                        className="overflow-hidden rounded-xl bg-[#E4F6F8]"
                         aria-label={`Phóng to ảnh ${index + 1}`}
                       >
                         <img
@@ -666,7 +666,7 @@ export default function SuggestionDetailPage() {
                   <p className="flex items-start gap-2">
                     <Icon
                       name="place"
-                      className="text-[19px] text-[#087A78]"
+                      className="text-[19px] text-[#0891B2]"
                     />
 
                     <span>
@@ -678,13 +678,13 @@ export default function SuggestionDetailPage() {
                   <p className="flex items-start gap-2">
                     <Icon
                       name="phone"
-                      className="text-[19px] text-[#087A78]"
+                      className="text-[19px] text-[#0891B2]"
                     />
 
                     {place.phone ? (
                       <a
                         href={`tel:${place.phone}`}
-                        className="font-semibold text-[#075C66]"
+                        className="font-semibold text-[#0E7490]"
                       >
                         {place.phone}
                       </a>
@@ -698,7 +698,7 @@ export default function SuggestionDetailPage() {
                   <p className="flex items-start gap-2">
                     <Icon
                       name="language"
-                      className="text-[19px] text-[#087A78]"
+                      className="text-[19px] text-[#0891B2]"
                     />
 
                     {place.website &&
@@ -709,7 +709,7 @@ export default function SuggestionDetailPage() {
                         href={place.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="break-all font-semibold text-[#075C66] underline"
+                        className="break-all font-semibold text-[#0E7490] underline"
                       >
                         {place.website}
                       </a>
@@ -749,7 +749,7 @@ export default function SuggestionDetailPage() {
           <div className="fixed inset-x-0 bottom-[62px] z-20 border-t border-[#EDF0F5] bg-white px-4 pt-2.5 pb-2 md:static md:mt-4 md:flex md:gap-3 md:rounded-[20px] md:border-0 md:p-3">
             <Link
               to={selectedUrl}
-              className="mb-2.5 flex h-12 items-center justify-center gap-2 rounded-full border border-[#B8EAE3] bg-[#F0FCF9] text-[14px] font-bold text-[#075C66] md:mb-0 md:flex-1"
+              className="mb-2.5 flex h-12 items-center justify-center gap-2 rounded-full border border-[#B6E7EC] bg-[#EFFBFD] text-[14px] font-bold text-[#0E7490] md:mb-0 md:flex-1"
             >
               <Icon
                 name="shopping_basket"
@@ -774,8 +774,8 @@ export default function SuggestionDetailPage() {
               aria-pressed={inPlan}
               className={`flex h-12 w-full items-center justify-center gap-2 rounded-full text-[14px] font-bold disabled:cursor-wait disabled:opacity-60 md:flex-1 ${
                 inPlan
-                  ? 'bg-[#C3F8F0] text-[#075C66]'
-                  : 'bg-[#075C66] text-white hover:bg-primary'
+                  ? 'bg-[#C0F5FB] text-[#0E7490]'
+                  : 'bg-[#0E7490] text-white hover:bg-client-primary'
               }`}
             >
               <Icon

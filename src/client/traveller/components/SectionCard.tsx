@@ -18,7 +18,7 @@ export default function SectionCard({
   return (
     <section className="rounded-[20px] bg-white p-4">
       <div className="mb-3 flex items-center">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EBEDFF] text-[#087A78]">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EBEDFF] text-[#0891B2]">
           <Icon name={icon} className="text-[19px]" />
         </span>
         <div className="ml-2.5 min-w-0 flex-1">

@@ -961,7 +961,7 @@ export default function TripLiveMapPage() {
 
   if (loading) {
     return (
-      <div className="rounded-[20px] bg-white p-10 text-center text-[13px] font-semibold text-[#087F78]">
+      <div className="rounded-[20px] bg-white p-10 text-center text-[13px] font-semibold text-[#0891B2]">
         Đang tải hành trình và tiến độ thực tế...
       </div>
     );
@@ -991,7 +991,7 @@ export default function TripLiveMapPage() {
         <button
           type="button"
           onClick={() => navigate(detailUrl)}
-          className="mt-4 rounded-full bg-[#006B65] px-5 py-3 text-[12px] font-bold text-white"
+          className="mt-4 rounded-full bg-[#0E7490] px-5 py-3 text-[12px] font-bold text-white"
         >
           Về lịch trình
         </button>
@@ -1099,7 +1099,7 @@ export default function TripLiveMapPage() {
 
           <div className="min-w-0 flex-1 px-2.5">
 
-            <p className="text-[10px] font-extrabold text-[#006B67]">
+            <p className="text-[10px] font-extrabold text-[#0E7490]">
               {dayStatus === 'COMPLETED'
                 ? 'ĐÃ HOÀN THÀNH'
                 : isRunning
@@ -1161,7 +1161,7 @@ export default function TripLiveMapPage() {
 
             <div
               className={`absolute left-3 right-3 top-[78px] z-[400] flex items-center gap-3 rounded-[18px] px-3.5 py-3 text-white shadow-md ${
-                arrived ? 'bg-[#087E79]' : 'bg-[#075C66]'
+                arrived ? 'bg-[#0891B2]' : 'bg-[#0E7490]'
               }`}
               aria-live="polite"
             >
@@ -1197,7 +1197,7 @@ export default function TripLiveMapPage() {
               mapRef.current?.fitRoute()
             }
             aria-label="Xem tuyến Goong"
-            className="flex h-[47px] w-[47px] items-center justify-center rounded-[17px] bg-white text-[#006B67] shadow-md"
+            className="flex h-[47px] w-[47px] items-center justify-center rounded-[17px] bg-white text-[#0E7490] shadow-md"
           >
             <Icon
               name="route"
@@ -1212,8 +1212,8 @@ export default function TripLiveMapPage() {
             aria-pressed={following}
             className={`flex h-[47px] w-[47px] items-center justify-center rounded-[17px] shadow-md ${
               following
-                ? 'bg-[#006B67] text-white'
-                : 'bg-white text-[#006B67]'
+                ? 'bg-[#0E7490] text-white'
+                : 'bg-white text-[#0E7490]'
             }`}
           >
             <Icon
@@ -1235,13 +1235,13 @@ export default function TripLiveMapPage() {
 
       <div className="relative z-10 -mt-5 min-w-0 rounded-t-[27px] bg-white px-[17px] pb-5 pt-2.5 shadow-[0_-6px_18px_rgba(0,0,0,0.08)] md:mt-0 md:rounded-[20px] md:shadow-none">
 
-        <span className="mx-auto mb-3.5 block h-[5px] w-[43px] rounded-full bg-[#DCE5E7] md:hidden" />
+        <span className="mx-auto mb-3.5 block h-[5px] w-[43px] rounded-full bg-[#DBE6E8] md:hidden" />
 
         {/* TRẠNG THÁI TIẾN ĐỘ */}
 
         <div className="flex items-center justify-between gap-3">
 
-          <span className="flex items-center gap-1 rounded-full bg-[#E6F8F4] px-2.5 py-1.5 text-[10px] font-extrabold text-[#006B67]">
+          <span className="flex items-center gap-1 rounded-full bg-[#E5F7F9] px-2.5 py-1.5 text-[10px] font-extrabold text-[#0E7490]">
 
             <Icon
               name={
@@ -1270,7 +1270,7 @@ export default function TripLiveMapPage() {
 
         <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[#EDF2F2]">
           <div
-            className="h-full rounded-full bg-[#087E79] transition-all"
+            className="h-full rounded-full bg-[#0891B2] transition-all"
             style={{
               width: `${completedPercent}%`,
             }}
@@ -1283,7 +1283,7 @@ export default function TripLiveMapPage() {
 
           <div className="mt-4 flex items-center gap-3">
 
-            <span className="flex h-[47px] w-[47px] shrink-0 items-center justify-center rounded-2xl bg-[#006B67] text-[23px] font-extrabold text-white">
+            <span className="flex h-[47px] w-[47px] shrink-0 items-center justify-center rounded-2xl bg-[#0E7490] text-[23px] font-extrabold text-white">
               {nextPosition}
             </span>
 
@@ -1311,7 +1311,7 @@ export default function TripLiveMapPage() {
 
         ) : (
 
-          <p className="mt-4 rounded-2xl bg-[#E6F8F4] px-4 py-4 text-[13px] font-bold text-[#006B67]">
+          <p className="mt-4 rounded-2xl bg-[#E5F7F9] px-4 py-4 text-[13px] font-bold text-[#0E7490]">
 
             {stops.length === 0
               ? 'Ngày này không có địa điểm tham quan.'
@@ -1327,7 +1327,7 @@ export default function TripLiveMapPage() {
 
           <Icon
             name="my_location"
-            className="text-[17px] text-[#006B67]"
+            className="text-[17px] text-[#0E7490]"
           />
 
           {gpsMessage}
@@ -1370,11 +1370,11 @@ export default function TripLiveMapPage() {
 
         {isRunning && pendingStop && (
 
-          <section className="mt-3 rounded-2xl border border-[#D7EEE9] bg-[#F4FBF9] px-3 py-3">
+          <section className="mt-3 rounded-2xl border border-[#D6EDEF] bg-[#F4FBFB] px-3 py-3">
 
             <div className="flex items-center justify-between gap-2">
 
-              <span className="flex items-center gap-1 text-[12px] font-extrabold text-[#006B67]">
+              <span className="flex items-center gap-1 text-[12px] font-extrabold text-[#0E7490]">
 
                 <Icon
                   name="route"
@@ -1398,7 +1398,7 @@ export default function TripLiveMapPage() {
                   setRoute(null);
                   lastRouteRequest.current = null;
                 }}
-                className="rounded-xl border border-[#CFE7E2] bg-white px-2 py-1.5 text-[11px] font-bold text-[#14364F]"
+                className="rounded-xl border border-[#CEE6E8] bg-white px-2 py-1.5 text-[11px] font-bold text-[#14364F]"
               >
 
                 {VEHICLES.map((item) => (
@@ -1498,7 +1498,7 @@ export default function TripLiveMapPage() {
                 type="button"
                 onClick={refreshRoute}
                 disabled={routeLoading}
-                className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[11px] font-extrabold text-[#006B67] disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[11px] font-extrabold text-[#0E7490] disabled:opacity-50"
               >
 
                 <Icon
@@ -1513,7 +1513,7 @@ export default function TripLiveMapPage() {
               <button
                 type="button"
                 onClick={focusMyPosition}
-                className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[11px] font-extrabold text-[#006B67]"
+                className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[11px] font-extrabold text-[#0E7490]"
               >
 
                 <Icon
@@ -1538,8 +1538,8 @@ export default function TripLiveMapPage() {
                   }}
                   className={`inline-flex items-center gap-1 rounded-full px-3 py-2 text-[11px] font-extrabold ${
                     following
-                      ? 'bg-[#006B67] text-white'
-                      : 'bg-white text-[#006B67]'
+                      ? 'bg-[#0E7490] text-white'
+                      : 'bg-white text-[#0E7490]'
                   }`}
                 >
 
@@ -1559,7 +1559,7 @@ export default function TripLiveMapPage() {
               <button
                 type="button"
                 onClick={() => setPicking((value) => !value)}
-                className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[11px] font-extrabold text-[#006B67]"
+                className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[11px] font-extrabold text-[#0E7490]"
               >
 
                 <Icon
@@ -1579,7 +1579,7 @@ export default function TripLiveMapPage() {
                     lastRouteRequest.current = null;
                     tracker.clearManual();
                   }}
-                  className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[11px] font-extrabold text-[#006B67]"
+                  className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[11px] font-extrabold text-[#0E7490]"
                 >
 
                   <Icon
@@ -1640,7 +1640,7 @@ export default function TripLiveMapPage() {
                   status !== 'PENDING'
                     ? 'bg-[#E7EBED] text-[#64747D]'
                     : pendingStop?.itemId === stop.itemId
-                      ? 'bg-[#006B67] text-white'
+                      ? 'bg-[#0E7490] text-white'
                       : 'bg-[#EEF2F5] text-[#17344A]'
                 }`}
               >
@@ -1685,7 +1685,7 @@ export default function TripLiveMapPage() {
               void startDay()
             }
             disabled={busy}
-            className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#006B67] px-4 text-[13px] font-extrabold text-white disabled:opacity-60"
+            className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#0E7490] px-4 text-[13px] font-extrabold text-white disabled:opacity-60"
           >
 
             <Icon
@@ -1713,7 +1713,7 @@ export default function TripLiveMapPage() {
                 setDialog('skip')
               }
               disabled={busy}
-              className="flex h-[51px] flex-[0.85] items-center justify-center gap-1 rounded-2xl bg-[#E6F8F4] px-2 text-[12px] font-extrabold text-[#006B67] disabled:opacity-50"
+              className="flex h-[51px] flex-[0.85] items-center justify-center gap-1 rounded-2xl bg-[#E5F7F9] px-2 text-[12px] font-extrabold text-[#0E7490] disabled:opacity-50"
             >
 
               <Icon
@@ -1731,7 +1731,7 @@ export default function TripLiveMapPage() {
                 void updateStop('COMPLETED')
               }
               disabled={busy}
-              className="flex h-[51px] flex-[1.3] items-center justify-center gap-1 rounded-2xl bg-[#006B67] px-2 text-[12px] font-extrabold text-white disabled:opacity-50"
+              className="flex h-[51px] flex-[1.3] items-center justify-center gap-1 rounded-2xl bg-[#0E7490] px-2 text-[12px] font-extrabold text-white disabled:opacity-50"
             >
 
               <Icon
@@ -1759,7 +1759,7 @@ export default function TripLiveMapPage() {
               setDialog('finish')
             }
             disabled={busy}
-            className="mt-3 flex h-[51px] w-full items-center justify-center gap-2 rounded-2xl bg-[#006B67] text-[13px] font-extrabold text-white disabled:opacity-50"
+            className="mt-3 flex h-[51px] w-full items-center justify-center gap-2 rounded-2xl bg-[#0E7490] text-[13px] font-extrabold text-white disabled:opacity-50"
           >
 
             <Icon
@@ -1782,7 +1782,7 @@ export default function TripLiveMapPage() {
             onClick={() =>
               navigate(detailUrl)
             }
-            className="mt-3 flex h-[51px] w-full items-center justify-center gap-2 rounded-2xl bg-[#006B67] text-[13px] font-extrabold text-white"
+            className="mt-3 flex h-[51px] w-full items-center justify-center gap-2 rounded-2xl bg-[#0E7490] text-[13px] font-extrabold text-white"
           >
 
             <Icon

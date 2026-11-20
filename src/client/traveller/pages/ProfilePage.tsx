@@ -20,10 +20,10 @@ const ROLE_LABELS: Record<RoleName, string> = {
 type BadgeTone = 'mint' | 'gray' | 'red' | 'plain';
 
 const BADGE_STYLES: Record<BadgeTone, string> = {
-  mint: 'bg-[#BEF9F0] text-[#006A6F]',
+  mint: 'bg-[#BBF5FC] text-[#0E7490]',
   gray: 'bg-[#EFF0FB] text-[#445577]',
   red: 'bg-[#FFE0DD] text-[#C63E32]',
-  plain: 'text-[#13756C]',
+  plain: 'text-[#0891B2]',
 };
 
 interface MenuItemProps {
@@ -51,7 +51,7 @@ function MenuItem({
     <>
       <span
         className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
-          danger ? 'bg-[#FFE1DE] text-[#D94848]' : 'bg-[#C3F7F1] text-[#087A78]'
+          danger ? 'bg-[#FFE1DE] text-[#D94848]' : 'bg-[#C0F4FA] text-[#0891B2]'
         }`}
       >
         <Icon name={icon} className="text-[21px]" />
@@ -95,7 +95,7 @@ function MenuItem({
 }
 
 function SectionTitle({ children }: { children: string }) {
-  return <h2 className="mt-6 mb-2 px-1 text-[12px] font-extrabold text-[#075C66]">{children}</h2>;
+  return <h2 className="mt-6 mb-2 px-1 text-[12px] font-extrabold text-[#0E7490]">{children}</h2>;
 }
 
 /** Hồ sơ du khách — theo ProfileScreen của mobile; thông tin tài khoản lấy từ phiên đăng nhập */
@@ -115,7 +115,7 @@ export default function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="flex items-center rounded-[22px] bg-linear-to-r from-white to-[#E2FCF8] p-4">
+      <div className="flex items-center rounded-[22px] bg-[#E1FAFD] p-4">
         <div className="relative mr-4">
           <Avatar url={user.avatarUrl} size={82} iconSize={62} />
           <button
@@ -123,7 +123,7 @@ export default function ProfilePage() {
             onClick={() => fileRef.current?.click()}
             disabled={avatar.uploading}
             aria-label="Đổi ảnh đại diện"
-            className="absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-full border-[3px] border-white bg-[#00827F] text-white"
+            className="absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-full border-[3px] border-white bg-[#0891B2] text-white"
           >
             {avatar.uploading ? (
               <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
@@ -150,7 +150,7 @@ export default function ProfilePage() {
             {user.roles.map((role) => (
               <span
                 key={role}
-                className="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-primary"
+                className="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-client-primary"
               >
                 {ROLE_LABELS[role] ?? role}
               </span>
@@ -168,7 +168,7 @@ export default function ProfilePage() {
             key={item.label}
             className="flex flex-col items-center justify-center rounded-xl bg-[#F3F4FF] py-2"
           >
-            <span className="text-[24px] font-extrabold text-[#006E78]">{item.value}</span>
+            <span className="text-[24px] font-extrabold text-[#0E7490]">{item.value}</span>
             <span className="text-[10px] font-semibold text-[#13364A]">{item.label}</span>
           </div>
         ))}
@@ -261,7 +261,7 @@ export default function ProfilePage() {
 
       <div className="pt-5 pb-4 text-center">
         <p className="text-[11px] font-semibold text-[#728493]">Smart Travel Vietnam AI • Web</p>
-        <p className="text-[10px] text-[#63A3B0]">Khám phá Việt Nam theo cách thông minh nhất ✨</p>
+        <p className="text-[10px] text-[#5FABB4]">Khám phá Việt Nam theo cách thông minh nhất ✨</p>
       </div>
 
       {confirmLogout && (

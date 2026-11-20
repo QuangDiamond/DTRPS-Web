@@ -12,7 +12,7 @@ export function AppLogo({
 }) {
   return (
     <Link to="/" className="flex items-center" aria-label="SmartTravel — Trang chủ">
-      <BrandMark subtitle={subtitle} tone={onDark ? 'dark' : 'light'} />
+      <BrandMark subtitle={subtitle} tone={onDark ? 'sky' : 'skyLight'} />
     </Link>
   );
 }
@@ -21,7 +21,7 @@ export function AppLogo({
 export function Brand() {
   return (
     <div className="mb-7 flex justify-center">
-      <BrandMark size="lg" subtitle="VIETNAM AI TRAVEL PLANNER" />
+      <BrandMark size="lg" tone="skyLight" subtitle="VIETNAM AI TRAVEL PLANNER" />
     </div>
   );
 }

@@ -85,13 +85,13 @@ export default function ReportReviewDialog({
                 }}
                 className={`flex w-full items-center gap-3 rounded-2xl border px-3.5 py-2.5 text-left transition-colors ${
                   selected
-                    ? 'border-primary bg-[#E7F6F4]'
-                    : 'border-[#E3E9EE] bg-white hover:bg-[#F6F9FA]'
+                    ? 'border-client-primary bg-[#E6F5F7]'
+                    : 'border-[#E3E9EE] bg-white hover:bg-[#F6FAFA]'
                 }`}
               >
                 <Icon
                   name={selected ? 'radio_button_checked' : 'radio_button_unchecked'}
-                  className={`text-[20px] ${selected ? 'text-primary' : 'text-[#9AA7B4]'}`}
+                  className={`text-[20px] ${selected ? 'text-client-primary' : 'text-[#9AA7B4]'}`}
                 />
                 <span className="min-w-0">
                   <span className="block text-[14px] font-bold text-client-ink">
@@ -117,7 +117,7 @@ export default function ReportReviewDialog({
               setError('');
             }}
             placeholder="Mô tả thêm để admin xử lý nhanh hơn…"
-            className="w-full resize-none rounded-2xl border border-[#E3E9EE] p-3 text-[14px] text-client-ink outline-none focus:border-primary"
+            className="w-full resize-none rounded-2xl border border-[#E3E9EE] p-3 text-[14px] text-client-ink outline-none focus:border-client-primary"
           />
           <span className="mt-0.5 block text-right text-[11px] text-client-muted">
             {note.length}/{MAX_NOTE_LENGTH}

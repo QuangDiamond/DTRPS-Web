@@ -124,13 +124,13 @@ export default function LoginPage() {
                 type="checkbox"
                 checked={remember}
                 onChange={(event) => setRemember(event.target.checked)}
-                className="h-4 w-4 accent-primary"
+                className="h-4 w-4 accent-client-primary"
               />
               Ghi nhớ đăng nhập
             </label>
             <Link
               to={CLIENT_ROUTES.FORGOT_PASSWORD}
-              className="text-[12.5px] font-bold text-primary hover:underline"
+              className="text-[12.5px] font-bold text-client-primary hover:underline"
             >
               Quên mật khẩu?
             </Link>
@@ -144,7 +144,7 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-[13px] text-[#62737F]">
           Chưa có tài khoản?{' '}
-          <Link to={CLIENT_ROUTES.REGISTER} className="font-bold text-primary hover:underline">
+          <Link to={CLIENT_ROUTES.REGISTER} className="font-bold text-client-primary hover:underline">
             Đăng ký
           </Link>
         </p>
@@ -152,7 +152,7 @@ export default function LoginPage() {
 
       <Link
         to={CLIENT_ROUTES.HOME}
-        className="group mx-auto mt-5 flex w-fit items-center gap-2 rounded-full border border-[#9FD8D1] bg-white px-5 py-2.5 text-[13px] font-bold text-primary shadow-sm transition-colors hover:border-primary hover:bg-[#E8F9F4]"
+        className="group mx-auto mt-5 flex w-fit items-center gap-2 rounded-full border border-[#9CD5DB] bg-white px-5 py-2.5 text-[13px] font-bold text-client-primary shadow-sm transition-colors hover:border-client-primary hover:bg-[#E7F8FA]"
       >
         <Icon name="explore" className="text-[19px]" />
         Khám phá ngay, chưa cần đăng nhập

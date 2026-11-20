@@ -13,7 +13,7 @@ export const PLAN_STATUS_INFO: Record<
   PLANNED: {
     label: 'Đã lên kế hoạch',
     icon: 'calendar_today',
-    className: 'bg-[#D7FBF3] text-[#06695F]',
+    className: 'bg-[#D5F9FD] text-[#0E7490]',
   },
   IN_PROGRESS: {
     label: 'Đang diễn ra',

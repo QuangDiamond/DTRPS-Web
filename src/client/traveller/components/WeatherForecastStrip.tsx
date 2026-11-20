@@ -55,20 +55,20 @@ export default function WeatherForecastStrip({ itineraryId }: { itineraryId: num
   }
 
   return (
-    <section className="mt-4 min-w-0 rounded-[20px] border border-[#E2EAE8] bg-white p-4 sm:mt-5 sm:p-5">
-      <h3 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-[#163D42]">
-        <Icon name="wb_sunny" className="text-[19px] text-[#087A78]" />
+    <section className="mt-4 min-w-0 rounded-[20px] border border-[#E2EAEA] bg-white p-4 sm:mt-5 sm:p-5">
+      <h3 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-[#163142]">
+        <Icon name="wb_sunny" className="text-[19px] text-[#0891B2]" />
         Dự báo thời tiết 7 ngày
       </h3>
       <HorizontalScrollRow>
         {daily.map((day) => (
           <div
             key={day.date}
-            className="flex w-[84px] shrink-0 flex-col items-center gap-1 rounded-2xl bg-[#F5F9F7] px-2 py-3"
+            className="flex w-[84px] shrink-0 flex-col items-center gap-1 rounded-2xl bg-[#F5F9F9] px-2 py-3"
           >
             <span className="text-[11px] font-bold text-[#61757A]">{weekdayShortLabel(day.date)}</span>
             <Icon name={weatherIconName(day.weatherCode)} filled className="text-[24px] text-[#3B6FD8]" />
-            <span className="text-[12px] font-extrabold text-[#163D42]">
+            <span className="text-[12px] font-extrabold text-[#163142]">
               {formatTemp(day.temperatureMax)}
             </span>
             <span className="text-[10.5px] text-[#8793AB]">{formatTemp(day.temperatureMin)}</span>

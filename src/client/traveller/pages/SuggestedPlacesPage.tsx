@@ -68,7 +68,7 @@ const tripDays = (plan: TravelPlanResponse) => {
 
 /** Màu huy hiệu độ phù hợp: ≥75 rất phù hợp, ≥55 phù hợp, còn lại có thể bạn thích. */
 const matchColor = (percent: number) =>
-  percent >= 75 ? 'bg-[#087A78]' : percent >= 55 ? 'bg-[#2E8B57]' : 'bg-[#6B7C89]';
+  percent >= 75 ? 'bg-[#0891B2]' : percent >= 55 ? 'bg-[#2E8B57]' : 'bg-[#6B7C89]';
 
 function PlaceCard({
                      place,
@@ -95,9 +95,9 @@ function PlaceCard({
     <div
       id={`suggestion-${place.placeId}`}
       onMouseEnter={onHover}
-      className={`relative flex min-w-0 flex-col overflow-hidden rounded-[18px] border bg-white shadow-[0_3px_9px_rgba(13,69,67,0.07)] transition-shadow hover:shadow-md ${
+      className={`relative flex min-w-0 flex-col overflow-hidden rounded-[18px] border bg-white shadow-[0_3px_9px_rgba(8,47,73,0.07)] transition-shadow hover:shadow-md ${
         active
-          ? 'border-[#087A78]'
+          ? 'border-[#0891B2]'
           : 'border-[#E7EBEF]'
       }`}
     >
@@ -106,7 +106,7 @@ function PlaceCard({
         className="block"
         aria-label={`Xem chi tiết ${place.name}`}
       >
-        <div className="relative h-[140px] overflow-hidden bg-[#DCEFEB]">
+        <div className="relative h-[140px] overflow-hidden bg-[#DBEEF0]">
           {place.imageUrl ? (
             <img
               src={place.imageUrl}
@@ -115,17 +115,17 @@ function PlaceCard({
               className="h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#E5F7F2] to-[#C9E5E5]">
+            <div className="flex h-full items-center justify-center bg-[#E4F6F8]">
               <Icon
                 name="landscape"
-                className="text-[47px] text-[#73B8AD]"
+                className="text-[47px] text-[#70B4BB]"
               />
             </div>
           )}
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
 
-          <span className="absolute bottom-2 left-2 max-w-[90%] truncate rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-[#075C66]">
+          <span className="absolute bottom-2 left-2 max-w-[90%] truncate rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-[#0E7490]">
             {place.categoryName ?? 'Địa điểm du lịch'}
           </span>
 
@@ -157,7 +157,7 @@ function PlaceCard({
             </span>
           </p>
 
-          <p className="mt-2 text-[12px] font-extrabold text-[#087A78]">
+          <p className="mt-2 text-[12px] font-extrabold text-[#0891B2]">
             {priceLabel(place)}
           </p>
 
@@ -176,7 +176,7 @@ function PlaceCard({
             type="button"
             onClick={() => setShowWhy((open) => !open)}
             aria-expanded={showWhy}
-            className="flex w-full items-center justify-between rounded-lg bg-[#F1FAF8] px-2.5 py-1.5 text-[11px] font-bold text-[#075C66] hover:bg-[#E3F5F1]"
+            className="flex w-full items-center justify-between rounded-lg bg-[#F1F9FA] px-2.5 py-1.5 text-[11px] font-bold text-[#0E7490] hover:bg-[#E2F4F6]"
           >
             <span className="flex items-center gap-1">
               <Icon name="lightbulb" className="text-[15px]" />
@@ -189,7 +189,7 @@ function PlaceCard({
             <ul className="mt-2 space-y-1.5 text-[11px] leading-4">
               {place.aiReasons?.map((reason) => (
                 <li key={reason} className="flex items-start gap-1.5 text-[#13364A]">
-                  <Icon name="check_circle" className="mt-px shrink-0 text-[14px] text-[#087A78]" />
+                  <Icon name="check_circle" className="mt-px shrink-0 text-[14px] text-[#0891B2]" />
                   <span>{reason}</span>
                 </li>
               ))}
@@ -212,8 +212,8 @@ function PlaceCard({
           aria-pressed={selected}
           className={`flex h-10 w-full items-center justify-center gap-1.5 rounded-xl text-[11px] font-extrabold transition-colors disabled:cursor-wait disabled:opacity-60 ${
             selected
-              ? 'bg-[#DAF5EA] text-[#075C66] hover:bg-[#C5ECDE]'
-              : 'bg-[#075C66] text-white hover:bg-[#087A78]'
+              ? 'bg-[#D9F3F6] text-[#0E7490] hover:bg-[#C3EAEE]'
+              : 'bg-[#0E7490] text-white hover:bg-[#0891B2]'
           }`}
         >
           <Icon
@@ -253,18 +253,18 @@ function PartnerCard({
   onToggle: () => void;
 }) {
   return (
-    <div className="flex min-w-0 flex-col rounded-2xl border border-[#E7EBEF] bg-white p-2.5 shadow-[0_3px_9px_rgba(13,69,67,0.06)]">
+    <div className="flex min-w-0 flex-col rounded-2xl border border-[#E7EBEF] bg-white p-2.5 shadow-[0_3px_9px_rgba(8,47,73,0.06)]">
       <Link
         to={`${suggestionPath(String(place.placeId))}?planId=${planId}`}
         className="flex min-w-0 gap-2.5"
         aria-label={`Xem chi tiết ${place.name}`}
       >
-        <div className="h-18 w-18 shrink-0 overflow-hidden rounded-xl bg-[#DCEFEB]">
+        <div className="h-18 w-18 shrink-0 overflow-hidden rounded-xl bg-[#DBEEF0]">
           {place.coverUrl ? (
             <img src={place.coverUrl} alt={place.name} loading="lazy" className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full items-center justify-center">
-              <Icon name="storefront" className="text-[28px] text-[#73B8AD]" />
+              <Icon name="storefront" className="text-[28px] text-[#70B4BB]" />
             </div>
           )}
         </div>
@@ -305,8 +305,8 @@ function PartnerCard({
         aria-pressed={selected}
         className={`mt-2 flex h-9 items-center justify-center gap-1.5 rounded-xl px-3 text-[11px] font-extrabold transition-colors disabled:cursor-wait disabled:opacity-60 ${
           selected
-            ? 'bg-[#DAF5EA] text-[#075C66] hover:bg-[#C5ECDE]'
-            : 'bg-[#075C66] text-white hover:bg-[#087A78]'
+            ? 'bg-[#D9F3F6] text-[#0E7490] hover:bg-[#C3EAEE]'
+            : 'bg-[#0E7490] text-white hover:bg-[#0891B2]'
         }`}
       >
         <Icon name={selected ? 'check_circle' : 'add'} className="text-[17px]" />
@@ -707,7 +707,7 @@ useEffect(() => {
                 ? selectedUrl
                 : CLIENT_ROUTES.TRIP_PLAN
             }
-            className="flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[12px] font-bold text-[#075C66]"
+            className="flex items-center gap-1 rounded-full bg-white px-3 py-2 text-[12px] font-bold text-[#0E7490]"
           >
             <Icon
               name="shopping_basket"
@@ -732,7 +732,7 @@ useEffect(() => {
               key={index}
               className={`h-[5px] flex-1 rounded-full ${
                 index < CURRENT_FLOW_STEP
-                  ? 'bg-[#075C66]'
+                  ? 'bg-[#0E7490]'
                   : 'bg-[#E3E8EF]'
               }`}
             />
@@ -744,7 +744,7 @@ useEffect(() => {
       {loading && (
         <div
           role="status"
-          className="rounded-2xl bg-white p-8 text-center text-sm text-[#087A78]"
+          className="rounded-2xl bg-white p-8 text-center text-sm text-[#0891B2]"
         >
           Đang tải kế hoạch và các địa điểm ...
         </div>
@@ -765,7 +765,7 @@ useEffect(() => {
                 onClick={() =>
                   setRetryCount((count) => count + 1)
                 }
-                className="rounded-full bg-white px-4 py-2 font-bold text-[#075C66]"
+                className="rounded-full bg-white px-4 py-2 font-bold text-[#0E7490]"
               >
                 Thử lại
               </button>
@@ -773,7 +773,7 @@ useEffect(() => {
 
             <Link
               to={CLIENT_ROUTES.TRIP_PLAN}
-              className="rounded-full bg-white px-4 py-2 font-bold text-[#075C66]"
+              className="rounded-full bg-white px-4 py-2 font-bold text-[#0E7490]"
             >
               Tạo kế hoạch
             </Link>
@@ -784,11 +784,11 @@ useEffect(() => {
       {!loading && !error && plan && (
         <>
           {/* THÔNG TIN NGUỒN ĐỊA ĐIỂM */}
-          <div className="mb-3 rounded-2xl border border-[#DDEDE7] bg-[#F4FBF8] p-3">
+          <div className="mb-3 rounded-2xl border border-[#DCECEE] bg-[#F4FBFB] p-3">
             <p className="flex items-center gap-1.5 text-[13px] font-extrabold text-[#13364A]">
               <Icon
                 name="travel_explore"
-                className="text-[18px] text-[#075C66]"
+                className="text-[18px] text-[#0E7490]"
               />
 
              Địa điểm  gợi ý cho chuyến đi
@@ -847,7 +847,7 @@ useEffect(() => {
             {/* BẢN ĐỒ */}
             <div className="lg:sticky lg:top-20 lg:col-start-1 lg:row-start-1 lg:self-start">
 
-              <div className="relative isolate overflow-hidden rounded-[20px] bg-[#E0EEE9]">
+              <div className="relative isolate overflow-hidden rounded-[20px] bg-[#DFEDEF]">
                 <TravelMap
                   ref={mapRef}
                   className="h-[225px] lg:h-[480px]"
@@ -856,7 +856,7 @@ useEffect(() => {
                   onSelect={selectMarker}
                 />
 
-                <span className="pointer-events-none absolute left-3 top-3 z-[400] rounded-full bg-white px-3 py-2 text-[11px] font-bold text-[#075C66] shadow">
+                <span className="pointer-events-none absolute left-3 top-3 z-[400] rounded-full bg-white px-3 py-2 text-[11px] font-bold text-[#0E7490] shadow">
                   {mapPoints.length} địa điểm có tọa độ
                 </span>
 
@@ -927,7 +927,7 @@ useEffect(() => {
                       aria-pressed={item.id === category}
                       className={`shrink-0 rounded-full px-4 py-2.5 text-[12px] font-semibold ${
                         item.id === category
-                          ? 'bg-[#075C66] text-white'
+                          ? 'bg-[#0E7490] text-white'
                           : 'bg-[#EBEDFF] text-[#13364A]'
                       }`}
                     >
@@ -942,7 +942,7 @@ useEffect(() => {
                 <div className="flex flex-col items-center rounded-2xl bg-white px-4 py-10 text-center">
                   <Icon
                     name="travel_explore"
-                    className="text-[35px] text-[#94B5B6]"
+                    className="text-[35px] text-[#92B4B8]"
                   />
 
                   <p className="mt-2 text-[13px] font-bold text-[#13364A]">
@@ -1006,7 +1006,7 @@ useEffect(() => {
                     onClick={() =>
                       changePage(currentPage - 1)
                     }
-                    className="rounded-lg border px-3 py-2 text-xs font-semibold text-[#075C66] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-lg border px-3 py-2 text-xs font-semibold text-[#0E7490] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Trước
                   </button>
@@ -1026,8 +1026,8 @@ useEffect(() => {
                       }
                       className={`h-9 w-9 rounded-lg text-xs font-bold ${
                         number === currentPage
-                          ? 'bg-[#075C66] text-white'
-                          : 'bg-[#F1F5F5] text-[#075C66] hover:bg-[#DCEFEB]'
+                          ? 'bg-[#0E7490] text-white'
+                          : 'bg-[#F1F5F5] text-[#0E7490] hover:bg-[#DBEEF0]'
                       }`}
                     >
                       {number}
@@ -1040,7 +1040,7 @@ useEffect(() => {
                     onClick={() =>
                       changePage(currentPage + 1)
                     }
-                    className="rounded-lg border px-3 py-2 text-xs font-semibold text-[#075C66] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-lg border px-3 py-2 text-xs font-semibold text-[#0E7490] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Sau
                   </button>
@@ -1063,7 +1063,7 @@ useEffect(() => {
                 selectedIds.size === 0 ||
                 busyPlaceId !== null
               }
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#075C66] px-8 text-[14px] font-bold text-white hover:bg-primary disabled:bg-[#E3E8EF] disabled:text-[#72818C] md:w-auto md:min-w-[320px]"
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#0E7490] px-8 text-[14px] font-bold text-white hover:bg-client-primary disabled:bg-[#E3E8EF] disabled:text-[#72818C] md:w-auto md:min-w-[320px]"
             >
               <Icon
                 name="shopping_basket"

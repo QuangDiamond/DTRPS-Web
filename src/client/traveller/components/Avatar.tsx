@@ -6,7 +6,7 @@ export default function Avatar({
   url,
   size,
   iconSize,
-  className = 'bg-[#91F0E5] text-[#036C75]',
+  className = 'bg-[#8CEAF5] text-[#0E7490]',
 }: {
   url: string | null | undefined;
   size: number;

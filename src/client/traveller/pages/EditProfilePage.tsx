@@ -28,11 +28,11 @@ function FieldCard({
   children: ReactNode;
 }) {
   return (
-    <div className="mb-3 rounded-2xl bg-white px-4 py-3.5 focus-within:ring-2 focus-within:ring-primary/30">
+    <div className="mb-3 rounded-2xl bg-white px-4 py-3.5 focus-within:ring-2 focus-within:ring-client-primary/30">
       <div className="flex items-center justify-between">
         <label htmlFor={htmlFor} className="text-[13px] font-semibold text-[#123747]">
           {label}
-          {required && <span className="text-[#00A5A0]"> *</span>}
+          {required && <span className="text-[#0891B2]"> *</span>}
         </label>
         {right}
       </div>
@@ -108,15 +108,15 @@ export default function EditProfilePage() {
             onClick={() => fileRef.current?.click()}
             disabled={uploading}
             aria-label="Thay đổi ảnh đại diện"
-            className="relative rounded-full shadow-[0_6px_18px_rgba(48,201,189,0.25)]"
+            className="relative rounded-full shadow-[0_6px_18px_rgba(8,145,178,0.25)]"
           >
             <Avatar
               url={avatarUrl}
               size={108}
               iconSize={80}
-              className="bg-[#98F0E7] text-[#006D72]"
+              className="bg-[#94EBF4] text-[#0E7490]"
             />
-            <span className="absolute right-0 bottom-0 flex h-10 w-10 items-center justify-center rounded-full border-[3px] border-[#F8F7FC] bg-[#006A65] text-white">
+            <span className="absolute right-0 bottom-0 flex h-10 w-10 items-center justify-center rounded-full border-[3px] border-[#F8F7FC] bg-[#0E7490] text-white">
               {uploading ? (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
               ) : (
@@ -153,7 +153,7 @@ export default function EditProfilePage() {
         {formError && <FormAlert message={formError} />}
 
         <FieldCard label="Họ và tên" htmlFor="profile-name" required error={errors.name}>
-          <Icon name="person" className="text-[21px] text-[#007A78]" />
+          <Icon name="person" className="text-[21px] text-[#0E7490]" />
           <input
             id="profile-name"
             value={name}
@@ -167,13 +167,13 @@ export default function EditProfilePage() {
         <FieldCard
           label="Địa chỉ Email"
           right={
-            <span className="flex items-center gap-1 rounded-full bg-[#B5F4EA] px-2.5 py-1 text-[10px] font-bold text-[#00766F]">
+            <span className="flex items-center gap-1 rounded-full bg-[#B2F0F7] px-2.5 py-1 text-[10px] font-bold text-[#0E7490]">
               <Icon name="verified" filled className="text-[13px]" />
               Đã xác minh
             </span>
           }
         >
-          <Icon name="mail" className="text-[20px] text-[#007A78]" />
+          <Icon name="mail" className="text-[20px] text-[#0E7490]" />
           <span className="ml-2 flex-1 truncate text-[15px] font-medium text-[#123747]">
             {user.email}
           </span>
@@ -196,7 +196,7 @@ export default function EditProfilePage() {
         </FieldCard>
 
         <FieldCard label="Ngày sinh" htmlFor="profile-dob" error={errors.dateOfBirth}>
-          <Icon name="cake" className="text-[21px] text-[#007A78]" />
+          <Icon name="cake" className="text-[21px] text-[#0E7490]" />
           <input
             id="profile-dob"
             type="date"
@@ -223,8 +223,8 @@ export default function EditProfilePage() {
           <Icon name="chevron_right" className="text-[22px] text-[#7D9AA9]" />
         </Link>
 
-        <div className="mt-4 flex items-center gap-3 rounded-2xl bg-linear-to-r from-[#D6FAF6] to-[#E7E9FF] p-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#9EF1E7] text-[#007A78]">
+        <div className="mt-4 flex items-center gap-3 rounded-2xl bg-[#D4F8FC] p-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#9AECF5] text-[#0E7490]">
             <Icon name="auto_awesome" className="text-[22px]" />
           </span>
           <p className="flex-1 text-[12px] leading-[18px] text-[#526C83]">
@@ -236,7 +236,7 @@ export default function EditProfilePage() {
         <button
           type="submit"
           disabled={saving || uploading}
-          className="mt-5 flex h-[53px] w-full items-center justify-center gap-2 rounded-full bg-[#006C64] text-[16px] font-bold text-white shadow-md hover:bg-primary-container disabled:bg-[#9EBEB9]"
+          className="mt-5 flex h-[53px] w-full items-center justify-center gap-2 rounded-full bg-[#0E7490] text-[16px] font-bold text-white shadow-md hover:bg-client-primary-strong disabled:bg-[#9CBCC0]"
         >
           {saving ? (
             <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white" />

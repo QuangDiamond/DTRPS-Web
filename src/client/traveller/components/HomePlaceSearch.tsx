@@ -112,7 +112,7 @@ export default function HomePlaceSearch() {
   return (
     <div ref={boxRef} className="relative mt-4">
       <div className="flex items-center rounded-2xl bg-white px-3 py-2 shadow-[0_2px_6px_rgba(0,0,0,0.05)]">
-        <Icon name="search" className="text-[23px] text-primary" />
+        <Icon name="search" className="text-[23px] text-client-primary" />
         <input
           value={query}
           onChange={(event) => {
@@ -166,15 +166,15 @@ export default function HomePlaceSearch() {
               onMouseEnter={() => setActiveIndex(index)}
               onClick={() => openPlace(place)}
               className={`flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left ${
-                index === activeIndex ? 'bg-[#EEF8F6]' : 'hover:bg-[#F6F8F8]'
+                index === activeIndex ? 'bg-[#EDF7F9]' : 'hover:bg-[#F6F8F8]'
               }`}
             >
-              <div className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-[#DCEFEB]">
+              <div className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-[#DBEEF0]">
                 {place.coverUrl ? (
                   <img src={place.coverUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full items-center justify-center">
-                    <Icon name="landscape" className="text-[20px] text-[#73B8AD]" />
+                    <Icon name="landscape" className="text-[20px] text-[#70B4BB]" />
                   </div>
                 )}
               </div>
@@ -200,7 +200,7 @@ export default function HomePlaceSearch() {
             <button
               type="button"
               onClick={loadMore}
-              className="mt-1 w-full rounded-xl py-2 text-[12px] font-bold text-primary hover:bg-[#F1FAF8]"
+              className="mt-1 w-full rounded-xl py-2 text-[12px] font-bold text-client-primary hover:bg-[#F1F9FA]"
             >
               Xem thêm kết quả ({total - results.length})
             </button>

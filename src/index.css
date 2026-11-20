@@ -117,15 +117,19 @@
   --color-outline: #6d7a77;
   --color-outline-variant: #bcc9c6;
 
-  /* Khu client (du khách + đối tác) — theo bảng màu app mobile */
-  --color-client-bg: #faf8ff;
-  --color-client-ink: #131b2e;
-  --color-client-muted: #64716f;
-  --color-client-teal: #008378;
-  --color-client-pale: #e0f5ef;
-  --color-client-soft: #f2f3ff;
-  --color-client-line: #e5ecea;
-  --color-client-field: #f6f7fc;
+  /* Khu client (du khách + đối tác) — tông cyan quanh #00FFFF. Admin dùng --color-primary riêng */
+  --color-client-primary: #0891b2;
+  --color-client-primary-strong: #0e7490;
+  --color-client-primary-soft: #ecfeff;
+  --color-client-cyan: #00ffff;
+  --color-client-bg: #f5fdfe;
+  --color-client-ink: #0f2a3b;
+  --color-client-muted: #557080;
+  --color-client-teal: #0891b2;
+  --color-client-pale: #cffafe;
+  --color-client-soft: #ecfeff;
+  --color-client-line: #dcecf0;
+  --color-client-field: #f3fbfc;
   --color-client-gold: #d79b00;
   --color-client-danger: #d83a48;
 }

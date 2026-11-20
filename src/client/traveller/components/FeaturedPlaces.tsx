@@ -182,7 +182,7 @@ export default function FeaturedPlaces() {
         className={`grid gap-4 ${places.length > 1 ? 'lg:grid-cols-[minmax(0,1fr)_340px]' : ''}`}
       >
         {/* SLIDE LỚN */}
-        <div className="relative h-[380px] overflow-hidden rounded-[28px] bg-[#0B3B3F] shadow-[0_18px_40px_rgba(7,60,66,0.25)] md:h-[480px]">
+        <div className="relative h-[380px] overflow-hidden rounded-[28px] bg-[#0F2A3B] shadow-[0_18px_40px_rgba(8,47,73,0.25)] md:h-[480px]">
           {places.map((place, i) => (
             <div
               key={place.id}
@@ -201,7 +201,7 @@ export default function FeaturedPlaces() {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <div className="flex h-full items-center justify-center bg-linear-to-br from-[#075C66] to-[#0E8C86]">
+                <div className="flex h-full items-center justify-center bg-[#0891B2]">
                   <Icon name="storefront" className="text-[80px] text-white/40" />
                 </div>
               )}
@@ -263,7 +263,7 @@ export default function FeaturedPlaces() {
                 to={placePath(String(current.id))}
                 state={DETAIL_STATE}
                 onClick={() => rememberOpened(current.id)}
-                className="flex items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-[13px] font-extrabold text-[#075C66] shadow-lg transition-transform hover:scale-[1.03]"
+                className="flex items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-[13px] font-extrabold text-[#0E7490] shadow-lg transition-transform hover:scale-[1.03]"
               >
                 Khám phá ngay
                 <Icon name="arrow_forward" className="text-[18px]" />
@@ -304,7 +304,7 @@ export default function FeaturedPlaces() {
                 className={`flex w-[250px] shrink-0 items-center gap-3 rounded-2xl border bg-white p-2.5 text-left transition-all lg:w-full ${
                   i === index
                     ? 'border-[#E0A100] shadow-[0_6px_18px_rgba(176,122,0,0.18)]'
-                    : 'border-client-line hover:border-[#C9D9D6]'
+                    : 'border-client-line hover:border-[#C8D8DA]'
                 }`}
               >
                 <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-client-field">
@@ -329,7 +329,7 @@ export default function FeaturedPlaces() {
                     {place.province ?? place.category ?? 'Địa điểm du lịch'}
                   </p>
                   {i === index && (
-                    <p className="mt-0.5 flex items-center gap-0.5 text-[11px] font-bold text-[#007A73]">
+                    <p className="mt-0.5 flex items-center gap-0.5 text-[11px] font-bold text-[#0E7490]">
                       Xem chi tiết <Icon name="arrow_forward" className="text-[13px]" />
                     </p>
                   )}

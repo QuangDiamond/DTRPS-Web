@@ -108,7 +108,7 @@ export default function WeatherImpactBanner({
                     className="flex items-center justify-between gap-3 rounded-xl bg-white p-3"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="text-[12.5px] font-semibold text-[#163D42]">
+                      <p className="text-[12.5px] font-semibold text-[#163142]">
                         {suggestion.description}
                       </p>
                       {errorKey === key && (
@@ -118,7 +118,7 @@ export default function WeatherImpactBanner({
                       )}
                     </div>
                     {applied ? (
-                      <span className="flex shrink-0 items-center gap-1 text-[12px] font-bold text-[#087A78]">
+                      <span className="flex shrink-0 items-center gap-1 text-[12px] font-bold text-[#0891B2]">
                         <Icon name="check_circle" filled className="text-[18px]" />
                         Đã áp dụng
                       </span>
@@ -127,7 +127,7 @@ export default function WeatherImpactBanner({
                         type="button"
                         disabled={applying}
                         onClick={() => apply(item, suggestion, index)}
-                        className="flex shrink-0 items-center gap-1.5 rounded-full bg-[#075C66] px-3.5 py-2 text-[12px] font-bold text-white disabled:cursor-wait disabled:opacity-60"
+                        className="flex shrink-0 items-center gap-1.5 rounded-full bg-[#0E7490] px-3.5 py-2 text-[12px] font-bold text-white disabled:cursor-wait disabled:opacity-60"
                       >
                         {applying ? 'Đang áp dụng...' : 'Áp dụng'}
                       </button>

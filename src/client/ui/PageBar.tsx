@@ -18,7 +18,7 @@ export default function PageBar({
   actions?: ReactNode;
 }) {
   const backClass =
-    'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-client-ink shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:text-primary';
+    'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-client-ink shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:text-client-primary';
   return (
     <div className="mb-4 flex items-center gap-3">
       {onBack ? (
@@ -60,7 +60,7 @@ export function BarIconButton({
       aria-label={label}
       aria-pressed={active}
       className={`flex h-10 w-10 items-center justify-center rounded-full ${
-        active ? 'bg-[#C3F8F0] text-primary' : 'bg-white text-[#435369] hover:text-primary'
+        active ? 'bg-[#C0F5FB] text-client-primary' : 'bg-white text-[#435369] hover:text-client-primary'
       }`}
     >
       <Icon name={icon} filled={active} className="text-[21px]" />

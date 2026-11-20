@@ -48,13 +48,13 @@ function DestinationCard({
   const icon = GROUP_ICONS[place.group?.code ?? ''] ?? 'place';
 
   return (
-    <article className={`group relative min-w-0 overflow-hidden rounded-[24px] border border-[#E3E9E6] bg-white shadow-[0_5px_22px_rgba(12,44,43,0.035)] transition-all duration-300 hover:-translate-y-1 hover:border-[#A9D8C9] hover:shadow-[0_20px_44px_rgba(12,44,43,0.12)] ${horizontal ? 'sm:flex sm:min-h-[210px]' : ''}`}>
+    <article className={`group relative min-w-0 overflow-hidden rounded-[24px] border border-[#E3E9E9] bg-white shadow-[0_5px_22px_rgba(8,47,73,0.035)] transition-all duration-300 hover:-translate-y-1 hover:border-[#A7D5DA] hover:shadow-[0_20px_44px_rgba(8,47,73,0.12)] ${horizontal ? 'sm:flex sm:min-h-[210px]' : ''}`}>
       <Link
         to={placePath(String(place.id))}
         aria-label={`Xem chi tiết ${place.name}`}
         className={`block min-w-0 flex-1 ${horizontal ? 'sm:flex' : ''}`}
       >
-        <div className={`relative shrink-0 overflow-hidden bg-[#E3EEE9] ${horizontal ? 'h-[200px] sm:h-auto sm:w-[290px]' : 'aspect-[4/3]'}`}>
+        <div className={`relative shrink-0 overflow-hidden bg-[#E2EDEF] ${horizontal ? 'h-[200px] sm:h-auto sm:w-[290px]' : 'aspect-[4/3]'}`}>
           {place.coverUrl ? (
             <img
               src={place.coverUrl}
@@ -63,39 +63,39 @@ function DestinationCard({
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.065]"
             />
           ) : (
-            <div className="flex h-full min-h-[190px] items-center justify-center bg-gradient-to-br from-[#D5EDE5] via-[#B9DDD1] to-[#E9E7D5]">
-              <Icon name="landscape" className="text-[54px] text-[#669F8C]" />
+            <div className="flex h-full min-h-[190px] items-center justify-center bg-[#D4ECEE]">
+              <Icon name="landscape" className="text-[54px] text-[#639CA2]" />
             </div>
           )}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0B302C]/45 via-transparent to-transparent" />
-          <span className="absolute bottom-3 left-3 inline-flex max-w-[85%] items-center gap-1.5 rounded-full border border-white/50 bg-white/95 px-3 py-1.5 text-[11px] font-bold text-[#266B5D] shadow-sm">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+          <span className="absolute bottom-3 left-3 inline-flex max-w-[85%] items-center gap-1.5 rounded-full border border-white/50 bg-white/95 px-3 py-1.5 text-[11px] font-bold text-[#265D6B] shadow-sm">
             <Icon name={icon} className="text-[15px]" />
             <span className="truncate">{category}</span>
           </span>
         </div>
 
         <div className={`flex min-w-0 flex-1 flex-col ${horizontal ? 'px-5 pb-5 pt-5 sm:px-7 sm:py-6' : 'p-5'}`}>
-          <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#15907C]">
+          <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#0891B2]">
             {place.province?.name ?? 'Việt Nam'}
           </p>
-          <h3 className="line-clamp-2 pr-6 text-[17px] font-extrabold leading-[1.45] tracking-tight text-[#193F41] transition-colors group-hover:text-[#0B8875]">
+          <h3 className="line-clamp-2 pr-6 text-[17px] font-extrabold leading-[1.45] tracking-tight text-[#193241] transition-colors group-hover:text-[#0891B2]">
             {place.name}
           </h3>
           <p className="mt-2 flex items-start gap-1.5 text-[12px] leading-5 text-[#73868C]">
-            <Icon name="location_on" className="mt-0.5 shrink-0 text-[16px] text-[#0F9984]" />
+            <Icon name="location_on" className="mt-0.5 shrink-0 text-[16px] text-[#0891B2]" />
             <span className="line-clamp-2">{place.address || 'Địa chỉ đang cập nhật'}</span>
           </p>
           <div className="mt-auto flex items-center justify-between gap-2 border-t border-[#EDF1EE] pt-4 sm:mt-5">
             <div className="inline-flex min-w-0 items-center gap-1.5 text-[12px] text-[#697C81]">
               <Icon name="star" filled className="text-[19px] text-[#E9AD43]" />
-              <strong className="text-[13px] text-[#29444A]">
+              <strong className="text-[13px] text-[#29434A]">
                 {place.rating == null ? 'Mới' : place.rating.toFixed(1)}
               </strong>
               {place.rating != null && (
                 <span className="truncate text-[#9AA9A9]">· {place.reviewCount} đánh giá</span>
               )}
             </div>
-            <span className="inline-flex shrink-0 items-center gap-1 text-[12px] font-extrabold text-[#0B8A77]">
+            <span className="inline-flex shrink-0 items-center gap-1 text-[12px] font-extrabold text-[#0891B2]">
               Khám phá <Icon name="arrow_forward" className="text-[18px] transition-transform group-hover:translate-x-1" />
             </span>
           </div>
@@ -411,9 +411,9 @@ export default function ExplorePage() {
   return (
     <div className="pb-14">
       {/* HERO — lời mời khám phá & ảnh thật từ API */}
-      <section className="relative mb-9 overflow-visible rounded-[28px] bg-[#123F3B] text-white shadow-[0_18px_50px_rgba(14,55,51,0.13)] lg:rounded-[34px]">
+      <section className="relative mb-9 overflow-visible rounded-[28px] bg-[#122E3F] text-white shadow-[0_18px_50px_rgba(8,47,73,0.13)] lg:rounded-[34px]">
         <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[28px] lg:rounded-[34px]">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#103D3A] via-[#145C51] to-[#0B7965]" />
+          <div className="absolute inset-0 bg-[#0891B2]" />
           <div className="absolute -left-28 -top-32 h-80 w-80 rounded-full border-[55px] border-white/[0.035]" />
           <div className="absolute bottom-[-130px] left-[45%] h-72 w-72 rounded-full border-[45px] border-[#D2F0B8]/[0.07]" />
         </div>
@@ -426,15 +426,15 @@ export default function ExplorePage() {
               Bạn muốn khám phá<br />
               <span className="text-[#C7F0BE]">nơi nào tiếp theo?</span>
             </h1>
-            <p className="mt-4 max-w-[530px] text-[13px] leading-6 text-[#D2E6DF] sm:text-[14px]">
+            <p className="mt-4 max-w-[530px] text-[13px] leading-6 text-[#D1E5E7] sm:text-[14px]">
               Chọn tỉnh thành bạn yêu thích và tìm những trải nghiệm đáng nhớ khắp Việt Nam.
             </p>
 
             <div className="relative z-30 mt-7 max-w-[680px]" onBlur={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget)) setSuggestionsOpen(false);
             }}>
-              <div className="flex min-h-[62px] items-center gap-2 rounded-[18px] border border-white/25 bg-white p-2 shadow-[0_12px_32px_rgba(0,0,0,0.17)] focus-within:ring-[3px] focus-within:ring-[#B7EBD5]/60">
-                <span className="ml-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7F4EB] text-[#0D806C]">
+              <div className="flex min-h-[62px] items-center gap-2 rounded-[18px] border border-white/25 bg-white p-2 shadow-[0_12px_32px_rgba(0,0,0,0.17)] focus-within:ring-[3px] focus-within:ring-[#B4E8EE]/60">
+                <span className="ml-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7F4EB] text-[#0891B2]">
                   <Icon name="location_on" className="text-[24px]" />
                 </span>
                 <input
@@ -466,21 +466,21 @@ export default function ExplorePage() {
                   aria-controls="province-suggestion-list"
                   aria-activedescendant={suggestionsOpen && suggestions.length ? `province-option-${highlightedIndex}` : undefined}
                   autoComplete="off"
-                  className="h-11 min-w-0 flex-1 bg-transparent text-[13px] font-semibold text-[#1C4143] outline-none placeholder:font-normal placeholder:text-[#91A2A1] sm:text-[14px]"
+                  className="h-11 min-w-0 flex-1 bg-transparent text-[13px] font-semibold text-[#1C3443] outline-none placeholder:font-normal placeholder:text-[#91A2A1] sm:text-[14px]"
                 />
                 {searchText && (
                   <button type="button" onClick={() => { clearProvince(); inputRef.current?.focus(); }} aria-label="Xóa tỉnh đã chọn" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#829A96] hover:bg-[#F0F5F2]">
                     <Icon name="close" className="text-[18px]" />
                   </button>
                 )}
-                <button type="button" onClick={submitProvince} className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-[12px] bg-[#0C806F] px-4 text-[12px] font-extrabold text-white transition hover:bg-[#096657] sm:px-6">
+                <button type="button" onClick={submitProvince} className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-[12px] bg-[#0891B2] px-4 text-[12px] font-extrabold text-white transition hover:bg-[#0E7490] sm:px-6">
                   <Icon name="search" className="text-[19px]" /> <span className="hidden sm:inline">Khám phá</span>
                 </button>
               </div>
 
               {/* Không dùng keyword /places; chỉ gợi ý tỉnh thành từ /reference/provinces. */}
               {suggestionsOpen && Boolean(searchText.trim()) && (
-                <div id="province-suggestion-list" role="listbox" aria-label="Danh sách tỉnh thành gợi ý" className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[320px] overflow-y-auto rounded-[19px] border border-[#DCE9E3] bg-white p-2 text-[#203F42] shadow-[0_20px_48px_rgba(7,40,39,0.28)]">
+                <div id="province-suggestion-list" role="listbox" aria-label="Danh sách tỉnh thành gợi ý" className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[320px] overflow-y-auto rounded-[19px] border border-[#DBE8EA] bg-white p-2 text-[#203542] shadow-[0_20px_48px_rgba(8,47,73,0.28)]">
                   {loadingReferences ? (
                     <p className="px-4 py-4 text-[13px] text-[#7D9090]">Đang tải danh sách tỉnh thành...</p>
                   ) : suggestions.length ? (
@@ -496,9 +496,9 @@ export default function ExplorePage() {
                           onMouseDown={(event) => event.preventDefault()}
                           onMouseEnter={() => setHighlightedIndex(index)}
                           onClick={() => chooseProvince(province)}
-                          className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-bold transition-colors ${index === highlightedIndex ? 'bg-[#E9F6F0] text-[#0A7566]' : 'text-[#34575A] hover:bg-[#F3F8F5]'}`}
+                          className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-bold transition-colors ${index === highlightedIndex ? 'bg-[#E8F5F7] text-[#0891B2]' : 'text-[#34525A] hover:bg-[#F3F8F5]'}`}
                         >
-                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#DBEFE6] text-[#0D8672]"><Icon name="location_on" className="text-[19px]" /></span>
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#DAEEF0] text-[#0891B2]"><Icon name="location_on" className="text-[19px]" /></span>
                           <span className="flex-1">{province.name}</span>
                           <Icon name="north_west" className="text-[16px] text-[#94AAA4]" />
                         </button>
@@ -519,14 +519,14 @@ export default function ExplorePage() {
 
           <div className="pointer-events-none relative hidden min-h-[410px] overflow-hidden lg:block">
             <div className="absolute -right-14 top-[-40px] h-[480px] w-[480px] rounded-full border-[40px] border-white/[0.045]" />
-            <div className="absolute right-[23%] top-[48px] h-[295px] w-[230px] -rotate-[10deg] overflow-hidden rounded-[25px] border-[7px] border-white/90 bg-[#A5D9CA] shadow-[0_25px_42px_rgba(0,0,0,0.24)]">
-              {heroPlaces[0]?.coverUrl ? <img src={heroPlaces[0].coverUrl} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#9CC9B5] to-[#E6DBB4]"><Icon name="landscape" className="text-[65px] text-white" /></div>}
+            <div className="absolute right-[23%] top-[48px] h-[295px] w-[230px] -rotate-[10deg] overflow-hidden rounded-[25px] border-[7px] border-white/90 bg-[#A2D6DC] shadow-[0_25px_42px_rgba(0,0,0,0.24)]">
+              {heroPlaces[0]?.coverUrl ? <img src={heroPlaces[0].coverUrl} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center bg-[#9AC6CB]"><Icon name="landscape" className="text-[65px] text-white" /></div>}
             </div>
             <div className="absolute right-[2%] top-[110px] h-[255px] w-[210px] rotate-[10deg] overflow-hidden rounded-[24px] border-[7px] border-white/90 bg-[#AACCB7] shadow-[0_25px_42px_rgba(0,0,0,0.25)]">
-              {heroPlaces[1]?.coverUrl ? <img src={heroPlaces[1].coverUrl} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#B9DBC7] to-[#E9D9AB]"><Icon name="beach_access" className="text-[65px] text-white" /></div>}
+              {heroPlaces[1]?.coverUrl ? <img src={heroPlaces[1].coverUrl} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center bg-[#B9DBC7]"><Icon name="beach_access" className="text-[65px] text-white" /></div>}
             </div>
-            <div className="absolute bottom-7 left-[12%] flex items-center gap-2 rounded-2xl border border-white/40 bg-white/95 px-4 py-3 text-[12px] font-extrabold text-[#1D574D] shadow-lg">
-              <Icon name="travel_explore" className="text-[21px] text-[#0B917C]" /> Đi khắp Việt Nam, theo cách của bạn
+            <div className="absolute bottom-7 left-[12%] flex items-center gap-2 rounded-2xl border border-white/40 bg-white/95 px-4 py-3 text-[12px] font-extrabold text-[#0E7490] shadow-lg">
+              <Icon name="travel_explore" className="text-[21px] text-[#0891B2]" /> Đi khắp Việt Nam, theo cách của bạn
             </div>
           </div>
         </div>
@@ -537,7 +537,7 @@ export default function ExplorePage() {
         <div className="mb-7 flex flex-wrap items-center gap-2.5">
           <span className="mr-1 inline-flex items-center gap-1 text-[12px] font-bold text-[#748D86]"><Icon name="trending_up" className="text-[18px]" /> Gợi ý:</span>
           {quickProvinces.map((province) => (
-            <button key={province.code} type="button" onClick={() => chooseProvince(province)} className="rounded-full border border-[#DBE7E1] bg-white px-4 py-2 text-[12px] font-bold text-[#386A60] transition hover:border-[#9EDAC8] hover:bg-[#EAF7F0]">
+            <button key={province.code} type="button" onClick={() => chooseProvince(province)} className="rounded-full border border-[#DAE6E8] bg-white px-4 py-2 text-[12px] font-bold text-[#38606A] transition hover:border-[#9BD6DD] hover:bg-[#EAF7F0]">
               {province.name}
             </button>
           ))}
@@ -549,10 +549,10 @@ export default function ExplorePage() {
         <section className="mb-8">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0C937C]">CẢM HỨNG CHO CHUYẾN ĐI</p>
-              <h2 className="mt-1 text-[22px] font-extrabold tracking-tight text-[#204346] sm:text-[25px]">Điều gì khiến bạn hứng thú?</h2>
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0891B2]">CẢM HỨNG CHO CHUYẾN ĐI</p>
+              <h2 className="mt-1 text-[22px] font-extrabold tracking-tight text-[#203E46] sm:text-[25px]">Điều gì khiến bạn hứng thú?</h2>
             </div>
-            <button type="button" onClick={() => setSelectedCategoryCodes([])} className="text-[12px] font-bold text-[#0C8773] hover:underline">Xem mọi loại hình</button>
+            <button type="button" onClick={() => setSelectedCategoryCodes([])} className="text-[12px] font-bold text-[#0891B2] hover:underline">Xem mọi loại hình</button>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {categoryGroups.map((group) => {
@@ -563,12 +563,12 @@ export default function ExplorePage() {
                   type="button"
                   onClick={() => chooseGroup(group.code)}
                   aria-pressed={active}
-                  className={`group flex min-h-[91px] items-center gap-3 rounded-[19px] border px-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md ${active ? 'border-[#0B907B] bg-[#E2F5E9] shadow-[0_8px_24px_rgba(14,115,86,0.1)]' : 'border-[#E2EBE5] bg-white hover:border-[#B8DDCB]'}`}
+                  className={`group flex min-h-[91px] items-center gap-3 rounded-[19px] border px-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md ${active ? 'border-[#0891B2] bg-[#E2F5E9] shadow-[0_8px_24px_rgba(8,145,178,0.1)]' : 'border-[#E2EBE5] bg-white hover:border-[#B6DBDF]'}`}
                 >
-                  <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] ${active ? 'bg-[#0B8F78] text-white' : 'bg-[#EAF3ED] text-[#188F78]'}`}>
+                  <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] ${active ? 'bg-[#0891B2] text-white' : 'bg-[#EAF3ED] text-[#0891B2]'}`}>
                     <Icon name={GROUP_ICONS[group.code] ?? 'explore'} className="text-[25px]" />
                   </span>
-                  <span className={`min-w-0 text-[12px] font-extrabold leading-5 sm:text-[13px] ${active ? 'text-[#0D7664]' : 'text-[#325755]'}`}>{group.name}</span>
+                  <span className={`min-w-0 text-[12px] font-extrabold leading-5 sm:text-[13px] ${active ? 'text-[#0891B2]' : 'text-[#325057]'}`}>{group.name}</span>
                 </button>
               );
             })}
@@ -580,8 +580,8 @@ export default function ExplorePage() {
       <section className="min-w-0">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-4 border-b border-[#E0EAE4] pb-5">
           <div>
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0B927B]">KHÁM PHÁ ĐIỂM ĐẾN</p>
-            <h2 className="mt-1 text-[24px] font-extrabold tracking-[-0.03em] text-[#204346] sm:text-[28px]">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0891B2]">KHÁM PHÁ ĐIỂM ĐẾN</p>
+            <h2 className="mt-1 text-[24px] font-extrabold tracking-[-0.03em] text-[#203E46] sm:text-[28px]">
               {selectedProvince ? `Điểm đến tại ${selectedProvince.name}` : 'Những nơi đáng khám phá'}
             </h2>
             <p className="mt-1.5 text-[12px] text-[#849794]">
@@ -591,12 +591,12 @@ export default function ExplorePage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button type="button" onClick={() => setFiltersOpen((open) => !open)} aria-expanded={filtersOpen} className={`inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-[12px] font-bold transition ${filtersOpen || activeFilterCount ? 'border-[#A9DCCD] bg-[#EAF7EF] text-[#087D6E]' : 'border-[#DEE8E3] bg-white text-[#42635D] hover:border-[#B6DDCC]'}`}>
+            <button type="button" onClick={() => setFiltersOpen((open) => !open)} aria-expanded={filtersOpen} className={`inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-[12px] font-bold transition ${filtersOpen || activeFilterCount ? 'border-[#A6D9DF] bg-[#EAF7EF] text-[#0891B2]' : 'border-[#DEE8E3] bg-white text-[#425C63] hover:border-[#B4DBDF]'}`}>
               <Icon name="tune" className="text-[20px]" /> Bộ lọc
-              {activeFilterCount > 0 && <span className="rounded-full bg-[#0C8C76] px-2 py-0.5 text-[10px] text-white">{activeFilterCount}</span>}
+              {activeFilterCount > 0 && <span className="rounded-full bg-[#0891B2] px-2 py-0.5 text-[10px] text-white">{activeFilterCount}</span>}
             </button>
-            <label className="flex h-11 items-center gap-2 rounded-xl border border-[#DEE8E3] bg-white px-3 text-[12px] text-[#526B68]">
-              <Icon name="sort" className="text-[19px] text-[#128E79]" />
+            <label className="flex h-11 items-center gap-2 rounded-xl border border-[#DEE8E3] bg-white px-3 text-[12px] text-[#52666B]">
+              <Icon name="sort" className="text-[19px] text-[#0891B2]" />
               <select value={sortMode} onChange={(event) => setSortMode(event.target.value as SortMode)} aria-label="Sắp xếp địa điểm đã tải" className="max-w-[130px] cursor-pointer bg-transparent text-[12px] font-semibold outline-none">
                 <option value="default">Mặc định</option>
                 <option value="rating">Đánh giá cao</option>
@@ -605,7 +605,7 @@ export default function ExplorePage() {
             </label>
             <div className="inline-flex h-11 items-center rounded-xl border border-[#DEE8E3] bg-white p-1" role="group" aria-label="Chế độ hiển thị">
               {(['grid', 'list'] as const).map((mode) => (
-                <button key={mode} type="button" onClick={() => setViewMode(mode)} aria-label={mode === 'grid' ? 'Dạng lưới' : 'Dạng danh sách'} aria-pressed={viewMode === mode} className={`flex h-9 w-9 items-center justify-center rounded-lg ${viewMode === mode ? 'bg-[#E7F5EA] text-[#0B8975]' : 'text-[#8EA5A0] hover:bg-[#F5F8F5]'}`}>
+                <button key={mode} type="button" onClick={() => setViewMode(mode)} aria-label={mode === 'grid' ? 'Dạng lưới' : 'Dạng danh sách'} aria-pressed={viewMode === mode} className={`flex h-9 w-9 items-center justify-center rounded-lg ${viewMode === mode ? 'bg-[#E7F5EA] text-[#0891B2]' : 'text-[#8EA5A0] hover:bg-[#F5F8F5]'}`}>
                   <Icon name={mode === 'grid' ? 'grid_view' : 'view_agenda'} className="text-[19px]" />
                 </button>
               ))}
@@ -614,29 +614,29 @@ export default function ExplorePage() {
         </div>
 
         {filtersOpen && (
-          <div className="mb-6 rounded-[22px] border border-[#DFEAE3] bg-white p-5 shadow-[0_10px_32px_rgba(19,52,47,0.05)] sm:p-6">
+          <div className="mb-6 rounded-[22px] border border-[#DFEAE3] bg-white p-5 shadow-[0_10px_32px_rgba(8,47,73,0.05)] sm:p-6">
             <div className="mb-5 flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-[16px] font-extrabold text-[#274C49]">Tinh chỉnh trải nghiệm</h3>
+                <h3 className="text-[16px] font-extrabold text-[#27454C]">Tinh chỉnh trải nghiệm</h3>
                 <p className="mt-1 text-[11px] text-[#81968F]">Chọn loại hình và đánh giá yêu thích</p>
               </div>
-              <button type="button" onClick={resetFilters} className="text-[12px] font-bold text-[#0E8D78] hover:underline">Đặt lại</button>
+              <button type="button" onClick={resetFilters} className="text-[12px] font-bold text-[#0891B2] hover:underline">Đặt lại</button>
             </div>
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1.7fr)_minmax(220px,.8fr)]">
               <div>
-                <p className="mb-3 text-[12px] font-extrabold text-[#355C58]">Loại hình trải nghiệm</p>
+                <p className="mb-3 text-[12px] font-extrabold text-[#35545C]">Loại hình trải nghiệm</p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {categoryGroups.map((group) => (
-                    <details key={group.code} className="rounded-xl border border-[#E9F0EA] bg-[#FBFDFC] open:border-[#B9DECF]">
+                    <details key={group.code} className="rounded-xl border border-[#E9F0EA] bg-[#FBFDFD] open:border-[#B7DCE0]">
                       <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-3 [&::-webkit-details-marker]:hidden">
-                        <Icon name={GROUP_ICONS[group.code] ?? 'category'} className="text-[20px] text-[#0D8D76]" />
-                        <span className="flex-1 text-[12px] font-bold text-[#385C59]">{group.name}</span>
+                        <Icon name={GROUP_ICONS[group.code] ?? 'category'} className="text-[20px] text-[#0891B2]" />
+                        <span className="flex-1 text-[12px] font-bold text-[#38555C]">{group.name}</span>
                         <Icon name="expand_more" className="text-[18px] text-[#9BAD9F]" />
                       </summary>
                       <div className="space-y-1.5 border-t border-[#E8F0EA] p-2">
                         {[group, ...group.subtypes].map((item) => (
-                          <label key={item.code} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-[11px] font-semibold text-[#58726A] hover:bg-[#E9F6EC]">
-                            <input type="checkbox" checked={selectedCategoryCodes.includes(item.code)} onChange={() => toggleCategory(item.code)} className="h-4 w-4 accent-[#0C937C]" />
+                          <label key={item.code} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-[11px] font-semibold text-[#586D72] hover:bg-[#E9F6EC]">
+                            <input type="checkbox" checked={selectedCategoryCodes.includes(item.code)} onChange={() => toggleCategory(item.code)} className="h-4 w-4 accent-[#0891B2]" />
                             {item.code === group.code ? `Tất cả ${group.name}` : item.name}
                           </label>
                         ))}
@@ -646,10 +646,10 @@ export default function ExplorePage() {
                 </div>
               </div>
               <div>
-                <p className="mb-3 text-[12px] font-extrabold text-[#355C58]">Đánh giá tối thiểu</p>
+                <p className="mb-3 text-[12px] font-extrabold text-[#35545C]">Đánh giá tối thiểu</p>
                 <div className="grid grid-cols-2 gap-2">
                   {RATINGS.map((rating) => (
-                    <button key={rating} type="button" onClick={() => updateRating(rating)} aria-pressed={minRating === rating} className={`flex h-11 items-center justify-center gap-1.5 rounded-xl border text-[12px] font-bold transition ${minRating === rating ? 'border-[#0B8C77] bg-[#0B8C77] text-white' : 'border-[#DFEAE3] bg-[#FAFCFB] text-[#5F7972] hover:bg-[#EAF7EF]'}`}>
+                    <button key={rating} type="button" onClick={() => updateRating(rating)} aria-pressed={minRating === rating} className={`flex h-11 items-center justify-center gap-1.5 rounded-xl border text-[12px] font-bold transition ${minRating === rating ? 'border-[#0891B2] bg-[#0891B2] text-white' : 'border-[#DFEAE3] bg-[#FAFCFB] text-[#5F7479] hover:bg-[#EAF7EF]'}`}>
                       {rating > 0 ? <><Icon name="star" filled className="text-[17px] text-[#F0C36C]" /> {rating}+</> : 'Tất cả'}
                     </button>
                   ))}
@@ -663,12 +663,12 @@ export default function ExplorePage() {
         {(selectedProvince || activeFilterCount > 0) && (
           <div className="mb-5 flex flex-wrap items-center gap-2">
             {selectedProvince && (
-              <button type="button" onClick={clearProvince} className="inline-flex items-center gap-1.5 rounded-full border border-[#BFE2D1] bg-[#E8F6EF] px-3 py-1.5 text-[11px] font-bold text-[#147D67]">
+              <button type="button" onClick={clearProvince} className="inline-flex items-center gap-1.5 rounded-full border border-[#BDE0E4] bg-[#E7F5F7] px-3 py-1.5 text-[11px] font-bold text-[#0891B2]">
                 <Icon name="location_on" className="text-[15px]" /> {selectedProvince.name} <Icon name="close" className="text-[14px]" />
               </button>
             )}
             {selectedCategories.map((category) => (
-              <button key={category.code} type="button" onClick={() => toggleCategory(category.code)} className="inline-flex items-center gap-1.5 rounded-full border border-[#E0EAE3] bg-white px-3 py-1.5 text-[11px] font-bold text-[#52736A]">
+              <button key={category.code} type="button" onClick={() => toggleCategory(category.code)} className="inline-flex items-center gap-1.5 rounded-full border border-[#E0EAE3] bg-white px-3 py-1.5 text-[11px] font-bold text-[#526C73]">
                 {category.name} <Icon name="close" className="text-[14px]" />
               </button>
             ))}
@@ -677,7 +677,7 @@ export default function ExplorePage() {
                 <Icon name="star" filled className="text-[15px]" /> {minRating}+ <Icon name="close" className="text-[14px]" />
               </button>
             )}
-            <button type="button" onClick={clearAll} className="px-2 text-[11px] font-bold text-[#0F8E7A] hover:underline">Xóa tất cả</button>
+            <button type="button" onClick={clearAll} className="px-2 text-[11px] font-bold text-[#0891B2] hover:underline">Xóa tất cả</button>
           </div>
         )}
 
@@ -690,10 +690,10 @@ export default function ExplorePage() {
           </div>
         ) : visiblePlaces.length === 0 ? (
           <div className="flex min-h-[330px] flex-col items-center justify-center rounded-[24px] border border-[#E4EBE5] bg-white p-8 text-center">
-            <div className="flex h-[72px] w-[72px] items-center justify-center rounded-[22px] bg-[#E6F4EB]"><Icon name="travel_explore" className="text-[36px] text-[#158E79]" /></div>
-            <h3 className="mt-5 text-[17px] font-extrabold text-[#274C49]">Chưa tìm thấy điểm đến phù hợp</h3>
+            <div className="flex h-[72px] w-[72px] items-center justify-center rounded-[22px] bg-[#E6F4EB]"><Icon name="travel_explore" className="text-[36px] text-[#0891B2]" /></div>
+            <h3 className="mt-5 text-[17px] font-extrabold text-[#27454C]">Chưa tìm thấy điểm đến phù hợp</h3>
             <p className="mt-2 max-w-[400px] text-[12px] leading-6 text-[#7D938C]">Hãy thử chọn tỉnh/thành khác hoặc điều chỉnh bộ lọc. Những địa điểm phù hợp có thể nằm ở trang kết quả tiếp theo.</p>
-            <button type="button" onClick={clearAll} className="mt-5 rounded-xl bg-[#0B8976] px-5 py-3 text-[12px] font-extrabold text-white hover:bg-[#086B5E]">Khám phá tất cả</button>
+            <button type="button" onClick={clearAll} className="mt-5 rounded-xl bg-[#0891B2] px-5 py-3 text-[12px] font-extrabold text-white hover:bg-[#0E7490]">Khám phá tất cả</button>
           </div>
         ) : (
           <div className={viewMode === 'grid' ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' : 'grid gap-4'}>
@@ -705,7 +705,7 @@ export default function ExplorePage() {
 
         {!loading && hasMore && (
           <div className="mt-9 flex flex-col items-center gap-2">
-            <button type="button" onClick={loadMore} disabled={loadingMore} className="inline-flex h-12 items-center gap-2 rounded-xl border border-[#B8DCCB] bg-white px-7 text-[12px] font-extrabold text-[#0B816F] transition hover:bg-[#EAF7ED] disabled:opacity-60">
+            <button type="button" onClick={loadMore} disabled={loadingMore} className="inline-flex h-12 items-center gap-2 rounded-xl border border-[#B6DADE] bg-white px-7 text-[12px] font-extrabold text-[#0891B2] transition hover:bg-[#EAF7ED] disabled:opacity-60">
               <Icon name={loadingMore ? 'hourglass_top' : 'expand_more'} className="text-[20px]" />
               {loadingMore ? 'Đang tải thêm...' : 'Xem thêm địa điểm'}
             </button>

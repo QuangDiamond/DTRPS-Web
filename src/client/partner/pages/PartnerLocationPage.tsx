@@ -178,7 +178,7 @@ export default function PartnerLocationPage() {
   const backLink = (
     <Link
       to={CLIENT_ROUTES.PARTNER_LOCATIONS}
-      className="mb-3 inline-flex items-center gap-1 text-[13px] font-bold text-[#007A73] hover:underline"
+      className="mb-3 inline-flex items-center gap-1 text-[13px] font-bold text-[#0E7490] hover:underline"
     >
       <Icon name="arrow_back" className="text-[18px]" /> Địa điểm của tôi
     </Link>

@@ -75,7 +75,7 @@ function SectionCard({
   return (
     <section className="rounded-[20px] bg-white p-4">
       <div className="mb-3 flex items-center">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EBEDFF] text-[#087A78]">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EBEDFF] text-[#0891B2]">
           <Icon name={icon} className="text-[19px]" />
         </span>
         <div className="ml-2.5 min-w-0 flex-1">
@@ -109,7 +109,7 @@ function StepperButton({
       disabled={disabled}
       aria-label={label}
       className={`flex h-8 w-8 items-center justify-center rounded-full disabled:opacity-40 ${
-        filled ? 'bg-[#075C66] text-white' : 'bg-[#EBEDFF] text-[#075C66]'
+        filled ? 'bg-[#0E7490] text-white' : 'bg-[#EBEDFF] text-[#0E7490]'
       }`}
     >
       <Icon name={icon} className="text-[18px]" />
@@ -296,7 +296,7 @@ export default function PlanTripPage() {
     <div className="mx-auto max-w-4xl pb-36 md:pb-4">
       <PageBar title="Lập kế hoạch chuyến đi" backTo={CLIENT_ROUTES.TRIPS} />
 
-      <span className="inline-flex items-center gap-1 rounded-full bg-[#C3F8F0] px-2.5 py-1 text-[10px] font-bold text-[#075C66]">
+      <span className="inline-flex items-center gap-1 rounded-full bg-[#C0F5FB] px-2.5 py-1 text-[10px] font-bold text-[#0E7490]">
         <Icon name="auto_awesome" className="text-[12px]" />
         Smart Travel
       </span>
@@ -317,13 +317,13 @@ export default function PlanTripPage() {
           <div className="relative">
             <Icon
               name="near_me"
-              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[18px] text-[#087A78]"
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[18px] text-[#0891B2]"
             />
             <select
               value={destinationId}
               onChange={(event) => setDestinationId(event.target.value)}
               aria-label="Điểm đến"
-              className="h-12 w-full cursor-pointer appearance-none rounded-2xl border border-[#E3E7F0] bg-[#F8F8FF] pl-10 pr-10 text-[14px] font-bold text-[#13364A] focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="h-12 w-full cursor-pointer appearance-none rounded-2xl border border-[#E3E7F0] bg-[#F8F8FF] pl-10 pr-10 text-[14px] font-bold text-[#13364A] focus:outline-none focus:ring-2 focus:ring-client-primary/30"
             >
               <option value="" disabled>
                 {provincesFailed
@@ -353,7 +353,7 @@ export default function PlanTripPage() {
             <p className="text-[15px] font-extrabold text-[#13364A]">
               {formatDate(startDate)} - {formatDate(endDate)}
             </p>
-            <p className="text-[11px] font-semibold text-[#087A78]">
+            <p className="text-[11px] font-semibold text-[#0891B2]">
               {days} ngày {days - 1} đêm
             </p>
           </div>
@@ -371,7 +371,7 @@ export default function PlanTripPage() {
                 const [year, month, day] = event.target.value.split('-').map(Number);
                 setStartDate(new Date(year, month - 1, day));
               }}
-              className="rounded-xl bg-[#F8F8FF] px-3 py-1.5 text-[13px] font-bold text-[#13364A] focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="rounded-xl bg-[#F8F8FF] px-3 py-1.5 text-[13px] font-bold text-[#13364A] focus:outline-none focus:ring-2 focus:ring-client-primary/30"
             />
           </div>
           <div className="mt-2.5 flex items-center justify-between">
@@ -409,13 +409,13 @@ export default function PlanTripPage() {
                   aria-pressed={active}
                   className={`flex items-center gap-2 rounded-2xl px-3 py-2.5 text-left ${
                     active
-                      ? 'border-[1.5px] border-[#087A78] bg-[#E2FAF5]'
+                      ? 'border-[1.5px] border-[#0891B2] bg-[#E1F9FB]'
                       : 'border border-[#E3E7F0] bg-[#F8F8FF]'
                   }`}
                 >
                   <Icon
                     name={item.icon}
-                    className={`text-[19px] ${active ? 'text-[#075C66]' : 'text-[#72818C]'}`}
+                    className={`text-[19px] ${active ? 'text-[#0E7490]' : 'text-[#72818C]'}`}
                   />
                   <span>
                     <span className="block text-[12px] font-bold text-[#13364A]">
@@ -461,8 +461,8 @@ export default function PlanTripPage() {
           <label htmlFor="trip-budget" className="mb-1.5 block text-[12px] font-semibold text-[#506581]">
             Nhập ngân sách (VND)
           </label>
-          <div className="flex items-center gap-2 rounded-2xl border border-[#C9E4DD] bg-[#F7FCFA] px-3 py-2 focus-within:ring-2 focus-within:ring-[#087A78]/20">
-            <Icon name="payments" className="text-[21px] text-[#087A78]" />
+          <div className="flex items-center gap-2 rounded-2xl border border-[#C8E2E5] bg-[#F7FCFC] px-3 py-2 focus-within:ring-2 focus-within:ring-[#0891B2]/20">
+            <Icon name="payments" className="text-[21px] text-[#0891B2]" />
             <input
               id="trip-budget"
               type="text"
@@ -474,9 +474,9 @@ export default function PlanTripPage() {
               aria-describedby="trip-budget-description"
               className="h-9 min-w-0 flex-1 bg-transparent text-[17px] font-extrabold text-[#13364A] outline-none"
             />
-            <span className="text-[12px] font-bold text-[#087A78]">VND</span>
+            <span className="text-[12px] font-bold text-[#0891B2]">VND</span>
           </div>
-          <p id="trip-budget-description" className="mt-1.5 text-[12px] font-bold text-[#087A78]">
+          <p id="trip-budget-description" className="mt-1.5 text-[12px] font-bold text-[#0891B2]">
             {formatMoney(budget)}
           </p>
 
@@ -494,7 +494,7 @@ export default function PlanTripPage() {
             step={BUDGET_STEP}
             value={budget}
             onChange={(event) => setBudgetValue(event.target.value)}
-            className="mt-3 w-full cursor-pointer accent-[#087A78]"
+            className="mt-3 w-full cursor-pointer accent-[#0891B2]"
             aria-label="Kéo chọn tổng ngân sách chuyến đi"
           />
           <div className="flex justify-between text-[10px] font-medium text-[#72818C]">
@@ -512,8 +512,8 @@ export default function PlanTripPage() {
                   onClick={() => setBudgetValue(String(amount))}
                   className={`rounded-full border px-3 py-1.5 text-[11px] font-bold transition-colors ${
                     budget === amount
-                      ? 'border-[#087A78] bg-[#E2FAF5] text-[#075C66]'
-                      : 'border-[#E3E7F0] bg-white text-[#506581] hover:border-[#087A78]'
+                      ? 'border-[#0891B2] bg-[#E1F9FB] text-[#0E7490]'
+                      : 'border-[#E3E7F0] bg-white text-[#506581] hover:border-[#0891B2]'
                   }`}
                 >
                   {moneyFormatter.format(amount / 1_000_000)} triệu
@@ -536,7 +536,7 @@ export default function PlanTripPage() {
             right={
               <Link
                 to={CLIENT_ROUTES.PREFERENCES}
-                className="ml-2 shrink-0 rounded-full bg-[#E2FAF5] px-2.5 py-1 text-[11px] font-bold text-[#075C66]"
+                className="ml-2 shrink-0 rounded-full bg-[#E1F9FB] px-2.5 py-1 text-[11px] font-bold text-[#0E7490]"
               >
                 Chỉnh sửa
               </Link>
@@ -547,7 +547,7 @@ export default function PlanTripPage() {
                 {selectedExperienceOptions.map((option) => (
                   <span
                     key={option.code}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[#C9E7DF] bg-[#F0F9F6] px-2.5 py-1.5 text-[11px] font-semibold text-[#075C66]"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#C8E5E9] bg-[#F0F8F9] px-2.5 py-1.5 text-[11px] font-semibold text-[#0E7490]"
                   >
                     {option.emoji} {option.label}
                   </span>
@@ -561,7 +561,7 @@ export default function PlanTripPage() {
                 </p>
                 <Link
                   to={CLIENT_ROUTES.PREFERENCES}
-                  className="shrink-0 rounded-full bg-[#075C66] px-4 py-2 text-[12px] font-bold text-white"
+                  className="shrink-0 rounded-full bg-[#0E7490] px-4 py-2 text-[12px] font-bold text-white"
                 >
                   Thiết lập ngay
                 </Link>
@@ -596,13 +596,13 @@ export default function PlanTripPage() {
                     onClick={() => setPace(item.id)}
                     className={`flex items-start rounded-2xl p-3 text-left ${
                       selected
-                        ? 'border-[1.5px] border-[#087A78] bg-[#E2FAF5]'
+                        ? 'border-[1.5px] border-[#0891B2] bg-[#E1F9FB]'
                         : 'border border-[#E3E7F0] bg-[#F8F8FF]'
                     }`}
                   >
                   <span
                     className={`mr-2.5 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-                      selected ? 'bg-[#087A78] text-white' : 'border-[1.5px] border-[#C5CDD3]'
+                      selected ? 'bg-[#0891B2] text-white' : 'border-[1.5px] border-[#C5CDD3]'
                     }`}
                   >
                     {selected && <Icon name="check" className="text-[14px]" />}
@@ -612,7 +612,7 @@ export default function PlanTripPage() {
                       <span className="text-[13px] font-bold text-[#13364A]">
                         {item.label} ({item.english})
                       </span>
-                      <span className="text-[10px] font-semibold text-[#087A78]">
+                      <span className="text-[10px] font-semibold text-[#0891B2]">
                         {item.perDay}
                       </span>
                     </span>
@@ -642,7 +642,7 @@ export default function PlanTripPage() {
           type="button"
           onClick={() => void submit()}
           disabled={submitting || categoriesLoading}
-          className="flex h-12 w-full items-center justify-center gap-1.5 rounded-full bg-[#075C66] text-[14px] font-bold text-white hover:bg-primary disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex h-12 w-full items-center justify-center gap-1.5 rounded-full bg-[#0E7490] text-[14px] font-bold text-white hover:bg-client-primary disabled:cursor-not-allowed disabled:opacity-60"
         >
           {submitting ? 'Đang lưu kế hoạch...' : 'Tạo chuyến đi của tôi'}
           <Icon

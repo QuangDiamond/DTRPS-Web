@@ -38,7 +38,7 @@ interface Todo {
 const TODO_STYLE: Record<TodoTone, string> = {
   danger: 'bg-[#FCE4E3] text-[#9A2D2D]',
   warning: 'bg-[#FFF4DD] text-[#7A5410]',
-  info: 'bg-[#E5F5F0] text-[#356D64]',
+  info: 'bg-[#E4F4F6] text-[#35626D]',
 };
 const TODO_ORDER: Record<TodoTone, number> = { danger: 0, info: 1, warning: 2 };
 const MAX_TODOS = 6;
@@ -183,7 +183,7 @@ function PlacesPanel({ places }: { places: Place[] }) {
         </div>
         <Link
           to={CLIENT_ROUTES.PARTNER_LOCATION_NEW}
-          className="flex items-center gap-1 rounded-xl bg-[#E3F3EF] px-3 py-2 text-[12px] font-bold text-primary hover:bg-client-pale"
+          className="flex items-center gap-1 rounded-xl bg-[#E2F2F4] px-3 py-2 text-[12px] font-bold text-client-primary hover:bg-client-pale"
         >
           <Icon name="add" className="text-[16px]" /> Thêm địa điểm
         </Link>
@@ -200,13 +200,13 @@ function PlacesPanel({ places }: { places: Place[] }) {
 
       {listings.length === 0 ? (
         <div className="mt-4 flex flex-col items-center gap-2 rounded-2xl border border-dashed border-client-line p-6 text-center">
-          <Icon name="add_location_alt" className="text-[36px] text-primary" />
+          <Icon name="add_location_alt" className="text-[36px] text-client-primary" />
           <p className="text-[13px] text-client-muted">
             Bạn chưa có địa điểm nào. Đăng ký để du khách tìm thấy bạn.
           </p>
           <Link
             to={CLIENT_ROUTES.PARTNER_LOCATION_NEW}
-            className="rounded-2xl bg-primary px-5 py-2.5 text-[13px] font-extrabold text-white hover:bg-primary-container"
+            className="rounded-2xl bg-client-primary px-5 py-2.5 text-[13px] font-extrabold text-white hover:bg-client-primary-strong"
           >
             Đăng ký địa điểm
           </Link>
@@ -220,7 +220,7 @@ function PlacesPanel({ places }: { places: Place[] }) {
           </div>
           <Link
             to={CLIENT_ROUTES.PARTNER_LOCATIONS}
-            className="mt-3 flex items-center justify-end gap-1 text-[13px] font-bold text-[#007A73] hover:underline"
+            className="mt-3 flex items-center justify-end gap-1 text-[13px] font-bold text-[#0E7490] hover:underline"
           >
             {listings.length > MAX_CARDS
               ? `Xem tất cả ${listings.length} địa điểm`
@@ -255,7 +255,7 @@ function ProfileCard({ profile }: { profile: BusinessProfile }) {
       </div>
       <Link
         to={CLIENT_ROUTES.PARTNER_PROFILE}
-        className="mt-3 flex items-center justify-end gap-1 text-[13px] font-bold text-[#007A73] hover:underline"
+        className="mt-3 flex items-center justify-end gap-1 text-[13px] font-bold text-[#0E7490] hover:underline"
       >
         Xem / sửa hồ sơ <Icon name="chevron_right" className="text-[18px]" />
       </Link>
@@ -331,7 +331,7 @@ function AdsCard({ ads }: { ads: AdPartnerState | null | undefined }) {
       className="mt-4 flex items-center justify-between gap-3 rounded-[20px] border border-client-line bg-white p-4 transition-shadow hover:shadow-md"
     >
       <span className="flex min-w-0 items-center gap-3">
-        <Icon name="campaign" className="text-[22px] text-primary" />
+        <Icon name="campaign" className="text-[22px] text-client-primary" />
         <span className="min-w-0">
           <span className="block truncate text-[14px] font-bold text-client-ink">{title}</span>
           <span className="block text-[12px] text-client-muted">{detail}</span>
@@ -339,7 +339,7 @@ function AdsCard({ ads }: { ads: AdPartnerState | null | undefined }) {
       </span>
       <span className="flex shrink-0 items-center gap-2">
         {badge && <StatusBadge tone={badge.tone}>{badge.label}</StatusBadge>}
-        <span className="hidden items-center text-[13px] font-bold text-[#007A73] sm:flex">
+        <span className="hidden items-center text-[13px] font-bold text-[#0E7490] sm:flex">
           {action} <Icon name="chevron_right" className="text-[18px]" />
         </span>
       </span>
@@ -439,7 +439,7 @@ export default function PartnerDashboard({ profile }: { profile: BusinessProfile
         <>
           <p className="mb-3 text-[15px] font-bold text-client-ink">Việc cần làm</p>
           {todos.length === 0 ? (
-            <div className="mb-6 flex items-center gap-2 rounded-2xl bg-[#E5F5F0] p-4 text-[13px] text-[#356D64]">
+            <div className="mb-6 flex items-center gap-2 rounded-2xl bg-[#E4F4F6] p-4 text-[13px] text-[#35626D]">
               <Icon name="task_alt" className="text-[20px]" />
               Mọi thứ đã sẵn sàng — các địa điểm của bạn đang hiển thị đầy đủ với du khách.
             </div>
@@ -462,7 +462,7 @@ export default function PartnerDashboard({ profile }: { profile: BusinessProfile
                 <button
                   type="button"
                   onClick={() => setShowAllTodos((value) => !value)}
-                  className="self-start text-[12px] font-bold text-[#007A73] hover:underline"
+                  className="self-start text-[12px] font-bold text-[#0E7490] hover:underline"
                 >
                   {showAllTodos ? 'Thu gọn' : `Xem thêm ${todos.length - MAX_TODOS} việc`}
                 </button>

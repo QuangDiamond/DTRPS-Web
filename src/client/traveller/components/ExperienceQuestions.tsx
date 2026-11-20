@@ -19,16 +19,16 @@ export default function ExperienceQuestions({
         return (
           <label
             key={option.code}
-            className={`flex min-h-[64px] cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-colors focus-within:ring-2 focus-within:ring-[#087A78]/30 ${
+            className={`flex min-h-[64px] cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-colors focus-within:ring-2 focus-within:ring-[#0891B2]/30 ${
               isSelected
-                ? 'border-[#087A78] bg-[#EAF8F4]'
-                : 'border-[#E3E7F0] bg-white hover:border-[#9DDED1] hover:bg-[#F8FCFA]'
+                ? 'border-[#0891B2] bg-[#E9F7F9]'
+                : 'border-[#E3E7F0] bg-white hover:border-[#9ADAE1] hover:bg-[#F8FCFA]'
             }`}
           >
             <span
               aria-hidden="true"
               className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[19px] ${
-                isSelected ? 'bg-[#D5F2E9]' : 'bg-[#F1F4F6]'
+                isSelected ? 'bg-[#D4F0F3]' : 'bg-[#F1F4F6]'
               }`}
             >
               {option.emoji}
@@ -40,7 +40,7 @@ export default function ExperienceQuestions({
               type="checkbox"
               checked={isSelected}
               onChange={() => onToggle(option.code)}
-              className="h-[18px] w-[18px] shrink-0 cursor-pointer accent-[#087A78]"
+              className="h-[18px] w-[18px] shrink-0 cursor-pointer accent-[#0891B2]"
             />
           </label>
         );

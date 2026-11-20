@@ -47,7 +47,7 @@ function readSettings(): AppSettings {
 
 function SectionTitle({ children }: { children: string }) {
   return (
-    <h2 className="mt-6 mb-3 text-[12px] font-extrabold tracking-[0.04em] text-[#087B74]">
+    <h2 className="mt-6 mb-3 text-[12px] font-extrabold tracking-[0.04em] text-[#0891B2]">
       {children}
     </h2>
   );
@@ -55,7 +55,7 @@ function SectionTitle({ children }: { children: string }) {
 
 function SettingIcon({ name }: { name: string }) {
   return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#D7F8F4] text-[#087B74]">
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#D5F6FA] text-[#0891B2]">
       <Icon name={name} className="text-[21px]" />
     </span>
   );
@@ -75,7 +75,7 @@ function Texts({ title, subtitle, badge }: { title: string; subtitle: string; ba
       <span className="flex items-center gap-2">
         <span className="truncate text-[13px] font-bold text-[#173C50]">{title}</span>
         {badge && (
-          <span className="rounded-full bg-[#C6F3EB] px-2 py-0.5 text-[9px] font-bold text-[#087B74]">
+          <span className="rounded-full bg-[#C4F0F5] px-2 py-0.5 text-[9px] font-bold text-[#0891B2]">
             {badge}
           </span>
         )}
@@ -108,7 +108,7 @@ function SelectSetting({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         aria-label={title}
-        className="ml-1 max-w-[150px] cursor-pointer rounded-lg bg-transparent text-right text-[11px] font-semibold text-[#087B74] focus:outline-none"
+        className="ml-1 max-w-[150px] cursor-pointer rounded-lg bg-transparent text-right text-[11px] font-semibold text-[#0891B2] focus:outline-none"
       >
         {options.map((option) => (
           <option key={option}>{option}</option>
@@ -146,8 +146,8 @@ function SwitchSetting({
       />
       <span
         aria-hidden="true"
-        className={`relative ml-1 h-6 w-11 shrink-0 rounded-full transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-primary/40 ${
-          checked ? 'bg-[#0D9488]' : 'bg-[#D5D8E0]'
+        className={`relative ml-1 h-6 w-11 shrink-0 rounded-full transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-client-primary/40 ${
+          checked ? 'bg-[#0891B2]' : 'bg-[#D5D8E0]'
         }`}
       >
         <span
@@ -189,12 +189,12 @@ export default function SettingsPage() {
     <div className="mx-auto max-w-2xl">
       <PageBar title="Cài đặt ứng dụng" subtitle="SmartTravel" backTo={CLIENT_ROUTES.PROFILE} />
 
-      <div className="flex items-center rounded-[20px] bg-linear-to-br from-[#DDFBF7] to-[#EAEDFF] p-3.5">
+      <div className="flex items-center rounded-[20px] bg-[#DCF9FD] p-3.5">
         <Avatar
           url={user.avatarUrl}
           size={48}
           iconSize={33}
-          className="mr-3 bg-[#99EFE7] text-[#007B78]"
+          className="mr-3 bg-[#95EAF3] text-[#0891B2]"
         />
         <div className="min-w-0 flex-1">
           <p className="flex items-center gap-2">
@@ -205,7 +205,7 @@ export default function SettingsPage() {
         <Link
           to={CLIENT_ROUTES.PROFILE_EDIT}
           aria-label="Chỉnh sửa hồ sơ"
-          className="ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-[#DFE8FF] text-[#087B74]"
+          className="ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-[#DFE8FF] text-[#0891B2]"
         >
           <Icon name="edit" className="text-[18px]" />
         </Link>
@@ -300,7 +300,7 @@ export default function SettingsPage() {
         <Row>
           <SettingIcon name="info" />
           <Texts title="Phiên bản ứng dụng" subtitle="Smart Travel AI Engine" />
-          <span className="text-[11px] font-semibold text-[#087B74]">Web</span>
+          <span className="text-[11px] font-semibold text-[#0891B2]">Web</span>
         </Row>
       </div>
 

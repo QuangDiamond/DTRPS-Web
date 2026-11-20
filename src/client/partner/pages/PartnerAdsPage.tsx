@@ -52,21 +52,21 @@ function PackageCard({
   return (
     <div className="flex flex-col rounded-[20px] border border-client-line bg-white p-5">
       <p className="text-[16px] font-extrabold text-client-ink">{item.name}</p>
-      <p className="mt-2 text-[26px] font-extrabold text-primary">{money(item.price)}</p>
+      <p className="mt-2 text-[26px] font-extrabold text-client-primary">{money(item.price)}</p>
       {item.description && (
         <p className="mt-1 text-[12px] leading-[19px] text-client-muted">{item.description}</p>
       )}
       <ul className="mt-4 flex-1 space-y-2 text-[13px] text-client-ink">
         <li className="flex items-center gap-2">
-          <Icon name="location_on" className="text-[18px] text-primary" />
+          <Icon name="location_on" className="text-[18px] text-client-primary" />
           Quảng cáo {item.maxPlaces} địa điểm cùng lúc
         </li>
         <li className="flex items-center gap-2">
-          <Icon name="event" className="text-[18px] text-primary" />
+          <Icon name="event" className="text-[18px] text-client-primary" />
           Trong {item.durationDays} ngày
         </li>
         <li className="flex items-center gap-2">
-          <Icon name="home" className="text-[18px] text-primary" />
+          <Icon name="home" className="text-[18px] text-client-primary" />
           Hiện ở trang chủ du khách
         </li>
       </ul>
@@ -148,7 +148,7 @@ function SlotPicker({ slots, onSaved }: { slots: AdSlots; onSaved: (next: AdSlot
               <label
                 key={place.listingId}
                 className={`flex items-center gap-3 rounded-2xl border p-3 transition-colors ${
-                  checked ? 'border-primary bg-[#E7F6F4]' : 'border-client-line bg-white'
+                  checked ? 'border-client-primary bg-[#E6F5F7]' : 'border-client-line bg-white'
                 } ${locked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
               >
                 <input
@@ -156,7 +156,7 @@ function SlotPicker({ slots, onSaved }: { slots: AdSlots; onSaved: (next: AdSlot
                   checked={checked}
                   disabled={locked}
                   onChange={() => toggle(place.listingId)}
-                  className="h-5 w-5 shrink-0 accent-[#075C66]"
+                  className="h-5 w-5 shrink-0 accent-[#0E7490]"
                 />
                 {place.coverUrl ? (
                   <img
@@ -199,7 +199,7 @@ function SlotPicker({ slots, onSaved }: { slots: AdSlots; onSaved: (next: AdSlot
         </div>
       )}
       {saved && !changed && (
-        <p className="mt-3 text-[12px] font-semibold text-primary">Đã lưu địa điểm quảng cáo.</p>
+        <p className="mt-3 text-[12px] font-semibold text-client-primary">Đã lưu địa điểm quảng cáo.</p>
       )}
       <PrimaryButton
         className="mt-4 md:w-56"

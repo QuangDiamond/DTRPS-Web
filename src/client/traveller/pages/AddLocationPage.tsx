@@ -57,7 +57,7 @@ function NearbyPlaceCard({
           <Icon name="schedule" className="ml-2 text-[14px]" />
           {place.duration}
         </p>
-        <p className="mt-1 flex items-center gap-1 text-[11px] font-bold text-[#087A78]">
+        <p className="mt-1 flex items-center gap-1 text-[11px] font-bold text-[#0891B2]">
           <Icon name="confirmation_number" className="text-[15px]" />
           {place.price}
         </p>
@@ -70,7 +70,7 @@ function NearbyPlaceCard({
             onClick={onToggle}
             aria-pressed={added}
             className={`flex h-10 shrink-0 items-center gap-1 rounded-full px-4 text-[12px] font-bold ${
-              added ? 'bg-[#C3F8F0] text-[#075C66]' : 'bg-[#075C66] text-white hover:bg-primary'
+              added ? 'bg-[#C0F5FB] text-[#0E7490]' : 'bg-[#0E7490] text-white hover:bg-client-primary'
             }`}
           >
             <Icon name={added ? 'check' : 'add'} className="text-[17px]" />
@@ -133,13 +133,13 @@ export default function AddLocationPage() {
         onBack={() => (addedIds.length > 0 ? setConfirmLeave(true) : leave())}
       />
 
-      <div className="rounded-[20px] bg-[#E7F8F5] p-3.5">
+      <div className="rounded-[20px] bg-[#E6F7F9] p-3.5">
         <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1 text-[10px] font-extrabold tracking-[0.04em] text-[#087A78]">
+          <span className="flex items-center gap-1 text-[10px] font-extrabold tracking-[0.04em] text-[#0891B2]">
             <Icon name="edit_calendar" className="text-[15px]" />
             LỊCH TRÌNH ĐANG CHỈNH SỬA
           </span>
-          <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-[#075C66]">
+          <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-[#0E7490]">
             {trip.days}N{Math.max(trip.days - 1, 0)}Đ
           </span>
         </div>
@@ -151,7 +151,7 @@ export default function AddLocationPage() {
           aria-expanded={showPicker}
           className="mt-2.5 flex w-full items-center rounded-2xl bg-white px-3 py-2.5 text-left"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#C3F8F0] text-[#087A78]">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#C0F5FB] text-[#0891B2]">
             <Icon name="schedule" className="text-[19px]" />
           </span>
           <span className="ml-2.5 min-w-0 flex-1">
@@ -160,7 +160,7 @@ export default function AddLocationPage() {
               Ngày {position.day}: {currentSlot.label} {currentSlot.time}
             </span>
           </span>
-          <Icon name={showPicker ? 'expand_less' : 'tune'} className="text-[20px] text-[#087A78]" />
+          <Icon name={showPicker ? 'expand_less' : 'tune'} className="text-[20px] text-[#0891B2]" />
         </button>
 
         {showPicker && (
@@ -174,7 +174,7 @@ export default function AddLocationPage() {
                   onClick={() => setPosition((previous) => ({ ...previous, day }))}
                   aria-pressed={day === position.day}
                   className={`rounded-full px-3.5 py-1.5 text-[12px] font-bold ${
-                    day === position.day ? 'bg-[#075C66] text-white' : 'bg-[#EBEDFF] text-[#13364A]'
+                    day === position.day ? 'bg-[#0E7490] text-white' : 'bg-[#EBEDFF] text-[#13364A]'
                   }`}
                 >
                   Ngày {day}
@@ -195,12 +195,12 @@ export default function AddLocationPage() {
                     }}
                     aria-pressed={selected}
                     className={`flex flex-1 flex-col items-center rounded-xl py-2 ${
-                      selected ? 'bg-[#075C66] text-white' : 'bg-[#EBEDFF] text-[#13364A]'
+                      selected ? 'bg-[#0E7490] text-white' : 'bg-[#EBEDFF] text-[#13364A]'
                     }`}
                   >
                     <span className="text-[12px] font-bold">{slot.label}</span>
                     <span
-                      className={`text-[10px] ${selected ? 'text-[#D7FBF3]' : 'text-[#72818C]'}`}
+                      className={`text-[10px] ${selected ? 'text-[#D5F9FD]' : 'text-[#72818C]'}`}
                     >
                       {slot.time.split(' ')[0]}
                     </span>
@@ -212,7 +212,7 @@ export default function AddLocationPage() {
         )}
       </div>
 
-      <div className="mt-4 flex h-11 items-center rounded-full bg-white px-3.5 focus-within:ring-2 focus-within:ring-primary/30">
+      <div className="mt-4 flex h-11 items-center rounded-full bg-white px-3.5 focus-within:ring-2 focus-within:ring-client-primary/30">
         <Icon name="search" className="text-[20px] text-[#72818C]" />
         <input
           value={query}
@@ -236,7 +236,7 @@ export default function AddLocationPage() {
             onClick={() => setCategory(item.id)}
             aria-pressed={item.id === category}
             className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[12px] font-bold ${
-              item.id === category ? 'bg-[#075C66] text-white' : 'bg-white text-[#13364A]'
+              item.id === category ? 'bg-[#0E7490] text-white' : 'bg-white text-[#13364A]'
             }`}
           >
             <Icon name={item.icon} className="text-[16px]" />
@@ -250,7 +250,7 @@ export default function AddLocationPage() {
           <h2 className="text-[16px] font-extrabold text-[#13364A]">Gợi ý địa điểm lân cận</h2>
           <p className="text-[11px] text-[#72818C]">Tối ưu thời gian di chuyển từ điểm trước</p>
         </div>
-        <span className="text-[12px] font-bold text-[#087A78]">
+        <span className="text-[12px] font-bold text-[#0891B2]">
           {visiblePlaces.length} địa điểm
         </span>
       </div>
@@ -269,7 +269,7 @@ export default function AddLocationPage() {
         </div>
       ) : (
         <div className="flex flex-col items-center rounded-[22px] bg-white px-6 py-10">
-          <Icon name="travel_explore" className="text-[36px] text-[#087A78]" />
+          <Icon name="travel_explore" className="text-[36px] text-[#0891B2]" />
           <p className="mt-2 text-[13px] font-bold text-[#13364A]">
             Không tìm thấy địa điểm phù hợp
           </p>
@@ -277,7 +277,7 @@ export default function AddLocationPage() {
       )}
 
       <p className="mt-4 flex items-start gap-2 rounded-2xl bg-[#EBEDFF] px-3.5 py-3 text-[11px] text-[#445577]">
-        <Icon name="info" className="text-[17px] text-[#087A78]" />
+        <Icon name="info" className="text-[17px] text-[#0891B2]" />
         <span>
           Địa điểm đã chọn sẽ tự động xếp vào khung giờ phù hợp trên lịch trình{' '}
           <b>Ngày {position.day}</b>.
@@ -297,7 +297,7 @@ export default function AddLocationPage() {
           <button
             type="button"
             onClick={done}
-            className="flex h-11 items-center gap-1.5 rounded-full bg-[#075C66] px-5 text-[13px] font-bold text-white hover:bg-primary"
+            className="flex h-11 items-center gap-1.5 rounded-full bg-[#0E7490] px-5 text-[13px] font-bold text-white hover:bg-client-primary"
           >
             Lưu vào lịch trình <Icon name="check" className="text-[17px]" />
           </button>

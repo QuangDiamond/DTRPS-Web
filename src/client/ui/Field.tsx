@@ -33,11 +33,11 @@ export default function Field({
         {label}
       </label>
       <div
-        className={`flex h-[51px] items-center rounded-xl border bg-client-field px-3 focus-within:ring-2 focus-within:ring-primary/40 ${
+        className={`flex h-[51px] items-center rounded-xl border bg-client-field px-3 focus-within:ring-2 focus-within:ring-client-primary/40 ${
           error ? 'border-client-danger' : 'border-[#EBEDF5]'
         }`}
       >
-        <Icon name={leadingIcon} className="text-[18px] text-[#168C85]" />
+        <Icon name={leadingIcon} className="text-[18px] text-[#0891B2]" />
         <input
           id={id}
           type={isPassword && visible ? 'text' : type}
@@ -52,7 +52,7 @@ export default function Field({
             type="button"
             onClick={() => setVisible((current) => !current)}
             aria-label={visible ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-            className="text-[#83959E] hover:text-primary"
+            className="text-[#83959E] hover:text-client-primary"
           >
             <Icon name={visible ? 'visibility' : 'visibility_off'} className="text-[20px]" />
           </button>

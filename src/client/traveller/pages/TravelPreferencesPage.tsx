@@ -33,7 +33,7 @@ type ListKey = 'specialNeeds';
 
 function CheckBadge() {
   return (
-    <span className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-primary text-white">
+    <span className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-client-primary text-white">
       <Icon name="check" className="text-[15px]" />
     </span>
   );
@@ -63,12 +63,12 @@ function IconList({
             role={variant === 'single' ? 'radio' : 'checkbox'}
             aria-checked={selected}
             className={`flex items-center rounded-2xl px-4 text-left ${option.note ? 'py-4' : 'py-3.5'} ${
-              selected ? 'border-2 border-primary bg-[#F0FAF8]' : 'border border-[#E6EAF0] bg-white'
+              selected ? 'border-2 border-client-primary bg-[#EFF9FB]' : 'border border-[#E6EAF0] bg-white'
             }`}
           >
             <span
-              className={`flex h-10 w-10 items-center justify-center rounded-full text-primary ${
-                selected ? 'bg-[#D4F1EC]' : 'bg-[#F4F6F8]'
+              className={`flex h-10 w-10 items-center justify-center rounded-full text-client-primary ${
+                selected ? 'bg-[#D3EFF2]' : 'bg-[#F4F6F8]'
               }`}
             >
               <Icon name={option.icon} className="text-[22px]" />
@@ -86,7 +86,7 @@ function IconList({
             {variant === 'multi' ? (
               <span
                 className={`flex h-5 w-5 items-center justify-center rounded-md ${
-                  selected ? 'bg-primary text-white' : 'border-[1.5px] border-[#C5CDD3]'
+                  selected ? 'bg-client-primary text-white' : 'border-[1.5px] border-[#C5CDD3]'
                 }`}
               >
                 {selected && <Icon name="check" className="text-[15px]" />}
@@ -238,7 +238,7 @@ export default function TravelPreferencesPage() {
       <div className="flex items-center gap-3">
         <div className="h-[7px] flex-1 overflow-hidden rounded-full bg-[#E6EAF0]">
           <div
-            className="h-full rounded-full bg-primary transition-all"
+            className="h-full rounded-full bg-client-primary transition-all"
             style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
           />
         </div>
@@ -261,7 +261,7 @@ export default function TravelPreferencesPage() {
         {done && (
           <p
             role="status"
-            className="mt-4 flex items-center gap-2 rounded-2xl bg-[#E5F5F0] p-3 text-[12px] text-[#356D64]"
+            className="mt-4 flex items-center gap-2 rounded-2xl bg-[#E4F4F6] p-3 text-[12px] text-[#35626D]"
           >
             <Icon name="check_circle" filled className="text-[18px]" />
             Đã lưu sở thích. SmartTravel sẽ gợi ý điểm đến và lịch trình phù hợp hơn với bạn.
@@ -281,7 +281,7 @@ export default function TravelPreferencesPage() {
             type="button"
             onClick={handleContinue}
             disabled={saving || done}
-            className={`flex h-12 flex-[1.6] items-center justify-center rounded-2xl bg-primary text-[14px] font-bold text-white ${
+            className={`flex h-12 flex-[1.6] items-center justify-center rounded-2xl bg-client-primary text-[14px] font-bold text-white ${
               canContinue ? '' : 'opacity-50'
             }`}
           >

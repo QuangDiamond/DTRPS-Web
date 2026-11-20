@@ -152,7 +152,7 @@ function UpcomingTrip({ loggedIn }: { loggedIn: boolean }) {
         </p>
         <Link
           to={loggedIn ? CLIENT_ROUTES.TRIP_PLAN : CLIENT_ROUTES.LOGIN}
-          className="mt-auto flex items-center gap-1.5 self-start rounded-full bg-primary px-5 py-2.5 text-[12px] font-bold text-white hover:bg-primary-container"
+          className="mt-auto flex items-center gap-1.5 self-start rounded-full bg-client-primary px-5 py-2.5 text-[12px] font-bold text-white hover:bg-client-primary-strong"
         >
           {loggedIn ? 'Tạo chuyến đi' : 'Đăng nhập'}
           <Icon name="arrow_forward" className="text-[17px]" />
@@ -178,10 +178,10 @@ function UpcomingTrip({ loggedIn }: { loggedIn: boolean }) {
   const dayNumber = Math.min(totalDays, dayDiff(plan.startDate, today) + 1);
 
   return (
-    <div className={`${shell} bg-linear-to-br from-white to-[#EEF8F6]`}>
+    <div className={`${shell} bg-[#EDF7F9]`}>
       <Icon
         name="flight_takeoff"
-        className="pointer-events-none absolute -right-4 -bottom-6 text-[150px] text-[#075C66]/6"
+        className="pointer-events-none absolute -right-4 -bottom-6 text-[150px] text-[#0E7490]/6"
       />
       <p className="flex items-center gap-1.5 text-[11px] font-extrabold tracking-[0.16em] text-client-teal uppercase">
         <Icon name="event_upcoming" className="text-[16px]" />
@@ -222,7 +222,7 @@ function UpcomingTrip({ loggedIn }: { loggedIn: boolean }) {
           type="button"
           disabled={opening}
           onClick={() => void open(plan)}
-          className="relative flex items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 text-[12px] font-bold text-white hover:bg-primary-container disabled:cursor-wait disabled:opacity-70"
+          className="relative flex items-center gap-1.5 rounded-full bg-client-primary px-5 py-2.5 text-[12px] font-bold text-white hover:bg-client-primary-strong disabled:cursor-wait disabled:opacity-70"
         >
           {opening ? 'Đang mở…' : 'Xem chuyến đi'}
           <Icon name="arrow_forward" className="text-[17px]" />
@@ -272,10 +272,10 @@ export default function HomePage() {
   return (
     <div className="pb-6">
       {/* HERO: lời chào, tìm kiếm, nút lập kế hoạch và ảnh thật của các địa điểm mới */}
-      <section className="relative rounded-[32px] bg-linear-to-br from-[#053F46] via-[#075C66] to-[#0E8C86] px-5 py-8 md:px-10 md:py-12">
+      <section className="relative rounded-[32px] bg-[#0891B2] px-5 py-8 md:px-10 md:py-12">
         <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[32px]" aria-hidden>
           <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-white/8" />
-          <div className="absolute -right-16 -bottom-28 h-80 w-80 rounded-full bg-[#36C2B4]/20" />
+          <div className="absolute -right-16 -bottom-28 h-80 w-80 rounded-full bg-[#2FBAC9]/20" />
         </div>
 
         <div className="relative grid items-center gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
@@ -286,7 +286,7 @@ export default function HomePage() {
             <h1 className="mt-4 text-[30px] leading-[1.15] font-extrabold tracking-tight text-white md:text-[46px]">
               Việt Nam theo cách
               <br />
-              <span className="text-[#9BF0E1]">của riêng bạn</span>
+              <span className="text-[#97EBF4]">của riêng bạn</span>
             </h1>
             <p className="mt-3 max-w-lg text-[13px] leading-6 text-white/80 md:text-[15px]">
               Tìm địa điểm, nhận gợi ý cá nhân hóa và để SmartTravel sắp xếp lịch trình theo
@@ -300,7 +300,7 @@ export default function HomePage() {
             <div className="mt-5 flex flex-wrap gap-3">
               <Link
                 to={CLIENT_ROUTES.TRIP_PLAN}
-                className="flex items-center gap-1.5 rounded-full bg-white px-5 py-3 text-[13px] font-extrabold text-[#075C66] shadow-lg hover:bg-[#EFFFFB]"
+                className="flex items-center gap-1.5 rounded-full bg-white px-5 py-3 text-[13px] font-extrabold text-[#0E7490] shadow-lg hover:bg-[#EFFDFF]"
               >
                 <Icon name="auto_awesome" className="text-[18px]" />
                 Lập kế hoạch với AI
@@ -317,7 +317,7 @@ export default function HomePage() {
             <div className="mt-7 flex flex-wrap gap-x-7 gap-y-3">
               {stats.map((stat) => (
                 <div key={stat.label} className="flex items-center gap-2 text-white">
-                  <Icon name={stat.icon} className="text-[20px] text-[#9BF0E1]" />
+                  <Icon name={stat.icon} className="text-[20px] text-[#97EBF4]" />
                   <span className="text-[20px] font-extrabold">{stat.value}</span>
                   <span className="text-[12px] text-white/75">{stat.label}</span>
                 </div>
@@ -336,7 +336,7 @@ export default function HomePage() {
       <section className="mt-10 grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <UpcomingTrip loggedIn={Boolean(user)} />
 
-        <div className="relative flex min-h-[210px] flex-col overflow-hidden rounded-[24px] bg-linear-to-br from-[#FFF6E0] to-[#FFE9C2] p-5 md:p-6">
+        <div className="relative flex min-h-[210px] flex-col overflow-hidden rounded-[24px] bg-[#FFF6E0] p-5 md:p-6">
           <Icon
             name="favorite"
             filled
@@ -373,7 +373,7 @@ export default function HomePage() {
             </div>
             <Link
               to={CLIENT_ROUTES.EXPLORE}
-              className="flex shrink-0 items-center gap-1 text-[13px] font-bold text-primary hover:underline"
+              className="flex shrink-0 items-center gap-1 text-[13px] font-bold text-client-primary hover:underline"
             >
               Xem tất cả
               <Icon name="arrow_forward" className="text-[17px]" />
@@ -400,7 +400,7 @@ export default function HomePage() {
                     </div>
                   )}
                   {place.category?.name && (
-                    <span className="absolute bottom-2 left-2 max-w-[85%] truncate rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-[#075C66]">
+                    <span className="absolute bottom-2 left-2 max-w-[85%] truncate rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-[#0E7490]">
                       {place.category.name}
                     </span>
                   )}
@@ -431,7 +431,7 @@ export default function HomePage() {
           </div>
           <Link
             to={CLIENT_ROUTES.TRIP_PLAN}
-            className="flex items-center gap-1.5 self-start rounded-full bg-primary px-5 py-2.5 text-[12px] font-bold text-white hover:bg-primary-container md:self-auto"
+            className="flex items-center gap-1.5 self-start rounded-full bg-client-primary px-5 py-2.5 text-[12px] font-bold text-white hover:bg-client-primary-strong md:self-auto"
           >
             Bắt đầu ngay
             <Icon name="arrow_forward" className="text-[17px]" />
@@ -440,10 +440,10 @@ export default function HomePage() {
         <ol className="mt-6 grid gap-4 md:grid-cols-3">
           {STEPS.map((step, i) => (
             <li key={step.title} className="relative rounded-[20px] bg-client-field p-5">
-              <span className="absolute top-4 right-5 text-[40px] leading-none font-extrabold text-[#075C66]/10">
+              <span className="absolute top-4 right-5 text-[40px] leading-none font-extrabold text-[#0E7490]/10">
                 {i + 1}
               </span>
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#075C66] text-white">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0E7490] text-white">
                 <Icon name={step.icon} className="text-[22px]" />
               </span>
               <p className="mt-4 text-[15px] font-extrabold text-client-ink">{step.title}</p>

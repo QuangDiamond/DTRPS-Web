@@ -36,8 +36,8 @@ function PasswordField({
         </label>
         {right}
       </div>
-      <div className="flex h-[58px] items-center rounded-2xl bg-white px-4 focus-within:ring-2 focus-within:ring-primary/30">
-        <Icon name={icon} className="text-[21px] text-[#006D68]" />
+      <div className="flex h-[58px] items-center rounded-2xl bg-white px-4 focus-within:ring-2 focus-within:ring-client-primary/30">
+        <Icon name={icon} className="text-[21px] text-[#0E7490]" />
         <input
           id={id}
           type={visible ? 'text' : 'password'}
@@ -66,9 +66,9 @@ function PasswordRule({ title, valid }: { title: string; valid: boolean }) {
       <Icon
         name={valid ? 'check_circle' : 'radio_button_unchecked'}
         filled={valid}
-        className={`text-[18px] ${valid ? 'text-[#007A73]' : 'text-[#A1ADBD]'}`}
+        className={`text-[18px] ${valid ? 'text-[#0E7490]' : 'text-[#A1ADBD]'}`}
       />
-      <span className={`text-[12px] ${valid ? 'font-medium text-[#164B58]' : 'text-[#8190A3]'}`}>
+      <span className={`text-[12px] ${valid ? 'font-medium text-[#0E7490]' : 'text-[#8190A3]'}`}>
         {title}
       </span>
     </li>
@@ -103,7 +103,7 @@ export default function ChangePasswordPage() {
         ? { label: 'Yếu (Weak)', color: '#E87575' }
         : score <= 4
           ? { label: 'Trung bình (Medium)', color: '#D69E36' }
-          : { label: 'Khá mạnh (Strong)', color: '#007A73' };
+          : { label: 'Khá mạnh (Strong)', color: '#0E7490' };
   const matches = confirm.length > 0 && confirm === next;
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -140,7 +140,7 @@ export default function ChangePasswordPage() {
           </p>
           <Link
             to={CLIENT_ROUTES.PROFILE}
-            className="mt-6 flex h-[50px] w-full max-w-xs items-center justify-center gap-2 rounded-full bg-[#006D68] text-[15px] font-bold text-white shadow-md hover:bg-primary-container"
+            className="mt-6 flex h-[50px] w-full max-w-xs items-center justify-center gap-2 rounded-full bg-[#0E7490] text-[15px] font-bold text-white shadow-md hover:bg-client-primary-strong"
           >
             <Icon name="person" className="text-[20px]" />
             Về trang cá nhân
@@ -154,8 +154,8 @@ export default function ChangePasswordPage() {
     <div className="mx-auto max-w-xl">
       <PageBar title="Đổi mật khẩu" subtitle="Bảo mật tài khoản" backTo={CLIENT_ROUTES.PROFILE} />
 
-      <div className="flex min-h-[124px] items-start gap-3 rounded-[17px] bg-linear-to-br from-[#F0F1FF] to-[#DFF8FC] p-[18px]">
-        <span className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl bg-[#006D68] text-white shadow-md">
+      <div className="flex min-h-[124px] items-start gap-3 rounded-[17px] bg-[#DEFAFD] p-[18px]">
+        <span className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl bg-[#0E7490] text-white shadow-md">
           <Icon name="shield_lock" filled className="text-[28px]" />
         </span>
         <div>
@@ -179,7 +179,7 @@ export default function ChangePasswordPage() {
           right={
             <Link
               to={CLIENT_ROUTES.FORGOT_PASSWORD}
-              className="text-[11px] font-semibold text-[#006D68] hover:underline"
+              className="text-[11px] font-semibold text-[#0E7490] hover:underline"
             >
               Quên mật khẩu?
             </Link>
@@ -232,7 +232,7 @@ export default function ChangePasswordPage() {
         {confirm.length > 0 && (
           <p
             className={`mt-3 flex items-center gap-2 text-[12px] font-medium ${
-              matches ? 'text-[#007A73]' : 'text-[#D94A4A]'
+              matches ? 'text-[#0E7490]' : 'text-[#D94A4A]'
             }`}
           >
             <Icon name={matches ? 'verified' : 'error'} className="text-[17px]" />
@@ -245,7 +245,7 @@ export default function ChangePasswordPage() {
         <button
           type="submit"
           disabled={busy}
-          className="mt-3 flex h-[54px] w-full items-center justify-center gap-2 rounded-full bg-[#006D68] text-[16px] font-bold text-white shadow-md hover:bg-primary-container disabled:bg-[#9EBEB9]"
+          className="mt-3 flex h-[54px] w-full items-center justify-center gap-2 rounded-full bg-[#0E7490] text-[16px] font-bold text-white shadow-md hover:bg-client-primary-strong disabled:bg-[#9CBCC0]"
         >
           {busy ? (
             <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white" />

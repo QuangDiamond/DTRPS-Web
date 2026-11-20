@@ -20,7 +20,7 @@ const PACE_TO_API: Record<string, TravelPace> = {
 };
 
 const inputClass =
-  'h-11 w-full rounded-2xl border border-[#E3E7F0] bg-[#F8F8FF] px-3.5 text-[14px] font-semibold text-[#13364A] focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60';
+  'h-11 w-full rounded-2xl border border-[#E3E7F0] bg-[#F8F8FF] px-3.5 text-[14px] font-semibold text-[#13364A] focus:ring-2 focus:ring-client-primary/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60';
 
 const labelClass = 'mb-1 block text-[12px] font-semibold text-[#72818C]';
 
@@ -134,7 +134,7 @@ export default function EditTripPlanPage() {
           <button
             type="button"
             onClick={() => setRetryCount((value) => value + 1)}
-            className="mt-3 rounded-full bg-white px-5 py-2.5 text-[12px] font-bold text-[#075C66]"
+            className="mt-3 rounded-full bg-white px-5 py-2.5 text-[12px] font-bold text-[#0E7490]"
           >
             Thử tải lại
           </button>
@@ -148,7 +148,7 @@ export default function EditTripPlanPage() {
       <div className="mx-auto max-w-4xl">
         <PageBar title="Sửa kế hoạch" backTo={CLIENT_ROUTES.TRIPS} />
         <div role="status" className="rounded-[22px] bg-white p-10 text-center">
-          <span className="mx-auto block h-8 w-8 animate-spin rounded-full border-2 border-[#C3F8F0] border-t-[#087A78]" />
+          <span className="mx-auto block h-8 w-8 animate-spin rounded-full border-2 border-[#C0F5FB] border-t-[#0891B2]" />
           <p className="mt-3 text-[12px] text-[#72818C]">Đang tải kế hoạch...</p>
         </div>
       </div>
@@ -170,7 +170,7 @@ export default function EditTripPlanPage() {
           </p>
           <Link
             to={CLIENT_ROUTES.TRIPS}
-            className="mt-4 inline-flex rounded-full bg-[#075C66] px-5 py-2.5 text-[12px] font-bold text-white"
+            className="mt-4 inline-flex rounded-full bg-[#0E7490] px-5 py-2.5 text-[12px] font-bold text-white"
           >
             Về danh sách chuyến đi
           </Link>
@@ -272,7 +272,7 @@ export default function EditTripPlanPage() {
             rows={3}
             value={form.description}
             onChange={(event) => update('description', event.target.value)}
-            className="w-full rounded-2xl border border-[#E3E7F0] bg-[#F8F8FF] px-3.5 py-2.5 text-[13px] text-[#13364A] focus:ring-2 focus:ring-primary/30 focus:outline-none"
+            className="w-full rounded-2xl border border-[#E3E7F0] bg-[#F8F8FF] px-3.5 py-2.5 text-[13px] text-[#13364A] focus:ring-2 focus:ring-client-primary/30 focus:outline-none"
           />
         </SectionCard>
 
@@ -384,12 +384,12 @@ export default function EditTripPlanPage() {
                   onClick={() => update('travelPace', value)}
                   className={`rounded-2xl px-2 py-2.5 text-center ${
                     selected
-                      ? 'border-[1.5px] border-[#087A78] bg-[#E2FAF5]'
+                      ? 'border-[1.5px] border-[#0891B2] bg-[#E1F9FB]'
                       : 'border border-[#E3E7F0] bg-[#F8F8FF]'
                   }`}
                 >
                   <span className="block text-[12px] font-bold text-[#13364A]">{item.label}</span>
-                  <span className="block text-[10px] text-[#087A78]">{item.perDay}</span>
+                  <span className="block text-[10px] text-[#0891B2]">{item.perDay}</span>
                 </button>
               );
             })}
@@ -430,7 +430,7 @@ export default function EditTripPlanPage() {
         <div className="flex gap-2">
           <Link
             to={CLIENT_ROUTES.TRIPS}
-            className="flex h-12 flex-1 items-center justify-center rounded-full bg-[#EBEDFF] text-[14px] font-bold text-[#075C66]"
+            className="flex h-12 flex-1 items-center justify-center rounded-full bg-[#EBEDFF] text-[14px] font-bold text-[#0E7490]"
           >
             Hủy
           </Link>
@@ -438,7 +438,7 @@ export default function EditTripPlanPage() {
             type="button"
             onClick={() => void submit()}
             disabled={saving}
-            className="flex h-12 flex-[2] items-center justify-center gap-1.5 rounded-full bg-[#075C66] text-[14px] font-bold text-white hover:bg-primary disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex h-12 flex-[2] items-center justify-center gap-1.5 rounded-full bg-[#0E7490] text-[14px] font-bold text-white hover:bg-client-primary disabled:cursor-not-allowed disabled:opacity-60"
           >
             {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
             <Icon name={saving ? 'hourglass_empty' : 'check'} className="text-[18px]" />

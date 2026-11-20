@@ -53,7 +53,7 @@ function LocationCard({ listing }: { listing: BusinessListing }) {
             .join(' · ')}
         </p>
         <p className="mt-2 flex items-start gap-1 text-[12px] text-client-ink">
-          <Icon name="location_on" className="text-[15px] text-primary" />
+          <Icon name="location_on" className="text-[15px] text-client-primary" />
           <span className="line-clamp-2">{listing.address}</span>
         </p>
         {listing.status === 'REJECTED' && listing.statusNote && (
@@ -123,7 +123,7 @@ export default function PartnerLocationsPage() {
         />
         <Link
           to={CLIENT_ROUTES.PARTNER_LOCATION_NEW}
-          className="mb-6 flex items-center gap-1.5 rounded-2xl bg-primary px-5 py-3 text-[13px] font-extrabold text-white hover:bg-primary-container"
+          className="mb-6 flex items-center gap-1.5 rounded-2xl bg-client-primary px-5 py-3 text-[13px] font-extrabold text-white hover:bg-client-primary-strong"
         >
           <Icon name="add_location_alt" className="text-[19px]" /> Thêm địa điểm
         </Link>
@@ -131,7 +131,7 @@ export default function PartnerLocationsPage() {
 
       {listings.length === 0 ? (
         <div className="flex flex-col items-center gap-2 rounded-[20px] border border-dashed border-client-line bg-white p-10 text-center">
-          <Icon name="add_location_alt" className="text-[44px] text-primary" />
+          <Icon name="add_location_alt" className="text-[44px] text-client-primary" />
           <p className="text-[15px] font-bold text-client-ink">Bạn chưa có địa điểm nào</p>
           <p className="max-w-md text-[13px] text-client-muted">
             Đăng ký địa điểm đầu tiên để du khách tìm thấy bạn. Bạn có thể thêm nhiều địa điểm (ví
@@ -139,7 +139,7 @@ export default function PartnerLocationsPage() {
           </p>
           <Link
             to={CLIENT_ROUTES.PARTNER_LOCATION_NEW}
-            className="mt-2 rounded-2xl bg-primary px-5 py-3 text-[13px] font-extrabold text-white hover:bg-primary-container"
+            className="mt-2 rounded-2xl bg-client-primary px-5 py-3 text-[13px] font-extrabold text-white hover:bg-client-primary-strong"
           >
             Đăng ký địa điểm
           </Link>
@@ -154,8 +154,8 @@ export default function PartnerLocationsPage() {
                 onClick={() => setFilter(item.value)}
                 className={`rounded-full px-4 py-2 text-[12px] font-bold transition-colors ${
                   filter === item.value
-                    ? 'bg-primary text-white'
-                    : 'bg-white text-client-muted hover:text-primary'
+                    ? 'bg-client-primary text-white'
+                    : 'bg-white text-client-muted hover:text-client-primary'
                 }`}
               >
                 {item.label} ({count(item.value)})

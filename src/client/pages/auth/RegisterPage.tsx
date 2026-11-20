@@ -130,13 +130,13 @@ export default function RegisterPage() {
             {formError && <FormAlert message={formError} />}
             {emailTaken && (
               <p className="-mt-1 mb-4 text-[12.5px] text-[#4F5F6B]">
-                <Link to={CLIENT_ROUTES.LOGIN} className="font-bold text-primary hover:underline">
+                <Link to={CLIENT_ROUTES.LOGIN} className="font-bold text-client-primary hover:underline">
                   Đăng nhập
                 </Link>{' '}
                 hoặc{' '}
                 <Link
                   to={CLIENT_ROUTES.FORGOT_PASSWORD}
-                  className="font-bold text-primary hover:underline"
+                  className="font-bold text-client-primary hover:underline"
                 >
                   lấy lại mật khẩu
                 </Link>
@@ -223,7 +223,7 @@ export default function RegisterPage() {
 
         <p className="mt-6 text-center text-[13px] text-[#62737F]">
           Đã có tài khoản?{' '}
-          <Link to={CLIENT_ROUTES.LOGIN} className="font-bold text-primary hover:underline">
+          <Link to={CLIENT_ROUTES.LOGIN} className="font-bold text-client-primary hover:underline">
             Đăng nhập
           </Link>
         </p>

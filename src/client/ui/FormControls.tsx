@@ -3,7 +3,7 @@ import { Icon } from '@/components/common';
 
 const LABEL_CLASS = 'mb-1.5 block text-[12px] font-bold text-[#293E4A]';
 const boxClass = (error?: string) =>
-  `rounded-xl border bg-client-field px-3 focus-within:ring-2 focus-within:ring-primary/40 ${
+  `rounded-xl border bg-client-field px-3 focus-within:ring-2 focus-within:ring-client-primary/40 ${
     error ? 'border-client-danger' : 'border-[#EBEDF5]'
   }`;
 
@@ -44,7 +44,7 @@ export function SelectField({
         {label}
       </label>
       <div className={`relative flex h-[51px] items-center ${boxClass(error)}`}>
-        <Icon name={icon} className="text-[18px] text-[#168C85]" />
+        <Icon name={icon} className="text-[18px] text-[#0891B2]" />
         <select
           id={id}
           value={value}

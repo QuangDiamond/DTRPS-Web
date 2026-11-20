@@ -50,7 +50,7 @@ function RevisionItem({
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
-          className="text-[12px] font-bold text-[#007A73] hover:underline"
+          className="text-[12px] font-bold text-[#0E7490] hover:underline"
         >
           {open ? 'Ẩn nội dung' : 'Xem nội dung đề xuất'}
         </button>

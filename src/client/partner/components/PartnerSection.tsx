@@ -26,7 +26,7 @@ export default function PartnerSection({
     >
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#E4F6F2] text-[#087F79]">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#E3F5F7] text-[#0891B2]">
             <Icon name={icon} className="text-[20px]" />
           </span>
           <div>

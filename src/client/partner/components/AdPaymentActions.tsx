@@ -133,7 +133,7 @@ function PaymentIssueDialog({
           {receiptUrl ? (
             <div className="flex items-center gap-3">
               <img src={receiptUrl} alt="Biên lai" className="h-20 w-20 rounded-xl object-cover" />
-              <label className="cursor-pointer text-[13px] font-bold text-primary">
+              <label className="cursor-pointer text-[13px] font-bold text-client-primary">
                 Đổi ảnh
                 <input
                   type="file"
@@ -144,7 +144,7 @@ function PaymentIssueDialog({
               </label>
             </div>
           ) : (
-            <label className="flex h-20 cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-[#B9CBC9] text-[13px] font-semibold text-primary">
+            <label className="flex h-20 cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-[#B8CACC] text-[13px] font-semibold text-client-primary">
               <Icon name="upload" className="text-[20px]" />
               {uploading ? 'Đang tải ảnh…' : 'Chọn ảnh biên lai'}
               <input
@@ -247,7 +247,7 @@ export default function AdPaymentActions({
           type="button"
           disabled={checking}
           onClick={() => void check()}
-          className="text-[12px] font-bold text-primary hover:underline disabled:opacity-60"
+          className="text-[12px] font-bold text-client-primary hover:underline disabled:opacity-60"
         >
           {checking ? 'Đang kiểm tra…' : 'Tôi đã thanh toán, kiểm tra lại'}
         </button>

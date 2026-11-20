@@ -46,7 +46,7 @@ export default function InterestChips({
             onClick={() => toggle(item.code)}
             className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-[12px] font-bold ${
               active
-                ? 'border-[1.5px] border-[#087A78] bg-[#E2FAF5] text-[#075C66]'
+                ? 'border-[1.5px] border-[#0891B2] bg-[#E1F9FB] text-[#0E7490]'
                 : 'border border-[#E3E7F0] bg-[#F8F8FF] text-[#506581]'
             }`}
           >

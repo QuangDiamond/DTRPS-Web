@@ -117,7 +117,7 @@ export default function PhotoEditor({
       }}
       onDragLeave={() => setDragging(false)}
       onDrop={onDrop}
-      className={`rounded-xl transition-colors ${dragging ? 'bg-client-pale ring-2 ring-primary/50' : ''}`}
+      className={`rounded-xl transition-colors ${dragging ? 'bg-client-pale ring-2 ring-client-primary/50' : ''}`}
     >
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
         {images.map((image) => (
@@ -128,7 +128,7 @@ export default function PhotoEditor({
             <div className="relative">
               <img src={image.url} alt="" className="h-28 w-full object-cover" />
               {image.primary && (
-                <span className="absolute top-2 left-2 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-white">
+                <span className="absolute top-2 left-2 rounded-full bg-client-primary px-2 py-0.5 text-[10px] font-bold text-white">
                   Ảnh bìa
                 </span>
               )}
@@ -138,7 +138,7 @@ export default function PhotoEditor({
                 type="button"
                 disabled={image.primary}
                 onClick={() => setCover(image.url)}
-                className="text-[11px] font-bold text-[#007A73] hover:underline disabled:text-client-muted disabled:no-underline"
+                className="text-[11px] font-bold text-[#0E7490] hover:underline disabled:text-client-muted disabled:no-underline"
               >
                 {image.primary ? 'Đang là ảnh bìa' : 'Đặt ảnh bìa'}
               </button>
@@ -167,7 +167,7 @@ export default function PhotoEditor({
               />
               {item.error === null && (
                 <span className="absolute inset-0 flex items-center justify-center">
-                  <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-white/60 border-t-primary" />
+                  <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-white/60 border-t-client-primary" />
                 </span>
               )}
             </div>
@@ -196,7 +196,7 @@ export default function PhotoEditor({
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="flex min-h-[9.5rem] flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-client-line bg-client-field text-client-muted transition-colors hover:border-primary hover:text-primary"
+            className="flex min-h-[9.5rem] flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-client-line bg-client-field text-client-muted transition-colors hover:border-client-primary hover:text-client-primary"
           >
             <Icon name="add" className="text-[36px]" />
             <span className="text-[12px] font-bold">Thêm ảnh</span>

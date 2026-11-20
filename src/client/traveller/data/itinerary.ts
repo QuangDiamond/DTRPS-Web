@@ -38,7 +38,7 @@ export const ITINERARY: ItineraryDay[] = [];
 
 export const NOTE_TONES: Record<Activity['noteTone'], string> = {
   lavender: 'bg-[#EFF0FD] text-[#6474A5]',
-  mint: 'bg-[#DBF9F3] text-[#006B65]',
+  mint: 'bg-[#D9F7FB] text-[#0E7490]',
   violet: 'bg-[#F1F0FF] text-[#6C70A0]',
   orange: 'bg-[#FFF1E5] text-[#B57A31]',
 };

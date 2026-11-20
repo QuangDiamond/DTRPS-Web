@@ -13,7 +13,7 @@ export function Heading({
 }) {
   return (
     <div className="mb-4 rounded-[24px] bg-client-pale px-5 py-6 md:px-8 md:py-8">
-      <p className="text-[10px] font-extrabold tracking-[0.2em] text-[#007E73] uppercase">
+      <p className="text-[10px] font-extrabold tracking-[0.2em] text-[#0891B2] uppercase">
         {eyebrow}
       </p>
       <h1 className="mt-2 text-[24px] leading-[32px] font-extrabold text-client-ink md:text-[30px] md:leading-[38px]">
@@ -47,7 +47,7 @@ export function Notice({
   tone?: 'info' | 'success' | 'warning' | 'danger';
 }) {
   const styles = {
-    info: 'bg-[#E5F5F0] text-[#356D64]',
+    info: 'bg-[#E4F4F6] text-[#35626D]',
     success: 'border border-[#8FD9B6] bg-[#DDF7EA] font-semibold text-[#11643F]',
     warning: 'bg-[#FFF4DD] text-[#7A5410]',
     danger: 'bg-[#FCE4E3] text-[#9A2D2D]',
@@ -79,7 +79,7 @@ export type BadgeTone = 'pending' | 'approved' | 'rejected' | 'locked' | 'draft'
 
 const BADGE_STYLES: Record<BadgeTone, string> = {
   pending: 'bg-[#FFF0D5] text-[#976207]',
-  approved: 'bg-[#DDF4E8] text-primary',
+  approved: 'bg-[#DDF4E8] text-[#11643F]',
   rejected: 'bg-[#FCE4E3] text-[#AD3232]',
   locked: 'bg-[#EDE7F6] text-[#5B3E99]',
   draft: 'bg-[#EDF0F0] text-[#596768]',
@@ -98,7 +98,7 @@ export function StatusBadge({ tone, children }: { tone: BadgeTone; children: Rea
 export function Spinner({ label = 'Đang tải…' }: { label?: string }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-16 text-client-muted">
-      <span className="h-8 w-8 animate-spin rounded-full border-[3px] border-client-pale border-t-primary" />
+      <span className="h-8 w-8 animate-spin rounded-full border-[3px] border-client-pale border-t-client-primary" />
       <span className="text-[12px]">{label}</span>
     </div>
   );

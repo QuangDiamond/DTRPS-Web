@@ -137,8 +137,8 @@ export default function StopReviewCard({
         <AuthorRow />
 
         <div className="mt-2.5 flex items-center gap-2">
-          <Icon name="verified" filled className="text-[19px] text-[#006B67]" />
-          <span className="text-[13.5px] font-extrabold text-[#006B67]">Đã gửi nhận xét</span>
+          <Icon name="verified" filled className="text-[19px] text-[#0E7490]" />
+          <span className="text-[13.5px] font-extrabold text-[#0E7490]">Đã gửi nhận xét</span>
           <span className="flex" aria-label={`${justSubmitted.rating} sao`}>
             {[1, 2, 3, 4, 5].map((value) => (
               <Icon
@@ -214,14 +214,14 @@ export default function StopReviewCard({
             rows={3}
             placeholder="Chia sẻ cảm nhận của bạn về địa điểm này..."
             aria-label="Cảm nhận về địa điểm"
-            className="mt-2 w-full resize-none rounded-2xl border border-[#E3E9EF] bg-white px-3.5 py-3 text-[14px] text-[#17344A] placeholder:text-[#9AA8B5] focus:ring-2 focus:ring-primary/30 focus:outline-none"
+            className="mt-2 w-full resize-none rounded-2xl border border-[#E3E9EF] bg-white px-3.5 py-3 text-[14px] text-[#17344A] placeholder:text-[#9AA8B5] focus:ring-2 focus:ring-client-primary/30 focus:outline-none"
           />
           <div className="flex gap-2.5 overflow-x-auto pt-3">
             {remainingSlots > 0 && (
               <button
                 type="button"
                 onClick={() => libraryRef.current?.click()}
-                className="flex h-[76px] w-[84px] shrink-0 flex-col items-center justify-center rounded-2xl border-[1.5px] border-dashed border-[#9FD9CF] bg-[#E6F8F4] text-[#006B67]"
+                className="flex h-[76px] w-[84px] shrink-0 flex-col items-center justify-center rounded-2xl border-[1.5px] border-dashed border-[#9CD6DC] bg-[#E5F7F9] text-[#0E7490]"
               >
                 <Icon name="add_photo_alternate" className="text-[24px]" />
                 <span className="mt-1 text-[11px] font-bold">Thêm ảnh</span>
@@ -262,7 +262,7 @@ export default function StopReviewCard({
             type="button"
             onClick={submit}
             disabled={rating === 0 || submitting}
-            className={`mt-2.5 flex h-[46px] w-full items-center justify-center gap-2 rounded-2xl bg-[#006B67] text-[14px] font-extrabold text-white ${
+            className={`mt-2.5 flex h-[46px] w-full items-center justify-center gap-2 rounded-2xl bg-[#0E7490] text-[14px] font-extrabold text-white ${
               rating === 0 || submitting ? 'opacity-50' : ''
             }`}
           >

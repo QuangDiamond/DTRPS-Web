@@ -181,8 +181,8 @@ function pinElement(
   const color = visited
     ? '#86969A'
     : active
-      ? '#075C66'
-      : '#12A99A';
+      ? '#0E7490'
+      : '#0891B2';
 
   const pin = document.createElement('span');
 
@@ -518,7 +518,7 @@ export default function TravelMap({
         filter: ['==', ['get', 'part'], 'preview'],
 
         paint: {
-          'line-color': '#087E79',
+          'line-color': '#0891B2',
           'line-width': 4,
           'line-dasharray': [2.2, 1.7],
         },
@@ -544,7 +544,7 @@ export default function TravelMap({
         filter: ['==', ['get', 'part'], 'todo'],
 
         paint: {
-          'line-color': '#087E79',
+          'line-color': '#0891B2',
           'line-width': 5,
           'line-opacity': 0.95,
         },

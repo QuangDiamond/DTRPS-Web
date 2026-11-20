@@ -48,8 +48,8 @@ function ModeSwitchButton({ partnerMode }: { partnerMode: boolean }) {
       to={target.to}
       title={target.label}
       aria-label={target.label}
-      // Viên thuốc nền xanh bạc hà (màu chữ "Travel" của logo): nổi trên nền topbar tối mà vẫn hợp tông
-      className="flex h-9 items-center gap-1.5 rounded-full bg-[#99EFE5] px-2.5 text-[13px] font-extrabold whitespace-nowrap text-[#0B3F3B] shadow-sm transition-colors hover:bg-white xl:px-4"
+      // Viên thuốc nền trắng, chữ màu thương hiệu — một tông màu, không pha
+      className="flex h-9 items-center gap-1.5 rounded-full bg-white px-2.5 text-[13px] font-extrabold whitespace-nowrap text-[#0E7490] shadow-sm transition-colors hover:bg-[#ECFEFF] xl:px-4"
     >
       <Icon name={target.icon} className="text-[18px]" />
       {/* Màn nhỏ chỉ hiện icon cho gọn; menu ảnh đại diện cũng có mục chuyển chế độ */}
@@ -78,7 +78,7 @@ function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
     return (
       <Link
         to={CLIENT_ROUTES.LOGIN}
-        className="flex h-9 items-center gap-1.5 rounded-full bg-white px-4 text-[13px] font-extrabold text-[#0B3F3B] shadow-sm hover:bg-[#E0F5EF]"
+        className="flex h-9 items-center gap-1.5 rounded-full bg-white px-4 text-[13px] font-extrabold text-[#0F2A3B] shadow-sm hover:bg-[#DFF4F6]"
       >
         <Icon name="login" className="text-[18px]" />
         Đăng nhập
@@ -100,7 +100,7 @@ function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
           url={user.avatarUrl}
           size={36}
           iconSize={30}
-          className="bg-[#99EFE5] text-primary"
+          className="bg-[#95EAF3] text-client-primary"
         />
       </button>
       {open && (
@@ -114,20 +114,24 @@ function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
           </div>
           <div className="pt-2">
             <Link to={CLIENT_ROUTES.PROFILE} className={itemClass} onClick={() => setOpen(false)}>
-              <Icon name="account_circle" className="text-[18px] text-primary" /> Hồ sơ của tôi
+              <Icon name="account_circle" className="text-[18px] text-client-primary" /> Hồ sơ của
+              tôi
             </Link>
             <Link
               to={switchTarget(partnerMode).to}
               className={itemClass}
               onClick={() => setOpen(false)}
             >
-              <Icon name={switchTarget(partnerMode).icon} className="text-[18px] text-primary" />{' '}
+              <Icon
+                name={switchTarget(partnerMode).icon}
+                className="text-[18px] text-client-primary"
+              />{' '}
               {partnerMode ? 'Chuyển sang chế độ du khách' : 'Chuyển sang chế độ đối tác'}
             </Link>
             {hasRole('ADMIN') && (
               <a href="/admin/dashboard" className={itemClass}>
-                <Icon name="admin_panel_settings" className="text-[18px] text-primary" /> Trang quản
-                trị
+                <Icon name="admin_panel_settings" className="text-[18px] text-client-primary" />{' '}
+                Trang quản trị
               </a>
             )}
             <button
@@ -176,12 +180,12 @@ export default function ClientShell() {
     }`;
   const bottomTabClass = ({ isActive }: { isActive: boolean }) =>
     `flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[10px] ${
-      isActive ? 'font-extrabold text-[#087E78]' : 'font-semibold text-[#65747D]'
+      isActive ? 'font-extrabold text-[#0891B2]' : 'font-semibold text-[#65747D]'
     }`;
 
   return (
     <div className="min-h-screen bg-client-bg pb-20 md:pb-10">
-      <header className="sticky top-0 z-30 bg-linear-to-r from-[#0B3F3B] to-[#0F5F57] shadow-[0_2px_12px_rgba(7,42,40,0.18)]">
+      <header className="sticky top-0 z-30 bg-[#0891B2] shadow-[0_2px_12px_rgba(8,47,73,0.18)]">
         <div className="flex h-16 w-full items-center justify-between gap-3 px-4 md:px-6 lg:px-10">
           <AppLogo subtitle={partnerMode ? 'BUSINESS OWNER' : 'VIETNAM AI PLANNER'} onDark />
           <nav

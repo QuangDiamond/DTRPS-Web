@@ -65,7 +65,7 @@ export default function TripFeedbackModal({
           <button
             type="button"
             onClick={onClose}
-            className="mt-5 h-11 w-full rounded-full bg-primary text-[13px] font-bold text-white"
+            className="mt-5 h-11 w-full rounded-full bg-client-primary text-[13px] font-bold text-white"
           >
             Đóng
           </button>
@@ -130,7 +130,7 @@ export default function TripFeedbackModal({
           rows={3}
           placeholder="Chia sẻ cảm nhận của bạn về chuyến đi này..."
           aria-label="Nhận xét chuyến đi"
-          className="mt-4 w-full resize-none rounded-2xl border border-[#E3E9EF] px-3 py-2.5 text-[13px] text-client-ink placeholder:text-[#9AA8B5] focus:ring-2 focus:ring-primary/30 focus:outline-none"
+          className="mt-4 w-full resize-none rounded-2xl border border-[#E3E9EF] px-3 py-2.5 text-[13px] text-client-ink placeholder:text-[#9AA8B5] focus:ring-2 focus:ring-client-primary/30 focus:outline-none"
         />
 
         {error && (
@@ -151,7 +151,7 @@ export default function TripFeedbackModal({
             type="button"
             onClick={submit}
             disabled={submitting || rating === 0}
-            className="h-11 flex-1 rounded-full bg-primary text-[13px] font-bold text-white disabled:opacity-50"
+            className="h-11 flex-1 rounded-full bg-client-primary text-[13px] font-bold text-white disabled:opacity-50"
           >
             {submitting ? 'Đang gửi...' : 'Gửi đánh giá'}
           </button>

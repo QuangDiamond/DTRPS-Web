@@ -60,13 +60,13 @@ const STATUS_LABELS: Record<PlanStatus, string> = {
 
 function SummaryCard({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <div className="flex min-w-0 items-start gap-3 rounded-2xl border border-[#E2EAE8] bg-white p-4 sm:p-5">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF6F1] text-[#087A78]">
+    <div className="flex min-w-0 items-start gap-3 rounded-2xl border border-[#E2EAEA] bg-white p-4 sm:p-5">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E9F5F7] text-[#0891B2]">
         <Icon name={icon} className="text-[22px]" />
       </span>
       <div className="min-w-0">
         <p className="text-xs font-medium text-[#61757A]">{label}</p>
-        <p className="mt-1 break-words text-base font-extrabold tracking-tight text-[#123D40] sm:text-lg">
+        <p className="mt-1 break-words text-base font-extrabold tracking-tight text-[#122E40] sm:text-lg">
           {value}
         </p>
       </div>
@@ -87,23 +87,23 @@ function BudgetCard({
   const percent = budget != null && budget > 0 ? (total / budget) * 100 : null;
   const overBudget = difference != null && difference < 0;
   return (
-    <section className="rounded-[24px] border border-[#E2EAE8] bg-white p-5 shadow-[0_6px_24px_rgba(18,61,64,0.04)]">
-      <div className="flex items-center gap-2 text-[#163D42]">
-        <Icon name="account_balance_wallet" className="text-[22px] text-[#087A78]" />
+    <section className="rounded-[24px] border border-[#E2EAEA] bg-white p-5 shadow-[0_6px_24px_rgba(8,47,73,0.04)]">
+      <div className="flex items-center gap-2 text-[#163142]">
+        <Icon name="account_balance_wallet" className="text-[22px] text-[#0891B2]" />
         <h3 className="text-base font-extrabold">Ngân sách chuyến đi</h3>
       </div>
       <p className="mt-5 text-xs font-medium text-[#61757A]">Tổng chi phí dự kiến</p>
-      <p className="mt-1 break-words text-2xl font-extrabold tracking-tight text-[#123D40]">
+      <p className="mt-1 break-words text-2xl font-extrabold tracking-tight text-[#122E40]">
         {formatMoney(total, currency)}
       </p>
       <div className="mt-4 flex items-center justify-between gap-3 text-xs text-[#61757A]">
         <span>Ngân sách kế hoạch</span>
-        <strong className="text-right text-[#163D42]">{formatMoney(budget, currency)}</strong>
+        <strong className="text-right text-[#163142]">{formatMoney(budget, currency)}</strong>
       </div>
       {percent !== null && (
         <div className="mt-3">
           <div
-            className="h-2.5 overflow-hidden rounded-full bg-[#EAF1EF]"
+            className="h-2.5 overflow-hidden rounded-full bg-[#EAF1F1]"
             role="progressbar"
             aria-label="Tỷ lệ ngân sách dự kiến"
             aria-valuenow={Math.min(100, Math.max(0, percent))}
@@ -112,7 +112,7 @@ function BudgetCard({
             aria-valuetext={`${Math.round(percent)}% ngân sách`}
           >
             <div
-              className={`h-full rounded-full transition-all ${overBudget ? 'bg-[#C66B42]' : 'bg-[#087A78]'}`}
+              className={`h-full rounded-full transition-all ${overBudget ? 'bg-[#C66B42]' : 'bg-[#0891B2]'}`}
               style={{ width: `${Math.min(100, Math.max(0, percent))}%` }}
             />
           </div>
@@ -121,7 +121,7 @@ function BudgetCard({
       )}
       {difference !== null && (
         <div
-          className={`mt-4 rounded-2xl p-4 ${overBudget ? 'bg-[#FFF1EB] text-[#9A472D]' : 'bg-[#EDF8F3] text-[#086B5F]'}`}
+          className={`mt-4 rounded-2xl p-4 ${overBudget ? 'bg-[#FFF1EB] text-[#9A472D]' : 'bg-[#ECF7F9] text-[#0E7490]'}`}
         >
           <p className="text-xs font-semibold">
             {overBudget ? 'Vượt ngân sách dự kiến' : 'Còn lại so với ngân sách'}
@@ -156,12 +156,12 @@ function DayCard({
   return (
     <section
       id={`itinerary-day-${day.dayId}`}
-      className="scroll-mt-24 overflow-hidden rounded-[24px] border border-[#E2EAE8] bg-white shadow-[0_6px_26px_rgba(18,61,64,0.04)]"
+      className="scroll-mt-24 overflow-hidden rounded-[24px] border border-[#E2EAEA] bg-white shadow-[0_6px_26px_rgba(8,47,73,0.04)]"
     >
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[#E9EFED] px-5 py-5 sm:px-6">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[#E9EFEF] px-5 py-5 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-2xl bg-[#0B615F] text-white">
-            <span className="text-[9px] font-semibold uppercase tracking-widest text-[#C2EDE3]">
+          <span className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-2xl bg-[#0E7490] text-white">
+            <span className="text-[9px] font-semibold uppercase tracking-widest text-[#C0EAEF]">
               Ngày
             </span>
             <span className="text-xl font-extrabold leading-6">
@@ -169,7 +169,7 @@ function DayCard({
             </span>
           </span>
           <div className="min-w-0">
-            <h3 className="break-words text-lg font-extrabold tracking-tight text-[#163D42]">
+            <h3 className="break-words text-lg font-extrabold tracking-tight text-[#163142]">
               {day.title || `Ngày ${day.dayNumber}`}
             </h3>
             <p className="mt-1 text-xs text-[#61757A]">
@@ -179,20 +179,20 @@ function DayCard({
         </div>
         <div className="text-right">
           <p className="text-xs text-[#61757A]">Chi phí dự kiến</p>
-          <p className="mt-1 text-sm font-extrabold text-[#087A78]">
+          <p className="mt-1 text-sm font-extrabold text-[#0891B2]">
             {formatMoney(day.estimatedCost, currency)}
           </p>
         </div>
       </header>
       {day.notes && (
-        <p className="mx-5 mt-4 rounded-xl bg-[#F5F8F7] p-3 text-xs leading-5 text-[#506775] sm:mx-6">
+        <p className="mx-5 mt-4 rounded-xl bg-[#F5F8F8] p-3 text-xs leading-5 text-[#506775] sm:mx-6">
           {day.notes}
         </p>
       )}
       {activities.length === 0 ? (
         <div className="flex flex-col items-center gap-2 px-5 py-10 text-center">
-          <Icon name="event_available" className="text-[34px] text-[#8DB4AE]" />
-          <p className="text-sm font-bold text-[#163D42]">Chưa có hoạt động</p>
+          <Icon name="event_available" className="text-[34px] text-[#8BB2B6]" />
+          <p className="text-sm font-bold text-[#163142]">Chưa có hoạt động</p>
           <p className="text-xs text-[#61757A]">Ngày này chưa được sắp xếp địa điểm.</p>
         </div>
       ) : (
@@ -202,51 +202,51 @@ function DayCard({
               {index < activities.length - 1 && (
                 <span
                   aria-hidden="true"
-                  className="absolute bottom-0 left-[15px] top-8 w-px bg-[#D4E9E3]"
+                  className="absolute bottom-0 left-[15px] top-8 w-px bg-[#D3E8EA]"
                 />
               )}
-              <span className="relative z-[1] mt-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#CDE5DE] bg-[#EDF8F3] text-xs font-extrabold text-[#087A78] ring-4 ring-white">
+              <span className="relative z-[1] mt-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#CCE4E6] bg-[#ECF7F9] text-xs font-extrabold text-[#0891B2] ring-4 ring-white">
                 {index + 1}
               </span>
               <div className="min-w-0 flex-1">
                 {activity.travelTimeMinutes != null && activity.travelTimeMinutes > 0 && (
                   <p className="mb-2 flex flex-wrap items-center gap-1.5 text-xs text-[#61757A]">
-                    <Icon name="directions_car" className="text-[17px] text-[#087A78]" />
+                    <Icon name="directions_car" className="text-[17px] text-[#0891B2]" />
                     <span>
                       Di chuyển ước tính · {activity.travelTimeMinutes} phút
                       {activity.transportModeName ? ` · ${activity.transportModeName}` : ''}
                     </span>
                   </p>
                 )}
-                <div className="rounded-2xl border border-[#E5EDEB] bg-[#FCFDFD] p-4 transition-colors hover:border-[#B4DBD1] sm:p-5">
+                <div className="rounded-2xl border border-[#E5EDED] bg-[#FCFDFD] p-4 transition-colors hover:border-[#B2D9DD] sm:p-5">
                   <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#E9F5F0] px-2.5 py-1.5 text-xs font-bold tabular-nums text-[#086B60]">
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#E8F4F6] px-2.5 py-1.5 text-xs font-bold tabular-nums text-[#0E7490]">
                       <Icon name="schedule" className="text-[16px]" />
                       {formatTime(activity.startTime)} – {formatTime(activity.endTime)}
                     </span>
-                    <span className="text-xs font-bold text-[#163D42]">
+                    <span className="text-xs font-bold text-[#163142]">
                       {formatMoney(activity.estimatedCost, currency)}
                     </span>
                   </div>
-                  <h4 className="mt-3 break-words text-base font-extrabold leading-snug tracking-tight text-[#163D42] sm:text-lg">
+                  <h4 className="mt-3 break-words text-base font-extrabold leading-snug tracking-tight text-[#163142] sm:text-lg">
                     {activity.placeName}
                   </h4>
                   {activity.placeAddress && (
                     <p className="mt-2 flex items-start gap-1.5 text-xs leading-5 text-[#61757A]">
                       <Icon
                         name="location_on"
-                        className="mt-0.5 shrink-0 text-[17px] text-[#087A78]"
+                        className="mt-0.5 shrink-0 text-[17px] text-[#0891B2]"
                       />
                       <span>{activity.placeAddress}</span>
                     </p>
                   )}
                   {activity.notes && (
-                    <p className="mt-3 rounded-lg bg-[#F0F5F4] p-3 text-xs leading-5 text-[#506775]">
+                    <p className="mt-3 rounded-lg bg-[#F0F5F5] p-3 text-xs leading-5 text-[#506775]">
                       {activity.notes}
                     </p>
                   )}
                   {onEdit && activity.status === 'PLANNED' && (
-                    <div className="mt-4 flex flex-wrap gap-2 border-t border-[#E5EDEB] pt-3">
+                    <div className="mt-4 flex flex-wrap gap-2 border-t border-[#E5EDED] pt-3">
                       {(
                         [
                           { mode: 'time', icon: 'schedule', label: 'Đổi giờ' },
@@ -258,7 +258,7 @@ function DayCard({
                           key={action.mode}
                           type="button"
                           onClick={() => onEdit(activity, action.mode)}
-                          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-[#DCE9E5] bg-white px-3 py-2 text-xs font-semibold text-[#086B60] transition-colors hover:border-[#087A78] hover:bg-[#EAF7F3] focus-visible:outline-2 focus-visible:outline-[#087A78]"
+                          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-[#DBE8EA] bg-white px-3 py-2 text-xs font-semibold text-[#0E7490] transition-colors hover:border-[#0891B2] hover:bg-[#E9F6F8] focus-visible:outline-2 focus-visible:outline-[#0891B2]"
                         >
                           <Icon name={action.icon} className="text-[17px]" />
                           {action.label}
@@ -272,10 +272,10 @@ function DayCard({
           ))}
         </ol>
       )}
-      <footer className="flex border-t border-[#E9EFED] px-5 py-3 sm:justify-end sm:px-6">
+      <footer className="flex border-t border-[#E9EFEF] px-5 py-3 sm:justify-end sm:px-6">
         <Link
           to={detailUrl}
-          className="flex w-full items-center justify-between gap-3 rounded-xl bg-[#F0F7F4] px-4 py-3 text-sm font-bold text-[#086B60] transition-colors hover:bg-[#DDF2E9] sm:w-auto sm:min-w-[240px]"
+          className="flex w-full items-center justify-between gap-3 rounded-xl bg-[#F0F7F7] px-4 py-3 text-sm font-bold text-[#0E7490] transition-colors hover:bg-[#DCF1F3] sm:w-auto sm:min-w-[240px]"
         >
           <span className="flex items-center gap-2">
             <Icon name="map" className="text-[19px]" />
@@ -436,7 +436,7 @@ function EditActivityModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-end justify-center bg-[#092D32]/55 backdrop-blur-[3px] sm:items-center sm:p-5"
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-[#0E2939]/55 backdrop-blur-[3px] sm:items-center sm:p-5"
       onClick={() => {
         if (!saving) onClose();
       }}
@@ -448,23 +448,23 @@ function EditActivityModal({
         className="flex max-h-[92dvh] w-full max-w-[640px] flex-col overflow-hidden rounded-t-[28px] bg-white shadow-2xl sm:rounded-[28px]"
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="relative shrink-0 overflow-hidden bg-[#104C4C] px-5 py-6 text-white sm:px-7">
+        <header className="relative shrink-0 overflow-hidden bg-[#12344A] px-5 py-6 text-white sm:px-7">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -right-10 -top-24 h-64 w-64 rounded-full border-[36px] border-white/5"
           />
           <div className="relative flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-[#C3EADD]">
+              <p className="text-xs font-semibold text-[#C1E8EC]">
                 Ngày {day.dayNumber} · {formatDate(day.visitDate)}
               </p>
               <h2 id="edit-activity-title" className="mt-2 text-2xl font-extrabold tracking-tight">
                 Chỉnh sửa hoạt động
               </h2>
-              <p className="mt-2 break-words text-sm font-medium text-[#E0F3EE]">
+              <p className="mt-2 break-words text-sm font-medium text-[#DFF2F4]">
                 {activity.placeName}
               </p>
-              <p className="mt-1 text-xs text-[#C3EADD]">
+              <p className="mt-1 text-xs text-[#C1E8EC]">
                 {formatTime(activity.startTime)} – {formatTime(activity.endTime)}
               </p>
             </div>
@@ -481,7 +481,7 @@ function EditActivityModal({
         </header>
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-7">
           <div
-            className="grid grid-cols-3 gap-1 rounded-2xl bg-[#F0F5F3] p-1.5"
+            className="grid grid-cols-3 gap-1 rounded-2xl bg-[#F0F5F5] p-1.5"
             role="group"
             aria-label="Cách chỉnh sửa"
           >
@@ -501,7 +501,7 @@ function EditActivityModal({
                   setMode(option.id);
                   setSaveError('');
                 }}
-                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-xs font-bold transition-colors sm:flex-row sm:gap-2 ${mode === option.id ? 'bg-white text-[#087A78] shadow-sm ring-1 ring-[#D8E7E1]' : 'text-[#61757A] hover:bg-white/60'}`}
+                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-xs font-bold transition-colors sm:flex-row sm:gap-2 ${mode === option.id ? 'bg-white text-[#0891B2] shadow-sm ring-1 ring-[#D7E6E8]' : 'text-[#61757A] hover:bg-white/60'}`}
               >
                 <Icon name={option.icon} className="text-[20px]" />
                 {option.label}
@@ -510,22 +510,22 @@ function EditActivityModal({
           </div>
           {mode === 'replace' && (
             <div className="mt-6">
-              <label htmlFor="replacement-search" className="text-sm font-extrabold text-[#163D42]">
+              <label htmlFor="replacement-search" className="text-sm font-extrabold text-[#163142]">
                 Tìm địa điểm tại {overview.destination}
               </label>
-              <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#DCE8E6] bg-[#F8FBFA] px-3 focus-within:ring-2 focus-within:ring-[#087A78]/25">
-                <Icon name="search" className="text-[22px] text-[#087A78]" />
+              <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#DBE7E9] bg-[#F8FBFB] px-3 focus-within:ring-2 focus-within:ring-[#0891B2]/25">
+                <Icon name="search" className="text-[22px] text-[#0891B2]" />
                 <input
                   id="replacement-search"
                   value={keyword}
                   disabled={saving || !province}
                   onChange={(e) => setKeyword(e.target.value)}
                   placeholder="Nhập tên địa điểm..."
-                  className="h-12 min-w-0 flex-1 bg-transparent text-sm text-[#163D42] outline-none"
+                  className="h-12 min-w-0 flex-1 bg-transparent text-sm text-[#163142] outline-none"
                 />
               </div>
               {replacement && (
-                <div className="mt-3 flex items-center gap-2 rounded-xl bg-[#EDF8F3] p-3 text-sm font-semibold text-[#086B60]">
+                <div className="mt-3 flex items-center gap-2 rounded-xl bg-[#ECF7F9] p-3 text-sm font-semibold text-[#0E7490]">
                   <Icon name="check_circle" className="text-[20px]" />
                   <span>Đã chọn: {replacement.name}</span>
                 </div>
@@ -541,7 +541,7 @@ function EditActivityModal({
               ) : (
                 <div className="mt-3 max-h-64 space-y-2 overflow-y-auto">
                   {results.length === 0 && (
-                    <p className="rounded-xl bg-[#F5F8F7] p-4 text-sm text-[#61757A]">
+                    <p className="rounded-xl bg-[#F5F8F8] p-4 text-sm text-[#61757A]">
                       Không tìm thấy địa điểm khác. Thử nhập tên cụ thể.
                     </p>
                   )}
@@ -552,7 +552,7 @@ function EditActivityModal({
                       disabled={saving}
                       aria-pressed={replacement?.id === place.id}
                       onClick={() => setReplacement(place)}
-                      className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors ${replacement?.id === place.id ? 'border-[#087A78] bg-[#EDF8F3]' : 'border-[#E5EDEB] hover:bg-[#F5F8F7]'}`}
+                      className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors ${replacement?.id === place.id ? 'border-[#0891B2] bg-[#ECF7F9]' : 'border-[#E5EDED] hover:bg-[#F5F8F8]'}`}
                     >
                       {place.coverUrl ? (
                         <img
@@ -562,12 +562,12 @@ function EditActivityModal({
                           className="h-14 w-[76px] shrink-0 rounded-lg object-cover"
                         />
                       ) : (
-                        <span className="flex h-14 w-[76px] shrink-0 items-center justify-center rounded-lg bg-[#EDF8F3] text-[#087A78]">
+                        <span className="flex h-14 w-[76px] shrink-0 items-center justify-center rounded-lg bg-[#ECF7F9] text-[#0891B2]">
                           <Icon name="place" className="text-[24px]" />
                         </span>
                       )}
                       <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-bold text-[#163D42]">{place.name}</span>
+                        <span className="block text-sm font-bold text-[#163142]">{place.name}</span>
                         <span className="mt-1 line-clamp-2 text-xs text-[#61757A]">
                           {place.address || overview.destination}
                         </span>
@@ -576,7 +576,7 @@ function EditActivityModal({
                         name={
                           replacement?.id === place.id ? 'check_circle' : 'radio_button_unchecked'
                         }
-                        className="shrink-0 text-[21px] text-[#087A78]"
+                        className="shrink-0 text-[21px] text-[#0891B2]"
                       />
                     </button>
                   ))}
@@ -589,9 +589,9 @@ function EditActivityModal({
           )}
           {mode !== 'swap' ? (
             <div className="mt-6">
-              <h3 className="text-sm font-extrabold text-[#163D42]">Khung giờ tham quan</h3>
+              <h3 className="text-sm font-extrabold text-[#163142]">Khung giờ tham quan</h3>
               <div className="mt-3 grid grid-cols-2 gap-3">
-                <label className="min-w-0 rounded-2xl border border-[#E2EAE8] bg-[#F8FBFA] p-3 text-xs font-semibold text-[#61757A]">
+                <label className="min-w-0 rounded-2xl border border-[#E2EAEA] bg-[#F8FBFB] p-3 text-xs font-semibold text-[#61757A]">
                   Giờ bắt đầu
                   <input
                     type="time"
@@ -599,10 +599,10 @@ function EditActivityModal({
                     value={start}
                     disabled={saving}
                     onChange={(e) => setStart(e.target.value)}
-                    className="mt-2 block min-w-0 w-full rounded-lg border border-[#DCE8E6] bg-white px-2 py-3 text-base font-extrabold tabular-nums text-[#163D42] focus:outline-[#087A78]"
+                    className="mt-2 block min-w-0 w-full rounded-lg border border-[#DBE7E9] bg-white px-2 py-3 text-base font-extrabold tabular-nums text-[#163142] focus:outline-[#0891B2]"
                   />
                 </label>
-                <label className="min-w-0 rounded-2xl border border-[#E2EAE8] bg-[#F8FBFA] p-3 text-xs font-semibold text-[#61757A]">
+                <label className="min-w-0 rounded-2xl border border-[#E2EAEA] bg-[#F8FBFB] p-3 text-xs font-semibold text-[#61757A]">
                   Giờ kết thúc
                   <input
                     type="time"
@@ -610,12 +610,12 @@ function EditActivityModal({
                     value={end}
                     disabled={saving}
                     onChange={(e) => setEnd(e.target.value)}
-                    className="mt-2 block min-w-0 w-full rounded-lg border border-[#DCE8E6] bg-white px-2 py-3 text-base font-extrabold tabular-nums text-[#163D42] focus:outline-[#087A78]"
+                    className="mt-2 block min-w-0 w-full rounded-lg border border-[#DBE7E9] bg-white px-2 py-3 text-base font-extrabold tabular-nums text-[#163142] focus:outline-[#0891B2]"
                   />
                 </label>
               </div>
               {start && end && start < end && (
-                <p className="mt-3 flex items-center gap-2 rounded-xl bg-[#EDF8F3] p-3 text-sm font-semibold text-[#086B60]">
+                <p className="mt-3 flex items-center gap-2 rounded-xl bg-[#ECF7F9] p-3 text-sm font-semibold text-[#0E7490]">
                   <Icon name="schedule" className="text-[18px]" />
                   Khung giờ mới: {start} – {end}
                 </p>
@@ -623,7 +623,7 @@ function EditActivityModal({
             </div>
           ) : (
             <div className="mt-6">
-              <label htmlFor="swap-activity" className="text-sm font-extrabold text-[#163D42]">
+              <label htmlFor="swap-activity" className="text-sm font-extrabold text-[#163142]">
                 Chọn địa điểm muốn đổi vị trí
               </label>
               <select
@@ -631,7 +631,7 @@ function EditActivityModal({
                 value={swapId}
                 disabled={saving}
                 onChange={(e) => setSwapId(e.target.value)}
-                className="mt-3 h-12 w-full rounded-xl border border-[#DCE8E6] bg-[#F8FBFA] px-3 text-sm text-[#163D42] focus:outline-[#087A78]"
+                className="mt-3 h-12 w-full rounded-xl border border-[#DBE7E9] bg-[#F8FBFB] px-3 text-sm text-[#163142] focus:outline-[#0891B2]"
               >
                 <option value="">Chọn ngày và địa điểm...</option>
                 {swapOptions.map((o) => (
@@ -645,26 +645,26 @@ function EditActivityModal({
                 <p className="mt-3 text-sm text-[#61757A]">Không có hoạt động khác để hoán đổi.</p>
               )}
               {swapTarget && (
-                <div className="mt-4 rounded-2xl border border-[#DCE8E6] bg-[#F8FBFA] p-4">
+                <div className="mt-4 rounded-2xl border border-[#DBE7E9] bg-[#F8FBFB] p-4">
                   <p className="mb-3 text-xs font-bold text-[#61757A]">VỊ TRÍ SAU KHI HOÁN ĐỔI</p>
                   <div className="rounded-xl bg-white p-3">
-                    <p className="text-xs font-semibold text-[#087A78]">
+                    <p className="text-xs font-semibold text-[#0891B2]">
                       Ngày {day.dayNumber} · {formatTime(activity.startTime)} –{' '}
                       {formatTime(activity.endTime)}
                     </p>
-                    <p className="mt-1 text-sm font-extrabold text-[#163D42]">
+                    <p className="mt-1 text-sm font-extrabold text-[#163142]">
                       {swapTarget.activity.placeName}
                     </p>
                   </div>
-                  <div className="flex justify-center py-2 text-[#087A78]">
+                  <div className="flex justify-center py-2 text-[#0891B2]">
                     <Icon name="swap_vert" className="text-[25px]" />
                   </div>
                   <div className="rounded-xl bg-white p-3">
-                    <p className="text-xs font-semibold text-[#087A78]">
+                    <p className="text-xs font-semibold text-[#0891B2]">
                       Ngày {swapTarget.day.dayNumber} · {formatTime(swapTarget.activity.startTime)}{' '}
                       – {formatTime(swapTarget.activity.endTime)}
                     </p>
-                    <p className="mt-1 text-sm font-extrabold text-[#163D42]">
+                    <p className="mt-1 text-sm font-extrabold text-[#163142]">
                       {activity.placeName}
                     </p>
                   </div>
@@ -685,9 +685,9 @@ function EditActivityModal({
             </p>
           )}
         </div>
-        <footer className="shrink-0 border-t border-[#E5EDEB] px-5 pb-5 pt-4 sm:px-7">
+        <footer className="shrink-0 border-t border-[#E5EDED] px-5 pb-5 pt-4 sm:px-7">
           <p className="mb-4 flex items-start gap-2 text-xs leading-5 text-[#61757A]">
-            <Icon name="info" className="mt-0.5 shrink-0 text-[17px] text-[#087A78]" />
+            <Icon name="info" className="mt-0.5 shrink-0 text-[17px] text-[#0891B2]" />
             Thay đổi được kiểm tra trước khi lưu. Chi phí và thời gian di chuyển sẽ được cập nhật
             theo dữ liệu hiện có.
           </p>
@@ -696,7 +696,7 @@ function EditActivityModal({
               type="button"
               disabled={saving}
               onClick={onClose}
-              className="rounded-xl border border-[#DCE8E6] px-5 py-3 text-sm font-bold text-[#506775] hover:bg-[#F5F8F7]"
+              className="rounded-xl border border-[#DBE7E9] px-5 py-3 text-sm font-bold text-[#506775] hover:bg-[#F5F8F8]"
             >
               Hủy
             </button>
@@ -706,7 +706,7 @@ function EditActivityModal({
                 saving || (mode === 'replace' && !replacement) || (mode === 'swap' && !swapTarget)
               }
               onClick={() => void save()}
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#0B615F] px-4 py-3 text-sm font-bold text-white hover:bg-[#087A78] disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#0E7490] px-4 py-3 text-sm font-bold text-white hover:bg-[#0891B2] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Icon name={saving ? 'hourglass_empty' : 'check'} className="text-[20px]" />
               {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
@@ -927,7 +927,7 @@ export default function ItineraryOverviewPage() {
           overview ? (
             <Link
               to={CLIENT_ROUTES.TRIPS}
-              className="rounded-full bg-white px-3 py-2 text-[11px] font-bold text-[#075C66]"
+              className="rounded-full bg-white px-3 py-2 text-[11px] font-bold text-[#0E7490]"
             >
               Chuyến đi của tôi
             </Link>
@@ -962,16 +962,16 @@ export default function ItineraryOverviewPage() {
       {/* ĐANG TẢI */}
       {loading && (
         <div role="status" className="rounded-[20px] bg-white p-9 text-center">
-          <span className="mx-auto block h-8 w-8 animate-spin rounded-full border-2 border-[#C3F8F0] border-t-[#087A78]" />
+          <span className="mx-auto block h-8 w-8 animate-spin rounded-full border-2 border-[#C0F5FB] border-t-[#0891B2]" />
 
-          <p className="mt-3 text-[13px] font-semibold text-[#087A78]">Đang tải lịch trình ...</p>
+          <p className="mt-3 text-[13px] font-semibold text-[#0891B2]">Đang tải lịch trình ...</p>
         </div>
       )}
 
       {/* LỖI HOẶC CHƯA CÓ LỊCH TRÌNH */}
       {!loading && (error || notFound) && (
         <div className="flex flex-col items-center rounded-[20px] bg-white px-5 py-10 text-center">
-          <Icon name="event_note" className="text-[42px] text-[#94B5B6]" />
+          <Icon name="event_note" className="text-[42px] text-[#92B4B8]" />
 
           <h2 className="mt-3 text-[16px] font-extrabold text-[#13364A]">
             {notFound ? 'Chưa tìm thấy lịch trình đã tạo' : 'Không thể tải lịch trình'}
@@ -988,7 +988,7 @@ export default function ItineraryOverviewPage() {
               <button
                 type="button"
                 onClick={() => setRetryCount((count) => count + 1)}
-                className="rounded-full bg-[#E2FAF5] px-5 py-2.5 text-[12px] font-bold text-[#075C66]"
+                className="rounded-full bg-[#E1F9FB] px-5 py-2.5 text-[12px] font-bold text-[#0E7490]"
               >
                 Thử tải lại
               </button>
@@ -996,7 +996,7 @@ export default function ItineraryOverviewPage() {
 
             <Link
               to={selectedUrl}
-              className="rounded-full bg-[#075C66] px-5 py-2.5 text-[12px] font-bold text-white"
+              className="rounded-full bg-[#0E7490] px-5 py-2.5 text-[12px] font-bold text-white"
             >
               {validPlanId ? 'Xem địa điểm đã chọn' : 'Tạo kế hoạch'}
             </Link>
@@ -1007,10 +1007,10 @@ export default function ItineraryOverviewPage() {
       {/* LỊCH TRÌNH BACKEND TRẢ VỀ */}
       {!loading && !error && !notFound && overview && (
         <>
-          <section className="relative overflow-hidden rounded-[28px] bg-[#104C4C] px-6 py-8 text-white shadow-[0_12px_30px_rgba(16,76,76,0.12)] sm:px-9 sm:py-10">
+          <section className="relative overflow-hidden rounded-[28px] bg-[#12344A] px-6 py-8 text-white shadow-[0_12px_30px_rgba(8,47,73,0.12)] sm:px-9 sm:py-10">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-linear-to-br from-[#104C4C] via-[#125E5B] to-[#168579]"
+              className="pointer-events-none absolute inset-0 bg-[#0891B2]"
             />
             <div
               aria-hidden="true"
@@ -1022,14 +1022,14 @@ export default function ItineraryOverviewPage() {
             />
             <div className="relative flex flex-wrap items-end justify-between gap-6">
               <div className="min-w-0 max-w-2xl">
-                <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-[#BEE9DF]">
+                <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-[#BCE6EB]">
                   <Icon name="route" className="text-[20px]" />
                   HÀNH TRÌNH CỦA BẠN
                 </p>
                 <h2 className="mt-3 break-words text-3xl font-extrabold leading-tight tracking-tight sm:text-[38px]">
                   {overview.itineraryTitle}
                 </h2>
-                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[#E0F3EE]">
+                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[#DFF2F4]">
                   <span className="flex items-center gap-1.5">
                     <Icon name="location_on" className="text-[18px]" />
                     {overview.destination}
@@ -1040,15 +1040,15 @@ export default function ItineraryOverviewPage() {
                   </span>
                 </div>
                 {overview.itineraryNotes && (
-                  <p className="mt-4 text-sm leading-6 text-[#D5EEE8]">{overview.itineraryNotes}</p>
+                  <p className="mt-4 text-sm leading-6 text-[#D4EDEF]">{overview.itineraryNotes}</p>
                 )}
               </div>
               <div className="shrink-0 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
-                <p className="flex items-center gap-1.5 text-xs font-semibold text-[#D4EFE6]">
+                <p className="flex items-center gap-1.5 text-xs font-semibold text-[#D3EDF0]">
                   <Icon name="event_available" className="text-[18px]" />
                   {planStatus ? STATUS_LABELS[planStatus] : 'Lịch trình của bạn'}
                 </p>
-                <p className="mt-1 text-xs text-[#C3E8DF]">Phiên bản {overview.versionNumber}</p>
+                <p className="mt-1 text-xs text-[#C1E6EA]">Phiên bản {overview.versionNumber}</p>
               </div>
             </div>
           </section>
@@ -1070,7 +1070,7 @@ export default function ItineraryOverviewPage() {
             <div className="order-2 min-w-0 lg:order-1">
               <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
                 <div>
-                  <h2 className="text-2xl font-extrabold tracking-tight text-[#163D42]">
+                  <h2 className="text-2xl font-extrabold tracking-tight text-[#163142]">
                     Lịch trình từng ngày
                   </h2>
                   <p className="mt-1 text-sm text-[#61757A]">
@@ -1081,7 +1081,7 @@ export default function ItineraryOverviewPage() {
                 </div>
                 <Link
                   to={selectedUrl}
-                  className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-[#DCE8E6] bg-white px-3 py-2 text-xs font-bold text-[#086B60] hover:bg-[#EDF8F3]"
+                  className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-[#DBE7E9] bg-white px-3 py-2 text-xs font-bold text-[#0E7490] hover:bg-[#ECF7F9]"
                 >
                   <Icon name="format_list_bulleted" className="text-[18px]" />
                   Địa điểm đã chọn
@@ -1101,7 +1101,7 @@ export default function ItineraryOverviewPage() {
                           .getElementById(`itinerary-day-${day.dayId}`)
                           ?.scrollIntoView({ block: 'start', behavior: 'smooth' })
                       }
-                      className="shrink-0 rounded-xl border border-[#DCE8E6] bg-white px-4 py-2 text-xs font-bold text-[#086B60] hover:bg-[#EDF8F3]"
+                      className="shrink-0 rounded-xl border border-[#DBE7E9] bg-white px-4 py-2 text-xs font-bold text-[#0E7490] hover:bg-[#ECF7F9]"
                     >
                       Ngày {day.dayNumber}
                     </button>
@@ -1111,14 +1111,14 @@ export default function ItineraryOverviewPage() {
               {savedNotice && (
                 <p
                   role="status"
-                  className="mb-4 flex items-center gap-2 rounded-xl border border-[#C8E5DC] bg-[#EDF8F3] p-4 text-sm font-semibold text-[#086B60]"
+                  className="mb-4 flex items-center gap-2 rounded-xl border border-[#C7E3E6] bg-[#ECF7F9] p-4 text-sm font-semibold text-[#0E7490]"
                 >
                   <Icon name="check_circle" className="text-[20px]" />
                   Đã lưu thay đổi lịch trình.
                 </p>
               )}
               {days.length === 0 ? (
-                <div className="rounded-[24px] border border-[#E2EAE8] bg-white p-8 text-center text-sm text-[#61757A]">
+                <div className="rounded-[24px] border border-[#E2EAEA] bg-white p-8 text-center text-sm text-[#61757A]">
                   Lịch trình chưa có ngày hoặc hoạt động nào.
                 </div>
               ) : (
@@ -1142,8 +1142,8 @@ export default function ItineraryOverviewPage() {
             <aside className="order-1 grid min-w-0 gap-4 lg:sticky lg:top-20 lg:order-2">
               <BudgetCard total={totalCost} budget={budget} currency={currency} />
               {days.length > 0 && (
-                <section className="hidden rounded-[24px] border border-[#E2EAE8] bg-white p-5 lg:block">
-                  <h3 className="text-sm font-extrabold text-[#163D42]">
+                <section className="hidden rounded-[24px] border border-[#E2EAEA] bg-white p-5 lg:block">
+                  <h3 className="text-sm font-extrabold text-[#163142]">
                     Các ngày trong chuyến đi
                   </h3>
                   <nav
@@ -1159,13 +1159,13 @@ export default function ItineraryOverviewPage() {
                             .getElementById(`itinerary-day-${day.dayId}`)
                             ?.scrollIntoView({ block: 'start', behavior: 'smooth' })
                         }
-                        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left hover:bg-[#F0F7F4] focus-visible:outline-[#087A78]"
+                        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left hover:bg-[#F0F7F7] focus-visible:outline-[#0891B2]"
                       >
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#EDF8F3] text-sm font-extrabold text-[#087A78]">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#ECF7F9] text-sm font-extrabold text-[#0891B2]">
                           {day.dayNumber}
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-xs font-bold text-[#163D42]">
+                          <span className="block truncate text-xs font-bold text-[#163142]">
                             {day.title || `Ngày ${day.dayNumber}`}
                           </span>
                           <span className="mt-1 block text-xs text-[#61757A]">
@@ -1174,15 +1174,15 @@ export default function ItineraryOverviewPage() {
                         </span>
                         <Icon
                           name="chevron_right"
-                          className="shrink-0 text-[19px] text-[#087A78]"
+                          className="shrink-0 text-[19px] text-[#0891B2]"
                         />
                       </button>
                     ))}
                   </nav>
                 </section>
               )}
-              <div className="flex items-start gap-3 rounded-2xl border border-[#E2EAE8] bg-[#F5F9F7] p-4 text-xs leading-5 text-[#61757A]">
-                <Icon name="info" className="mt-0.5 shrink-0 text-[20px] text-[#087A78]" />
+              <div className="flex items-start gap-3 rounded-2xl border border-[#E2EAEA] bg-[#F5F9F9] p-4 text-xs leading-5 text-[#61757A]">
+                <Icon name="info" className="mt-0.5 shrink-0 text-[20px] text-[#0891B2]" />
                 <p>
                   Lịch trình được sắp xếp bằng thuật toán, không phải AI. Thời gian di chuyển là ước
                   lượng.{' '}
@@ -1196,7 +1196,7 @@ export default function ItineraryOverviewPage() {
 
           {/* ĐÁNH GIÁ CỦA BẠN */}
           {tripFeedback && (
-            <div className="mt-6 rounded-[24px] border border-[#E2EAE8] bg-white p-5 shadow-[0_6px_24px_rgba(18,61,64,0.04)]">
+            <div className="mt-6 rounded-[24px] border border-[#E2EAEA] bg-white p-5 shadow-[0_6px_24px_rgba(8,47,73,0.04)]">
               <div className="flex items-center gap-2.5">
                 <Avatar url={user?.avatarUrl} size={36} iconSize={21} />
 
@@ -1216,7 +1216,7 @@ export default function ItineraryOverviewPage() {
                 </span>
               </div>
 
-              <p className="mt-2.5 flex items-center gap-1.5 text-[12px] font-bold text-[#087A78]">
+              <p className="mt-2.5 flex items-center gap-1.5 text-[12px] font-bold text-[#0891B2]">
                 <Icon name="verified" filled className="text-[15px]" />
                 Đánh giá của bạn
               </p>

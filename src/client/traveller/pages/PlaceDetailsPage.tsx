@@ -104,7 +104,7 @@ function ReviewCard({
           url={review.userAvatarUrl}
           size={48}
           iconSize={28}
-          className="bg-[#CFE9E6] text-[#087A78]"
+          className="bg-[#CEE7EA] text-[#0891B2]"
         />
         <div className="min-w-0 flex-1">
           <p className="truncate text-[15px] font-extrabold text-[#13364A]">
@@ -350,7 +350,7 @@ export default function PlaceDetailsPage() {
 
       <div className="md:grid md:grid-cols-[1.4fr_1fr] md:gap-6">
         <div className="min-w-0">
-          <div className="relative h-60 overflow-hidden rounded-[24px] bg-[#CFE9E6] md:h-80">
+          <div className="relative h-60 overflow-hidden rounded-[24px] bg-[#CEE7EA] md:h-80">
             {place.coverUrl ? (
               <img
                 src={place.coverUrl}
@@ -390,7 +390,7 @@ export default function PlaceDetailsPage() {
             </h2>
           </div>
           <p className="mt-1 flex items-start gap-1 text-[12px] text-[#72818C]">
-            <Icon name="location_on" className="text-[16px] text-[#087A78]" />
+            <Icon name="location_on" className="text-[16px] text-[#0891B2]" />
             {place.address ?? 'Chưa cập nhật địa chỉ'}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -404,8 +404,8 @@ export default function PlaceDetailsPage() {
                     title={`Xem các địa điểm ${type.name}`}
                     className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors ${
                       index === 0
-                        ? 'bg-[#087A78] text-white hover:bg-[#06615F]'
-                        : 'border border-[#9FD8D1] bg-white text-[#087A78] hover:bg-[#E8F9F4]'
+                        ? 'bg-[#0891B2] text-white hover:bg-[#0E7490]'
+                        : 'border border-[#9CD5DB] bg-white text-[#0891B2] hover:bg-[#E7F8FA]'
                     }`}
                   >
                     <Icon name="sell" className="text-[15px]" />
@@ -433,7 +433,7 @@ export default function PlaceDetailsPage() {
             <button
               type="button"
               onClick={() => setIntroExpanded((value) => !value)}
-              className="mt-1.5 flex items-center text-[12px] font-bold text-[#087A78]"
+              className="mt-1.5 flex items-center text-[12px] font-bold text-[#0891B2]"
             >
               {introExpanded ? 'Thu gọn' : 'Xem thêm'}
               <Icon name={introExpanded ? 'expand_less' : 'expand_more'} className="text-[18px]" />
@@ -449,7 +449,7 @@ export default function PlaceDetailsPage() {
                     key={image.url}
                     src={image.url}
                     alt=""
-                    className="h-[110px] w-[168px] shrink-0 rounded-2xl bg-[#CFE9E6] object-cover"
+                    className="h-[110px] w-[168px] shrink-0 rounded-2xl bg-[#CEE7EA] object-cover"
                   />
                 ))}
               </div>
@@ -542,7 +542,7 @@ export default function PlaceDetailsPage() {
           <h2 className="mt-7 mb-3 text-[17px] font-extrabold text-[#13364A]">Giờ mở cửa</h2>
           <div className="rounded-2xl bg-white p-4">
             {detail.openingHours.length === 0 ? (
-              <p className="flex items-center gap-2 text-[13px] font-bold text-[#087A78]">
+              <p className="flex items-center gap-2 text-[13px] font-bold text-[#0891B2]">
                 <Icon name="all_inclusive" className="text-[18px]" />
                 Mở cả ngày, tất cả các ngày trong tuần
               </p>
@@ -556,7 +556,7 @@ export default function PlaceDetailsPage() {
                       <li
                         key={hour.dayOfWeek}
                         className={`flex items-center justify-between py-2 text-[12.5px] first:pt-0 last:pb-0 ${
-                          today ? 'font-extrabold text-[#087A78]' : 'text-[#4F5F6B]'
+                          today ? 'font-extrabold text-[#0891B2]' : 'text-[#4F5F6B]'
                         }`}
                       >
                         <span>
@@ -624,7 +624,7 @@ export default function PlaceDetailsPage() {
               aria-label="Lưu địa điểm"
               aria-pressed={saved}
               className={`flex h-12 w-12 items-center justify-center rounded-full ${
-                saved ? 'bg-[#C3F8F0] text-[#087A78]' : 'bg-[#EBEDFF] text-[#405A82]'
+                saved ? 'bg-[#C0F5FB] text-[#0891B2]' : 'bg-[#EBEDFF] text-[#405A82]'
               }`}
             >
               <Icon name="bookmark" filled={saved} className="text-[22px]" />
@@ -632,7 +632,7 @@ export default function PlaceDetailsPage() {
             <button
               type="button"
               onClick={() => showNotice(`Đã thêm "${place.name}" vào chuyến đi của bạn.`)}
-              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-[#006C64] text-[15px] font-bold text-white shadow-md hover:bg-primary-container"
+              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-[#0E7490] text-[15px] font-bold text-white shadow-md hover:bg-client-primary-strong"
             >
               <Icon name="add_circle" className="text-[21px]" />
               Thêm vào Chuyến đi
@@ -671,7 +671,7 @@ export default function PlaceDetailsPage() {
             </p>
             <Link
               to={CLIENT_ROUTES.LOGIN}
-              className="shrink-0 rounded-full bg-[#075C66] px-5 py-2.5 text-[13.5px] font-bold text-white"
+              className="shrink-0 rounded-full bg-[#0E7490] px-5 py-2.5 text-[13.5px] font-bold text-white"
             >
               Đăng nhập
             </Link>

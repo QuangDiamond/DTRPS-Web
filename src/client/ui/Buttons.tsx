@@ -22,7 +22,7 @@ export function PrimaryButton({
     <button
       type={type}
       disabled={loading || disabled}
-      className={`flex h-[50px] w-full items-center justify-center gap-2 rounded-2xl bg-primary text-[14px] font-extrabold text-white transition-colors hover:bg-primary-container disabled:cursor-not-allowed disabled:bg-[#9EBEB9] ${className}`}
+      className={`flex h-[50px] w-full items-center justify-center gap-2 rounded-2xl bg-client-primary text-[14px] font-extrabold text-white transition-colors hover:bg-client-primary-strong disabled:cursor-not-allowed disabled:bg-[#9CBCC0] ${className}`}
       {...rest}
     >
       {loading ? (
@@ -47,7 +47,7 @@ export function SecondaryButton({
   return (
     <button
       type={type}
-      className={`flex h-[48px] w-full items-center justify-center rounded-[15px] bg-[#E3F3EF] text-[13px] font-extrabold text-primary transition-colors hover:bg-client-pale disabled:opacity-60 ${className}`}
+      className={`flex h-[48px] w-full items-center justify-center rounded-[15px] bg-[#E2F2F4] text-[13px] font-extrabold text-client-primary transition-colors hover:bg-client-pale disabled:opacity-60 ${className}`}
       {...rest}
     >
       {children}
@@ -60,7 +60,7 @@ export function TextLink({ to, children }: { to: string; children: ReactNode }) 
   return (
     <Link
       to={to}
-      className="block py-3 text-center text-[12px] font-bold text-[#007A73] hover:underline"
+      className="block py-3 text-center text-[12px] font-bold text-[#0E7490] hover:underline"
     >
       {children}
     </Link>

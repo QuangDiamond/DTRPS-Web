@@ -5,6 +5,7 @@ import Icon from './Icon';
  * cùng chữ "SmartTravel", cùng ô bo góc — chỉ đổi màu theo nền.
  * light: nền sáng · dark: nền đậm (sidebar admin, top bar du khách) · inverse: nền màu thương hiệu
  * (panel trái trang đăng nhập admin) — ô trắng, quả cầu màu thương hiệu.
+ * sky / skyLight: khu du khách & đối tác (tông cyan) — trên top bar xanh / trên nền sáng.
  */
 export default function BrandMark({
   subtitle,
@@ -12,21 +13,37 @@ export default function BrandMark({
   size = 'md',
 }: {
   subtitle?: string;
-  tone?: 'light' | 'dark' | 'inverse';
+  tone?: 'light' | 'dark' | 'inverse' | 'sky' | 'skyLight';
   size?: 'sm' | 'md' | 'lg';
 }) {
   const tile = {
     light: 'bg-brand text-white',
     dark: 'bg-[#14B8A6] text-white',
     inverse: 'bg-white text-brand',
+    sky: 'bg-white text-[#0891B2]',
+    skyLight: 'bg-[#0891B2] text-white',
   }[tone];
   const word = {
     light: 'text-[#13364A]',
     dark: 'text-white',
     inverse: 'text-white',
+    sky: 'text-white',
+    skyLight: 'text-[#0F2A3B]',
   }[tone];
-  const accent = { light: 'text-brand', dark: 'text-[#5EEAD4]', inverse: 'text-[#99F6E4]' }[tone];
-  const sub = { light: 'text-brand', dark: 'text-white/60', inverse: 'text-white/75' }[tone];
+  const accent = {
+    light: 'text-brand',
+    dark: 'text-[#5EEAD4]',
+    inverse: 'text-[#99F6E4]',
+    sky: 'text-[#CFFAFE]',
+    skyLight: 'text-[#0891B2]',
+  }[tone];
+  const sub = {
+    light: 'text-brand',
+    dark: 'text-white/60',
+    inverse: 'text-white/75',
+    sky: 'text-white/75',
+    skyLight: 'text-[#0891B2]',
+  }[tone];
 
   if (size === 'lg') {
     return (

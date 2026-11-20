@@ -74,7 +74,7 @@ export function ConfirmDialog({
               onClose();
             }}
             className={`h-11 flex-1 rounded-full text-[13px] font-bold text-white ${
-              danger ? 'bg-client-danger' : 'bg-primary'
+              danger ? 'bg-client-danger' : 'bg-client-primary'
             }`}
           >
             {confirmLabel}

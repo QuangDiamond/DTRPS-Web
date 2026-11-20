@@ -126,7 +126,7 @@ function PlanMenu({
           >
             {editable && (
               <button type="button" role="menuitem" onClick={pick(onEdit)} className={itemClass}>
-                <Icon name="edit" className="text-[18px] text-[#087A78]" />
+                <Icon name="edit" className="text-[18px] text-[#0891B2]" />
                 Sửa kế hoạch
               </button>
             )}
@@ -144,7 +144,7 @@ function PlanMenu({
                 >
                   <Icon
                     name={action.icon}
-                    className={`text-[18px] ${action.danger ? '' : 'text-[#087A78]'}`}
+                    className={`text-[18px] ${action.danger ? '' : 'text-[#0891B2]'}`}
                   />
                   {action.label}
                 </button>
@@ -199,7 +199,7 @@ function PlanCard({
     <article className="rounded-[22px] bg-white p-2.5 shadow-[0_3px_12px_rgba(19,54,74,0.04)]">
       {/* Backend chưa trả ảnh bìa Travel Plan, nên dùng nền minh họa thay ảnh giả. */}
       {/* Không đặt overflow-hidden ở khung này để menu thao tác không bị cắt. */}
-      <div className="relative flex h-[165px] flex-col justify-between rounded-[18px] bg-gradient-to-br from-[#0F8D86] via-[#087A78] to-[#13364A] p-3 text-white">
+      <div className="relative flex h-[165px] flex-col justify-between rounded-[18px] bg-[#0891B2] p-3 text-white">
         <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-[18px]">
           <span className="absolute -right-6 -top-8 opacity-15">
             <Icon name="travel_explore" className="text-[170px]" />
@@ -249,7 +249,7 @@ function PlanCard({
       <div className="px-1.5 pt-3">
         <div className="grid grid-cols-2 gap-2 rounded-2xl bg-[#F3F4FF] px-3 py-3">
           <div className="flex items-start gap-2">
-            <Icon name="date_range" className="mt-0.5 text-[18px] text-[#087A78]" />
+            <Icon name="date_range" className="mt-0.5 text-[18px] text-[#0891B2]" />
             <div className="min-w-0">
               <p className="text-[10px] text-[#72818C]">Thời gian</p>
               <p className="mt-0.5 text-[11px] font-bold text-[#13364A]">
@@ -261,7 +261,7 @@ function PlanCard({
             </div>
           </div>
           <div className="flex items-start gap-2">
-            <Icon name="groups" className="mt-0.5 text-[18px] text-[#087A78]" />
+            <Icon name="groups" className="mt-0.5 text-[18px] text-[#0891B2]" />
             <div>
               <p className="text-[10px] text-[#72818C]">Số người</p>
               <p className="mt-0.5 text-[12px] font-bold text-[#13364A]">
@@ -273,15 +273,15 @@ function PlanCard({
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
           <span className="flex items-center gap-1 text-[12px] font-semibold text-[#13364A]">
-            <Icon name="payments" className="text-[17px] text-[#087A78]" />
+            <Icon name="payments" className="text-[17px] text-[#0891B2]" />
             {formatEstimatedCost(plan.estimatedCost, plan.currency)}
           </span>
           <span className="flex items-center gap-1 text-[11px] text-[#72818C]">
-            <Icon name="favorite" className="text-[17px] text-[#087A78]" />
+            <Icon name="favorite" className="text-[17px] text-[#0891B2]" />
             {plan.interestCodes?.length ?? 0} sở thích
           </span>
           <span className="flex items-center gap-1 text-[11px] text-[#72818C]">
-            <Icon name="category" className="text-[17px] text-[#087A78]" />
+            <Icon name="category" className="text-[17px] text-[#0891B2]" />
             {plan.categoryCodes?.length ?? 0} loại hình
           </span>
         </div>
@@ -291,7 +291,7 @@ function PlanCard({
             type="button"
             onClick={onOpen}
             disabled={opening}
-            className="flex h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full bg-[#075C66] px-3 text-[12px] font-bold text-white hover:bg-[#087A78] disabled:cursor-wait disabled:opacity-60"
+            className="flex h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full bg-[#0E7490] px-3 text-[12px] font-bold text-white hover:bg-[#0891B2] disabled:cursor-wait disabled:opacity-60"
           >
             {opening ? (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
@@ -305,7 +305,7 @@ function PlanCard({
             to={selectedUrl}
             title="Xem địa điểm đã chọn"
             aria-label={`Địa điểm đã chọn của ${plan.title}`}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#EBEDFF] text-[#075C66]"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#EBEDFF] text-[#0E7490]"
           >
             <Icon name="shopping_basket" className="text-[20px]" />
           </Link>
@@ -313,7 +313,7 @@ function PlanCard({
             to={suggestionsUrl}
             title="Xem danh sách địa điểm"
             aria-label={`Danh sách địa điểm cho ${plan.title}`}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#EBEDFF] text-[#075C66]"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#EBEDFF] text-[#0E7490]"
           >
             <Icon name="add_location_alt" className="text-[20px]" />
           </Link>
@@ -473,7 +473,7 @@ export default function MyTripsPage() {
         <Link
           to={CLIENT_ROUTES.TRIP_PLAN}
           aria-label="Tạo chuyến đi mới"
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#075C66] text-white hover:bg-[#087A78]"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0E7490] text-white hover:bg-[#0891B2]"
         >
           <Icon name="add" className="text-[26px]" />
         </Link>
@@ -492,7 +492,7 @@ export default function MyTripsPage() {
               onClick={() => setFilter(item.id)}
               className={`flex flex-1 items-center justify-center gap-1.5 rounded-full py-2 text-[12px] font-bold ${
                 selected
-                  ? 'bg-white text-[#075C66]'
+                  ? 'bg-white text-[#0E7490]'
                   : 'text-[#72818C]'
               }`}
             >
@@ -500,7 +500,7 @@ export default function MyTripsPage() {
               <span
                 className={`min-w-[20px] rounded-full px-1.5 text-[11px] ${
                   selected
-                    ? 'bg-[#C3F8F0] text-[#075C66]'
+                    ? 'bg-[#C0F5FB] text-[#0E7490]'
                     : 'bg-[#DCDFF5]'
                 }`}
               >
@@ -514,7 +514,7 @@ export default function MyTripsPage() {
       {/* ĐANG TẢI */}
       {loading && (
         <div role="status" className="mt-4 rounded-[22px] bg-white p-10 text-center">
-          <span className="mx-auto block h-8 w-8 animate-spin rounded-full border-2 border-[#C3F8F0] border-t-[#087A78]" />
+          <span className="mx-auto block h-8 w-8 animate-spin rounded-full border-2 border-[#C0F5FB] border-t-[#0891B2]" />
           <p className="mt-3 text-[12px] text-[#72818C]">
             Đang tải các chuyến đi từ Backend...
           </p>
@@ -528,7 +528,7 @@ export default function MyTripsPage() {
           <button
             type="button"
             onClick={() => setRetryCount((value) => value + 1)}
-            className="mt-3 rounded-full bg-white px-5 py-2.5 text-[12px] font-bold text-[#075C66]"
+            className="mt-3 rounded-full bg-white px-5 py-2.5 text-[12px] font-bold text-[#0E7490]"
           >
             Thử tải lại
           </button>
@@ -555,7 +555,7 @@ export default function MyTripsPage() {
           </div>
         ) : (
           <div className="mt-4 flex flex-col items-center rounded-[22px] bg-white px-6 py-10 text-center">
-            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#C3F8F0] text-[#087A78]">
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#C0F5FB] text-[#0891B2]">
               <Icon name="luggage" className="text-[30px]" />
             </span>
             <p className="mt-3 text-[14px] font-bold text-[#13364A]">
@@ -571,7 +571,7 @@ export default function MyTripsPage() {
       )}
 
       {/* TẠO CHUYẾN ĐI MỚI */}
-      <div className="mt-5 flex items-center gap-3 rounded-[22px] bg-gradient-to-br from-[#E2FCF8] to-[#EEF0FF] p-4">
+      <div className="mt-5 flex items-center gap-3 rounded-[22px] bg-[#E1FAFD] p-4">
         <div className="min-w-0 flex-1">
           <p className="text-[15px] font-extrabold text-[#13364A]">
             Bạn có dự định mới?
@@ -582,7 +582,7 @@ export default function MyTripsPage() {
         </div>
         <Link
           to={CLIENT_ROUTES.TRIP_PLAN}
-          className="flex shrink-0 items-center gap-1 rounded-full bg-[#075C66] px-4 py-2.5 text-[12px] font-bold text-white hover:bg-[#087A78]"
+          className="flex shrink-0 items-center gap-1 rounded-full bg-[#0E7490] px-4 py-2.5 text-[12px] font-bold text-white hover:bg-[#0891B2]"
         >
           Lên lịch mới
           <Icon name="add" className="text-[16px]" />

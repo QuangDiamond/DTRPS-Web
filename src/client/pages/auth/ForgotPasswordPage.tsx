@@ -162,7 +162,7 @@ export default function ForgotPasswordPage() {
 
         <Link
           to={CLIENT_ROUTES.LOGIN}
-          className="mt-6 flex items-center justify-center gap-1 text-[13px] font-semibold text-[#62737F] hover:text-primary"
+          className="mt-6 flex items-center justify-center gap-1 text-[13px] font-semibold text-[#62737F] hover:text-client-primary"
         >
           <Icon name="arrow_back" className="text-[17px]" />
           Quay lại đăng nhập

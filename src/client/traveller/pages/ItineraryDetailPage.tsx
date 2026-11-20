@@ -137,10 +137,10 @@ function ActivityCard({
     <li className="relative pb-4 pl-8 last:pb-0">
 
       {!isLast && (
-        <span className="absolute bottom-0 left-[11px] top-5 w-[2px] bg-[#BDECE5]" />
+        <span className="absolute bottom-0 left-[11px] top-5 w-[2px] bg-[#BBE9EE]" />
       )}
 
-      <span className="absolute left-0 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#DDF7EF] text-[11px] font-extrabold text-[#006B65]">
+      <span className="absolute left-0 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#DCF5F8] text-[11px] font-extrabold text-[#0E7490]">
         {index + 1}
       </span>
 
@@ -149,7 +149,7 @@ function ActivityCard({
         {/* THỜI GIAN HOẠT ĐỘNG */}
 
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="flex items-center gap-1 text-[14px] font-extrabold text-[#087F78]">
+          <span className="flex items-center gap-1 text-[14px] font-extrabold text-[#0891B2]">
 
             <Icon
               name="schedule"
@@ -172,11 +172,11 @@ function ActivityCard({
 
         <div className="mt-3 flex gap-3">
 
-          <span className="flex h-[70px] w-[70px] shrink-0 items-center justify-center rounded-xl bg-[#E6F4F2]">
+          <span className="flex h-[70px] w-[70px] shrink-0 items-center justify-center rounded-xl bg-[#E5F3F5]">
 
             <Icon
               name="place"
-              className="text-[33px] text-[#087F78]"
+              className="text-[33px] text-[#0891B2]"
             />
 
           </span>
@@ -185,7 +185,7 @@ function ActivityCard({
 
             <Link
               to={placePath(String(activity.placeId))}
-              className="text-[14px] font-extrabold leading-5 text-[#14364F] hover:text-[#087F78]"
+              className="text-[14px] font-extrabold leading-5 text-[#14364F] hover:text-[#0891B2]"
             >
               {activity.placeName}
             </Link>
@@ -194,7 +194,7 @@ function ActivityCard({
 
               <Icon
                 name="location_on"
-                className="shrink-0 text-[16px] text-[#087F78]"
+                className="shrink-0 text-[16px] text-[#0891B2]"
               />
 
               <span>
@@ -203,7 +203,7 @@ function ActivityCard({
               </span>
             </p>
 
-            <p className="mt-2 text-[12px] font-extrabold text-[#087F78]">
+            <p className="mt-2 text-[12px] font-extrabold text-[#0891B2]">
               {formatMoney(
                 activity.estimatedCost,
                 currency,
@@ -239,7 +239,7 @@ function ActivityCard({
         {/* GHI CHÚ */}
 
         {activity.notes && (
-          <p className="mt-2 flex items-start gap-2 rounded-xl bg-[#F1FBF8] px-3 py-2.5 text-[11px] leading-5 text-[#4B7470]">
+          <p className="mt-2 flex items-start gap-2 rounded-xl bg-[#F0FAFB] px-3 py-2.5 text-[11px] leading-5 text-[#4B6C74]">
 
             <Icon
               name="info"
@@ -257,7 +257,7 @@ function ActivityCard({
         {executionStatus &&
           executionStatus !== 'PENDING' && (
 
-            <p className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[#087F78]">
+            <p className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[#0891B2]">
 
               <Icon
                 name={
@@ -710,10 +710,10 @@ export default function ItineraryDetailPage() {
       {loading && (
         <div
           role="status"
-          className="rounded-[20px] bg-white p-8 text-center text-[13px] text-[#087F78]"
+          className="rounded-[20px] bg-white p-8 text-center text-[13px] text-[#0891B2]"
         >
 
-          <span className="mx-auto mb-3 block h-8 w-8 animate-spin rounded-full border-2 border-[#C3F8F0] border-t-[#087F78]" />
+          <span className="mx-auto mb-3 block h-8 w-8 animate-spin rounded-full border-2 border-[#C0F5FB] border-t-[#0891B2]" />
 
           Đang tải lịch trình ...
         </div>
@@ -741,7 +741,7 @@ export default function ItineraryDetailPage() {
                     (value) => value + 1,
                   )
                 }
-                className="rounded-full bg-white px-4 py-2 text-[12px] font-bold text-[#006B65]"
+                className="rounded-full bg-white px-4 py-2 text-[12px] font-bold text-[#0E7490]"
               >
                 Thử lại
               </button>
@@ -749,7 +749,7 @@ export default function ItineraryDetailPage() {
 
             <Link
               to={overviewUrl}
-              className="rounded-full bg-white px-4 py-2 text-[12px] font-bold text-[#006B65]"
+              className="rounded-full bg-white px-4 py-2 text-[12px] font-bold text-[#0E7490]"
             >
               Về tổng quan
             </Link>
@@ -768,7 +768,7 @@ export default function ItineraryDetailPage() {
 
             <Icon
               name="event_busy"
-              className="text-[40px] text-[#94B5B6]"
+              className="text-[40px] text-[#92B4B8]"
             />
 
             <h2 className="mt-3 text-[16px] font-extrabold text-[#14364F]">
@@ -781,7 +781,7 @@ export default function ItineraryDetailPage() {
 
             <Link
               to={overviewUrl}
-              className="mt-4 inline-flex rounded-full bg-[#006B65] px-5 py-3 text-[12px] font-bold text-white"
+              className="mt-4 inline-flex rounded-full bg-[#0E7490] px-5 py-3 text-[12px] font-bold text-white"
             >
               Xem tất cả các ngày
             </Link>
@@ -798,9 +798,9 @@ export default function ItineraryDetailPage() {
 
             {/* THÔNG TIN NGÀY */}
 
-            <div className="rounded-[20px] bg-gradient-to-br from-[#DDF9F1] to-[#EDF9FB] p-4">
+            <div className="rounded-[20px] bg-[#DCF7FA] p-4">
 
-              <p className="flex items-center gap-1 text-[11px] font-semibold text-[#006B65]">
+              <p className="flex items-center gap-1 text-[11px] font-semibold text-[#0E7490]">
 
                 <Icon
                   name="event_note"
@@ -826,7 +826,7 @@ export default function ItineraryDetailPage() {
 
               <div className="mt-3 flex flex-wrap items-center gap-2">
 
-                <span className="rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-bold text-[#006B65]">
+                <span className="rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-bold text-[#0E7490]">
 
                   Chi phí ngày:
                   {' '}
@@ -873,7 +873,7 @@ export default function ItineraryDetailPage() {
                   }
                   className={`flex shrink-0 items-center gap-1.5 rounded-xl px-4 py-3 text-[12px] font-extrabold ${
                     day.dayNumber === dayNumber
-                      ? 'bg-[#006B65] text-white'
+                      ? 'bg-[#0E7490] text-white'
                       : 'bg-[#F0F1FF] text-[#667895]'
                   }`}
                 >
@@ -909,7 +909,7 @@ export default function ItineraryDetailPage() {
                 Các hoạt động trong ngày
               </h2>
 
-              <span className="text-[11px] font-semibold text-[#087F78]">
+              <span className="text-[11px] font-semibold text-[#0891B2]">
                 {activities.length} hoạt động
               </span>
             </div>
@@ -956,11 +956,11 @@ export default function ItineraryDetailPage() {
             {/* BẮT ĐẦU CHUYẾN ĐI THEO NGÀY             */}
             {/* ====================================== */}
 
-            <section className="mt-5 rounded-[20px] border border-[#BDECE5] bg-[#F1FBF8] p-4">
+            <section className="mt-5 rounded-[20px] border border-[#BBE9EE] bg-[#F0FAFB] p-4">
 
               <div className="flex items-start gap-3">
 
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#DDF7EF] text-[#087F78]">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#DCF5F8] text-[#0891B2]">
 
                   <Icon
                     name="navigation"
@@ -994,7 +994,7 @@ export default function ItineraryDetailPage() {
 
               {executionStatus === 'COMPLETED' ? (
 
-                <div className="mt-3 flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-[12px] font-bold text-[#087F78]">
+                <div className="mt-3 flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-[12px] font-bold text-[#0891B2]">
 
                   <Icon
                     name="check_circle"
@@ -1016,7 +1016,7 @@ export default function ItineraryDetailPage() {
                     starting ||
                     Boolean(startBlockedReason)
                   }
-                  className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#006B65] px-4 text-[13px] font-extrabold text-white transition hover:bg-[#075C66] disabled:cursor-wait disabled:opacity-60"
+                  className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#0E7490] px-4 text-[13px] font-extrabold text-white transition hover:bg-[#0E7490] disabled:cursor-wait disabled:opacity-60"
                 >
 
                   <Icon
@@ -1077,7 +1077,7 @@ export default function ItineraryDetailPage() {
               {nextDay ? (
                 <Link
                   to={dayUrl(nextDay.dayNumber)}
-                  className="flex h-12 flex-1 items-center justify-center gap-1 rounded-full bg-[#006B65] px-4 text-[12px] font-extrabold text-white"
+                  className="flex h-12 flex-1 items-center justify-center gap-1 rounded-full bg-[#0E7490] px-4 text-[12px] font-extrabold text-white"
                 >
 
                   Ngày tiếp theo
@@ -1093,7 +1093,7 @@ export default function ItineraryDetailPage() {
 
                 <Link
                   to={overviewUrl}
-                  className="flex h-12 flex-1 items-center justify-center gap-1 rounded-full bg-[#006B65] px-4 text-[12px] font-extrabold text-white"
+                  className="flex h-12 flex-1 items-center justify-center gap-1 rounded-full bg-[#0E7490] px-4 text-[12px] font-extrabold text-white"
                 >
 
                   Về tổng quan

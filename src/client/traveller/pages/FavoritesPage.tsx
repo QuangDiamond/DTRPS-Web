@@ -35,7 +35,7 @@ function FavoriteCard({ place, onRemove }: { place: PlaceSummary; onRemove: () =
   return (
     <div className="relative overflow-hidden rounded-[22px] bg-white">
       <Link to={favoritePlacePath(String(place.id))} className="block">
-        <div className="relative h-[170px] bg-[#CFE9E6]">
+        <div className="relative h-[170px] bg-[#CEE7EA]">
           {place.coverUrl ? (
             <img
               src={place.coverUrl}
@@ -159,7 +159,7 @@ export default function FavoritesPage() {
       <div className="flex items-center gap-3">
         <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2">
           <h1 className="text-[22px] font-extrabold text-[#13364A]">Địa điểm yêu thích</h1>
-          <span className="text-[12px] font-semibold text-[#087A78]">({total} điểm đã lưu)</span>
+          <span className="text-[12px] font-semibold text-[#0891B2]">({total} điểm đã lưu)</span>
         </div>
       </div>
 
@@ -200,7 +200,7 @@ export default function FavoritesPage() {
               onClick={() => setGroupFilter(id)}
               aria-pressed={selected}
               className={`shrink-0 rounded-full px-4 py-2 text-[12px] font-bold ${
-                selected ? 'bg-[#075C66] text-white' : 'bg-white text-[#13364A]'
+                selected ? 'bg-[#0E7490] text-white' : 'bg-white text-[#13364A]'
               }`}
             >
               {GROUP_LABELS[id]}
@@ -249,7 +249,7 @@ export default function FavoritesPage() {
           {!hasActiveFilter && (
             <Link
               to={CLIENT_ROUTES.EXPLORE}
-              className="mt-4 rounded-2xl bg-[#075C66] px-5 py-3 text-[13px] font-bold text-white"
+              className="mt-4 rounded-2xl bg-[#0E7490] px-5 py-3 text-[13px] font-bold text-white"
             >
               Khám phá ngay
             </Link>
@@ -258,9 +258,9 @@ export default function FavoritesPage() {
       )}
 
       {total > 0 && (
-        <div className="mt-5 flex flex-col gap-3 rounded-[22px] bg-linear-to-br from-[#E2FCF8] to-[#D6F0FF] p-4 md:flex-row md:items-center">
+        <div className="mt-5 flex flex-col gap-3 rounded-[22px] bg-[#E1FAFD] p-4 md:flex-row md:items-center">
           <div className="flex flex-1 items-center gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#075C66] text-white">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#0E7490] text-white">
               <Icon name="rocket_launch" className="text-[22px]" />
             </span>
             <div className="min-w-0">
@@ -272,7 +272,7 @@ export default function FavoritesPage() {
           </div>
           <Link
             to={CLIENT_ROUTES.TRIP_PLAN}
-            className="flex h-11 items-center justify-center gap-1.5 rounded-2xl bg-[#075C66] px-5 text-[13px] font-bold text-white hover:bg-primary"
+            className="flex h-11 items-center justify-center gap-1.5 rounded-2xl bg-[#0E7490] px-5 text-[13px] font-bold text-white hover:bg-client-primary"
           >
             Tạo chuyến đi từ danh sách này
             <Icon name="arrow_forward" className="text-[18px]" />

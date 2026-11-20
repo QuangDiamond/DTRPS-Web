@@ -54,7 +54,7 @@ function BecomePartner() {
         {benefits.map(([icon, title, description]) => (
           <Card key={title} className="mb-0">
             <div className="flex items-center gap-3">
-              <Icon name={icon} className="text-[28px] text-primary" />
+              <Icon name={icon} className="text-[28px] text-client-primary" />
               <div>
                 <CardTitle>{title}</CardTitle>
                 <p className="text-[12px] text-client-muted">{description}</p>

@@ -43,21 +43,21 @@ const easeOutQuad = (ratio: number) => 1 - (1 - ratio) * (1 - ratio);
 function GlobeAnimation({ finished, stopped }: { finished: boolean; stopped: boolean }) {
   return (
     <div className="relative mx-auto flex h-[210px] w-[210px] items-center justify-center">
-      <span className="absolute h-[200px] w-[200px] animate-pulse rounded-full border border-[#D8EEF0] bg-[#F2FBFA]" />
-      <span className="absolute h-[160px] w-[160px] rounded-full border border-[#D8EEF0]" />
+      <span className="absolute h-[200px] w-[200px] animate-pulse rounded-full border border-[#D7EFF1] bg-[#F2FAFB]" />
+      <span className="absolute h-[160px] w-[160px] rounded-full border border-[#D7EFF1]" />
       {!stopped && (
         <span className="absolute h-[200px] w-[200px] animate-[spin_5s_linear_infinite]">
-          <span className="absolute top-[18px] right-[18px] flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#075C66] shadow-md">
+          <span className="absolute top-[18px] right-[18px] flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#0E7490] shadow-md">
             <Icon name="flight" className="rotate-45 text-[17px]" />
           </span>
-          <span className="absolute bottom-[30px] left-3 h-3 w-3 rounded-full border-2 border-white bg-[#1BB59F]" />
+          <span className="absolute bottom-[30px] left-3 h-3 w-3 rounded-full border-2 border-white bg-[#0891B2]" />
         </span>
       )}
       <span className="relative flex h-[118px] w-[118px] items-center justify-center rounded-full bg-white shadow-lg">
         <Icon
           name={finished ? 'verified' : 'public'}
           filled={finished}
-          className={`text-[72px] ${finished ? 'text-[#087A78]' : 'text-[#2BB5A3]'}`}
+          className={`text-[72px] ${finished ? 'text-[#0891B2]' : 'text-[#0891B2]'}`}
         />
       </span>
     </div>
@@ -179,7 +179,7 @@ const openSuggestions = () => {
     <div className="mx-auto max-w-xl rounded-[24px] bg-white px-5 pt-6 pb-4">
       <GlobeAnimation finished={finished} stopped={finished || Boolean(error)} />
 
-      <p className="mx-auto mt-2 flex w-fit items-center gap-1 rounded-full bg-[#EBEDFF] px-3 py-1 text-[11px] font-semibold text-[#075C66]">
+      <p className="mx-auto mt-2 flex w-fit items-center gap-1 rounded-full bg-[#EBEDFF] px-3 py-1 text-[11px] font-semibold text-[#0E7490]">
         <Icon name="explore" className="text-[14px]" />
         Hành trình cá nhân hóa
       </p>
@@ -194,7 +194,7 @@ const openSuggestions = () => {
         {plan ? (
           <>
             Đang chuẩn bị danh sách địa điểm phù hợp với sở thích của bạn tại{' '}
-            <b className="text-[#087A78]">{plan.destination}</b>.
+            <b className="text-[#0891B2]">{plan.destination}</b>.
           </>
         ) : (
           'Đang xác nhận thông tin chuyến đi đã lưu trên hệ thống.'
@@ -209,7 +209,7 @@ const openSuggestions = () => {
           <span className="mt-0.5 text-[11px] text-[#72818C]">
             ({doneSteps}/{STEPS.length} bước)
           </span>
-          <span className="text-[16px] font-extrabold text-[#087A78]">
+          <span className="text-[16px] font-extrabold text-[#0891B2]">
             {finished ? 100 : percent}%
           </span>
         </div>
@@ -222,7 +222,7 @@ const openSuggestions = () => {
           aria-valuemax={100}
         >
           <div
-            className="h-full rounded-full bg-[#075C66] transition-[width] duration-100"
+            className="h-full rounded-full bg-[#0E7490] transition-[width] duration-100"
             style={{ width: `${finished ? 100 : percent}%` }}
           />
         </div>
@@ -240,20 +240,20 @@ const openSuggestions = () => {
                 key={step.done}
                 className={`flex items-center rounded-2xl px-3 py-2.5 ${
                   status === 'doing'
-                    ? 'border border-[#9FE3D6] bg-[#E2FAF5]'
+                    ? 'border border-[#9CDFE6] bg-[#E1F9FB]'
                     : status === 'done'
                       ? 'bg-[#F4F6FB]'
                       : ''
                 }`}
               >
                 {status === 'done' && (
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#075C66] text-white">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0E7490] text-white">
                     <Icon name="check" className="text-[15px]" />
                   </span>
                 )}
                 {status === 'doing' && (
                   <span className="flex h-6 w-6 items-center justify-center">
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#C3F8F0] border-t-[#087A78]" />
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#C0F5FB] border-t-[#0891B2]" />
                   </span>
                 )}
                 {status === 'waiting' && (
@@ -271,9 +271,9 @@ const openSuggestions = () => {
                 <span
                   className={`ml-2 text-[11px] font-semibold ${
                     status === 'done'
-                      ? 'text-[#075C66]'
+                      ? 'text-[#0E7490]'
                       : status === 'doing'
-                        ? 'text-[#087A78]'
+                        ? 'text-[#0891B2]'
                         : 'text-[#A7B0B8]'
                   }`}
                 >
@@ -292,7 +292,7 @@ const openSuggestions = () => {
             <button
               type="button"
               onClick={retry}
-              className="mt-2 rounded-full bg-white px-4 py-2 font-bold text-[#075C66]"
+              className="mt-2 rounded-full bg-white px-4 py-2 font-bold text-[#0E7490]"
             >
               Thử tải lại
             </button>
@@ -302,7 +302,7 @@ const openSuggestions = () => {
 
       {plan && (
         <div className="mt-4 flex items-center rounded-[18px] border border-[#ECEFF5] p-3">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#EBEDFF] text-[#087A78]">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#EBEDFF] text-[#0891B2]">
             <Icon name="location_on" className="text-[22px]" />
           </span>
           <div className="ml-3 min-w-0 flex-1">
@@ -313,7 +313,7 @@ const openSuggestions = () => {
               {plan.startDate} – {plan.endDate} • {plan.groupSize} người
             </p>
             {candidateCount !== null && (
-              <p className="mt-1 text-[11px] text-[#087A78]">
+              <p className="mt-1 text-[11px] text-[#0891B2]">
                 {candidateCount} địa điểm được SmartTravel gợi ý
               </p>
             )}
@@ -332,8 +332,8 @@ Lịch trình sẽ được tạo sau khi bạn chọn địa điểm.
         disabled={!finished || Boolean(error)}
         className={`mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-full text-[14px] font-bold ${
           finished
-            ? 'bg-[#075C66] text-white hover:bg-primary'
-            : 'cursor-not-allowed bg-[#EBEDFF] text-[#075C66]'
+            ? 'bg-[#0E7490] text-white hover:bg-client-primary'
+            : 'cursor-not-allowed bg-[#EBEDFF] text-[#0E7490]'
         }`}
       >
         <Icon name={finished ? 'travel_explore' : 'schedule'} className="text-[18px]" />
@@ -343,7 +343,7 @@ Lịch trình sẽ được tạo sau khi bạn chọn địa điểm.
       <button
         type="button"
         onClick={() => setConfirmCancel(true)}
-        className="w-full py-3 text-[12px] text-[#72818C] hover:text-primary"
+        className="w-full py-3 text-[12px] text-[#72818C] hover:text-client-primary"
       >
         Quay lại
       </button>

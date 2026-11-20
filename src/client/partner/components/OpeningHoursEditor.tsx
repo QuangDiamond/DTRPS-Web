@@ -3,7 +3,7 @@ import type { OpeningHour } from '@/client/api/types';
 import { DAY_LABELS } from '@/client/partner/placeFormat';
 
 const TIME_CLASS =
-  'h-10 rounded-lg border border-[#EBEDF5] bg-client-field px-2 text-[13px] text-[#18333E] focus:ring-2 focus:ring-primary/40 focus:outline-none disabled:opacity-40';
+  'h-10 rounded-lg border border-[#EBEDF5] bg-client-field px-2 text-[13px] text-[#18333E] focus:ring-2 focus:ring-client-primary/40 focus:outline-none disabled:opacity-40';
 
 interface OpeningHoursEditorProps {
   /** false: không khai báo giờ mở cửa (gửi danh sách rỗng) */
@@ -49,7 +49,7 @@ export default function OpeningHoursEditor({
             onClick={() => onEnabledChange(option.value)}
             className={`flex h-10 items-center justify-center gap-1.5 rounded-lg text-[13px] font-bold transition-colors ${
               enabled === option.value
-                ? 'bg-white text-primary shadow-sm'
+                ? 'bg-white text-client-primary shadow-sm'
                 : 'text-client-muted hover:text-client-ink'
             }`}
           >
@@ -82,7 +82,7 @@ export default function OpeningHoursEditor({
                         closeTime: hour.closeTime ?? '22:00',
                       })
                     }
-                    className="h-4 w-4 accent-primary"
+                    className="h-4 w-4 accent-client-primary"
                   />
                   Mở cửa
                 </label>
@@ -110,7 +110,7 @@ export default function OpeningHoursEditor({
           <button
             type="button"
             onClick={copyMonday}
-            className="mt-2 text-[12px] font-bold text-[#007A73] hover:underline"
+            className="mt-2 text-[12px] font-bold text-[#0E7490] hover:underline"
           >
             Áp dụng giờ của Thứ 2 cho cả tuần
           </button>

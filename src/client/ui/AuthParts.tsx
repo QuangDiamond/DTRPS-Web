@@ -54,9 +54,9 @@ export function StepIndicator({ steps, current }: { steps: string[]; current: nu
             <span
               className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold ${
                 done
-                  ? 'bg-primary text-white'
+                  ? 'bg-client-primary text-white'
                   : active
-                    ? 'bg-[#E4F6F2] text-primary ring-2 ring-primary'
+                    ? 'bg-[#E3F5F7] text-client-primary ring-2 ring-client-primary'
                     : 'bg-[#EEF1F5] text-[#8A99A6]'
               }`}
               aria-current={active ? 'step' : undefined}
@@ -69,7 +69,7 @@ export function StepIndicator({ steps, current }: { steps: string[]; current: nu
               {label}
             </span>
             {index < steps.length - 1 && (
-              <span className={`h-px flex-1 ${done ? 'bg-primary' : 'bg-[#E3E8EE]'}`} />
+              <span className={`h-px flex-1 ${done ? 'bg-client-primary' : 'bg-[#E3E8EE]'}`} />
             )}
           </li>
         );
@@ -150,8 +150,8 @@ export function OtpInput({
           onKeyDown={(event) => key(index, event)}
           onPaste={paste}
           onFocus={(event) => event.target.select()}
-          className={`h-14 w-full min-w-0 rounded-xl border bg-client-field text-center text-[22px] font-extrabold text-[#13364A] focus:ring-2 focus:ring-primary/40 focus:outline-none disabled:opacity-60 ${
-            invalid ? 'border-client-danger' : digit ? 'border-primary/50' : 'border-[#E3E8EE]'
+          className={`h-14 w-full min-w-0 rounded-xl border bg-client-field text-center text-[22px] font-extrabold text-[#13364A] focus:ring-2 focus:ring-client-primary/40 focus:outline-none disabled:opacity-60 ${
+            invalid ? 'border-client-danger' : digit ? 'border-client-primary/50' : 'border-[#E3E8EE]'
           }`}
         />
       ))}
@@ -175,7 +175,7 @@ export function PasswordChecklist({ password }: { password: string }) {
         return (
           <li
             key={rule.label}
-            className={`flex items-center gap-1.5 text-[11.5px] ${ok ? 'font-semibold text-primary' : 'text-[#8A99A6]'}`}
+            className={`flex items-center gap-1.5 text-[11.5px] ${ok ? 'font-semibold text-client-primary' : 'text-[#8A99A6]'}`}
           >
             <Icon
               name={ok ? 'check_circle' : 'radio_button_unchecked'}
@@ -254,8 +254,8 @@ export function OtpStep({
 
   return (
     <div>
-      <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1FAF8] p-3.5">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-primary">
+      <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1F9FA] p-3.5">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-client-primary">
           <Icon name="mark_email_read" className="text-[22px]" />
         </span>
         <div className="min-w-0 flex-1 text-[12.5px] leading-5 text-[#4F5F6B]">
@@ -265,7 +265,7 @@ export function OtpStep({
         <button
           type="button"
           onClick={onChangeEmail}
-          className="shrink-0 text-[12px] font-bold text-primary hover:underline"
+          className="shrink-0 text-[12px] font-bold text-client-primary hover:underline"
         >
           Đổi email
         </button>
@@ -298,7 +298,7 @@ export function OtpStep({
             type="button"
             onClick={() => void again()}
             disabled={resending}
-            className="font-bold text-primary hover:underline disabled:opacity-60"
+            className="font-bold text-client-primary hover:underline disabled:opacity-60"
           >
             {resending ? 'Đang gửi…' : 'Gửi lại mã'}
           </button>
@@ -400,7 +400,7 @@ export function GoogleButton({ redirectTo = CLIENT_ROUTES.HOME }: { redirectTo?:
         className="flex h-[48px] w-full items-center justify-center gap-2.5 rounded-2xl border border-[#E3E8EE] bg-white text-[13.5px] font-semibold text-[#293A48] transition-colors hover:bg-[#F7F9FB] disabled:cursor-wait disabled:opacity-70"
       >
         {busy ? (
-          <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#C9D3DC] border-t-primary" />
+          <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#C9D3DC] border-t-client-primary" />
         ) : (
           <GoogleLogo />
         )}

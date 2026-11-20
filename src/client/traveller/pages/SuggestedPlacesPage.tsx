@@ -16,6 +16,7 @@ import {
   tripFlowApi,
   toAiTripPlace,
   type AiRecommendationResponse,
+  type PartnerPlace,
   type TravelPlanResponse,
   type TripPlace,
 } from '@/client/api/tripFlowApi';
@@ -237,6 +238,84 @@ function PlaceCard({
   );
 }
 
+/** Thẻ gọn trong cột "Đối tác đã xác minh" (không chấm % phù hợp). */
+function PartnerCard({
+  place,
+  planId,
+  selected,
+  busy,
+  onToggle,
+}: {
+  place: PartnerPlace;
+  planId: number;
+  selected: boolean;
+  busy: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="flex min-w-0 flex-col rounded-2xl border border-[#E7EBEF] bg-white p-2.5 shadow-[0_3px_9px_rgba(13,69,67,0.06)]">
+      <Link
+        to={`${suggestionPath(String(place.placeId))}?planId=${planId}`}
+        className="flex min-w-0 gap-2.5"
+        aria-label={`Xem chi tiết ${place.name}`}
+      >
+        <div className="h-18 w-18 shrink-0 overflow-hidden rounded-xl bg-[#DCEFEB]">
+          {place.coverUrl ? (
+            <img src={place.coverUrl} alt={place.name} loading="lazy" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center">
+              <Icon name="storefront" className="text-[28px] text-[#73B8AD]" />
+            </div>
+          )}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <p className="line-clamp-2 text-[13px] font-extrabold leading-4.25 text-[#13364A]">
+            {place.name}
+          </p>
+          {place.verified && (
+            <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#E8F1FF] px-2 py-0.5 text-[10px] font-bold text-[#1F5FBF]">
+              <Icon name="verified" filled className="text-[13px]" />
+              Đối tác đã xác minh
+            </span>
+          )}
+          <p className="mt-1 truncate text-[11px] text-[#72818C]">
+            {[place.categoryName, place.businessName].filter(Boolean).join(' · ')}
+          </p>
+          <p className="mt-0.5 flex items-center gap-1 text-[11px] text-[#72818C]">
+            <Icon name="star" filled className="text-[13px] text-[#E0A100]" />
+            {place.rating !== null
+              ? `${place.rating} (${place.reviewCount} đánh giá)`
+              : 'Chưa có đánh giá'}
+          </p>
+        </div>
+      </Link>
+
+      {place.address && (
+        <p className="mt-2 flex items-start gap-1 text-[11px] text-[#72818C]">
+          <Icon name="location_on" className="shrink-0 text-[14px]" />
+          <span className="line-clamp-1">{place.address}</span>
+        </p>
+      )}
+
+      <button
+        type="button"
+        disabled={busy}
+        onClick={onToggle}
+        aria-pressed={selected}
+        className={`mt-2 flex h-9 items-center justify-center gap-1.5 rounded-xl px-3 text-[11px] font-extrabold transition-colors disabled:cursor-wait disabled:opacity-60 ${
+          selected
+            ? 'bg-[#DAF5EA] text-[#075C66] hover:bg-[#C5ECDE]'
+            : 'bg-[#075C66] text-white hover:bg-[#087A78]'
+        }`}
+      >
+        <Icon name={selected ? 'check_circle' : 'add'} className="text-[17px]" />
+        {selected ? 'Đã chọn · Bỏ chọn' : 'Thêm vào kế hoạch'}
+      </button>
+    </div>
+  );
+}
+
 /**
  * Danh sách địa điểm thật từ Backend.
  * Hiện lấy từ catalogue, chưa phải AI Embedding.
@@ -265,6 +344,9 @@ const [aiSummary, setAiSummary] =
 
   const [selectedIds, setSelectedIds] =
     useState<Set<number>>(new Set());
+
+  // Cột riêng: địa điểm do đối tác đã xác minh đăng ký tại điểm đến.
+  const [partners, setPartners] = useState<PartnerPlace[]>([]);
 
   const [category, setCategory] = useState('all');
 const [page, setPage] = useState(1);
@@ -401,6 +483,23 @@ useEffect(() => {
   location.state,
 ]);
 
+
+  // Tải cột đối tác riêng; lỗi thì chỉ ẩn cột, không chặn danh sách gợi ý.
+  useEffect(() => {
+    if (!validPlanId) return;
+    let active = true;
+    tripFlowApi
+      .partnerPlaces(planId)
+      .then((items) => {
+        if (active) setPartners(items);
+      })
+      .catch(() => {
+        if (active) setPartners([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [planId, validPlanId, retryCount]);
 
   // ==========================================
   // LỌC ĐỊA ĐIỂM THEO CATEGORY TỪ BACKEND
@@ -544,7 +643,7 @@ useEffect(() => {
   // THÊM / XÓA ĐỊA ĐIỂM KHỎI GIỎ
   // ==========================================
 
-  const togglePlace = async (place: TripPlace) => {
+  const togglePlace = async (place: Pick<TripPlace, 'placeId'>) => {
     if (!validPlanId || busyPlaceId !== null) {
       return;
     }
@@ -734,9 +833,20 @@ useEffect(() => {
             </div>
           )}
 
-          <div className="lg:grid lg:grid-cols-[1fr_1.15fr] lg:gap-5">
+          {/*
+            Có đối tác: bản đồ | cột đối tác | danh sách gợi ý (màn rộng).
+            Màn vừa (lg): cột trái = bản đồ + đối tác, cột phải = danh sách gợi ý.
+          */}
+          <div
+            className={`lg:grid lg:gap-5 ${
+              partners.length > 0
+                ? 'lg:grid-cols-[1fr_1.15fr] lg:grid-rows-[auto_1fr] xl:grid-cols-[minmax(0,1fr)_300px_minmax(0,1.35fr)] xl:grid-rows-1'
+                : 'lg:grid-cols-[1fr_1.15fr]'
+            }`}
+          >
             {/* BẢN ĐỒ */}
-            <div className="lg:sticky lg:top-20 lg:self-start">
+            <div className="lg:sticky lg:top-20 lg:col-start-1 lg:row-start-1 lg:self-start">
+
               <div className="relative isolate overflow-hidden rounded-[20px] bg-[#E0EEE9]">
                 <TravelMap
                   ref={mapRef}
@@ -759,9 +869,49 @@ useEffect(() => {
               </div>
             </div>
 
+            {/* CỘT ĐỐI TÁC ĐÃ XÁC MINH: luôn hiện các đối tác của tỉnh đến, không phụ thuộc % phù hợp */}
+            {partners.length > 0 && (
+              <aside className="mt-4 lg:col-start-1 lg:row-start-2 lg:mt-0 lg:self-start xl:sticky xl:top-20 xl:col-start-2 xl:row-start-1">
+                <div className="rounded-[20px] border border-[#DCE7F7] bg-[#F7FAFF] p-3">
+                  <p className="flex items-center gap-1.5 text-[13px] font-extrabold text-[#13364A]">
+                    <Icon name="verified" filled className="text-[18px] text-[#1F5FBF]" />
+                    Đối tác tại {plan.destination}
+                    <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-[#1F5FBF]">
+                      {partners.length}
+                    </span>
+                  </p>
+                  <p className="mt-1 text-[11px] leading-4 text-[#72818C]">
+                    Địa điểm do doanh nghiệp đã được xác minh đăng ký. Không tính vào % phù hợp.
+                  </p>
+
+                  <div className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1 xl:max-h-[calc(100dvh-160px)] xl:overflow-y-auto">
+                    {partners.map((partner) => (
+                      <PartnerCard
+                        key={partner.placeId}
+                        place={partner}
+                        planId={planId}
+                        selected={selectedIds.has(partner.placeId)}
+                        busy={busyPlaceId !== null}
+                        onToggle={() => {
+                          void togglePlace(partner);
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </aside>
+            )}
+
             {/* DANH SÁCH ĐỊA ĐIỂM */}
 {/* min-w-0: hàng nút lọc dài không được kéo cột này phình ra và ép nhỏ bản đồ */}
-<div ref={listRef} className="min-w-0 scroll-mt-24">
+<div
+  ref={listRef}
+  className={`min-w-0 scroll-mt-24 ${
+    partners.length > 0
+      ? 'lg:col-start-2 lg:row-span-2 lg:row-start-1 xl:col-start-3 xl:row-span-1'
+      : ''
+  }`}
+>
               {/* LỌC CATEGORY */}
               <div className="sticky top-16 z-10 -mx-4 mt-3 bg-client-bg px-4 py-3 lg:mt-0 lg:pt-0">
                 <div className="flex gap-2 overflow-x-auto">
@@ -807,7 +957,11 @@ useEffect(() => {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-2.5 xl:grid-cols-3">
+                <div
+                  className={`grid grid-cols-2 gap-2.5 ${
+                    partners.length > 0 ? 'min-[1700px]:grid-cols-3' : 'xl:grid-cols-3'
+                  }`}
+                >
                  {pagePlaces.map((place, index) => (
                     <PlaceCard
                       key={place.placeId}
@@ -895,10 +1049,11 @@ useEffect(() => {
               )}
 
             </div>
+
           </div>
 
           {/* NÚT ĐẾN GIỎ ĐỊA ĐIỂM */}
-          <div className="fixed inset-x-0 bottom-[62px] z-20 border-t border-[#EEF1F5] bg-white px-4 pb-2.5 pt-2.5 md:static md:mt-4 md:rounded-[20px] md:border-0">
+          <div className="fixed inset-x-0 bottom-[62px] z-20 border-t border-[#EEF1F5] bg-white px-4 pb-2.5 pt-2.5 md:static md:mt-4 md:flex md:justify-end md:rounded-[20px] md:border-0">
             <button
               type="button"
               onClick={() =>
@@ -908,7 +1063,7 @@ useEffect(() => {
                 selectedIds.size === 0 ||
                 busyPlaceId !== null
               }
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#075C66] text-[14px] font-bold text-white hover:bg-primary disabled:bg-[#E3E8EF] disabled:text-[#72818C]"
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#075C66] px-8 text-[14px] font-bold text-white hover:bg-primary disabled:bg-[#E3E8EF] disabled:text-[#72818C] md:w-auto md:min-w-[320px]"
             >
               <Icon
                 name="shopping_basket"

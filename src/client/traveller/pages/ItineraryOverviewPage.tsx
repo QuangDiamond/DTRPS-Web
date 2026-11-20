@@ -272,10 +272,10 @@ function DayCard({
           ))}
         </ol>
       )}
-      <footer className="border-t border-[#E9EFED] px-5 py-3 sm:px-6">
+      <footer className="flex border-t border-[#E9EFED] px-5 py-3 sm:justify-end sm:px-6">
         <Link
           to={detailUrl}
-          className="flex items-center justify-between rounded-xl bg-[#F0F7F4] px-4 py-3 text-sm font-bold text-[#086B60] transition-colors hover:bg-[#DDF2E9]"
+          className="flex w-full items-center justify-between gap-3 rounded-xl bg-[#F0F7F4] px-4 py-3 text-sm font-bold text-[#086B60] transition-colors hover:bg-[#DDF2E9] sm:w-auto sm:min-w-[240px]"
         >
           <span className="flex items-center gap-2">
             <Icon name="map" className="text-[19px]" />

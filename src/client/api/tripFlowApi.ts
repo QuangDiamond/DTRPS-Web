@@ -439,6 +439,22 @@ const dayItemsPath = (dayId: number) =>
 const feedbackPath = (planId: number) =>
   `${planPath(planId)}/feedback`;
 
+/** GET /travel-plans/{planId}/partner-places: điểm do đối tác đã xác minh đăng ký. */
+export interface PartnerPlace {
+  placeId: number;
+  name: string;
+  categoryCode: string | null;
+  categoryName: string | null;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  coverUrl: string | null;
+  rating: number | null;
+  reviewCount: number;
+  businessName: string;
+  verified: boolean;
+}
+
 // ==========================================================
 // TRIP FLOW API
 // ==========================================================
@@ -472,6 +488,10 @@ export const tripFlowApi = {
         timeoutMs: 60_000,
       },
     ),
+
+  /** Địa điểm của đối tác đã xác minh tại điểm đến của kế hoạch (cột riêng ở màn Gợi ý). */
+  partnerPlaces: (planId: number) =>
+    clientRequest<PartnerPlace[]>(`${planPath(planId)}/partner-places`),
 
   // ========================================================
   // 3. UPDATE / DELETE / STATUS

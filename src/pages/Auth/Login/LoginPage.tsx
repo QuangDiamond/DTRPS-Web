@@ -26,7 +26,6 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState(getStateString(location.state, 'email') ?? '');
   const [password, setPassword] = useState('');
-  const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Tab vừa bị đăng xuất (không thao tác / phiên hết hạn) — còn khi F5 hay quay lại tab
@@ -42,7 +41,7 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      const admin = await login(email, password, remember);
+      const admin = await login(email, password);
       showToast(i18n.t('session.welcome', { name: admin.name }));
       navigate(getStateString(location.state, 'from') ?? ROUTES.DASHBOARD, { replace: true });
     } catch (loginError) {
@@ -90,18 +89,7 @@ export default function LoginPage() {
 
         {error && <AuthAlert message={error} />}
 
-        <div className="flex items-center justify-between pt-1">
-          <label className="flex cursor-pointer items-center gap-2.5 select-none">
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={(event) => setRemember(event.target.checked)}
-              className="h-4 w-4 cursor-pointer rounded accent-primary"
-            />
-            <span className="font-body-sm text-body-sm font-medium text-on-surface-variant">
-              {t('auth.login.rememberMe')}
-            </span>
-          </label>
+        <div className="flex items-center justify-end pt-1">
           <button
             type="button"
             onClick={() => navigate(ROUTES.FORGOT_PASSWORD, { state: { email } })}

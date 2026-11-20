@@ -5,11 +5,7 @@ import { bindSession } from '@/client/api/http';
 import type { AuthResponse, ClientUser, RoleName } from '@/client/api/types';
 import { ClientAuthContext } from './clientAuthContext';
 import { clientSessionEnd } from '@/utils/sessionEnd';
-import { tabLock } from '@/utils/useIdleTimeout';
 import { type ClientSession, clearSession, readSession, writeSession } from './sessionStorage';
-
-/** Cờ khoá theo từng tab (sessionStorage) khi không thao tác 30 phút */
-const idleLock = tabLock('smarttravel.client.idleLocked');
 
 const toSession = (response: AuthResponse, remember: boolean): ClientSession => ({
   accessToken: response.accessToken,
@@ -20,10 +16,7 @@ const toSession = (response: AuthResponse, remember: boolean): ClientSession => 
 
 /** Phiên đăng nhập của du khách / đối tác (tách hoàn toàn với AuthProvider của admin) */
 export default function ClientAuthProvider({ children }: { children: ReactNode }) {
-  // Tab đã bị khoá vì không thao tác → coi như chưa đăng nhập cho tới khi đăng nhập lại
-  const [session, setSession] = useState<ClientSession | null>(() =>
-    idleLock.isLocked() ? null : readSession(),
-  );
+  const [session, setSession] = useState<ClientSession | null>(readSession);
   const sessionRef = useRef(session);
   sessionRef.current = session;
   // Nhiều request cùng gặp 401 chỉ làm mới token một lần
@@ -74,7 +67,6 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
   const login = useCallback(
     async (email: string, password: string, remember: boolean) => {
       const response = await authApi.login(email, password);
-      idleLock.unlock();
       clientSessionEnd.clear();
       save(toSession(response, remember));
       return response.user;
@@ -86,7 +78,6 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
   const loginWithGoogle = useCallback(
     async (accessToken: string) => {
       const { session: response, newAccount } = await authApi.googleSignIn(accessToken);
-      idleLock.unlock();
       clientSessionEnd.clear();
       save(toSession(response, true));
       return { user: response.user, newAccount };
@@ -110,14 +101,6 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
     save(null);
   }, [save]);
 
-  const lockIdle = useCallback(() => {
-    idleLock.lock();
-    clientSessionEnd.set('idle');
-    // Không xoá phiên lưu chung, không thu hồi token: chỉ tab này phải đăng nhập lại
-    sessionRef.current = null;
-    setSession(null);
-  }, []);
-
   const updateUser = useCallback(
     (next: ClientUser) => {
       const current = sessionRef.current;
@@ -139,7 +122,6 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
       updateUser,
       refreshSession,
       hasRole,
-      lockIdle,
     }),
     [
       user,
@@ -150,7 +132,6 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
       updateUser,
       refreshSession,
       hasRole,
-      lockIdle,
     ],
   );
 

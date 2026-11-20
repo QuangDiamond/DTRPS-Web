@@ -4,13 +4,9 @@ import { onUnauthorized } from '@/services/httpClient';
 import { clearAccessToken } from '@/services/tokenStore';
 import type { AdminProfile } from '@/types';
 import { adminSessionEnd } from '@/utils/sessionEnd';
-import { tabLock } from '@/utils/useIdleTimeout';
-import { AuthContext } from './authContext';
+import { ADMIN_IDLE_MINUTES, AuthContext, adminActivity } from './authContext';
 
 const STORAGE_KEY = 'smarttravel.admin';
-
-/** Cờ khoá theo từng tab (sessionStorage) khi không thao tác 30 phút */
-const idleLock = tabLock('smarttravel.admin.idleLocked');
 
 function isAdminProfile(value: unknown): value is AdminProfile {
   return (
@@ -33,7 +29,7 @@ function getStorages(): Storage[] {
   }
 }
 
-/** "Ghi nhớ đăng nhập" -> localStorage, ngược lại -> sessionStorage (mất khi đóng tab) */
+/** Hồ sơ admin lưu ở localStorage để mọi tab dùng chung một phiên */
 function readStoredAdmin(): AdminProfile | null {
   for (const storage of getStorages()) {
     try {
@@ -58,25 +54,57 @@ function clearStoredAdmin(): void {
   }
 }
 
+/** Cờ chung mọi tab: phiên vừa kết thúc vì không thao tác (để tab khác hiện đúng lý do) */
+const IDLE_FLAG_KEY = 'smarttravel.admin.endedIdle';
+
+function readIdleFlag(): boolean {
+  try {
+    return window.localStorage.getItem(IDLE_FLAG_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function writeIdleFlag(on: boolean): void {
+  try {
+    if (on) window.localStorage.setItem(IDLE_FLAG_KEY, '1');
+    else window.localStorage.removeItem(IDLE_FLAG_KEY);
+  } catch {
+    // bỏ qua
+  }
+}
+
+/**
+ * Mở trang (F5, tab mới, mở lại trình duyệt) sau hơn 30 phút không thao tác → phiên đã hết,
+ * không cho vào thẳng. Thu hồi token trên server luôn.
+ */
+function initialAdmin(): AdminProfile | null {
+  const stored = readStoredAdmin();
+  if (!stored) return null;
+  if (!adminActivity.expired(ADMIN_IDLE_MINUTES)) return stored;
+  authService.logout();
+  clearStoredAdmin();
+  adminActivity.clear();
+  adminSessionEnd.set('idle');
+  return null;
+}
+
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  // Tab đã bị khoá vì không thao tác → coi như chưa đăng nhập cho tới khi đăng nhập lại
-  const [admin, setAdmin] = useState<AdminProfile | null>(() =>
-    idleLock.isLocked() ? null : readStoredAdmin(),
-  );
+  const [admin, setAdmin] = useState<AdminProfile | null>(initialAdmin);
   const adminRef = useRef(admin);
   adminRef.current = admin;
   /** Phiên vừa bị kết thúc do 401; đăng nhập lại thì xoá */
   const sessionEndedRef = useRef(false);
 
-  const login = useCallback(async (email: string, password: string, remember: boolean) => {
-    const profile = await authService.login(email, password, remember);
+  const login = useCallback(async (email: string, password: string) => {
+    const profile = await authService.login(email, password);
     sessionEndedRef.current = false;
-    idleLock.unlock();
     adminSessionEnd.clear();
     clearStoredAdmin();
+    writeIdleFlag(false);
+    adminActivity.touch();
     try {
-      const storage = remember ? window.localStorage : window.sessionStorage;
-      storage.setItem(STORAGE_KEY, JSON.stringify(profile));
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
     } catch {
       // Không lưu được thì vẫn đăng nhập trong phiên hiện tại
     }
@@ -85,18 +113,36 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
+    writeIdleFlag(false);
     authService.logout();
-    idleLock.unlock();
     adminSessionEnd.clear();
     clearStoredAdmin();
+    adminActivity.clear();
     setAdmin(null);
   }, []);
 
-  // Không xoá phiên lưu chung, không thu hồi token: chỉ tab này phải đăng nhập lại
-  const lockIdle = useCallback(() => {
-    idleLock.lock();
+  // Hết giờ không thao tác: đăng xuất thật — các tab khác nhận sự kiện storage và cũng thoát
+  const endIdle = useCallback(() => {
+    writeIdleFlag(true);
+    authService.logout();
+    clearStoredAdmin();
+    adminActivity.clear();
     adminSessionEnd.set('idle');
     setAdmin(null);
+  }, []);
+
+  // Tab khác đăng xuất / hết giờ / đăng nhập tài khoản khác → tab này theo cùng
+  useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY && event.key !== null) return;
+      const next = readStoredAdmin();
+      // Tab khác kết thúc phiên vì không thao tác → trang đăng nhập ở tab này cũng giải thích lý do
+      if (!next && adminRef.current && readIdleFlag()) adminSessionEnd.set('idle');
+      adminRef.current = next;
+      setAdmin(next);
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   // API trả 401 mà không làm mới được (token hết hạn / bị thu hồi / DB đổi) → đăng xuất một lần.
@@ -118,10 +164,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return () => onUnauthorized(null);
   }, []);
 
-  const value = useMemo(
-    () => ({ admin, login, logout, lockIdle }),
-    [admin, login, logout, lockIdle],
-  );
+  const value = useMemo(() => ({ admin, login, logout, endIdle }), [admin, login, logout, endIdle]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

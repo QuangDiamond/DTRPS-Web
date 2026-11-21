@@ -88,7 +88,9 @@ function HeroCollage({ places }: { places: PlaceSummary[] }) {
           <p className="absolute right-3 bottom-3 left-3 truncate text-[13px] font-bold text-white">
             {place.name}
             {place.province?.name && (
-              <span className="block text-[11px] font-medium text-white/80">{place.province.name}</span>
+              <span className="block text-[11px] font-medium text-white/80">
+                {place.province.name}
+              </span>
             )}
           </p>
         </Link>
@@ -263,7 +265,11 @@ export default function HomePage() {
     () =>
       [
         placeTotal !== null && { icon: 'place', value: `${placeTotal}+`, label: 'địa điểm' },
-        provinceCount !== null && { icon: 'map', value: String(provinceCount), label: 'tỉnh thành' },
+        provinceCount !== null && {
+          icon: 'map',
+          value: String(provinceCount),
+          label: 'tỉnh thành',
+        },
         { icon: 'auto_awesome', value: 'AI', label: 'gợi ý theo sở thích' },
       ].filter(Boolean) as { icon: string; value: string; label: string }[],
     [placeTotal, provinceCount],
@@ -271,66 +277,54 @@ export default function HomePage() {
 
   return (
     <div className="pb-6">
-      {/* HERO: lời chào, tìm kiếm, nút lập kế hoạch và ảnh thật của các địa điểm mới */}
-      <section className="relative rounded-[32px] bg-[#0891B2] px-5 py-8 md:px-10 md:py-12">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[32px]" aria-hidden>
-          <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-white/8" />
-          <div className="absolute -right-16 -bottom-28 h-80 w-80 rounded-full bg-[#2FBAC9]/20" />
-        </div>
+      {/* HERO: quảng cáo đối tác tràn nền (tự chuyển) + lời chào, tìm kiếm, lập kế hoạch; không có quảng cáo thì quay về nền xanh + collage */}
+      <FeaturedPlaces fallbackRight={<HeroCollage places={recent} />}>
+        <div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-[12px] font-semibold text-white/95 backdrop-blur-sm">
+            Xin chào, {user?.name ?? 'bạn'} 👋
+          </span>
+          <h1 className="mt-4 text-[30px] leading-[1.15] font-extrabold tracking-tight text-white md:text-[46px]">
+            Việt Nam theo cách
+            <br />
+            <span className="text-[#97EBF4]">của riêng bạn</span>
+          </h1>
+          <p className="mt-3 max-w-lg text-[13px] leading-6 text-white/85 md:text-[15px]">
+            Tìm địa điểm, nhận gợi ý cá nhân hóa và để SmartTravel sắp xếp lịch trình theo sở thích,
+            ngân sách của bạn.
+          </p>
 
-        <div className="relative grid items-center gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-          <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1.5 text-[12px] font-semibold text-white/90">
-              Xin chào, {user?.name ?? 'bạn'} 👋
-            </span>
-            <h1 className="mt-4 text-[30px] leading-[1.15] font-extrabold tracking-tight text-white md:text-[46px]">
-              Việt Nam theo cách
-              <br />
-              <span className="text-[#97EBF4]">của riêng bạn</span>
-            </h1>
-            <p className="mt-3 max-w-lg text-[13px] leading-6 text-white/80 md:text-[15px]">
-              Tìm địa điểm, nhận gợi ý cá nhân hóa và để SmartTravel sắp xếp lịch trình theo
-              sở thích, ngân sách của bạn.
-            </p>
-
-            <div className="max-w-xl">
-              <HomePlaceSearch />
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Link
-                to={CLIENT_ROUTES.TRIP_PLAN}
-                className="flex items-center gap-1.5 rounded-full bg-white px-5 py-3 text-[13px] font-extrabold text-[#0E7490] shadow-lg hover:bg-[#EFFDFF]"
-              >
-                <Icon name="auto_awesome" className="text-[18px]" />
-                Lập kế hoạch với AI
-              </Link>
-              <Link
-                to={CLIENT_ROUTES.EXPLORE}
-                className="flex items-center gap-1.5 rounded-full border border-white/40 px-5 py-3 text-[13px] font-bold text-white hover:bg-white/10"
-              >
-                Khám phá địa điểm
-                <Icon name="arrow_forward" className="text-[18px]" />
-              </Link>
-            </div>
-
-            <div className="mt-7 flex flex-wrap gap-x-7 gap-y-3">
-              {stats.map((stat) => (
-                <div key={stat.label} className="flex items-center gap-2 text-white">
-                  <Icon name={stat.icon} className="text-[20px] text-[#97EBF4]" />
-                  <span className="text-[20px] font-extrabold">{stat.value}</span>
-                  <span className="text-[12px] text-white/75">{stat.label}</span>
-                </div>
-              ))}
-            </div>
+          <div className="max-w-xl">
+            <HomePlaceSearch />
           </div>
 
-          <HeroCollage places={recent} />
-        </div>
-      </section>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link
+              to={CLIENT_ROUTES.TRIP_PLAN}
+              className="flex items-center gap-1.5 rounded-full bg-white px-5 py-3 text-[13px] font-extrabold text-[#0E7490] shadow-lg hover:bg-[#EFFDFF]"
+            >
+              <Icon name="auto_awesome" className="text-[18px]" />
+              Lập kế hoạch với AI
+            </Link>
+            <Link
+              to={CLIENT_ROUTES.EXPLORE}
+              className="flex items-center gap-1.5 rounded-full border border-white/40 bg-black/15 px-5 py-3 text-[13px] font-bold text-white backdrop-blur-sm hover:bg-white/15"
+            >
+              Khám phá địa điểm
+              <Icon name="arrow_forward" className="text-[18px]" />
+            </Link>
+          </div>
 
-      {/* QUẢNG CÁO ĐỐI TÁC: slide lớn nổi bật */}
-      <FeaturedPlaces />
+          <div className="mt-7 flex flex-wrap gap-x-7 gap-y-3">
+            {stats.map((stat) => (
+              <div key={stat.label} className="flex items-center gap-2 text-white">
+                <Icon name={stat.icon} className="text-[20px] text-[#97EBF4]" />
+                <span className="text-[20px] font-extrabold">{stat.value}</span>
+                <span className="text-[12px] text-white/80">{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </FeaturedPlaces>
 
       {/* CHUYẾN ĐI SẮP TỚI + SỞ THÍCH */}
       <section className="mt-10 grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
@@ -345,7 +339,9 @@ export default function HomePage() {
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-client-gold shadow-sm">
             <Icon name="person_pin_circle" className="text-[26px]" />
           </span>
-          <p className="mt-4 text-[17px] font-extrabold text-client-ink">Hoàn thiện sở thích du lịch</p>
+          <p className="mt-4 text-[17px] font-extrabold text-client-ink">
+            Hoàn thiện sở thích du lịch
+          </p>
           <p className="mt-1 max-w-sm text-[12px] leading-5 text-[#6B5A35]">
             Càng hiểu bạn, gợi ý càng sát: chế độ ăn, người đi cùng, nhu cầu đặc biệt…
           </p>

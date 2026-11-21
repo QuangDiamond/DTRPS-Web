@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
@@ -234,10 +234,76 @@ function UpcomingTrip({ loggedIn }: { loggedIn: boolean }) {
   );
 }
 
+/** Đếm số tăng dần mượt từ 0 lên giá trị thật trong ~0.8s (dùng cho thống kê Hero) */
+function CountUp({ value, suffix = '' }: { value: number; suffix?: string }) {
+  const [shown, setShown] = useState(0);
+
+  useEffect(() => {
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduced || value <= 0) {
+      setShown(value);
+      return;
+    }
+    const duration = 800;
+    const start = performance.now();
+    let frame = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      // Ease-out cubic: tăng nhanh lúc đầu rồi chậm dần về đích
+      const eased = 1 - Math.pow(1 - t, 3);
+      setShown(Math.round(value * eased));
+      if (t < 1) frame = window.requestAnimationFrame(tick);
+    };
+    frame = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(frame);
+  }, [value]);
+
+  return (
+    <>
+      {shown}
+      {suffix}
+    </>
+  );
+}
+
+/** Hiện mượt từng khối trên Trang chủ (fade + trượt lên 16px) khi người dùng cuộn tới */
+function RevealSection({ children, className = '' }: { children: ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(() => typeof IntersectionObserver === 'undefined');
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || visible) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.08 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [visible]);
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-500 ease-out motion-reduce:transition-none ${
+        visible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
 /** Trang chủ du khách */
 export default function HomePage() {
   const { user } = useClientAuth();
   const [recent, setRecent] = useState<PlaceSummary[]>([]);
+  const [loadingRecent, setLoadingRecent] = useState(true);
   const [placeTotal, setPlaceTotal] = useState<number | null>(null);
   const [provinceCount, setProvinceCount] = useState<number | null>(null);
 
@@ -251,7 +317,8 @@ export default function HomePage() {
         setRecent(result.items);
         setPlaceTotal(result.total);
       })
-      .catch(() => undefined);
+      .catch(() => undefined)
+      .finally(() => active && setLoadingRecent(false));
     referenceApi
       .provinces()
       .then((items) => active && setProvinceCount(items.length))
@@ -264,14 +331,18 @@ export default function HomePage() {
   const stats = useMemo(
     () =>
       [
-        placeTotal !== null && { icon: 'place', value: `${placeTotal}+`, label: 'địa điểm' },
+        placeTotal !== null && {
+          icon: 'place',
+          value: <CountUp value={placeTotal} suffix="+" />,
+          label: 'địa điểm',
+        },
         provinceCount !== null && {
           icon: 'map',
-          value: String(provinceCount),
+          value: <CountUp value={provinceCount} />,
           label: 'tỉnh thành',
         },
         { icon: 'auto_awesome', value: 'AI', label: 'gợi ý theo sở thích' },
-      ].filter(Boolean) as { icon: string; value: string; label: string }[],
+      ].filter(Boolean) as { icon: string; value: ReactNode; label: string }[],
     [placeTotal, provinceCount],
   );
 
@@ -298,9 +369,10 @@ export default function HomePage() {
           </div>
 
           <div className="mt-5 flex flex-wrap gap-3">
+            {/* Nút CTA chính có vệt sáng lướt (.btn-shine trong index.css) */}
             <Link
               to={CLIENT_ROUTES.TRIP_PLAN}
-              className="flex items-center gap-1.5 rounded-full bg-white px-5 py-3 text-[13px] font-extrabold text-[#0E7490] shadow-lg hover:bg-[#EFFDFF]"
+              className="btn-shine flex items-center gap-1.5 rounded-full bg-white px-5 py-3 text-[13px] font-extrabold text-[#0E7490] shadow-lg transition-transform hover:bg-[#EFFDFF] active:scale-95"
             >
               <Icon name="auto_awesome" className="text-[18px]" />
               Lập kế hoạch với AI
@@ -326,158 +398,184 @@ export default function HomePage() {
         </div>
       </FeaturedPlaces>
 
-      {/* CHUYẾN ĐI SẮP TỚI + SỞ THÍCH */}
-      <section className="mt-10 grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
-        <UpcomingTrip loggedIn={Boolean(user)} />
+      {/* CHUYẾN ĐI SẮP TỚI + SỞ THÍCH (tự hiện mượt khi cuộn tới) */}
+      <RevealSection>
+        <section className="mt-10 grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+          <UpcomingTrip loggedIn={Boolean(user)} />
 
-        <div className="relative flex min-h-[210px] flex-col overflow-hidden rounded-[24px] bg-[#FFF6E0] p-5 md:p-6">
-          <Icon
-            name="favorite"
-            filled
-            className="pointer-events-none absolute -right-3 -bottom-5 text-[130px] text-[#D79B00]/12"
-          />
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-client-gold shadow-sm">
-            <Icon name="person_pin_circle" className="text-[26px]" />
-          </span>
-          <p className="mt-4 text-[17px] font-extrabold text-client-ink">
-            Hoàn thiện sở thích du lịch
-          </p>
-          <p className="mt-1 max-w-sm text-[12px] leading-5 text-[#6B5A35]">
-            Càng hiểu bạn, gợi ý càng sát: chế độ ăn, người đi cùng, nhu cầu đặc biệt…
-          </p>
-          <Link
-            to={CLIENT_ROUTES.PREFERENCES}
-            className="relative mt-auto flex items-center gap-1.5 self-start rounded-full bg-client-ink px-5 py-2.5 text-[12px] font-bold text-white hover:bg-black"
-          >
-            Thiết lập sở thích
-            <Icon name="arrow_forward" className="text-[17px]" />
-          </Link>
-        </div>
-      </section>
-
-      {/* MỚI CÓ TRÊN SMARTTRAVEL */}
-      {recent.length > 0 && (
-        <section className="mt-10">
-          <div className="mb-4 flex items-end justify-between gap-3">
-            <div>
-              <p className="text-[11px] font-extrabold tracking-[0.18em] text-client-teal uppercase">
-                Vừa cập nhật
-              </p>
-              <h2 className="mt-1 text-[21px] font-extrabold tracking-tight text-client-ink md:text-[28px]">
-                Mới có trên SmartTravel
-              </h2>
-            </div>
+          <div className="relative flex min-h-[210px] flex-col overflow-hidden rounded-[24px] bg-[#FFF6E0] p-5 md:p-6">
+            <Icon
+              name="favorite"
+              filled
+              className="pointer-events-none absolute -right-3 -bottom-5 text-[130px] text-[#D79B00]/12"
+            />
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-client-gold shadow-sm">
+              <Icon name="person_pin_circle" className="text-[26px]" />
+            </span>
+            <p className="mt-4 text-[17px] font-extrabold text-client-ink">
+              Hoàn thiện sở thích du lịch
+            </p>
+            <p className="mt-1 max-w-sm text-[12px] leading-5 text-[#6B5A35]">
+              Càng hiểu bạn, gợi ý càng sát: chế độ ăn, người đi cùng, nhu cầu đặc biệt…
+            </p>
             <Link
-              to={CLIENT_ROUTES.EXPLORE}
-              className="flex shrink-0 items-center gap-1 text-[13px] font-bold text-client-primary hover:underline"
+              to={CLIENT_ROUTES.PREFERENCES}
+              className="relative mt-auto flex items-center gap-1.5 self-start rounded-full bg-client-ink px-5 py-2.5 text-[12px] font-bold text-white hover:bg-black"
             >
-              Xem tất cả
+              Thiết lập sở thích
               <Icon name="arrow_forward" className="text-[17px]" />
             </Link>
           </div>
-          <HorizontalScrollRow>
-            {recent.map((place) => (
-              <Link
-                key={place.id}
-                to={placePath(String(place.id))}
-                className="group w-[220px] shrink-0 overflow-hidden rounded-[20px] bg-white shadow-[0_3px_10px_rgba(19,27,46,0.06)] md:w-[250px]"
-              >
-                <div className="relative h-[150px] overflow-hidden bg-client-field">
-                  {place.coverUrl ? (
-                    <img
-                      src={place.coverUrl}
-                      alt={place.name}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-client-muted">
-                      <Icon name="landscape" className="text-[34px]" />
-                    </div>
-                  )}
-                  {place.category?.name && (
-                    <span className="absolute bottom-2 left-2 max-w-[85%] truncate rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-[#0E7490]">
-                      {place.category.name}
-                    </span>
-                  )}
-                </div>
-                <div className="p-3">
-                  <p className="truncate text-[13px] font-bold text-client-ink">{place.name}</p>
-                  <p className="mt-0.5 flex items-center gap-1 truncate text-[11px] text-client-muted">
-                    <Icon name="location_on" className="text-[14px]" />
-                    {place.province?.name ?? 'Việt Nam'}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </HorizontalScrollRow>
         </section>
+      </RevealSection>
+
+      {/* MỚI CÓ TRÊN SMARTTRAVEL (hiện khung xương shimmer trong lúc chờ API) */}
+      {(loadingRecent || recent.length > 0) && (
+        <RevealSection>
+          <section className="mt-10">
+            <div className="mb-4 flex items-end justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-extrabold tracking-[0.18em] text-client-teal uppercase">
+                  Vừa cập nhật
+                </p>
+                <h2 className="mt-1 text-[21px] font-extrabold tracking-tight text-client-ink md:text-[28px]">
+                  Mới có trên SmartTravel
+                </h2>
+              </div>
+              <Link
+                to={CLIENT_ROUTES.EXPLORE}
+                className="flex shrink-0 items-center gap-1 text-[13px] font-bold text-client-primary hover:underline"
+              >
+                Xem tất cả
+                <Icon name="arrow_forward" className="text-[17px]" />
+              </Link>
+            </div>
+            {loadingRecent ? (
+              <div className="flex gap-3.5 overflow-hidden pb-1">
+                {Array.from({ length: 5 }, (_, idx) => (
+                  <div
+                    key={idx}
+                    className="w-[220px] shrink-0 overflow-hidden rounded-[20px] bg-white shadow-[0_3px_10px_rgba(19,27,46,0.06)] md:w-[250px]"
+                  >
+                    <div className="shimmer h-[150px] w-full" />
+                    <div className="space-y-2 p-3">
+                      <div className="shimmer h-3.5 w-3/4 rounded-full" />
+                      <div className="shimmer h-3 w-1/2 rounded-full" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <HorizontalScrollRow>
+                {recent.map((place) => (
+                  <Link
+                    key={place.id}
+                    to={placePath(String(place.id))}
+                    className="group w-[220px] shrink-0 overflow-hidden rounded-[20px] bg-white shadow-[0_3px_10px_rgba(19,27,46,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_28px_rgba(8,47,73,0.14)] md:w-[250px]"
+                  >
+                    <div className="relative h-[150px] overflow-hidden bg-client-field">
+                      {place.coverUrl ? (
+                        <img
+                          src={place.coverUrl}
+                          alt={place.name}
+                          loading="lazy"
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-client-muted">
+                          <Icon name="landscape" className="text-[34px]" />
+                        </div>
+                      )}
+                      {place.category?.name && (
+                        <span className="absolute bottom-2 left-2 max-w-[85%] truncate rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-[#0E7490]">
+                          {place.category.name}
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <p className="truncate text-[13px] font-bold text-client-ink">{place.name}</p>
+                      <p className="mt-0.5 flex items-center gap-1 truncate text-[11px] text-client-muted">
+                        <Icon name="location_on" className="text-[14px]" />
+                        {place.province?.name ?? 'Việt Nam'}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </HorizontalScrollRow>
+            )}
+          </section>
+        </RevealSection>
       )}
 
       {/* CÁCH HOẠT ĐỘNG */}
-      <section className="mt-10 rounded-[28px] bg-white p-5 shadow-[0_4px_16px_rgba(19,27,46,0.05)] md:p-8">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-[11px] font-extrabold tracking-[0.18em] text-client-teal uppercase">
-              Cách hoạt động
-            </p>
-            <h2 className="mt-1 text-[21px] font-extrabold tracking-tight text-client-ink md:text-[28px]">
-              Lịch trình hoàn chỉnh chỉ với 3 bước
-            </h2>
+      <RevealSection>
+        <section className="mt-10 rounded-[28px] bg-white p-5 shadow-[0_4px_16px_rgba(19,27,46,0.05)] md:p-8">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-[11px] font-extrabold tracking-[0.18em] text-client-teal uppercase">
+                Cách hoạt động
+              </p>
+              <h2 className="mt-1 text-[21px] font-extrabold tracking-tight text-client-ink md:text-[28px]">
+                Lịch trình hoàn chỉnh chỉ với 3 bước
+              </h2>
+            </div>
+            <Link
+              to={CLIENT_ROUTES.TRIP_PLAN}
+              className="flex items-center gap-1.5 self-start rounded-full bg-client-primary px-5 py-2.5 text-[12px] font-bold text-white hover:bg-client-primary-strong md:self-auto"
+            >
+              Bắt đầu ngay
+              <Icon name="arrow_forward" className="text-[17px]" />
+            </Link>
           </div>
-          <Link
-            to={CLIENT_ROUTES.TRIP_PLAN}
-            className="flex items-center gap-1.5 self-start rounded-full bg-client-primary px-5 py-2.5 text-[12px] font-bold text-white hover:bg-client-primary-strong md:self-auto"
-          >
-            Bắt đầu ngay
-            <Icon name="arrow_forward" className="text-[17px]" />
-          </Link>
-        </div>
-        <ol className="mt-6 grid gap-4 md:grid-cols-3">
-          {STEPS.map((step, i) => (
-            <li key={step.title} className="relative rounded-[20px] bg-client-field p-5">
-              <span className="absolute top-4 right-5 text-[40px] leading-none font-extrabold text-[#0E7490]/10">
-                {i + 1}
-              </span>
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0E7490] text-white">
-                <Icon name={step.icon} className="text-[22px]" />
-              </span>
-              <p className="mt-4 text-[15px] font-extrabold text-client-ink">{step.title}</p>
-              <p className="mt-1 text-[12px] leading-5 text-client-muted">{step.text}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
+          <ol className="mt-6 grid gap-4 md:grid-cols-3">
+            {STEPS.map((step, i) => (
+              <li key={step.title} className="relative rounded-[20px] bg-client-field p-5">
+                <span className="absolute top-4 right-5 text-[40px] leading-none font-extrabold text-[#0E7490]/10">
+                  {i + 1}
+                </span>
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0E7490] text-white">
+                  <Icon name={step.icon} className="text-[22px]" />
+                </span>
+                <p className="mt-4 text-[15px] font-extrabold text-client-ink">{step.title}</p>
+                <p className="mt-1 text-[12px] leading-5 text-client-muted">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </RevealSection>
 
       {/* MỜI ĐỐI TÁC */}
-      <section className="relative mt-10 overflow-hidden rounded-[28px] bg-client-ink px-5 py-8 md:px-10">
-        <Icon
-          name="storefront"
-          className="pointer-events-none absolute -right-6 -bottom-10 text-[200px] text-white/5"
-        />
-        <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-          <div className="max-w-2xl">
-            <p className="flex items-center gap-1.5 text-[11px] font-extrabold tracking-[0.18em] text-[#FFC94D] uppercase">
-              <Icon name="handshake" className="text-[16px]" />
-              Dành cho doanh nghiệp
-            </p>
-            <p className="mt-2 text-[20px] font-extrabold text-white md:text-[26px]">
-              Đưa địa điểm của bạn đến hàng nghìn du khách
-            </p>
-            <p className="mt-1 text-[13px] leading-6 text-white/70">
-              Đăng ký đối tác, được xác minh và xuất hiện ở khu nổi bật trên trang chủ cùng gợi ý
-              chuyến đi.
-            </p>
+      <RevealSection>
+        <section className="relative mt-10 overflow-hidden rounded-[28px] bg-client-ink px-5 py-8 md:px-10">
+          <Icon
+            name="storefront"
+            className="pointer-events-none absolute -right-6 -bottom-10 text-[200px] text-white/5"
+          />
+          <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-2xl">
+              <p className="flex items-center gap-1.5 text-[11px] font-extrabold tracking-[0.18em] text-[#FFC94D] uppercase">
+                <Icon name="handshake" className="text-[16px]" />
+                Dành cho doanh nghiệp
+              </p>
+              <p className="mt-2 text-[20px] font-extrabold text-white md:text-[26px]">
+                Đưa địa điểm của bạn đến hàng nghìn du khách
+              </p>
+              <p className="mt-1 text-[13px] leading-6 text-white/70">
+                Đăng ký đối tác, được xác minh và xuất hiện ở khu nổi bật trên trang chủ cùng gợi ý
+                chuyến đi.
+              </p>
+            </div>
+            {/* Nút CTA đối tác có vệt sáng lướt (.btn-shine trong index.css) */}
+            <Link
+              to={CLIENT_ROUTES.PARTNER}
+              className="btn-shine flex shrink-0 items-center gap-1.5 self-start rounded-full bg-[#FFC94D] px-6 py-3 text-[13px] font-extrabold text-[#4A3300] transition-transform hover:bg-[#FFD772] active:scale-95 md:self-auto"
+            >
+              Trở thành đối tác
+              <Icon name="arrow_forward" className="text-[18px]" />
+            </Link>
           </div>
-          <Link
-            to={CLIENT_ROUTES.PARTNER}
-            className="flex shrink-0 items-center gap-1.5 self-start rounded-full bg-[#FFC94D] px-6 py-3 text-[13px] font-extrabold text-[#4A3300] hover:bg-[#FFD772] md:self-auto"
-          >
-            Trở thành đối tác
-            <Icon name="arrow_forward" className="text-[18px]" />
-          </Link>
-        </div>
-      </section>
+        </section>
+      </RevealSection>
     </div>
   );
 }

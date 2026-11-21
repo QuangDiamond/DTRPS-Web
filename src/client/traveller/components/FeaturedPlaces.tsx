@@ -4,6 +4,7 @@ import { Icon } from '@/components/common';
 import { adApi, type FeaturedPlace } from '@/client/api/adApi';
 import { placePath } from '@/client/routePaths';
 
+/** Thời gian tự chuyển slide đối tác (ms) — khớp luôn với thanh tiến độ ở mép dưới ảnh */
 const ROTATE_MS = 3000;
 
 /** Neo của khu này trên trang chủ: trang chi tiết bấm "quay lại" về đúng đây */
@@ -293,6 +294,23 @@ export default function FeaturedPlaces({ children, fallbackRight }: FeaturedHero
                 )}
               </div>
             </div>
+
+            {/* Thanh tiến độ 3 giây ở mép dưới ảnh (tự tạm dừng khi rê chuột hoặc bấm ⏸) */}
+            {places.length > 1 && (
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px] bg-white/15"
+              >
+                <div
+                  key={index}
+                  style={{
+                    animation: `slideProgress ${ROTATE_MS}ms linear forwards`,
+                    animationPlayState: hovered || stopped ? 'paused' : 'running',
+                  }}
+                  className="h-full w-full origin-left bg-[#FFC94D] motion-reduce:hidden"
+                />
+              </div>
+            )}
           </div>
         ) : (
           fallbackRight

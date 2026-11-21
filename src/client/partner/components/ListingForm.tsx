@@ -297,8 +297,24 @@ export default function ListingForm({
           <PartnerSection
             icon="map"
             title="Vị trí"
-            hint="Tìm địa chỉ hoặc bấm lên bản đồ để đặt ghim."
+            hint="Tìm địa chỉ hoặc bấm lên bản đồ để đặt ghim (tự điền địa chỉ nếu ô bên dưới đang trống)."
           >
+            {/* Đặt bản đồ lên trước để chọn ghim → tự điền địa chỉ bên dưới */}
+            <LocationPicker
+              latitude={parseNumber(values.latitude)}
+              longitude={parseNumber(values.longitude)}
+              address={values.address}
+              search={mapsApi}
+              onAddress={update('address')}
+              onChange={(latitude, longitude) => {
+                setValues((current) => ({
+                  ...current,
+                  latitude: String(latitude),
+                  longitude: String(longitude),
+                }));
+                setErrors((current) => ({ ...current, latitude: undefined, longitude: undefined }));
+              }}
+            />
             <div className="grid gap-x-4 md:grid-cols-2">
               <SelectField
                 label="Tỉnh / Thành phố"
@@ -321,21 +337,6 @@ export default function ListingForm({
                 error={errors.address}
               />
             </div>
-            <LocationPicker
-              latitude={parseNumber(values.latitude)}
-              longitude={parseNumber(values.longitude)}
-              address={values.address}
-              search={mapsApi}
-              onAddress={update('address')}
-              onChange={(latitude, longitude) => {
-                setValues((current) => ({
-                  ...current,
-                  latitude: String(latitude),
-                  longitude: String(longitude),
-                }));
-                setErrors((current) => ({ ...current, latitude: undefined, longitude: undefined }));
-              }}
-            />
             <div className="mt-4 grid gap-x-4 md:grid-cols-2">
               <Field
                 label="Vĩ độ (latitude)"

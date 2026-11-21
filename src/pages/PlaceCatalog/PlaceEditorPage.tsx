@@ -404,6 +404,23 @@ export default function PlaceEditorPage() {
             title={t('placeEditor.sections.location')}
             hint={t('placeEditor.sections.locationHint')}
           >
+            {/* Đặt bản đồ lên trước để chọn ghim → tự điền địa chỉ nếu ô bên dưới đang trống */}
+            <LocationPicker
+              latitude={parseNumber(values.latitude)}
+              longitude={parseNumber(values.longitude)}
+              address={values.address}
+              labels={mapLabels}
+              search={mapService}
+              onAddress={(address) => update('address')(address)}
+              onChange={(latitude, longitude) => {
+                setValues((current) => ({
+                  ...current,
+                  latitude: String(latitude),
+                  longitude: String(longitude),
+                }));
+                setErrors((current) => ({ ...current, latitude: undefined, longitude: undefined }));
+              }}
+            />
             <div className="grid gap-4 md:grid-cols-2">
               <FormField
                 label={t('placeEditor.fields.province')}
@@ -433,22 +450,6 @@ export default function PlaceEditorPage() {
                 />
               </FormField>
             </div>
-            <LocationPicker
-              latitude={parseNumber(values.latitude)}
-              longitude={parseNumber(values.longitude)}
-              address={values.address}
-              labels={mapLabels}
-              search={mapService}
-              onAddress={(address) => update('address')(address)}
-              onChange={(latitude, longitude) => {
-                setValues((current) => ({
-                  ...current,
-                  latitude: String(latitude),
-                  longitude: String(longitude),
-                }));
-                setErrors((current) => ({ ...current, latitude: undefined, longitude: undefined }));
-              }}
-            />
             {!creating && (
               <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface-container-low px-4 py-3">
                 <p className="font-body-sm text-body-sm text-on-surface-variant">

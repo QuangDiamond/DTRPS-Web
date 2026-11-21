@@ -70,7 +70,7 @@ function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
         onClick={() => setOpen((current) => !current)}
         aria-label="Tài khoản"
         aria-expanded={open}
-        className="rounded-full ring-2 ring-white/40 transition hover:ring-white/80"
+        className="rounded-full ring-2 ring-white/40 transition-all duration-200 hover:ring-white/85 active:scale-95"
       >
         <Avatar
           url={user.avatarUrl}
@@ -80,7 +80,7 @@ function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
         />
       </button>
       {open && (
-        <div className="absolute right-0 z-40 mt-2 w-64 rounded-2xl border border-client-line bg-white p-2 shadow-lg">
+        <div className="animate-[fadeIn_150ms_ease-out] absolute right-0 z-40 mt-2 w-64 origin-top-right rounded-2xl border border-client-line bg-white p-2 shadow-xl">
           <div className="flex items-center gap-3 border-b border-client-line px-3 pt-1 pb-3">
             <Avatar url={user.avatarUrl} size={40} iconSize={34} />
             <div className="min-w-0">
@@ -147,10 +147,51 @@ export default function ClientShell() {
   const { hasRole } = useClientAuth();
   const { profile } = usePartnerProfile();
   const [notice, setNotice] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [showTop, setShowTop] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  const [pill, setPill] = useState<{ left: number; width: number } | null>(null);
   // Chế độ theo loại tài khoản, không theo đường dẫn (đối tác xem /explore vẫn giữ khung đối tác)
   const partnerMode = hasRole('BUSINESS_OWNER');
   // Menu đối tác chỉ hiện khi hồ sơ đã được duyệt
   const nav = partnerMode ? (profile?.status === 'ACTIVE' ? PARTNER_NAV : []) : TRAVELLER_NAV;
+
+  // Theo dõi vị trí cuộn trang: >8px bật hiệu ứng kính mờ topbar, >360px hiện nút cuộn lên đầu trang
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 8);
+      setShowTop(window.scrollY > 360);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Đo vị trí tab đang chọn bằng getBoundingClientRect + ResizeObserver để viên thuốc trượt luôn khớp tuyệt đối
+  useEffect(() => {
+    const updatePill = () => {
+      const container = navRef.current;
+      if (!container) return;
+      const activeEl = container.querySelector<HTMLElement>('[aria-current="page"]');
+      if (!activeEl) {
+        setPill(null);
+        return;
+      }
+      const cRect = container.getBoundingClientRect();
+      const aRect = activeEl.getBoundingClientRect();
+      setPill({ left: aRect.left - cRect.left, width: aRect.width });
+    };
+    const frame = window.requestAnimationFrame(updatePill);
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(updatePill) : null;
+    if (observer && navRef.current) observer.observe(navRef.current);
+    void document.fonts?.ready.then(updatePill);
+    window.addEventListener('resize', updatePill);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer?.disconnect();
+      window.removeEventListener('resize', updatePill);
+    };
+  }, [pathname, nav.length]);
 
   useEffect(() => {
     document.title = partnerMode ? 'Đối tác · SmartTravel' : 'SmartTravel';
@@ -163,25 +204,41 @@ export default function ClientShell() {
   }, [notice]);
 
   const tabClass = ({ isActive }: { isActive: boolean }) =>
-    `flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-2 text-[13px] whitespace-nowrap transition-colors lg:px-2 xl:px-3 ${
+    `group relative z-10 flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-2 text-[13px] whitespace-nowrap transition-all duration-200 active:scale-95 lg:px-2.5 xl:px-3.5 ${
       isActive
-        ? 'bg-white/15 font-bold text-white'
+        ? 'font-bold text-white'
         : 'font-semibold text-white/75 hover:bg-white/10 hover:text-white'
     }`;
   const bottomTabClass = ({ isActive }: { isActive: boolean }) =>
-    `flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[10px] ${
+    `flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[10px] transition-colors ${
       isActive ? 'font-extrabold text-[#0891B2]' : 'font-semibold text-[#65747D]'
     }`;
 
   return (
     <div className="min-h-screen bg-client-bg pb-20 md:pb-10">
-      <header className="sticky top-0 z-30 bg-[#0891B2] shadow-[0_2px_12px_rgba(8,47,73,0.18)]">
+      {/* Topbar giữ nguyên nền #0891B2; cuộn xuống chuyển sang kính mờ (backdrop-blur) + bóng sâu */}
+      <header
+        className={`sticky top-0 z-30 border-b transition-all duration-300 ${
+          scrolled
+            ? 'border-white/15 bg-[#0891B2]/92 shadow-[0_8px_24px_rgba(8,47,73,0.22)] backdrop-blur-md'
+            : 'border-transparent bg-[#0891B2] shadow-[0_2px_12px_rgba(8,47,73,0.18)]'
+        }`}
+      >
         <div className="flex h-16 w-full items-center justify-between gap-3 px-4 md:px-6 lg:px-10">
           <AppLogo subtitle={partnerMode ? 'BUSINESS OWNER' : 'VIETNAM AI PLANNER'} onDark />
           <nav
-            className="hidden min-w-0 flex-1 justify-center gap-0.5 md:flex xl:gap-1"
+            ref={navRef}
+            className="relative hidden min-w-0 flex-1 items-center justify-center gap-0.5 md:flex xl:gap-1"
             aria-label="Điều hướng chính"
           >
+            {/* Viên thuốc nền sáng trượt mượt theo tab đang chọn (sliding active pill) */}
+            {pill && (
+              <span
+                aria-hidden
+                style={{ transform: `translateX(${pill.left}px)`, width: `${pill.width}px` }}
+                className="pointer-events-none absolute top-0 bottom-0 left-0 rounded-full bg-white/18 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-300 ease-out motion-reduce:transition-none"
+              />
+            )}
             {nav.map((item) => (
               <NavLink
                 key={item.to}
@@ -190,7 +247,10 @@ export default function ClientShell() {
                 title={item.label}
                 className={tabClass}
               >
-                <Icon name={item.icon} className="text-[18px]" />
+                <Icon
+                  name={item.icon}
+                  className="text-[18px] transition-transform duration-200 group-hover:scale-110"
+                />
                 {/* Máy tính bảng (768–1023px): chỉ icon để menu không xuống dòng */}
                 <span className="hidden lg:inline">{item.label}</span>
               </NavLink>
@@ -200,7 +260,7 @@ export default function ClientShell() {
             <button
               type="button"
               onClick={() => setNotice('Tiếng Anh sẽ có trong phiên bản sau.')}
-              className="flex items-center gap-1 rounded-full bg-white/12 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-white/20"
+              className="flex items-center gap-1 rounded-full bg-white/12 px-2.5 py-1 text-[11px] font-bold text-white transition-all duration-200 hover:bg-white/22 active:scale-95"
             >
               <Icon name="language" className="text-[14px]" />
               VI | EN
@@ -248,9 +308,27 @@ export default function ClientShell() {
 
       <main className="w-full px-4 pt-6 md:px-6 lg:px-10">
         <Suspense fallback={<Spinner />}>
-          <Outlet />
+          {/* Hiệu ứng chuyển trang mượt (.page-enter trong index.css) mỗi khi đổi route */}
+          <div key={pathname} className="page-enter">
+            <Outlet />
+          </div>
         </Suspense>
       </main>
+
+      {/* Nút cuộn nhanh lên đầu trang khi người dùng cuộn xuống sâu */}
+      <button
+        type="button"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        aria-label="Lên đầu trang"
+        title="Lên đầu trang"
+        className={`fixed right-4 bottom-20 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-[#0891B2] text-white shadow-[0_10px_24px_rgba(8,47,73,0.28)] ring-2 ring-white/80 transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#0E7490] active:scale-95 md:right-7 md:bottom-7 ${
+          showTop
+            ? 'pointer-events-auto translate-y-0 opacity-100'
+            : 'pointer-events-none translate-y-4 opacity-0'
+        }`}
+      >
+        <Icon name="keyboard_arrow_up" className="text-[24px]" />
+      </button>
 
       {nav.length > 0 && (
         <nav

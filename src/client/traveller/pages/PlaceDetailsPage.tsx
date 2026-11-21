@@ -92,10 +92,13 @@ function ReviewMenu({ reported, onReport }: { reported: boolean; onReport: () =>
 function ReviewCard({
   review,
   menu,
+  onOpenImage,
 }: {
   review: PlaceReview;
   /** Không có với đánh giá của chính mình */
   menu?: { reported: boolean; onReport: () => void };
+  /** Bấm vào ảnh trong đánh giá để phóng to bằng Lightbox */
+  onOpenImage: (urls: string[], index: number) => void;
 }) {
   return (
     <div className="rounded-2xl bg-white p-5">
@@ -129,16 +132,144 @@ function ReviewCard({
       )}
       {review.imageUrls.length > 0 && (
         <div className="mt-3 flex gap-2.5 overflow-x-auto">
-          {review.imageUrls.map((url) => (
-            <img
+          {review.imageUrls.map((url, idx) => (
+            <button
               key={url}
-              src={url}
-              alt=""
-              className="h-[84px] w-[84px] shrink-0 rounded-2xl object-cover"
-            />
+              type="button"
+              onClick={() => onOpenImage(review.imageUrls, idx)}
+              aria-label={`Phóng to ảnh đánh giá ${idx + 1}`}
+              className="group relative h-[84px] w-[84px] shrink-0 overflow-hidden rounded-2xl bg-[#CEE7EA]"
+            >
+              <img
+                src={url}
+                alt=""
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+            </button>
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Khung xem ảnh toàn màn hình (Lightbox): hỗ trợ phím Esc, mũi tên trái/phải và bấm nút < > */
+function ImageLightbox({
+  images,
+  index,
+  onChange,
+  onClose,
+}: {
+  images: string[];
+  index: number;
+  onChange: (next: number) => void;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+      if (images.length > 1 && event.key === 'ArrowLeft') {
+        onChange((index - 1 + images.length) % images.length);
+      }
+      if (images.length > 1 && event.key === 'ArrowRight') {
+        onChange((index + 1) % images.length);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [images.length, index, onChange, onClose]);
+
+  const currentUrl = images[Math.min(index, images.length - 1)];
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Xem ảnh phóng to"
+      onClick={onClose}
+      className="animate-[fadeIn_150ms_ease-out] fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Đóng"
+        className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white transition-colors hover:bg-white/25"
+      >
+        <Icon name="close" className="text-[22px]" />
+      </button>
+
+      {images.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onChange((index - 1 + images.length) % images.length);
+            }}
+            aria-label="Ảnh trước"
+            className="absolute left-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white transition-colors hover:bg-white/25 md:left-6"
+          >
+            <Icon name="chevron_left" className="text-[28px]" />
+          </button>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onChange((index + 1) % images.length);
+            }}
+            aria-label="Ảnh tiếp theo"
+            className="absolute right-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white transition-colors hover:bg-white/25 md:right-6"
+          >
+            <Icon name="chevron_right" className="text-[28px]" />
+          </button>
+        </>
+      )}
+
+      <img
+        src={currentUrl}
+        alt=""
+        onClick={(event) => event.stopPropagation()}
+        className="max-h-[85vh] max-w-[92vw] rounded-2xl object-contain shadow-2xl"
+      />
+
+      {images.length > 1 && (
+        <span className="absolute bottom-5 rounded-full bg-black/60 px-3.5 py-1 text-[12px] font-bold text-white tabular-nums">
+          {index + 1} / {images.length}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** Khung xương shimmer thay cho vòng xoay trong lúc tải trang chi tiết */
+function PlaceDetailSkeleton() {
+  return (
+    <div className="pb-12">
+      <div className="mb-4 flex items-center gap-3">
+        <div className="shimmer h-10 w-10 rounded-full" />
+        <div className="shimmer h-5 w-40 rounded-full" />
+      </div>
+      <div className="md:grid md:grid-cols-[1.4fr_1fr] md:gap-6">
+        <div className="space-y-4">
+          <div className="shimmer h-60 w-full rounded-[24px] md:h-80" />
+          <div className="shimmer h-7 w-2/3 rounded-full" />
+          <div className="shimmer h-4 w-1/2 rounded-full" />
+          <div className="flex gap-2">
+            <div className="shimmer h-7 w-24 rounded-full" />
+            <div className="shimmer h-7 w-20 rounded-full" />
+          </div>
+          <div className="shimmer mt-4 h-24 w-full rounded-2xl" />
+        </div>
+        <div className="mt-6 space-y-4 md:mt-0">
+          <div className="grid grid-cols-2 gap-3">
+            {Array.from({ length: 4 }, (_, idx) => (
+              <div key={idx} className="shimmer h-28 rounded-2xl" />
+            ))}
+          </div>
+          <div className="shimmer h-36 w-full rounded-2xl" />
+          <div className="shimmer h-44 w-full rounded-2xl" />
+        </div>
+      </div>
     </div>
   );
 }
@@ -160,6 +291,28 @@ function formatVnd(amount: number): string {
 
 /** 1 = Thứ 2 … 7 = Chủ nhật */
 const todayOfWeek = () => (new Date().getDay() === 0 ? 7 : new Date().getDay());
+
+/** Đổi chuỗi "HH:mm" thành số phút tính từ 00:00 để so sánh giờ mở/đóng cửa */
+function parseMinutes(hhmm: string | null): number | null {
+  if (!hhmm) return null;
+  const [h, m] = hhmm.split(':').map(Number);
+  if (Number.isNaN(h) || Number.isNaN(m)) return null;
+  return h * 60 + m;
+}
+
+/** Kiểm tra địa điểm có đang mở cửa theo giờ hiện tại trên máy hay không */
+function isOpenNow(detail: PlaceDetail): boolean {
+  if (detail.openingHours.length === 0) return true;
+  const today = detail.openingHours.find((hour) => hour.dayOfWeek === todayOfWeek());
+  if (!today || today.closed) return false;
+  const open = parseMinutes(today.openTime);
+  const close = parseMinutes(today.closeTime);
+  if (open === null || close === null) return true;
+  const now = new Date();
+  const current = now.getHours() * 60 + now.getMinutes();
+  // Hỗ trợ quán mở qua nửa đêm (vd. 18:00 - 02:00)
+  return close >= open ? current >= open && current <= close : current >= open || current <= close;
+}
 
 /** Không khai báo giờ = mở cả ngày */
 function todayHoursLabel(detail: PlaceDetail): string {
@@ -210,6 +363,10 @@ export default function PlaceDetailsPage() {
   const [introExpanded, setIntroExpanded] = useState(false);
   const [saved, setSaved] = useState(false);
   const [notice, showNotice] = useNotice();
+  // Trạng thái Lightbox xem ảnh phóng to (dùng chung cho ảnh địa điểm và ảnh đánh giá)
+  const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
+  // Chỉ số ảnh đang hiển thị ở khung ảnh chính (đổi khi bấm thumbnail hoặc nút < >)
+  const [activeImage, setActiveImage] = useState(0);
 
   const [reviews, setReviews] = useState<PlaceReview[]>([]);
   const [reviewsTotal, setReviewsTotal] = useState(0);
@@ -276,8 +433,9 @@ export default function PlaceDetailsPage() {
     };
   }, [placeId]);
 
-  // Đổi địa điểm thì về lại trang 1 của danh sách đánh giá.
+  // Đổi địa điểm thì về lại ảnh chính đầu tiên và trang 1 của danh sách đánh giá.
   useEffect(() => {
+    setActiveImage(0);
     setReviewsPage(1);
   }, [placeId]);
 
@@ -319,11 +477,45 @@ export default function PlaceDetailsPage() {
     return <FormAlert message={`Không tải được địa điểm: ${loadError}`} />;
   }
 
-  if (!detail) return <Spinner />;
+  if (!detail) return <PlaceDetailSkeleton />;
 
   const place = detail.summary;
   const favorite = favorites.includes(String(place.id));
-  const gallery = detail.images.length > 0 ? detail.images : null;
+  // Sắp xếp ảnh chính (primary=true) luôn đứng đầu tiên; fallback về coverUrl nếu danh sách rỗng
+  const orderedImages =
+    detail.images.length > 0
+      ? [...detail.images].sort((a, b) => Number(b.primary) - Number(a.primary))
+      : [];
+  const placeImageUrls =
+    orderedImages.length > 0
+      ? orderedImages.map((image) => image.url)
+      : place.coverUrl
+        ? [place.coverUrl]
+        : [];
+  const openNow = isOpenNow(detail);
+  const safeImageIndex =
+    placeImageUrls.length > 0 ? Math.min(activeImage, placeImageUrls.length - 1) : 0;
+  const activeImageUrl = placeImageUrls[safeImageIndex] ?? null;
+  const stepImage = (delta: number) => {
+    if (placeImageUrls.length < 2) return;
+    setActiveImage((current) => (current + delta + placeImageUrls.length) % placeImageUrls.length);
+  };
+
+  const copyAddress = async () => {
+    if (!place.address) return;
+    try {
+      await navigator.clipboard.writeText(place.address);
+      showNotice('Đã sao chép địa chỉ.');
+    } catch {
+      showNotice('Không thể sao chép địa chỉ lúc này.');
+    }
+  };
+
+  const scrollToReviews = () => {
+    document
+      .getElementById('place-reviews')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const share = async () => {
     const text = `${place.name} - ${place.address ?? ''}\nKhám phá cùng SmartTravel Vietnam AI ✨`;
@@ -350,28 +542,77 @@ export default function PlaceDetailsPage() {
 
       <div className="md:grid md:grid-cols-[1.4fr_1fr] md:gap-6">
         <div className="min-w-0">
-          <div className="relative h-60 overflow-hidden rounded-[24px] bg-[#CEE7EA] md:h-80">
-            {place.coverUrl ? (
-              <img
-                src={place.coverUrl}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover"
-              />
+          {/* Khung ảnh chính lớn tỷ lệ ngang + nút < > chuyển ảnh + bấm phóng to Lightbox */}
+          <div className="group relative h-64 overflow-hidden rounded-[24px] bg-[#CEE7EA] md:h-[360px]">
+            {activeImageUrl ? (
+              <button
+                type="button"
+                onClick={() => setLightbox({ images: placeImageUrls, index: safeImageIndex })}
+                aria-label="Phóng to ảnh địa điểm"
+                className="relative h-full w-full cursor-zoom-in overflow-hidden"
+              >
+                <img
+                  src={activeImageUrl}
+                  alt={place.name}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+              </button>
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
                 <Icon name="image" className="text-[48px] text-white/70" />
               </div>
             )}
-            <div className="absolute inset-0 flex flex-col justify-between bg-linear-to-b from-black/15 via-transparent to-black/30 p-3.5">
-              <div className="flex items-start justify-end">
+
+            {/* Nút < > chuyển nhanh giữa các ảnh khi địa điểm có từ 2 ảnh trở lên */}
+            {placeImageUrls.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => stepImage(-1)}
+                  aria-label="Ảnh trước"
+                  className="absolute top-1/2 left-3 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/45 text-white backdrop-blur-sm transition-all hover:bg-black/70 active:scale-95"
+                >
+                  <Icon name="chevron_left" className="text-[22px]" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => stepImage(1)}
+                  aria-label="Ảnh tiếp theo"
+                  className="absolute top-1/2 right-3 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/45 text-white backdrop-blur-sm transition-all hover:bg-black/70 active:scale-95"
+                >
+                  <Icon name="chevron_right" className="text-[22px]" />
+                </button>
+              </>
+            )}
+
+            {/* Lớp phủ badge trạng thái mở cửa, yêu thích, số sao và nút xem tất cả ảnh */}
+            <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between bg-linear-to-b from-black/15 via-transparent to-black/30 p-3.5 [&_button]:pointer-events-auto">
+              <div className="flex items-start justify-between gap-2">
+                {/* Nhãn trạng thái mở/đóng cửa tính theo giờ hiện tại */}
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold shadow-sm backdrop-blur-sm ${
+                    openNow ? 'bg-[#ECFDF5]/95 text-[#0F766E]' : 'bg-[#FEF2F2]/95 text-[#B91C1C]'
+                  }`}
+                >
+                  <span
+                    className={`h-2 w-2 rounded-full ${openNow ? 'bg-[#10B981]' : 'bg-[#EF4444]'}`}
+                  />
+                  {openNow ? 'Đang mở cửa' : 'Đã đóng cửa'}
+                </span>
                 <FavoriteButton
                   active={favorite}
                   onToggle={() => toggleFavorite(String(place.id))}
                   className="h-10 w-10"
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[13px] font-extrabold text-[#13364A]">
+              <div className="flex items-center justify-between gap-2">
+                {/* Bấm badge số sao để cuộn mượt xuống mục Đánh giá */}
+                <button
+                  type="button"
+                  onClick={scrollToReviews}
+                  title="Xem đánh giá địa điểm"
+                  className="flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[13px] font-extrabold text-[#13364A] shadow-sm transition-transform hover:scale-105 active:scale-95"
+                >
                   <Icon name="star" filled className="text-[16px] text-[#E0A100]" />
                   {place.rating ?? 'Mới'}
                   {place.rating !== null && (
@@ -379,45 +620,104 @@ export default function PlaceDetailsPage() {
                       ({place.reviewCount})
                     </span>
                   )}
-                </span>
+                </button>
+                {placeImageUrls.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setLightbox({ images: placeImageUrls, index: safeImageIndex })}
+                    className="flex items-center gap-1 rounded-full bg-black/60 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur-sm transition-colors hover:bg-black/80"
+                  >
+                    <Icon name="photo_library" className="text-[14px]" />
+                    {placeImageUrls.length > 1
+                      ? `${safeImageIndex + 1}/${placeImageUrls.length} ảnh`
+                      : 'Phóng to'}
+                  </button>
+                )}
               </div>
             </div>
           </div>
 
-          <div className="mt-4 flex items-start justify-between gap-2">
-            <h2 className="flex-1 text-[28px] leading-[34px] font-extrabold text-[#13364A]">
+          {/* Hàng ảnh thumbnail nhỏ ngay dưới ảnh chính (tự ẩn khi địa điểm chỉ có 1 ảnh) */}
+          {placeImageUrls.length > 1 && (
+            <div className="mt-3 flex gap-2.5 overflow-x-auto p-1">
+              {placeImageUrls.map((url, idx) => {
+                const selected = idx === safeImageIndex;
+                return (
+                  <button
+                    key={url}
+                    type="button"
+                    onClick={() => setActiveImage(idx)}
+                    aria-label={`Xem ảnh ${idx + 1}`}
+                    aria-current={selected}
+                    className={`relative h-[68px] w-[104px] shrink-0 overflow-hidden rounded-2xl bg-[#CEE7EA] transition-all duration-200 ${
+                      selected
+                        ? 'opacity-100 ring-2 ring-[#0891B2] ring-offset-2'
+                        : 'opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    <img src={url} alt="" className="h-full w-full object-cover" />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="min-w-0 flex-1 text-[28px] leading-[34px] font-extrabold text-[#13364A]">
               {place.name}
             </h2>
+            {/* Tag tỉnh thành tách riêng khỏi hàng loại hình, đặt cùng dòng tiêu đề và bấm lọc theo tỉnh */}
+            {place.province && (
+              <Link
+                to={`${CLIENT_ROUTES.EXPLORE}?province=${encodeURIComponent(place.province.code)}`}
+                title={`Xem các địa điểm tại ${place.province.name}`}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#F1F5F8] px-3 py-1.5 text-[12px] font-semibold text-[#475569] transition-colors hover:bg-[#E2EBF0]"
+              >
+                <Icon name="map" className="text-[15px] text-[#0891B2]" />
+                {place.province.name}
+              </Link>
+            )}
           </div>
-          <p className="mt-1 flex items-start gap-1 text-[12px] text-[#72818C]">
-            <Icon name="location_on" className="text-[16px] text-[#0891B2]" />
-            {place.address ?? 'Chưa cập nhật địa chỉ'}
-          </p>
+          <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#72818C]">
+            <Icon name="location_on" className="shrink-0 text-[16px] text-[#0891B2]" />
+            <span className="min-w-0 flex-1">{place.address ?? 'Chưa cập nhật địa chỉ'}</span>
+            {/* Nút sao chép nhanh địa chỉ */}
+            {place.address && (
+              <button
+                type="button"
+                onClick={() => void copyAddress()}
+                title="Sao chép địa chỉ"
+                aria-label="Sao chép địa chỉ"
+                className="flex shrink-0 items-center gap-1 rounded-full bg-[#EDF4F6] px-2.5 py-1 text-[11px] font-bold text-[#0E7490] transition-colors hover:bg-[#D9EEF2] active:scale-95"
+              >
+                <Icon name="content_copy" className="text-[13px]" />
+                Sao chép
+              </button>
+            )}
+          </div>
           <div className="mt-3 flex flex-wrap gap-2">
-            {/* Tag loại hình — bấm để xem các địa điểm cùng loại ở trang Khám phá */}
+            {/* Hàng tag chỉ chứa loại hình: loại đại diện (index 0) nổi đậm #0891B2, các loại phụ dùng nền xanh nhạt đồng tông */}
             {(place.categories ?? (place.category ? [place.category] : [])).map(
-              (type, index) =>
+              (type, idx) =>
                 type && (
                   <Link
                     key={type.code}
                     to={`${CLIENT_ROUTES.EXPLORE}?type=${encodeURIComponent(type.code)}`}
-                    title={`Xem các địa điểm ${type.name}`}
-                    className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors ${
-                      index === 0
-                        ? 'bg-[#0891B2] text-white hover:bg-[#0E7490]'
-                        : 'border border-[#9CD5DB] bg-white text-[#0891B2] hover:bg-[#E7F8FA]'
+                    title={
+                      idx === 0
+                        ? `Loại hình đại diện · Xem các địa điểm ${type.name}`
+                        : `Xem các địa điểm ${type.name}`
+                    }
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition-colors ${
+                      idx === 0
+                        ? 'bg-[#0891B2] text-white shadow-xs hover:bg-[#0E7490]'
+                        : 'bg-[#E7F8FA] text-[#0E7490] hover:bg-[#D2F2F6]'
                     }`}
                   >
-                    <Icon name="sell" className="text-[15px]" />
+                    <Icon name="sell" filled={idx === 0} className="text-[14px]" />
                     {type.name}
                   </Link>
                 ),
-            )}
-            {place.province && (
-              <span className="flex items-center gap-1.5 rounded-full bg-[#EBEDFF] px-3 py-1.5 text-[11px] font-semibold text-[#36546A]">
-                <Icon name="map" className="text-[15px] text-[#4A7091]" />
-                {place.province.name}
-              </span>
             )}
           </div>
 
@@ -440,21 +740,60 @@ export default function PlaceDetailsPage() {
             </button>
           )}
 
-          {gallery && gallery.length > 1 && (
-            <>
-              <h2 className="mt-7 mb-3 text-[17px] font-extrabold text-[#13364A]">Hình ảnh</h2>
-              <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 md:mx-0 md:px-0">
-                {gallery.map((image) => (
-                  <img
-                    key={image.url}
-                    src={image.url}
-                    alt=""
-                    className="h-[110px] w-[168px] shrink-0 rounded-2xl bg-[#CEE7EA] object-cover"
-                  />
-                ))}
+          {/* Chuyển bản đồ sang cột trái ngay dưới Giới thiệu để lấp khoảng trống và khung bản đồ rộng, rõ hơn */}
+          <div className="mt-7 mb-3 flex items-center justify-between">
+            <h2 className="text-[17px] font-extrabold text-[#13364A]">Vị trí & Đường đi</h2>
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(locationQuery)}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-[12px] font-bold text-[#0891B2] hover:underline"
+            >
+              <Icon name="directions" className="text-[16px]" />
+              Chỉ đường
+            </a>
+          </div>
+          {/* isolate: z-index của bản đồ chỉ có tác dụng trong khung này, không đè lên hộp thoại / menu */}
+          <div className="overflow-hidden rounded-[22px] border border-[#E5ECEF] bg-white shadow-[0_4px_16px_rgba(19,27,46,0.05)]">
+            <div className="relative isolate">
+              <TravelMap
+                className="aspect-[16/10] w-full md:aspect-[16/9]"
+                center={[detail.latitude, detail.longitude]}
+                points={[
+                  {
+                    id: String(place.id),
+                    coordinate: [detail.latitude, detail.longitude],
+                    label: '•',
+                    title: place.name,
+                  },
+                ]}
+                activeId={String(place.id)}
+              />
+            </div>
+            {/* Thanh chân bản đồ đặt riêng bên dưới để không đè lên nhãn Goong Maps */}
+            <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#E7F8FA] text-[#0891B2]">
+                  <Icon name="near_me" className="text-[16px]" />
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-[13px] font-bold text-[#13364A]">{place.name}</p>
+                  {place.address && (
+                    <p className="truncate text-[11.5px] text-[#72818C]">{place.address}</p>
+                  )}
+                </div>
               </div>
-            </>
-          )}
+              <a
+                href={googleMapsUrl(locationQuery)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#F1F5F8] px-3.5 py-2 text-[12px] font-bold text-[#13364A] transition-colors hover:bg-[#E2EBF0]"
+              >
+                Mở Bản Đồ
+                <Icon name="open_in_new" className="text-[14px]" />
+              </a>
+            </div>
+          </div>
         </div>
 
         <div className="min-w-0">
@@ -463,9 +802,18 @@ export default function PlaceDetailsPage() {
           </h2>
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-2xl bg-white p-3.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#E3EDFF] text-[#3B6FD8]">
-                <Icon name="schedule" className="text-[19px]" />
-              </span>
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#E3EDFF] text-[#3B6FD8]">
+                  <Icon name="schedule" className="text-[19px]" />
+                </span>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                    openNow ? 'bg-[#ECFDF5] text-[#0F766E]' : 'bg-[#FEF2F2] text-[#B91C1C]'
+                  }`}
+                >
+                  {openNow ? 'Đang mở' : 'Đóng cửa'}
+                </span>
+              </div>
               <p className="mt-2.5 text-[11px] text-[#72818C]">Giờ mở cửa hôm nay</p>
               <p className="mt-0.5 truncate text-[16px] font-extrabold text-[#13364A]">
                 {todayHoursLabel(detail)}
@@ -474,23 +822,46 @@ export default function PlaceDetailsPage() {
                 {DAY_LABELS[todayOfWeek() - 1]}
               </p>
             </div>
+            {/* Thẻ Điện thoại: có số thì bấm gọi trực tiếp qua tel: */}
             <div className="rounded-2xl bg-white p-3.5">
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#D8F7EC] text-[#13936B]">
                 <Icon name="call" className="text-[19px]" />
               </span>
               <p className="mt-2.5 text-[11px] text-[#72818C]">Điện thoại</p>
-              <p className="mt-0.5 truncate text-[16px] font-extrabold text-[#13364A]">
-                {detail.phone ?? 'Chưa cập nhật'}
-              </p>
+              {detail.phone ? (
+                <a
+                  href={`tel:${detail.phone.replace(/\s+/g, '')}`}
+                  className="mt-0.5 block truncate text-[16px] font-extrabold text-[#13364A] transition-colors hover:text-[#0891B2] hover:underline"
+                >
+                  {detail.phone}
+                </a>
+              ) : (
+                <p className="mt-0.5 truncate text-[16px] font-extrabold text-[#13364A]">
+                  Chưa cập nhật
+                </p>
+              )}
             </div>
+            {/* Thẻ Website: có link thì mở tab mới */}
             <div className="rounded-2xl bg-white p-3.5">
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#ECE6FF] text-[#6F52D9]">
                 <Icon name="language" className="text-[19px]" />
               </span>
               <p className="mt-2.5 text-[11px] text-[#72818C]">Website</p>
-              <p className="mt-0.5 truncate text-[16px] font-extrabold text-[#13364A]">
-                {websiteLabel(detail.website)}
-              </p>
+              {detail.website ? (
+                <a
+                  href={detail.website}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-0.5 inline-flex max-w-full items-center gap-1 text-[16px] font-extrabold text-[#13364A] transition-colors hover:text-[#0891B2] hover:underline"
+                >
+                  <span className="truncate">{websiteLabel(detail.website)}</span>
+                  <Icon name="open_in_new" className="shrink-0 text-[14px]" />
+                </a>
+              ) : (
+                <p className="mt-0.5 truncate text-[16px] font-extrabold text-[#13364A]">
+                  Chưa cập nhật
+                </p>
+              )}
             </div>
             <div className="rounded-2xl bg-white p-3.5">
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FFEBD6] text-[#D7791A]">
@@ -573,41 +944,6 @@ export default function PlaceDetailsPage() {
             )}
           </div>
 
-          <div className="mt-7 mb-3 flex items-center justify-between">
-            <h2 className="text-[17px] font-extrabold text-[#13364A]">Vị trí & Đường đi</h2>
-          </div>
-          {/* isolate: z-index của bản đồ (Leaflet ~400) chỉ có tác dụng trong khung này,
-              không đè lên hộp thoại / menu của trang */}
-          <div className="relative isolate overflow-hidden rounded-[20px]">
-            <TravelMap
-              className="h-[180px]"
-              center={[detail.latitude, detail.longitude]}
-              points={[
-                {
-                  id: String(place.id),
-                  coordinate: [detail.latitude, detail.longitude],
-                  label: '•',
-                  title: place.name,
-                },
-              ]}
-              activeId={String(place.id)}
-            />
-            <div className="pointer-events-none absolute right-3 bottom-3 left-3 z-[400] flex items-center justify-between gap-2">
-              <span className="flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-[#13364A]/80 px-3 py-1.5 text-[11px] font-bold text-white">
-                <Icon name="near_me" className="text-[15px]" />
-                <span className="truncate">{place.name}</span>
-              </span>
-              <a
-                href={googleMapsUrl(locationQuery)}
-                target="_blank"
-                rel="noreferrer"
-                className="pointer-events-auto flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold text-[#13364A]"
-              >
-                Mở Bản Đồ <Icon name="open_in_new" className="text-[14px]" />
-              </a>
-            </div>
-          </div>
-
           <div className="fixed inset-x-0 bottom-[62px] z-20 flex items-center gap-2.5 border-t border-[#E6E9EE] bg-white px-4 py-3 md:static md:mt-5 md:rounded-[20px] md:border-0">
             <a
               href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(locationQuery)}`}
@@ -641,7 +977,8 @@ export default function PlaceDetailsPage() {
         </div>
       </div>
 
-      <div className="mt-7">
+      {/* Neo #place-reviews để bấm vào badge số sao trên ảnh sẽ cuộn mượt xuống đây */}
+      <div id="place-reviews" className="mt-7 scroll-mt-24">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-[19px] font-extrabold text-[#13364A]">Đánh giá địa điểm</h2>
           <span className="flex items-center gap-1.5 text-[15px] font-bold text-[#13364A]">
@@ -693,6 +1030,7 @@ export default function PlaceDetailsPage() {
               <ReviewCard
                 key={review.reviewId}
                 review={review}
+                onOpenImage={(urls, idx) => setLightbox({ images: urls, index: idx })}
                 menu={
                   review.userId === user?.id
                     ? undefined
@@ -723,6 +1061,14 @@ export default function PlaceDetailsPage() {
       </div>
 
       <NoticeToast message={notice} />
+      {lightbox && (
+        <ImageLightbox
+          images={lightbox.images}
+          index={lightbox.index}
+          onChange={(next) => setLightbox((prev) => (prev ? { ...prev, index: next } : null))}
+          onClose={() => setLightbox(null)}
+        />
+      )}
       {reporting && placeId && (
         <ReportReviewDialog
           placeId={placeId}

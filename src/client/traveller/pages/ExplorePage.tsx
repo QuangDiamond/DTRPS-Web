@@ -24,7 +24,8 @@ const GROUP_ICONS: Record<string, string> = {
 };
 
 function normalizeText(value: string): string {
-  return value.normalize('NFD')
+  return value
+    .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/đ/g, 'd')
     .replace(/Đ/g, 'D')
@@ -33,11 +34,11 @@ function normalizeText(value: string): string {
 }
 
 function DestinationCard({
-                           place,
-                           viewMode,
-                           favorite,
-                           onToggleFavorite,
-                         }: {
+  place,
+  viewMode,
+  favorite,
+  onToggleFavorite,
+}: {
   place: PlaceSummary;
   viewMode: ViewMode;
   favorite: boolean;
@@ -48,13 +49,17 @@ function DestinationCard({
   const icon = GROUP_ICONS[place.group?.code ?? ''] ?? 'place';
 
   return (
-    <article className={`group relative min-w-0 overflow-hidden rounded-[24px] border border-[#E3E9E9] bg-white shadow-[0_5px_22px_rgba(8,47,73,0.035)] transition-all duration-300 hover:-translate-y-1 hover:border-[#A7D5DA] hover:shadow-[0_20px_44px_rgba(8,47,73,0.12)] ${horizontal ? 'sm:flex sm:min-h-[210px]' : ''}`}>
+    <article
+      className={`group relative min-w-0 overflow-hidden rounded-[24px] border border-[#E3E9E9] bg-white shadow-[0_5px_22px_rgba(8,47,73,0.035)] transition-all duration-300 hover:-translate-y-1 hover:border-[#A7D5DA] hover:shadow-[0_20px_44px_rgba(8,47,73,0.12)] ${horizontal ? 'sm:flex sm:min-h-[210px]' : ''}`}
+    >
       <Link
         to={placePath(String(place.id))}
         aria-label={`Xem chi tiết ${place.name}`}
         className={`block min-w-0 flex-1 ${horizontal ? 'sm:flex' : ''}`}
       >
-        <div className={`relative shrink-0 overflow-hidden bg-[#E2EDEF] ${horizontal ? 'h-[200px] sm:h-auto sm:w-[290px]' : 'aspect-[4/3]'}`}>
+        <div
+          className={`relative shrink-0 overflow-hidden bg-[#E2EDEF] ${horizontal ? 'h-[200px] sm:h-auto sm:w-[290px]' : 'aspect-[4/3]'}`}
+        >
           {place.coverUrl ? (
             <img
               src={place.coverUrl}
@@ -74,7 +79,9 @@ function DestinationCard({
           </span>
         </div>
 
-        <div className={`flex min-w-0 flex-1 flex-col ${horizontal ? 'px-5 pb-5 pt-5 sm:px-7 sm:py-6' : 'p-5'}`}>
+        <div
+          className={`flex min-w-0 flex-1 flex-col ${horizontal ? 'px-5 pb-5 pt-5 sm:px-7 sm:py-6' : 'p-5'}`}
+        >
           <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#0891B2]">
             {place.province?.name ?? 'Việt Nam'}
           </p>
@@ -96,7 +103,11 @@ function DestinationCard({
               )}
             </div>
             <span className="inline-flex shrink-0 items-center gap-1 text-[12px] font-extrabold text-[#0891B2]">
-              Khám phá <Icon name="arrow_forward" className="text-[18px] transition-transform group-hover:translate-x-1" />
+              Khám phá{' '}
+              <Icon
+                name="arrow_forward"
+                className="text-[18px] transition-transform group-hover:translate-x-1"
+              />
             </span>
           </div>
         </div>
@@ -110,16 +121,19 @@ function DestinationCard({
   );
 }
 
+/** Khung xương shimmer mượt khi đang tải danh sách địa điểm ở trang Khám phá */
 function PlaceSkeleton({ viewMode }: { viewMode: ViewMode }) {
   const horizontal = viewMode === 'list';
   return (
-    <div className={`animate-pulse overflow-hidden rounded-[24px] border border-[#E7EEEA] bg-white ${horizontal ? 'sm:flex' : ''}`}>
-      <div className={`bg-[#E4EEE9] ${horizontal ? 'h-44 sm:w-[290px] sm:shrink-0' : 'aspect-[4/3]'}`} />
+    <div
+      className={`overflow-hidden rounded-[24px] border border-[#E7EEEA] bg-white ${horizontal ? 'sm:flex' : ''}`}
+    >
+      <div className={`shimmer ${horizontal ? 'h-44 sm:w-[290px] sm:shrink-0' : 'aspect-[4/3]'}`} />
       <div className="flex-1 space-y-3 p-5">
-        <div className="h-3 w-24 rounded-full bg-[#E4EEE9]" />
-        <div className="h-5 w-3/4 rounded-full bg-[#E4EEE9]" />
-        <div className="h-3 w-full rounded-full bg-[#F0F4F1]" />
-        <div className="mt-8 h-3 w-1/2 rounded-full bg-[#E4EEE9]" />
+        <div className="shimmer h-3 w-24 rounded-full" />
+        <div className="shimmer h-5 w-3/4 rounded-full" />
+        <div className="shimmer h-3 w-full rounded-full" />
+        <div className="shimmer mt-8 h-3 w-1/2 rounded-full" />
       </div>
     </div>
   );
@@ -133,7 +147,9 @@ export default function ExplorePage() {
   const selectedProvinceCode = params.get('province') ?? '';
   const typeParam = params.get('type') ?? '';
   const rawRating = Number(params.get('rating') ?? 0);
-  const minRating: RatingMode = RATINGS.includes(rawRating as RatingMode) ? rawRating as RatingMode : 0;
+  const minRating: RatingMode = RATINGS.includes(rawRating as RatingMode)
+    ? (rawRating as RatingMode)
+    : 0;
 
   const [provinces, setProvinces] = useState<ReferenceItem[]>([]);
   const [categoryGroups, setCategoryGroups] = useState<CategoryGroup[]>([]);
@@ -175,8 +191,12 @@ export default function ExplorePage() {
         else errors.push(`Danh mục: ${errorMessage(categoryResult.reason)}`);
         setReferenceError(errors.join(' · '));
       })
-      .finally(() => { if (alive) setLoadingReferences(false); });
-    return () => { alive = false; };
+      .finally(() => {
+        if (alive) setLoadingReferences(false);
+      });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const selectedProvince = useMemo(
@@ -257,7 +277,8 @@ export default function ExplorePage() {
     if (selectedCategoryCodes.length !== 1) return undefined;
     const code = selectedCategoryCodes[0];
     return categoryGroups.some((group) => group.subtypes.some((sub) => sub.code === code))
-      ? code : undefined;
+      ? code
+      : undefined;
   }, [categoryGroups, selectedCategoryCodes]);
 
   useEffect(() => {
@@ -267,24 +288,28 @@ export default function ExplorePage() {
     setLoadingMore(false);
     setLoadError(null);
     const timer = window.setTimeout(() => {
-      placesApi.list({
-        province: selectedProvinceCode || undefined,
-        category: serverCategory,
-        page: 0,
-        size: PAGE_SIZE,
-      }).then((result) => {
-        if (!alive || version !== requestVersionRef.current) return;
-        setPlaces(result.items);
-        setTotal(result.total);
-        setNextPage(1);
-      }).catch((error: unknown) => {
-        if (!alive || version !== requestVersionRef.current) return;
-        setPlaces([]);
-        setTotal(0);
-        setLoadError(errorMessage(error));
-      }).finally(() => {
-        if (alive && version === requestVersionRef.current) setLoading(false);
-      });
+      placesApi
+        .list({
+          province: selectedProvinceCode || undefined,
+          category: serverCategory,
+          page: 0,
+          size: PAGE_SIZE,
+        })
+        .then((result) => {
+          if (!alive || version !== requestVersionRef.current) return;
+          setPlaces(result.items);
+          setTotal(result.total);
+          setNextPage(1);
+        })
+        .catch((error: unknown) => {
+          if (!alive || version !== requestVersionRef.current) return;
+          setPlaces([]);
+          setTotal(0);
+          setLoadError(errorMessage(error));
+        })
+        .finally(() => {
+          if (alive && version === requestVersionRef.current) setLoading(false);
+        });
     }, 160);
     return () => {
       alive = false;
@@ -294,8 +319,10 @@ export default function ExplorePage() {
 
   const favoriteSet = useMemo(() => new Set(favorites), [favorites]);
   const selectedCategories = useMemo(
-    () => categoryGroups.flatMap((group) =>
-      [group, ...group.subtypes].filter((item) => selectedCategoryCodes.includes(item.code))),
+    () =>
+      categoryGroups.flatMap((group) =>
+        [group, ...group.subtypes].filter((item) => selectedCategoryCodes.includes(item.code)),
+      ),
     [categoryGroups, selectedCategoryCodes],
   );
   const visiblePlaces = useMemo(() => {
@@ -303,8 +330,10 @@ export default function ExplorePage() {
       if ((place.rating ?? 0) < minRating) return false;
       if (!selectedCategories.length) return true;
       const fields = [
-        place.group?.code ?? '', place.group?.name ?? '',
-        place.category?.code ?? '', place.category?.name ?? '',
+        place.group?.code ?? '',
+        place.group?.name ?? '',
+        place.category?.code ?? '',
+        place.category?.name ?? '',
         ...(place.groups ?? []).flatMap((group) => [group.code, group.name]),
         ...(place.categories ?? []).flatMap((category) => [category.code, category.name]),
       ].map(normalizeText);
@@ -315,8 +344,9 @@ export default function ExplorePage() {
       });
     });
     if (sortMode === 'rating') {
-      return [...result].sort((a, b) =>
-        (b.rating ?? -1) - (a.rating ?? -1) || b.reviewCount - a.reviewCount);
+      return [...result].sort(
+        (a, b) => (b.rating ?? -1) - (a.rating ?? -1) || b.reviewCount - a.reviewCount,
+      );
     }
     if (sortMode === 'popular') {
       return [...result].sort((a, b) => b.reviewCount - a.reviewCount);
@@ -331,7 +361,9 @@ export default function ExplorePage() {
   const quickProvinces = useMemo(() => {
     const names = ['Hà Nội', 'Hải Phòng', 'Đà Nẵng', 'TP. Hồ Chí Minh', 'Quảng Ninh'];
     return names
-      .map((name) => provinces.find((province) => normalizeText(province.name) === normalizeText(name)))
+      .map((name) =>
+        provinces.find((province) => normalizeText(province.name) === normalizeText(name)),
+      )
       .filter((province): province is ReferenceItem => province !== undefined)
       .slice(0, 4);
   }, [provinces]);
@@ -350,7 +382,8 @@ export default function ExplorePage() {
       setParams(next, { replace: true });
     }
     setSelectedCategoryCodes((current) =>
-      current.includes(code) ? current.filter((item) => item !== code) : [...current, code]);
+      current.includes(code) ? current.filter((item) => item !== code) : [...current, code],
+    );
   }
 
   function chooseGroup(code: string) {
@@ -359,7 +392,9 @@ export default function ExplorePage() {
       next.delete('type');
       setParams(next, { replace: true });
     }
-    setSelectedCategoryCodes((current) => current.length === 1 && current[0] === code ? [] : [code]);
+    setSelectedCategoryCodes((current) =>
+      current.length === 1 && current[0] === code ? [] : [code],
+    );
   }
 
   function resetFilters() {
@@ -388,24 +423,28 @@ export default function ExplorePage() {
     if (loading || loadingMore || !hasMore) return;
     const version = requestVersionRef.current;
     setLoadingMore(true);
-    placesApi.list({
-      province: selectedProvinceCode || undefined,
-      category: serverCategory,
-      page: nextPage,
-      size: PAGE_SIZE,
-    }).then((page) => {
-      if (requestVersionRef.current !== version) return;
-      setPlaces((current) => {
-        const existing = new Set(current.map((place) => place.id));
-        return [...current, ...page.items.filter((place) => !existing.has(place.id))];
+    placesApi
+      .list({
+        province: selectedProvinceCode || undefined,
+        category: serverCategory,
+        page: nextPage,
+        size: PAGE_SIZE,
+      })
+      .then((page) => {
+        if (requestVersionRef.current !== version) return;
+        setPlaces((current) => {
+          const existing = new Set(current.map((place) => place.id));
+          return [...current, ...page.items.filter((place) => !existing.has(place.id))];
+        });
+        setTotal(page.total);
+        setNextPage((value) => value + 1);
+      })
+      .catch((error: unknown) => {
+        if (requestVersionRef.current === version) setLoadError(errorMessage(error));
+      })
+      .finally(() => {
+        if (requestVersionRef.current === version) setLoadingMore(false);
       });
-      setTotal(page.total);
-      setNextPage((value) => value + 1);
-    }).catch((error: unknown) => {
-      if (requestVersionRef.current === version) setLoadError(errorMessage(error));
-    }).finally(() => {
-      if (requestVersionRef.current === version) setLoadingMore(false);
-    });
   }
 
   return (
@@ -423,16 +462,20 @@ export default function ExplorePage() {
               <Icon name="explore" className="text-[16px]" /> SMART TRAVEL · DISCOVER
             </span>
             <h1 className="mt-6 max-w-[670px] text-[32px] font-extrabold leading-[1.13] tracking-[-0.035em] sm:text-[45px] lg:text-[50px]">
-              Bạn muốn khám phá<br />
+              Bạn muốn khám phá
+              <br />
               <span className="text-[#C7F0BE]">nơi nào tiếp theo?</span>
             </h1>
             <p className="mt-4 max-w-[530px] text-[13px] leading-6 text-[#D1E5E7] sm:text-[14px]">
               Chọn tỉnh thành bạn yêu thích và tìm những trải nghiệm đáng nhớ khắp Việt Nam.
             </p>
 
-            <div className="relative z-30 mt-7 max-w-[680px]" onBlur={(event) => {
-              if (!event.currentTarget.contains(event.relatedTarget)) setSuggestionsOpen(false);
-            }}>
+            <div
+              className="relative z-30 mt-7 max-w-[680px]"
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) setSuggestionsOpen(false);
+              }}
+            >
               <div className="flex min-h-[62px] items-center gap-2 rounded-[18px] border border-white/25 bg-white p-2 shadow-[0_12px_32px_rgba(0,0,0,0.17)] focus-within:ring-[3px] focus-within:ring-[#B4E8EE]/60">
                 <span className="ml-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E7F4EB] text-[#0891B2]">
                   <Icon name="location_on" className="text-[24px]" />
@@ -440,12 +483,23 @@ export default function ExplorePage() {
                 <input
                   ref={inputRef}
                   value={searchText}
-                  onFocus={() => { setSuggestionsOpen(true); setHighlightedIndex(0); }}
+                  onFocus={() => {
+                    setSuggestionsOpen(true);
+                    setHighlightedIndex(0);
+                  }}
                   onChange={(event) => handleSearchInput(event.target.value)}
-                  onCompositionStart={() => { composingRef.current = true; }}
-                  onCompositionEnd={(event) => { composingRef.current = false; handleSearchInput(event.currentTarget.value); }}
+                  onCompositionStart={() => {
+                    composingRef.current = true;
+                  }}
+                  onCompositionEnd={(event) => {
+                    composingRef.current = false;
+                    handleSearchInput(event.currentTarget.value);
+                  }}
                   onKeyDown={(event) => {
-                    if (event.key === 'Escape') { setSuggestionsOpen(false); return; }
+                    if (event.key === 'Escape') {
+                      setSuggestionsOpen(false);
+                      return;
+                    }
                     if (event.nativeEvent.isComposing || composingRef.current) return;
                     if (event.key === 'ArrowDown' && suggestions.length) {
                       event.preventDefault();
@@ -464,28 +518,54 @@ export default function ExplorePage() {
                   aria-autocomplete="list"
                   aria-expanded={suggestionsOpen && Boolean(searchText.trim())}
                   aria-controls="province-suggestion-list"
-                  aria-activedescendant={suggestionsOpen && suggestions.length ? `province-option-${highlightedIndex}` : undefined}
+                  aria-activedescendant={
+                    suggestionsOpen && suggestions.length
+                      ? `province-option-${highlightedIndex}`
+                      : undefined
+                  }
                   autoComplete="off"
                   className="h-11 min-w-0 flex-1 bg-transparent text-[13px] font-semibold text-[#1C3443] outline-none placeholder:font-normal placeholder:text-[#91A2A1] sm:text-[14px]"
                 />
                 {searchText && (
-                  <button type="button" onClick={() => { clearProvince(); inputRef.current?.focus(); }} aria-label="Xóa tỉnh đã chọn" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#829A96] hover:bg-[#F0F5F2]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearProvince();
+                      inputRef.current?.focus();
+                    }}
+                    aria-label="Xóa tỉnh đã chọn"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#829A96] hover:bg-[#F0F5F2]"
+                  >
                     <Icon name="close" className="text-[18px]" />
                   </button>
                 )}
-                <button type="button" onClick={submitProvince} className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-[12px] bg-[#0891B2] px-4 text-[12px] font-extrabold text-white transition hover:bg-[#0E7490] sm:px-6">
-                  <Icon name="search" className="text-[19px]" /> <span className="hidden sm:inline">Khám phá</span>
+                <button
+                  type="button"
+                  onClick={submitProvince}
+                  className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-[12px] bg-[#0891B2] px-4 text-[12px] font-extrabold text-white transition hover:bg-[#0E7490] sm:px-6"
+                >
+                  <Icon name="search" className="text-[19px]" />{' '}
+                  <span className="hidden sm:inline">Khám phá</span>
                 </button>
               </div>
 
               {/* Không dùng keyword /places; chỉ gợi ý tỉnh thành từ /reference/provinces. */}
               {suggestionsOpen && Boolean(searchText.trim()) && (
-                <div id="province-suggestion-list" role="listbox" aria-label="Danh sách tỉnh thành gợi ý" className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[320px] overflow-y-auto rounded-[19px] border border-[#DBE8EA] bg-white p-2 text-[#203542] shadow-[0_20px_48px_rgba(8,47,73,0.28)]">
+                <div
+                  id="province-suggestion-list"
+                  role="listbox"
+                  aria-label="Danh sách tỉnh thành gợi ý"
+                  className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[320px] overflow-y-auto rounded-[19px] border border-[#DBE8EA] bg-white p-2 text-[#203542] shadow-[0_20px_48px_rgba(8,47,73,0.28)]"
+                >
                   {loadingReferences ? (
-                    <p className="px-4 py-4 text-[13px] text-[#7D9090]">Đang tải danh sách tỉnh thành...</p>
+                    <p className="px-4 py-4 text-[13px] text-[#7D9090]">
+                      Đang tải danh sách tỉnh thành...
+                    </p>
                   ) : suggestions.length ? (
                     <>
-                      <p className="px-3 pb-1.5 pt-2 text-[10px] font-extrabold uppercase tracking-[0.13em] text-[#8B9F9D]">Tỉnh/thành phù hợp</p>
+                      <p className="px-3 pb-1.5 pt-2 text-[10px] font-extrabold uppercase tracking-[0.13em] text-[#8B9F9D]">
+                        Tỉnh/thành phù hợp
+                      </p>
                       {suggestions.map((province, index) => (
                         <button
                           key={province.code}
@@ -498,21 +578,40 @@ export default function ExplorePage() {
                           onClick={() => chooseProvince(province)}
                           className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-bold transition-colors ${index === highlightedIndex ? 'bg-[#E8F5F7] text-[#0891B2]' : 'text-[#34525A] hover:bg-[#F3F8F5]'}`}
                         >
-                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#DAEEF0] text-[#0891B2]"><Icon name="location_on" className="text-[19px]" /></span>
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#DAEEF0] text-[#0891B2]">
+                            <Icon name="location_on" className="text-[19px]" />
+                          </span>
                           <span className="flex-1">{province.name}</span>
                           <Icon name="north_west" className="text-[16px] text-[#94AAA4]" />
                         </button>
                       ))}
                     </>
                   ) : (
-                    <div className="px-4 py-5 text-[12px] text-[#7D9290]">Không có tỉnh/thành nào phù hợp với “{searchText}”.</div>
+                    <div className="px-4 py-5 text-[12px] text-[#7D9290]">
+                      Không có tỉnh/thành nào phù hợp với “{searchText}”.
+                    </div>
                   )}
                 </div>
               )}
-              {searchNotice && <p role="alert" className="mt-2 rounded-lg bg-[#FFF4DF] px-3 py-2 text-[12px] font-semibold text-[#875B18]">{searchNotice}</p>}
+              {searchNotice && (
+                <p
+                  role="alert"
+                  className="mt-2 rounded-lg bg-[#FFF4DF] px-3 py-2 text-[12px] font-semibold text-[#875B18]"
+                >
+                  {searchNotice}
+                </p>
+              )}
               <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[11px] text-[#D5E7DC]">
-                <span className="inline-flex items-center gap-1.5"><Icon name="verified" className="text-[16px] text-[#D7EEAE]" /> {provinces.length > 0 ? `${provinces.length} tỉnh/thành phố` : 'Tỉnh/thành từ hệ thống'}</span>
-                <span className="inline-flex items-center gap-1.5"><Icon name="touch_app" className="text-[16px] text-[#D7EEAE]" /> Gõ tên và chọn gợi ý</span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Icon name="verified" className="text-[16px] text-[#D7EEAE]" />{' '}
+                  {provinces.length > 0
+                    ? `${provinces.length} tỉnh/thành phố`
+                    : 'Tỉnh/thành từ hệ thống'}
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Icon name="touch_app" className="text-[16px] text-[#D7EEAE]" /> Gõ tên và chọn
+                  gợi ý
+                </span>
               </div>
             </div>
           </div>
@@ -520,13 +619,26 @@ export default function ExplorePage() {
           <div className="pointer-events-none relative hidden min-h-[410px] overflow-hidden lg:block">
             <div className="absolute -right-14 top-[-40px] h-[480px] w-[480px] rounded-full border-[40px] border-white/[0.045]" />
             <div className="absolute right-[23%] top-[48px] h-[295px] w-[230px] -rotate-[10deg] overflow-hidden rounded-[25px] border-[7px] border-white/90 bg-[#A2D6DC] shadow-[0_25px_42px_rgba(0,0,0,0.24)]">
-              {heroPlaces[0]?.coverUrl ? <img src={heroPlaces[0].coverUrl} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center bg-[#9AC6CB]"><Icon name="landscape" className="text-[65px] text-white" /></div>}
+              {heroPlaces[0]?.coverUrl ? (
+                <img src={heroPlaces[0].coverUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full items-center justify-center bg-[#9AC6CB]">
+                  <Icon name="landscape" className="text-[65px] text-white" />
+                </div>
+              )}
             </div>
             <div className="absolute right-[2%] top-[110px] h-[255px] w-[210px] rotate-[10deg] overflow-hidden rounded-[24px] border-[7px] border-white/90 bg-[#AACCB7] shadow-[0_25px_42px_rgba(0,0,0,0.25)]">
-              {heroPlaces[1]?.coverUrl ? <img src={heroPlaces[1].coverUrl} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center bg-[#B9DBC7]"><Icon name="beach_access" className="text-[65px] text-white" /></div>}
+              {heroPlaces[1]?.coverUrl ? (
+                <img src={heroPlaces[1].coverUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full items-center justify-center bg-[#B9DBC7]">
+                  <Icon name="beach_access" className="text-[65px] text-white" />
+                </div>
+              )}
             </div>
             <div className="absolute bottom-7 left-[12%] flex items-center gap-2 rounded-2xl border border-white/40 bg-white/95 px-4 py-3 text-[12px] font-extrabold text-[#0E7490] shadow-lg">
-              <Icon name="travel_explore" className="text-[21px] text-[#0891B2]" /> Đi khắp Việt Nam, theo cách của bạn
+              <Icon name="travel_explore" className="text-[21px] text-[#0891B2]" /> Đi khắp Việt
+              Nam, theo cách của bạn
             </div>
           </div>
         </div>
@@ -535,9 +647,16 @@ export default function ExplorePage() {
       {/* Gợi ý nhanh: chỉ hiện những tỉnh thực sự tồn tại trong API. */}
       {quickProvinces.length > 0 && !selectedProvinceCode && (
         <div className="mb-7 flex flex-wrap items-center gap-2.5">
-          <span className="mr-1 inline-flex items-center gap-1 text-[12px] font-bold text-[#748D86]"><Icon name="trending_up" className="text-[18px]" /> Gợi ý:</span>
+          <span className="mr-1 inline-flex items-center gap-1 text-[12px] font-bold text-[#748D86]">
+            <Icon name="trending_up" className="text-[18px]" /> Gợi ý:
+          </span>
           {quickProvinces.map((province) => (
-            <button key={province.code} type="button" onClick={() => chooseProvince(province)} className="rounded-full border border-[#DAE6E8] bg-white px-4 py-2 text-[12px] font-bold text-[#38606A] transition hover:border-[#9BD6DD] hover:bg-[#EAF7F0]">
+            <button
+              key={province.code}
+              type="button"
+              onClick={() => chooseProvince(province)}
+              className="rounded-full border border-[#DAE6E8] bg-white px-4 py-2 text-[12px] font-bold text-[#38606A] transition hover:border-[#9BD6DD] hover:bg-[#EAF7F0]"
+            >
               {province.name}
             </button>
           ))}
@@ -549,14 +668,25 @@ export default function ExplorePage() {
         <section className="mb-8">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0891B2]">CẢM HỨNG CHO CHUYẾN ĐI</p>
-              <h2 className="mt-1 text-[22px] font-extrabold tracking-tight text-[#203E46] sm:text-[25px]">Điều gì khiến bạn hứng thú?</h2>
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0891B2]">
+                CẢM HỨNG CHO CHUYẾN ĐI
+              </p>
+              <h2 className="mt-1 text-[22px] font-extrabold tracking-tight text-[#203E46] sm:text-[25px]">
+                Điều gì khiến bạn hứng thú?
+              </h2>
             </div>
-            <button type="button" onClick={() => setSelectedCategoryCodes([])} className="text-[12px] font-bold text-[#0891B2] hover:underline">Xem mọi loại hình</button>
+            <button
+              type="button"
+              onClick={() => setSelectedCategoryCodes([])}
+              className="text-[12px] font-bold text-[#0891B2] hover:underline"
+            >
+              Xem mọi loại hình
+            </button>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {categoryGroups.map((group) => {
-              const active = selectedCategoryCodes.length === 1 && selectedCategoryCodes[0] === group.code;
+              const active =
+                selectedCategoryCodes.length === 1 && selectedCategoryCodes[0] === group.code;
               return (
                 <button
                   key={group.code}
@@ -565,10 +695,16 @@ export default function ExplorePage() {
                   aria-pressed={active}
                   className={`group flex min-h-[91px] items-center gap-3 rounded-[19px] border px-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md ${active ? 'border-[#0891B2] bg-[#E2F5E9] shadow-[0_8px_24px_rgba(8,145,178,0.1)]' : 'border-[#E2EBE5] bg-white hover:border-[#B6DBDF]'}`}
                 >
-                  <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] ${active ? 'bg-[#0891B2] text-white' : 'bg-[#EAF3ED] text-[#0891B2]'}`}>
+                  <span
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] ${active ? 'bg-[#0891B2] text-white' : 'bg-[#EAF3ED] text-[#0891B2]'}`}
+                  >
                     <Icon name={GROUP_ICONS[group.code] ?? 'explore'} className="text-[25px]" />
                   </span>
-                  <span className={`min-w-0 text-[12px] font-extrabold leading-5 sm:text-[13px] ${active ? 'text-[#0891B2]' : 'text-[#325057]'}`}>{group.name}</span>
+                  <span
+                    className={`min-w-0 text-[12px] font-extrabold leading-5 sm:text-[13px] ${active ? 'text-[#0891B2]' : 'text-[#325057]'}`}
+                  >
+                    {group.name}
+                  </span>
                 </button>
               );
             })}
@@ -580,33 +716,67 @@ export default function ExplorePage() {
       <section className="min-w-0">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-4 border-b border-[#E0EAE4] pb-5">
           <div>
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0891B2]">KHÁM PHÁ ĐIỂM ĐẾN</p>
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0891B2]">
+              KHÁM PHÁ ĐIỂM ĐẾN
+            </p>
             <h2 className="mt-1 text-[24px] font-extrabold tracking-[-0.03em] text-[#203E46] sm:text-[28px]">
-              {selectedProvince ? `Điểm đến tại ${selectedProvince.name}` : 'Những nơi đáng khám phá'}
+              {selectedProvince
+                ? `Điểm đến tại ${selectedProvince.name}`
+                : 'Những nơi đáng khám phá'}
             </h2>
             <p className="mt-1.5 text-[12px] text-[#849794]">
-              {loading ? 'Đang tìm những địa điểm thú vị...' : clientFiltered
-                ? `${visiblePlaces.length} kết quả phù hợp trong ${places.length} địa điểm đã tải`
-                : `${total} địa điểm từ hệ thống`}
+              {loading
+                ? 'Đang tìm những địa điểm thú vị...'
+                : clientFiltered
+                  ? `${visiblePlaces.length} kết quả phù hợp trong ${places.length} địa điểm đã tải`
+                  : `${total} địa điểm từ hệ thống`}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button type="button" onClick={() => setFiltersOpen((open) => !open)} aria-expanded={filtersOpen} className={`inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-[12px] font-bold transition ${filtersOpen || activeFilterCount ? 'border-[#A6D9DF] bg-[#EAF7EF] text-[#0891B2]' : 'border-[#DEE8E3] bg-white text-[#425C63] hover:border-[#B4DBDF]'}`}>
+            <button
+              type="button"
+              onClick={() => setFiltersOpen((open) => !open)}
+              aria-expanded={filtersOpen}
+              className={`inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-[12px] font-bold transition ${filtersOpen || activeFilterCount ? 'border-[#A6D9DF] bg-[#EAF7EF] text-[#0891B2]' : 'border-[#DEE8E3] bg-white text-[#425C63] hover:border-[#B4DBDF]'}`}
+            >
               <Icon name="tune" className="text-[20px]" /> Bộ lọc
-              {activeFilterCount > 0 && <span className="rounded-full bg-[#0891B2] px-2 py-0.5 text-[10px] text-white">{activeFilterCount}</span>}
+              {activeFilterCount > 0 && (
+                <span className="rounded-full bg-[#0891B2] px-2 py-0.5 text-[10px] text-white">
+                  {activeFilterCount}
+                </span>
+              )}
             </button>
             <label className="flex h-11 items-center gap-2 rounded-xl border border-[#DEE8E3] bg-white px-3 text-[12px] text-[#52666B]">
               <Icon name="sort" className="text-[19px] text-[#0891B2]" />
-              <select value={sortMode} onChange={(event) => setSortMode(event.target.value as SortMode)} aria-label="Sắp xếp địa điểm đã tải" className="max-w-[130px] cursor-pointer bg-transparent text-[12px] font-semibold outline-none">
+              <select
+                value={sortMode}
+                onChange={(event) => setSortMode(event.target.value as SortMode)}
+                aria-label="Sắp xếp địa điểm đã tải"
+                className="max-w-[130px] cursor-pointer bg-transparent text-[12px] font-semibold outline-none"
+              >
                 <option value="default">Mặc định</option>
                 <option value="rating">Đánh giá cao</option>
                 <option value="popular">Phổ biến</option>
               </select>
             </label>
-            <div className="inline-flex h-11 items-center rounded-xl border border-[#DEE8E3] bg-white p-1" role="group" aria-label="Chế độ hiển thị">
+            <div
+              className="inline-flex h-11 items-center rounded-xl border border-[#DEE8E3] bg-white p-1"
+              role="group"
+              aria-label="Chế độ hiển thị"
+            >
               {(['grid', 'list'] as const).map((mode) => (
-                <button key={mode} type="button" onClick={() => setViewMode(mode)} aria-label={mode === 'grid' ? 'Dạng lưới' : 'Dạng danh sách'} aria-pressed={viewMode === mode} className={`flex h-9 w-9 items-center justify-center rounded-lg ${viewMode === mode ? 'bg-[#E7F5EA] text-[#0891B2]' : 'text-[#8EA5A0] hover:bg-[#F5F8F5]'}`}>
-                  <Icon name={mode === 'grid' ? 'grid_view' : 'view_agenda'} className="text-[19px]" />
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setViewMode(mode)}
+                  aria-label={mode === 'grid' ? 'Dạng lưới' : 'Dạng danh sách'}
+                  aria-pressed={viewMode === mode}
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg ${viewMode === mode ? 'bg-[#E7F5EA] text-[#0891B2]' : 'text-[#8EA5A0] hover:bg-[#F5F8F5]'}`}
+                >
+                  <Icon
+                    name={mode === 'grid' ? 'grid_view' : 'view_agenda'}
+                    className="text-[19px]"
+                  />
                 </button>
               ))}
             </div>
@@ -617,26 +787,54 @@ export default function ExplorePage() {
           <div className="mb-6 rounded-[22px] border border-[#DFEAE3] bg-white p-5 shadow-[0_10px_32px_rgba(8,47,73,0.05)] sm:p-6">
             <div className="mb-5 flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-[16px] font-extrabold text-[#27454C]">Tinh chỉnh trải nghiệm</h3>
-                <p className="mt-1 text-[11px] text-[#81968F]">Chọn loại hình và đánh giá yêu thích</p>
+                <h3 className="text-[16px] font-extrabold text-[#27454C]">
+                  Tinh chỉnh trải nghiệm
+                </h3>
+                <p className="mt-1 text-[11px] text-[#81968F]">
+                  Chọn loại hình và đánh giá yêu thích
+                </p>
               </div>
-              <button type="button" onClick={resetFilters} className="text-[12px] font-bold text-[#0891B2] hover:underline">Đặt lại</button>
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="text-[12px] font-bold text-[#0891B2] hover:underline"
+              >
+                Đặt lại
+              </button>
             </div>
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1.7fr)_minmax(220px,.8fr)]">
               <div>
-                <p className="mb-3 text-[12px] font-extrabold text-[#35545C]">Loại hình trải nghiệm</p>
+                <p className="mb-3 text-[12px] font-extrabold text-[#35545C]">
+                  Loại hình trải nghiệm
+                </p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {categoryGroups.map((group) => (
-                    <details key={group.code} className="rounded-xl border border-[#E9F0EA] bg-[#FBFDFD] open:border-[#B7DCE0]">
+                    <details
+                      key={group.code}
+                      className="rounded-xl border border-[#E9F0EA] bg-[#FBFDFD] open:border-[#B7DCE0]"
+                    >
                       <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-3 [&::-webkit-details-marker]:hidden">
-                        <Icon name={GROUP_ICONS[group.code] ?? 'category'} className="text-[20px] text-[#0891B2]" />
-                        <span className="flex-1 text-[12px] font-bold text-[#38555C]">{group.name}</span>
+                        <Icon
+                          name={GROUP_ICONS[group.code] ?? 'category'}
+                          className="text-[20px] text-[#0891B2]"
+                        />
+                        <span className="flex-1 text-[12px] font-bold text-[#38555C]">
+                          {group.name}
+                        </span>
                         <Icon name="expand_more" className="text-[18px] text-[#9BAD9F]" />
                       </summary>
                       <div className="space-y-1.5 border-t border-[#E8F0EA] p-2">
                         {[group, ...group.subtypes].map((item) => (
-                          <label key={item.code} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-[11px] font-semibold text-[#586D72] hover:bg-[#E9F6EC]">
-                            <input type="checkbox" checked={selectedCategoryCodes.includes(item.code)} onChange={() => toggleCategory(item.code)} className="h-4 w-4 accent-[#0891B2]" />
+                          <label
+                            key={item.code}
+                            className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-[11px] font-semibold text-[#586D72] hover:bg-[#E9F6EC]"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedCategoryCodes.includes(item.code)}
+                              onChange={() => toggleCategory(item.code)}
+                              className="h-4 w-4 accent-[#0891B2]"
+                            />
                             {item.code === group.code ? `Tất cả ${group.name}` : item.name}
                           </label>
                         ))}
@@ -649,12 +847,27 @@ export default function ExplorePage() {
                 <p className="mb-3 text-[12px] font-extrabold text-[#35545C]">Đánh giá tối thiểu</p>
                 <div className="grid grid-cols-2 gap-2">
                   {RATINGS.map((rating) => (
-                    <button key={rating} type="button" onClick={() => updateRating(rating)} aria-pressed={minRating === rating} className={`flex h-11 items-center justify-center gap-1.5 rounded-xl border text-[12px] font-bold transition ${minRating === rating ? 'border-[#0891B2] bg-[#0891B2] text-white' : 'border-[#DFEAE3] bg-[#FAFCFB] text-[#5F7479] hover:bg-[#EAF7EF]'}`}>
-                      {rating > 0 ? <><Icon name="star" filled className="text-[17px] text-[#F0C36C]" /> {rating}+</> : 'Tất cả'}
+                    <button
+                      key={rating}
+                      type="button"
+                      onClick={() => updateRating(rating)}
+                      aria-pressed={minRating === rating}
+                      className={`flex h-11 items-center justify-center gap-1.5 rounded-xl border text-[12px] font-bold transition ${minRating === rating ? 'border-[#0891B2] bg-[#0891B2] text-white' : 'border-[#DFEAE3] bg-[#FAFCFB] text-[#5F7479] hover:bg-[#EAF7EF]'}`}
+                    >
+                      {rating > 0 ? (
+                        <>
+                          <Icon name="star" filled className="text-[17px] text-[#F0C36C]" />{' '}
+                          {rating}+
+                        </>
+                      ) : (
+                        'Tất cả'
+                      )}
                     </button>
                   ))}
                 </div>
-                <p className="mt-3 text-[10px] leading-4 text-[#90A39A]">Lọc đánh giá trên các địa điểm đã tải.</p>
+                <p className="mt-3 text-[10px] leading-4 text-[#90A39A]">
+                  Lọc đánh giá trên các địa điểm đã tải.
+                </p>
               </div>
             </div>
           </div>
@@ -663,57 +876,128 @@ export default function ExplorePage() {
         {(selectedProvince || activeFilterCount > 0) && (
           <div className="mb-5 flex flex-wrap items-center gap-2">
             {selectedProvince && (
-              <button type="button" onClick={clearProvince} className="inline-flex items-center gap-1.5 rounded-full border border-[#BDE0E4] bg-[#E7F5F7] px-3 py-1.5 text-[11px] font-bold text-[#0891B2]">
-                <Icon name="location_on" className="text-[15px]" /> {selectedProvince.name} <Icon name="close" className="text-[14px]" />
+              <button
+                type="button"
+                onClick={clearProvince}
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#BDE0E4] bg-[#E7F5F7] px-3 py-1.5 text-[11px] font-bold text-[#0891B2]"
+              >
+                <Icon name="location_on" className="text-[15px]" /> {selectedProvince.name}{' '}
+                <Icon name="close" className="text-[14px]" />
               </button>
             )}
             {selectedCategories.map((category) => (
-              <button key={category.code} type="button" onClick={() => toggleCategory(category.code)} className="inline-flex items-center gap-1.5 rounded-full border border-[#E0EAE3] bg-white px-3 py-1.5 text-[11px] font-bold text-[#526C73]">
+              <button
+                key={category.code}
+                type="button"
+                onClick={() => toggleCategory(category.code)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#E0EAE3] bg-white px-3 py-1.5 text-[11px] font-bold text-[#526C73]"
+              >
                 {category.name} <Icon name="close" className="text-[14px]" />
               </button>
             ))}
             {minRating > 0 && (
-              <button type="button" onClick={() => updateRating(0)} className="inline-flex items-center gap-1 rounded-full border border-[#F0E1BC] bg-[#FFF9E9] px-3 py-1.5 text-[11px] font-bold text-[#936D22]">
-                <Icon name="star" filled className="text-[15px]" /> {minRating}+ <Icon name="close" className="text-[14px]" />
+              <button
+                type="button"
+                onClick={() => updateRating(0)}
+                className="inline-flex items-center gap-1 rounded-full border border-[#F0E1BC] bg-[#FFF9E9] px-3 py-1.5 text-[11px] font-bold text-[#936D22]"
+              >
+                <Icon name="star" filled className="text-[15px]" /> {minRating}+{' '}
+                <Icon name="close" className="text-[14px]" />
               </button>
             )}
-            <button type="button" onClick={clearAll} className="px-2 text-[11px] font-bold text-[#0891B2] hover:underline">Xóa tất cả</button>
+            <button
+              type="button"
+              onClick={clearAll}
+              className="px-2 text-[11px] font-bold text-[#0891B2] hover:underline"
+            >
+              Xóa tất cả
+            </button>
           </div>
         )}
 
-        {referenceError && <div className="mb-4"><FormAlert message={`Không tải được dữ liệu bộ lọc: ${referenceError}`} /></div>}
-        {loadError && <div className="mb-4"><FormAlert message={`Không tải được địa điểm: ${loadError}`} /></div>}
+        {referenceError && (
+          <div className="mb-4">
+            <FormAlert message={`Không tải được dữ liệu bộ lọc: ${referenceError}`} />
+          </div>
+        )}
+        {loadError && (
+          <div className="mb-4">
+            <FormAlert message={`Không tải được địa điểm: ${loadError}`} />
+          </div>
+        )}
 
         {loading ? (
-          <div className={viewMode === 'grid' ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' : 'grid gap-4'}>
-            {Array.from({ length: viewMode === 'grid' ? 6 : 3 }, (_, index) => <PlaceSkeleton key={index} viewMode={viewMode} />)}
+          <div
+            className={
+              viewMode === 'grid'
+                ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'
+                : 'grid gap-4'
+            }
+          >
+            {Array.from({ length: viewMode === 'grid' ? 6 : 3 }, (_, index) => (
+              <PlaceSkeleton key={index} viewMode={viewMode} />
+            ))}
           </div>
         ) : visiblePlaces.length === 0 ? (
           <div className="flex min-h-[330px] flex-col items-center justify-center rounded-[24px] border border-[#E4EBE5] bg-white p-8 text-center">
-            <div className="flex h-[72px] w-[72px] items-center justify-center rounded-[22px] bg-[#E6F4EB]"><Icon name="travel_explore" className="text-[36px] text-[#0891B2]" /></div>
-            <h3 className="mt-5 text-[17px] font-extrabold text-[#27454C]">Chưa tìm thấy điểm đến phù hợp</h3>
-            <p className="mt-2 max-w-[400px] text-[12px] leading-6 text-[#7D938C]">Hãy thử chọn tỉnh/thành khác hoặc điều chỉnh bộ lọc. Những địa điểm phù hợp có thể nằm ở trang kết quả tiếp theo.</p>
-            <button type="button" onClick={clearAll} className="mt-5 rounded-xl bg-[#0891B2] px-5 py-3 text-[12px] font-extrabold text-white hover:bg-[#0E7490]">Khám phá tất cả</button>
+            <div className="flex h-[72px] w-[72px] items-center justify-center rounded-[22px] bg-[#E6F4EB]">
+              <Icon name="travel_explore" className="text-[36px] text-[#0891B2]" />
+            </div>
+            <h3 className="mt-5 text-[17px] font-extrabold text-[#27454C]">
+              Chưa tìm thấy điểm đến phù hợp
+            </h3>
+            <p className="mt-2 max-w-[400px] text-[12px] leading-6 text-[#7D938C]">
+              Hãy thử chọn tỉnh/thành khác hoặc điều chỉnh bộ lọc. Những địa điểm phù hợp có thể nằm
+              ở trang kết quả tiếp theo.
+            </p>
+            <button
+              type="button"
+              onClick={clearAll}
+              className="mt-5 rounded-xl bg-[#0891B2] px-5 py-3 text-[12px] font-extrabold text-white hover:bg-[#0E7490]"
+            >
+              Khám phá tất cả
+            </button>
           </div>
         ) : (
-          <div className={viewMode === 'grid' ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' : 'grid gap-4'}>
+          <div
+            className={
+              viewMode === 'grid'
+                ? 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'
+                : 'grid gap-4'
+            }
+          >
             {visiblePlaces.map((place) => (
-              <DestinationCard key={place.id} place={place} viewMode={viewMode} favorite={favoriteSet.has(String(place.id))} onToggleFavorite={() => toggleFavorite(String(place.id))} />
+              <DestinationCard
+                key={place.id}
+                place={place}
+                viewMode={viewMode}
+                favorite={favoriteSet.has(String(place.id))}
+                onToggleFavorite={() => toggleFavorite(String(place.id))}
+              />
             ))}
           </div>
         )}
 
         {!loading && hasMore && (
           <div className="mt-9 flex flex-col items-center gap-2">
-            <button type="button" onClick={loadMore} disabled={loadingMore} className="inline-flex h-12 items-center gap-2 rounded-xl border border-[#B6DADE] bg-white px-7 text-[12px] font-extrabold text-[#0891B2] transition hover:bg-[#EAF7ED] disabled:opacity-60">
+            <button
+              type="button"
+              onClick={loadMore}
+              disabled={loadingMore}
+              className="inline-flex h-12 items-center gap-2 rounded-xl border border-[#B6DADE] bg-white px-7 text-[12px] font-extrabold text-[#0891B2] transition hover:bg-[#EAF7ED] disabled:opacity-60"
+            >
               <Icon name={loadingMore ? 'hourglass_top' : 'expand_more'} className="text-[20px]" />
               {loadingMore ? 'Đang tải thêm...' : 'Xem thêm địa điểm'}
             </button>
-            <p className="text-[11px] text-[#94A7A0]">Đã tải {places.length}/{total} địa điểm</p>
+            <p className="text-[11px] text-[#94A7A0]">
+              Đã tải {places.length}/{total} địa điểm
+            </p>
           </div>
         )}
         {sortMode !== 'default' && !loading && (
-          <p className="mt-4 text-center text-[10px] text-[#9AABA3]">Sắp xếp áp dụng trên các địa điểm đã tải.</p>
+          <p className="mt-4 text-center text-[10px] text-[#9AABA3]">
+            Sắp xếp áp dụng trên các địa điểm đã tải.
+          </p>
         )}
       </section>
     </div>

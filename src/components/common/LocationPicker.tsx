@@ -83,6 +83,10 @@ export default function LocationPicker({
   onChangeRef.current = onChange;
   const searchRef = useRef(search);
   searchRef.current = search;
+  const addressRef = useRef(address);
+  addressRef.current = address;
+  const onAddressRef = useRef(onAddress);
+  onAddressRef.current = onAddress;
 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<AddressSuggestion[] | null>(null);
@@ -93,6 +97,17 @@ export default function LocationPicker({
   const lookupPin = useRef(false);
 
   const hasPoint = latitude !== null && longitude !== null;
+
+  /**
+   * Lưu địa chỉ Goong trả về tại ghim; nếu ô Địa chỉ * của form đang trống thì tự động điền luôn.
+   * Nếu form đã có sẵn địa chỉ (vd. đang sửa địa điểm cũ) thì không ghi đè — chỉ hiện nút "Dùng địa chỉ này".
+   */
+  const applyPinAddress = (foundAddress: string | null) => {
+    setPinAddress(foundAddress);
+    if (foundAddress && onAddressRef.current && !addressRef.current.trim()) {
+      onAddressRef.current(foundAddress);
+    }
+  };
 
   const choose = (lat: number, lng: number, findAddress: boolean) => {
     lookupPin.current = findAddress;
@@ -156,14 +171,14 @@ export default function LocationPicker({
     }
   }, [latitude, longitude]);
 
-  // Địa chỉ tại ghim (Goong) để người dùng điền nhanh vào ô địa chỉ
+  // Địa chỉ tại ghim (Goong): tự điền nếu ô địa chỉ đang trống, ngược lại hiện gợi ý "Dùng địa chỉ này"
   useEffect(() => {
     if (!onAddress || !lookupPin.current || latitude === null || longitude === null) return;
     let active = true;
     const timer = window.setTimeout(() => {
       searchRef.current
         .reverse(latitude, longitude)
-        .then((found) => active && setPinAddress(found.address || null))
+        .then((found) => active && applyPinAddress(found.address || null))
         .catch(() => active && setPinAddress(null));
     }, SEARCH_DELAY_MS);
     return () => {
@@ -219,7 +234,7 @@ export default function LocationPicker({
     try {
       const found = await search.place(result.placeId);
       choose(found.latitude, found.longitude, false);
-      setPinAddress(found.address || result.description);
+      applyPinAddress(found.address || result.description);
       mapRef.current?.jumpTo({ center: [found.longitude, found.latitude], zoom: 17 });
     } catch {
       setMessage(text.searchFailed);

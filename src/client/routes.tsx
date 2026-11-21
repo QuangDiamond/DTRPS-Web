@@ -6,6 +6,8 @@ import {
   GuestOnlyClient,
   RequireActivePartner,
   RequireClientLogin,
+  RequirePartner,
+  TravellerOnly,
 } from './guards';
 import { CLIENT_ROUTES } from './routePaths';
 
@@ -62,8 +64,17 @@ export const clientRoutes: RouteObject[] = [
         element: <GuestOnlyClient />,
         children: [
           { path: CLIENT_ROUTES.WELCOME, element: <WelcomePage /> },
-          { path: CLIENT_ROUTES.LOGIN, element: <LoginPage /> },
-          { path: CLIENT_ROUTES.REGISTER, element: <RegisterPage /> },
+          // Mỗi cổng một trang (dùng chung component, key khác nhau để đổi tab thì form làm mới)
+          { path: CLIENT_ROUTES.LOGIN, element: <LoginPage key="traveller" /> },
+          { path: CLIENT_ROUTES.REGISTER, element: <RegisterPage key="traveller" /> },
+          {
+            path: CLIENT_ROUTES.PARTNER_LOGIN,
+            element: <LoginPage key="partner" portal="PARTNER" />,
+          },
+          {
+            path: CLIENT_ROUTES.PARTNER_REGISTER,
+            element: <RegisterPage key="partner" portal="PARTNER" />,
+          },
         ],
       },
       // Mở được cả khi đã đăng nhập (đi từ màn Đổi mật khẩu)
@@ -73,51 +84,77 @@ export const clientRoutes: RouteObject[] = [
       {
         element: <ClientAppLayout />,
         children: [
-          // Khách chưa đăng nhập cũng xem được: trang chủ, danh sách + bộ lọc, chi tiết địa điểm
-          { path: CLIENT_ROUTES.HOME, element: <HomePage /> },
+          // Khách chưa đăng nhập cũng xem được: khám phá, chi tiết địa điểm (đối tác cũng xem được
+          // để kiểm tra địa điểm của mình hiển thị ra sao)
           { path: CLIENT_ROUTES.EXPLORE, element: <ExplorePage /> },
           { path: CLIENT_ROUTES.PLACE_DETAIL, element: <PlaceDetailsPage /> },
           {
-            // Cần đăng nhập: yêu thích, hồ sơ, lịch trình, đối tác
+            // Trang chủ du khách: tài khoản đối tác về /partner
+            element: <TravellerOnly />,
+            children: [{ path: CLIENT_ROUTES.HOME, element: <HomePage /> }],
+          },
+          {
+            // Cần đăng nhập
             element: <RequireClientLogin />,
             children: [
-              { path: CLIENT_ROUTES.FAVORITES, element: <FavoritesPage /> },
-              { path: CLIENT_ROUTES.FAVORITE_DETAIL, element: <PlaceDetailsPage /> },
-              { path: CLIENT_ROUTES.PREFERENCES, element: <TravelPreferencesPage /> },
+              // Tài khoản (cả hai cổng): hồ sơ cá nhân, đổi mật khẩu, cài đặt
               { path: CLIENT_ROUTES.PROFILE, element: <ProfilePage /> },
               { path: CLIENT_ROUTES.PROFILE_EDIT, element: <EditProfilePage /> },
               { path: CLIENT_ROUTES.PROFILE_PASSWORD, element: <ChangePasswordPage /> },
               { path: CLIENT_ROUTES.PROFILE_SETTINGS, element: <SettingsPage /> },
-              { path: CLIENT_ROUTES.TRIPS, element: <MyTripsPage /> },
-              { path: CLIENT_ROUTES.TRIP_PLAN, element: <PlanTripPage /> },
-              { path: CLIENT_ROUTES.TRIP_PLAN_SELECTED, element: <SelectedPlacesPage /> },
-              { path: CLIENT_ROUTES.TRIP_PLAN_EDIT, element: <EditTripPlanPage /> },
-              { path: CLIENT_ROUTES.TRIP_GENERATING, element: <GeneratingTripPage /> },
-              { path: CLIENT_ROUTES.TRIP_SUGGESTIONS, element: <SuggestedPlacesPage /> },
-              { path: CLIENT_ROUTES.TRIP_SUGGESTION_DETAIL, element: <SuggestionDetailPage /> },
-              { path: CLIENT_ROUTES.TRIP_ADD_LOCATION, element: <AddLocationPage /> },
-              { path: CLIENT_ROUTES.ITINERARY, element: <ItineraryOverviewPage /> },
-              { path: CLIENT_ROUTES.ITINERARY_DAY, element: <ItineraryDetailPage /> },
-              { path: CLIENT_ROUTES.ITINERARY_LIVE, element: <TripLiveMapPage /> },
-
-              // Đối tác
-              { path: CLIENT_ROUTES.PARTNER, element: <PartnerHomePage /> },
-              { path: CLIENT_ROUTES.PARTNER_APPLY, element: <PartnerApplicationPage /> },
               {
-                element: <RequireActivePartner />,
+                // Chỉ du khách
+                element: <TravellerOnly />,
                 children: [
-                  { path: CLIENT_ROUTES.PARTNER_PROFILE, element: <PartnerBusinessProfilePage /> },
-                  { path: CLIENT_ROUTES.PARTNER_LOCATIONS, element: <PartnerLocationsPage /> },
-                  { path: CLIENT_ROUTES.PARTNER_LOCATION_NEW, element: <PartnerNewLocationPage /> },
-                  { path: CLIENT_ROUTES.PARTNER_LOCATION_DETAIL, element: <PartnerLocationPage /> },
+                  { path: CLIENT_ROUTES.FAVORITES, element: <FavoritesPage /> },
+                  { path: CLIENT_ROUTES.FAVORITE_DETAIL, element: <PlaceDetailsPage /> },
+                  { path: CLIENT_ROUTES.PREFERENCES, element: <TravelPreferencesPage /> },
+                  { path: CLIENT_ROUTES.TRIPS, element: <MyTripsPage /> },
+                  { path: CLIENT_ROUTES.TRIP_PLAN, element: <PlanTripPage /> },
+                  { path: CLIENT_ROUTES.TRIP_PLAN_SELECTED, element: <SelectedPlacesPage /> },
+                  { path: CLIENT_ROUTES.TRIP_PLAN_EDIT, element: <EditTripPlanPage /> },
+                  { path: CLIENT_ROUTES.TRIP_GENERATING, element: <GeneratingTripPage /> },
+                  { path: CLIENT_ROUTES.TRIP_SUGGESTIONS, element: <SuggestedPlacesPage /> },
+                  { path: CLIENT_ROUTES.TRIP_SUGGESTION_DETAIL, element: <SuggestionDetailPage /> },
+                  { path: CLIENT_ROUTES.TRIP_ADD_LOCATION, element: <AddLocationPage /> },
+                  { path: CLIENT_ROUTES.ITINERARY, element: <ItineraryOverviewPage /> },
+                  { path: CLIENT_ROUTES.ITINERARY_DAY, element: <ItineraryDetailPage /> },
+                  { path: CLIENT_ROUTES.ITINERARY_LIVE, element: <TripLiveMapPage /> },
+                ],
+              },
+
+              // Đối tác: chỉ tài khoản đối tác
+              {
+                element: <RequirePartner />,
+                children: [
+                  { path: CLIENT_ROUTES.PARTNER, element: <PartnerHomePage /> },
+                  { path: CLIENT_ROUTES.PARTNER_APPLY, element: <PartnerApplicationPage /> },
                   {
-                    path: CLIENT_ROUTES.PARTNER_LOCATION_LEGACY,
-                    element: <Navigate to={CLIENT_ROUTES.PARTNER_LOCATIONS} replace />,
-                  },
-                  { path: CLIENT_ROUTES.PARTNER_ADS, element: <PartnerAdsPage /> },
-                  {
-                    path: CLIENT_ROUTES.PARTNER_ADS_RESULT,
-                    element: <PartnerAdPaymentResultPage />,
+                    element: <RequireActivePartner />,
+                    children: [
+                      {
+                        path: CLIENT_ROUTES.PARTNER_PROFILE,
+                        element: <PartnerBusinessProfilePage />,
+                      },
+                      { path: CLIENT_ROUTES.PARTNER_LOCATIONS, element: <PartnerLocationsPage /> },
+                      {
+                        path: CLIENT_ROUTES.PARTNER_LOCATION_NEW,
+                        element: <PartnerNewLocationPage />,
+                      },
+                      {
+                        path: CLIENT_ROUTES.PARTNER_LOCATION_DETAIL,
+                        element: <PartnerLocationPage />,
+                      },
+                      {
+                        path: CLIENT_ROUTES.PARTNER_LOCATION_LEGACY,
+                        element: <Navigate to={CLIENT_ROUTES.PARTNER_LOCATIONS} replace />,
+                      },
+                      { path: CLIENT_ROUTES.PARTNER_ADS, element: <PartnerAdsPage /> },
+                      {
+                        path: CLIENT_ROUTES.PARTNER_ADS_RESULT,
+                        element: <PartnerAdPaymentResultPage />,
+                      },
+                    ],
                   },
                 ],
               },

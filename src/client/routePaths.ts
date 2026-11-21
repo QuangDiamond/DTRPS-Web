@@ -33,6 +33,9 @@ export const CLIENT_ROUTES = {
   ITINERARY_DAY: '/trips/itinerary/day/:day',
   ITINERARY_LIVE: '/trips/itinerary/day/:day/live',
   PARTNER: '/partner',
+  /** Cổng riêng của đối tác: đăng nhập / đăng ký (tách khỏi du khách) */
+  PARTNER_LOGIN: '/partner/login',
+  PARTNER_REGISTER: '/partner/register',
   PARTNER_APPLY: '/partner/apply',
   /** Danh sách địa điểm của đối tác */
   PARTNER_LOCATIONS: '/partner/locations',

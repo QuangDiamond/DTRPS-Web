@@ -2,12 +2,14 @@ import { type FormEvent, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import SessionEndedBanner from '@/components/common/SessionEndedBanner';
-import { errorMessage } from '@/client/api/http';
+import type { AuthPortal } from '@/client/api/authApi';
+import { ClientApiError, errorMessage } from '@/client/api/http';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import { onboarding } from '@/client/auth/onboarding';
 import ClientAuthLayout from '@/client/layouts/ClientAuthLayout';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import { AuthCard, GoogleButton } from '@/client/ui/AuthParts';
+import { AuthTabs } from '@/client/ui/AuthTabs';
 import { FormAlert, Notice } from '@/client/ui/Blocks';
 import { PrimaryButton } from '@/client/ui/Buttons';
 import Field from '@/client/ui/Field';
@@ -15,13 +17,15 @@ import { routeNotice } from '@/client/ui/useNotice';
 import { isValidEmail } from '@/client/utils/validation';
 import type { SessionEndReason } from '@/utils/sessionEnd';
 
-/** Trang được mở trước khi bị chuyển về đăng nhập (RequireClientLogin gửi kèm) */
-function redirectTarget(state: unknown): string {
+/** Trang được mở trước khi bị chuyển về đăng nhập (guard gửi kèm) — chỉ nhận trang thuộc đúng cổng */
+function redirectTarget(state: unknown, partner: boolean): string {
+  const home = partner ? CLIENT_ROUTES.PARTNER : CLIENT_ROUTES.HOME;
   if (typeof state === 'object' && state !== null && 'from' in state) {
     const { from } = state as { from: unknown };
-    if (typeof from === 'string' && from.startsWith('/') && !from.startsWith('/admin')) return from;
+    if (typeof from !== 'string' || !from.startsWith('/') || from.startsWith('/admin')) return home;
+    return from.startsWith(CLIENT_ROUTES.PARTNER) === partner ? from : home;
   }
-  return CLIENT_ROUTES.HOME;
+  return home;
 }
 
 /** Email vừa đăng ký do trang Đăng ký gửi kèm (state.email) */
@@ -38,7 +42,9 @@ function sessionEndOf(state: unknown): SessionEndReason | null {
   return ended === 'idle' || ended === 'expired' ? ended : null;
 }
 
-export default function LoginPage() {
+/** Đăng nhập theo cổng: /login (du khách) và /partner/login (đối tác) dùng chung trang này */
+export default function LoginPage({ portal = 'TRAVELLER' }: { portal?: AuthPortal }) {
+  const partner = portal === 'PARTNER';
   const { login } = useClientAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,6 +54,8 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
+  // Tài khoản thuộc cổng còn lại (BE trả 403) → hiện thêm link sang đúng cổng
+  const [wrongPortal, setWrongPortal] = useState(false);
   const [busy, setBusy] = useState(false);
   // Thông báo do trang trước gửi kèm (vd. vừa đặt lại mật khẩu)
   const notice = routeNotice(location.state);
@@ -62,28 +70,41 @@ export default function LoginPage() {
     if (!password) next.password = 'Vui lòng nhập mật khẩu';
     setErrors(next);
     setFormError(null);
+    setWrongPortal(false);
     if (Object.keys(next).length > 0) return;
 
     setBusy(true);
     try {
-      const user = await login(email, password, remember);
+      const user = await login(email, password, remember, portal);
       if (onboarding.take(user.email)) {
-        // Lần đầu đăng nhập sau khi đăng ký: trả lời vài câu hỏi rồi mới vào trang chủ
-        navigate(CLIENT_ROUTES.PREFERENCES, {
-          replace: true,
-          state: { notice: 'Chào mừng bạn! Trả lời vài câu hỏi để SmartTravel gợi ý đúng gu bạn.' },
-        });
+        // Lần đầu đăng nhập sau khi đăng ký: đối tác điền hồ sơ doanh nghiệp, du khách chọn sở thích
+        if (partner) {
+          navigate(CLIENT_ROUTES.PARTNER_APPLY, { replace: true });
+        } else {
+          navigate(CLIENT_ROUTES.PREFERENCES, {
+            replace: true,
+            state: {
+              notice: 'Chào mừng bạn! Trả lời vài câu hỏi để SmartTravel gợi ý đúng gu bạn.',
+            },
+          });
+        }
       } else {
-        navigate(redirectTarget(location.state), { replace: true });
+        navigate(redirectTarget(location.state, partner), { replace: true });
       }
     } catch (error) {
+      setWrongPortal(
+        error instanceof ClientApiError && error.status === 403 && error.message.includes('cổng'),
+      );
       setFormError(errorMessage(error));
       setBusy(false);
     }
   };
 
+  const otherLogin = partner ? CLIENT_ROUTES.LOGIN : CLIENT_ROUTES.PARTNER_LOGIN;
+  const title = partner ? 'Đăng nhập Đối tác' : 'Đăng nhập';
+
   return (
-    <ClientAuthLayout title="Đăng nhập">
+    <ClientAuthLayout title={title}>
       {ended && !formError && (
         <SessionEndedBanner
           reason={ended}
@@ -96,10 +117,30 @@ export default function LoginPage() {
         />
       )}
 
-      <AuthCard title="Đăng nhập">
+      <AuthCard
+        title={title}
+        subtitle={
+          partner
+            ? 'Dành cho chủ địa điểm, doanh nghiệp đăng địa điểm trên SmartTravel.'
+            : undefined
+        }
+      >
+        <AuthTabs active={portal} mode="login" />
         <form onSubmit={(event) => void submit(event)} noValidate>
           {notice && !ended && !formError && <Notice tone="success">{notice}</Notice>}
           {formError && <FormAlert message={formError} />}
+          {wrongPortal && (
+            <p className="-mt-1 mb-4 text-[12.5px] text-[#4F5F6B]">
+              <Link
+                to={otherLogin}
+                replace
+                state={{ email }}
+                className="font-bold text-client-primary hover:underline"
+              >
+                Chuyển sang cổng {partner ? 'Du khách' : 'Đối tác'} →
+              </Link>
+            </p>
+          )}
           <Field
             label="Email"
             type="email"
@@ -140,27 +181,33 @@ export default function LoginPage() {
           </PrimaryButton>
         </form>
 
-        <GoogleButton redirectTo={redirectTarget(location.state)} />
+        {/* Google chỉ dành cho du khách; đối tác đăng nhập bằng email + mật khẩu */}
+        {!partner && <GoogleButton redirectTo={redirectTarget(location.state, false)} />}
 
         <p className="mt-6 text-center text-[13px] text-[#62737F]">
-          Chưa có tài khoản?{' '}
-          <Link to={CLIENT_ROUTES.REGISTER} className="font-bold text-client-primary hover:underline">
+          {partner ? 'Chưa có tài khoản đối tác?' : 'Chưa có tài khoản?'}{' '}
+          <Link
+            to={partner ? CLIENT_ROUTES.PARTNER_REGISTER : CLIENT_ROUTES.REGISTER}
+            className="font-bold text-client-primary hover:underline"
+          >
             Đăng ký
           </Link>
         </p>
       </AuthCard>
 
-      <Link
-        to={CLIENT_ROUTES.HOME}
-        className="group mx-auto mt-5 flex w-fit items-center gap-2 rounded-full border border-[#9CD5DB] bg-white px-5 py-2.5 text-[13px] font-bold text-client-primary shadow-sm transition-colors hover:border-client-primary hover:bg-[#E7F8FA]"
-      >
-        <Icon name="explore" className="text-[19px]" />
-        Khám phá ngay, chưa cần đăng nhập
-        <Icon
-          name="arrow_forward"
-          className="text-[17px] transition-transform group-hover:translate-x-0.5"
-        />
-      </Link>
+      {!partner && (
+        <Link
+          to={CLIENT_ROUTES.HOME}
+          className="group mx-auto mt-5 flex w-fit items-center gap-2 rounded-full border border-[#9CD5DB] bg-white px-5 py-2.5 text-[13px] font-bold text-client-primary shadow-sm transition-colors hover:border-client-primary hover:bg-[#E7F8FA]"
+        >
+          <Icon name="explore" className="text-[19px]" />
+          Khám phá ngay, chưa cần đăng nhập
+          <Icon
+            name="arrow_forward"
+            className="text-[17px] transition-transform group-hover:translate-x-0.5"
+          />
+        </Link>
+      )}
     </ClientAuthLayout>
   );
 }

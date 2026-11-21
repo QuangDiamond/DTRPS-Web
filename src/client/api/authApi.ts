@@ -16,12 +16,16 @@ export interface OtpTicket {
 
 const normalize = (email: string) => email.trim().toLowerCase();
 
+/** Cổng đăng nhập / đăng ký: du khách hoặc đối tác (một email chỉ thuộc một cổng) */
+export type AuthPortal = 'TRAVELLER' | 'PARTNER';
+
 export const authApi = {
-  login: (email: string, password: string) =>
+  /** portal: cổng đang đăng nhập — BE từ chối (403) nếu tài khoản thuộc cổng còn lại */
+  login: (email: string, password: string, portal: AuthPortal = 'TRAVELLER') =>
     clientRequest<AuthResponse>('/auth/login', {
       method: 'POST',
       auth: false,
-      body: { email: normalize(email), password },
+      body: { email: normalize(email), password, portal },
     }),
 
   // ===== Đăng ký 3 bước: họ tên + email → mã OTP → mật khẩu =====
@@ -37,11 +41,21 @@ export const authApi = {
       auth: false,
       body: { email: normalize(email), code },
     }),
-  completeRegistration: (ticket: string, name: string, password: string) =>
+  completeRegistration: (
+    ticket: string,
+    name: string,
+    password: string,
+    portal: AuthPortal = 'TRAVELLER',
+  ) =>
     clientRequest<AuthResponse>('/auth/register/complete', {
       method: 'POST',
       auth: false,
-      body: { ticket, name: name.trim(), password },
+      body: {
+        ticket,
+        name: name.trim(),
+        password,
+        accountType: portal === 'PARTNER' ? 'BUSINESS_OWNER' : 'TRAVELLER',
+      },
     }),
 
   /** Tiếp tục với Google: access token từ cửa sổ Google → phiên đăng nhập (+ tài khoản mới?) */

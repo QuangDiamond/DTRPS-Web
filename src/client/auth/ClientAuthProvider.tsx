@@ -1,5 +1,5 @@
 import { type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
-import { authApi } from '@/client/api/authApi';
+import { type AuthPortal, authApi } from '@/client/api/authApi';
 import { userApi } from '@/client/api/userApi';
 import { bindSession } from '@/client/api/http';
 import type { AuthResponse, ClientUser, RoleName } from '@/client/api/types';
@@ -65,8 +65,8 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
   });
 
   const login = useCallback(
-    async (email: string, password: string, remember: boolean) => {
-      const response = await authApi.login(email, password);
+    async (email: string, password: string, remember: boolean, portal?: AuthPortal) => {
+      const response = await authApi.login(email, password, portal);
       clientSessionEnd.clear();
       save(toSession(response, remember));
       return response.user;
@@ -123,16 +123,7 @@ export default function ClientAuthProvider({ children }: { children: ReactNode }
       refreshSession,
       hasRole,
     }),
-    [
-      user,
-      login,
-      loginWithGoogle,
-      changePassword,
-      logout,
-      updateUser,
-      refreshSession,
-      hasRole,
-    ],
+    [user, login, loginWithGoogle, changePassword, logout, updateUser, refreshSession, hasRole],
   );
 
   return <ClientAuthContext.Provider value={value}>{children}</ClientAuthContext.Provider>;

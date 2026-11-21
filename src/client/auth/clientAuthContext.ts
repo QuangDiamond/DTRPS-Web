@@ -1,9 +1,15 @@
 import { createContext, useContext } from 'react';
+import type { AuthPortal } from '@/client/api/authApi';
 import type { ClientUser, RoleName } from '@/client/api/types';
 
 export interface ClientAuthValue {
   user: ClientUser | null;
-  login: (email: string, password: string, remember: boolean) => Promise<ClientUser>;
+  login: (
+    email: string,
+    password: string,
+    remember: boolean,
+    portal?: AuthPortal,
+  ) => Promise<ClientUser>;
   /** Tiếp tục với Google (không dùng cho admin) */
   loginWithGoogle: (accessToken: string) => Promise<{ user: ClientUser; newAccount: boolean }>;
   /** Đổi mật khẩu, tab này vẫn đăng nhập (thiết bị khác bị đăng xuất) */

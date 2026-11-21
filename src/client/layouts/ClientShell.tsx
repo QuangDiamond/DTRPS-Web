@@ -34,30 +34,6 @@ const PARTNER_NAV: NavItem[] = [
   { to: CLIENT_ROUTES.PARTNER_PROFILE, label: 'Hồ sơ', icon: 'storefront' },
 ];
 
-/** Chế độ còn lại để chuyển sang (nút trên topbar luôn ghi chế độ KHÔNG đang dùng) */
-const switchTarget = (partnerMode: boolean) =>
-  partnerMode
-    ? { to: CLIENT_ROUTES.HOME, label: 'Chế độ du khách', icon: 'explore' }
-    : { to: CLIENT_ROUTES.PARTNER, label: 'Dành cho đối tác', icon: 'storefront' };
-
-/** Nút chuyển du khách ⇄ đối tác trên topbar (kiểu "Chuyển sang chế độ đón tiếp khách" của Airbnb) */
-function ModeSwitchButton({ partnerMode }: { partnerMode: boolean }) {
-  const target = switchTarget(partnerMode);
-  return (
-    <Link
-      to={target.to}
-      title={target.label}
-      aria-label={target.label}
-      // Viên thuốc nền trắng, chữ màu thương hiệu — một tông màu, không pha
-      className="flex h-9 items-center gap-1.5 rounded-full bg-white px-2.5 text-[13px] font-extrabold whitespace-nowrap text-[#0E7490] shadow-sm transition-colors hover:bg-[#ECFEFF] xl:px-4"
-    >
-      <Icon name={target.icon} className="text-[18px]" />
-      {/* Màn nhỏ chỉ hiện icon cho gọn; menu ảnh đại diện cũng có mục chuyển chế độ */}
-      <span className="hidden xl:inline">{target.label}</span>
-    </Link>
-  );
-}
-
 function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
   const { user, logout, hasRole } = useClientAuth();
   const navigate = useNavigate();
@@ -113,21 +89,31 @@ function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
             </div>
           </div>
           <div className="pt-2">
-            <Link to={CLIENT_ROUTES.PROFILE} className={itemClass} onClick={() => setOpen(false)}>
-              <Icon name="account_circle" className="text-[18px] text-client-primary" /> Hồ sơ của
-              tôi
-            </Link>
-            <Link
-              to={switchTarget(partnerMode).to}
-              className={itemClass}
-              onClick={() => setOpen(false)}
-            >
-              <Icon
-                name={switchTarget(partnerMode).icon}
-                className="text-[18px] text-client-primary"
-              />{' '}
-              {partnerMode ? 'Chuyển sang chế độ du khách' : 'Chuyển sang chế độ đối tác'}
-            </Link>
+            {partnerMode ? (
+              // Cổng đối tác: hồ sơ doanh nghiệp + đổi mật khẩu, không có lối sang khu du khách
+              <>
+                <Link
+                  to={CLIENT_ROUTES.PARTNER_PROFILE}
+                  className={itemClass}
+                  onClick={() => setOpen(false)}
+                >
+                  <Icon name="storefront" className="text-[18px] text-client-primary" /> Hồ sơ doanh
+                  nghiệp
+                </Link>
+                <Link
+                  to={CLIENT_ROUTES.PROFILE_PASSWORD}
+                  className={itemClass}
+                  onClick={() => setOpen(false)}
+                >
+                  <Icon name="lock" className="text-[18px] text-client-primary" /> Đổi mật khẩu
+                </Link>
+              </>
+            ) : (
+              <Link to={CLIENT_ROUTES.PROFILE} className={itemClass} onClick={() => setOpen(false)}>
+                <Icon name="account_circle" className="text-[18px] text-client-primary" /> Hồ sơ của
+                tôi
+              </Link>
+            )}
             {hasRole('ADMIN') && (
               <a href="/admin/dashboard" className={itemClass}>
                 <Icon name="admin_panel_settings" className="text-[18px] text-client-primary" />{' '}
@@ -139,7 +125,9 @@ function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
               className={itemClass}
               onClick={() => {
                 logout();
-                navigate(CLIENT_ROUTES.LOGIN, { replace: true });
+                navigate(partnerMode ? CLIENT_ROUTES.PARTNER_LOGIN : CLIENT_ROUTES.LOGIN, {
+                  replace: true,
+                });
               }}
             >
               <Icon name="logout" className="text-[18px] text-client-danger" /> Đăng xuất
@@ -151,14 +139,16 @@ function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
   );
 }
 
-/** Khung chung của du khách + đối tác: header (kèm nút chuyển chế độ), menu và thanh tab dưới (điện thoại) */
+/** Khung chung: du khách thấy menu du khách, tài khoản đối tác thấy menu đối tác (không chuyển qua lại) */
 export default function ClientShell() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const live = useClientLive();
+  const { hasRole } = useClientAuth();
   const { profile } = usePartnerProfile();
   const [notice, setNotice] = useState<string | null>(null);
-  const partnerMode = pathname.startsWith(CLIENT_ROUTES.PARTNER);
+  // Chế độ theo loại tài khoản, không theo đường dẫn (đối tác xem /explore vẫn giữ khung đối tác)
+  const partnerMode = hasRole('BUSINESS_OWNER');
   // Menu đối tác chỉ hiện khi hồ sơ đã được duyệt
   const nav = partnerMode ? (profile?.status === 'ACTIVE' ? PARTNER_NAV : []) : TRAVELLER_NAV;
 
@@ -207,8 +197,6 @@ export default function ClientShell() {
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            <ModeSwitchButton partnerMode={partnerMode} />
-            <span aria-hidden className="mx-1 hidden h-6 w-px bg-white/20 sm:block" />
             <button
               type="button"
               onClick={() => setNotice('Tiếng Anh sẽ có trong phiên bản sau.')}

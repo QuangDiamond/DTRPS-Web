@@ -1,7 +1,7 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/common';
-import { authApi, type OtpSent } from '@/client/api/authApi';
+import { type AuthPortal, authApi, type OtpSent } from '@/client/api/authApi';
 import { ClientApiError, errorMessage } from '@/client/api/http';
 import { onboarding } from '@/client/auth/onboarding';
 import ClientAuthLayout from '@/client/layouts/ClientAuthLayout';
@@ -13,6 +13,7 @@ import {
   PasswordChecklist,
   StepIndicator,
 } from '@/client/ui/AuthParts';
+import { AuthTabs } from '@/client/ui/AuthTabs';
 import { FormAlert } from '@/client/ui/Blocks';
 import { PrimaryButton } from '@/client/ui/Buttons';
 import Field from '@/client/ui/Field';
@@ -27,8 +28,26 @@ const TITLES = [
   { title: 'Đặt mật khẩu', subtitle: 'Bước cuối: tạo mật khẩu để đăng nhập lần sau.' },
 ];
 
-/** Đăng ký 3 bước: họ tên + email → mã OTP qua email → mật khẩu → về trang đăng nhập */
-export default function RegisterPage() {
+const PARTNER_TITLES = [
+  {
+    title: 'Tạo tài khoản đối tác',
+    subtitle: 'Nhập họ tên người đại diện và email doanh nghiệp — chúng tôi sẽ gửi mã 6 số.',
+  },
+  TITLES[1],
+  {
+    title: 'Đặt mật khẩu',
+    subtitle: 'Tạo mật khẩu. Đăng nhập xong bạn điền hồ sơ doanh nghiệp để Admin duyệt.',
+  },
+];
+
+/**
+ * Đăng ký 3 bước: họ tên + email → mã OTP qua email → mật khẩu → về trang đăng nhập.
+ * /register tạo tài khoản du khách, /partner/register tạo tài khoản đối tác (một email một loại).
+ */
+export default function RegisterPage({ portal = 'TRAVELLER' }: { portal?: AuthPortal }) {
+  const partner = portal === 'PARTNER';
+  const titles = partner ? PARTNER_TITLES : TITLES;
+  const loginPath = partner ? CLIENT_ROUTES.PARTNER_LOGIN : CLIENT_ROUTES.LOGIN;
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
@@ -83,10 +102,10 @@ export default function RegisterPage() {
 
     setBusy(true);
     try {
-      const created = await authApi.completeRegistration(ticket, name, password);
+      const created = await authApi.completeRegistration(ticket, name, password, portal);
       // Không tự đăng nhập: bỏ phiên BE vừa cấp, người dùng đăng nhập lại bằng email + mật khẩu
       authApi.revoke(created.refreshToken).catch(() => undefined);
-      // Lần đăng nhập đầu tiên → trả lời câu hỏi sở thích rồi mới vào trang chủ
+      // Lần đăng nhập đầu tiên → du khách trả lời câu hỏi sở thích, đối tác điền hồ sơ doanh nghiệp
       onboarding.mark(created.user.email);
       // Hiện màn thành công vài giây rồi mới sang trang đăng nhập
       setCreatedEmail(created.user.email);
@@ -102,11 +121,13 @@ export default function RegisterPage() {
         <RegisterSuccess
           email={createdEmail}
           onContinue={() =>
-            navigate(CLIENT_ROUTES.LOGIN, {
+            navigate(loginPath, {
               replace: true,
               state: {
                 email: createdEmail,
-                notice: 'Đăng ký tài khoản thành công! Hãy đăng nhập bằng mật khẩu vừa tạo.',
+                notice: partner
+                  ? 'Tạo tài khoản đối tác thành công! Đăng nhập để điền hồ sơ doanh nghiệp.'
+                  : 'Đăng ký tài khoản thành công! Hãy đăng nhập bằng mật khẩu vừa tạo.',
               },
             })
           }
@@ -121,8 +142,9 @@ export default function RegisterPage() {
   const canFinish = isValidPassword(password) && matched;
 
   return (
-    <ClientAuthLayout title="Đăng ký">
-      <AuthCard title={TITLES[step].title} subtitle={TITLES[step].subtitle}>
+    <ClientAuthLayout title={partner ? 'Đăng ký Đối tác' : 'Đăng ký'}>
+      <AuthCard title={titles[step].title} subtitle={titles[step].subtitle}>
+        {step === 0 && <AuthTabs active={portal} mode="register" />}
         <StepIndicator steps={STEPS} current={step} />
 
         {step === 0 && (
@@ -130,7 +152,7 @@ export default function RegisterPage() {
             {formError && <FormAlert message={formError} />}
             {emailTaken && (
               <p className="-mt-1 mb-4 text-[12.5px] text-[#4F5F6B]">
-                <Link to={CLIENT_ROUTES.LOGIN} className="font-bold text-client-primary hover:underline">
+                <Link to={loginPath} className="font-bold text-client-primary hover:underline">
                   Đăng nhập
                 </Link>{' '}
                 hoặc{' '}
@@ -219,11 +241,12 @@ export default function RegisterPage() {
           </form>
         )}
 
-        {step === 0 && <GoogleButton />}
+        {/* Google chỉ dành cho du khách */}
+        {step === 0 && !partner && <GoogleButton />}
 
         <p className="mt-6 text-center text-[13px] text-[#62737F]">
           Đã có tài khoản?{' '}
-          <Link to={CLIENT_ROUTES.LOGIN} className="font-bold text-client-primary hover:underline">
+          <Link to={loginPath} className="font-bold text-client-primary hover:underline">
             Đăng nhập
           </Link>
         </p>

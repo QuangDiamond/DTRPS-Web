@@ -32,10 +32,13 @@ export function ClientRoot() {
   );
 }
 
-/** Màn đăng nhập / đăng ký: đã đăng nhập thì vào trang chủ */
+/** Màn đăng nhập / đăng ký: đã đăng nhập thì vào trang chính của cổng mình */
 export function GuestOnlyClient() {
-  const { user } = useClientAuth();
-  return user ? <Navigate to={CLIENT_ROUTES.HOME} replace /> : <Outlet />;
+  const { user, hasRole } = useClientAuth();
+  if (!user) return <Outlet />;
+  return (
+    <Navigate to={hasRole('BUSINESS_OWNER') ? CLIENT_ROUTES.PARTNER : CLIENT_ROUTES.HOME} replace />
+  );
 }
 
 /** Khách chưa đăng nhập: không có hồ sơ đối tác (không gọi API) */
@@ -82,13 +85,27 @@ export function RequireClientLogin() {
   if (user) return <Outlet />;
   // Vừa mất phiên ngay trên trang này → mang lý do sang trang đăng nhập (khách mở trang thì không có)
   const ended = clientSessionEnd.get();
+  // Trang của đối tác → về cổng đăng nhập Đối tác
+  const partnerArea = location.pathname.startsWith(CLIENT_ROUTES.PARTNER);
   return (
     <Navigate
-      to={CLIENT_ROUTES.LOGIN}
+      to={partnerArea ? CLIENT_ROUTES.PARTNER_LOGIN : CLIENT_ROUTES.LOGIN}
       replace
       state={{ from: `${location.pathname}${location.search}`, ...(ended && { ended }) }}
     />
   );
+}
+
+/** Khu đối tác: chỉ tài khoản đối tác (du khách không có lối vào, về trang chủ) */
+export function RequirePartner() {
+  const { hasRole } = useClientAuth();
+  return hasRole('BUSINESS_OWNER') ? <Outlet /> : <Navigate to={CLIENT_ROUTES.HOME} replace />;
+}
+
+/** Trang chỉ dành cho du khách (trang chủ, chuyến đi, yêu thích…): đối tác về trang đối tác */
+export function TravellerOnly() {
+  const { hasRole } = useClientAuth();
+  return hasRole('BUSINESS_OWNER') ? <Navigate to={CLIENT_ROUTES.PARTNER} replace /> : <Outlet />;
 }
 
 /** Các màn quản lý của đối tác: chỉ khi hồ sơ đã được duyệt (ACTIVE) */

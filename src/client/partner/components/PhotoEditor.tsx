@@ -1,5 +1,5 @@
 import { type DragEvent, useEffect, useRef, useState } from 'react';
-import { Icon } from '@/components/common';
+import { Icon, PhotoLightbox } from '@/components/common';
 import { errorMessage } from '@/client/api/http';
 import type { PlaceImage } from '@/client/api/types';
 import { ACCEPTED_IMAGE_TYPES, MAX_IMAGE_BYTES, uploadApi } from '@/client/api/uploadApi';
@@ -44,6 +44,7 @@ export default function PhotoEditor({
   const [pending, setPending] = useState<Pending[]>([]);
   const [dragging, setDragging] = useState(false);
   const [notice, setNotice] = useState('');
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
 
   const uploading = pending.some((item) => item.error === null);
   useEffect(() => onUploadingChange?.(uploading), [uploading, onUploadingChange]);
@@ -119,26 +120,45 @@ export default function PhotoEditor({
       onDrop={onDrop}
       className={`rounded-xl transition-colors ${dragging ? 'bg-client-pale ring-2 ring-client-primary/50' : ''}`}
     >
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-        {images.map((image) => (
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {images.map((image, idx) => (
           <div
             key={image.url}
-            className="overflow-hidden rounded-xl border border-client-line bg-white"
+            className={`group flex flex-col overflow-hidden rounded-xl border bg-white transition-shadow hover:shadow-sm ${
+              image.primary
+                ? 'border-client-primary/70 ring-1 ring-client-primary/20'
+                : 'border-client-line'
+            }`}
           >
-            <div className="relative">
-              <img src={image.url} alt="" className="h-28 w-full object-cover" />
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-client-field">
+              <button
+                type="button"
+                onClick={() => setPreviewIndex(idx)}
+                aria-label={`Phóng to ảnh ${idx + 1}`}
+                className="relative h-full w-full cursor-zoom-in"
+              >
+                <img
+                  src={image.url}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <span className="pointer-events-none absolute right-2 bottom-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white opacity-0 backdrop-blur-xs transition-opacity group-hover:opacity-100">
+                  <Icon name="zoom_in" className="text-[16px]" />
+                </span>
+              </button>
               {image.primary && (
-                <span className="absolute top-2 left-2 rounded-full bg-client-primary px-2 py-0.5 text-[10px] font-bold text-white">
+                <span className="pointer-events-none absolute top-2 left-2 rounded-full bg-client-primary px-2 py-0.5 text-[10px] font-bold text-white shadow-xs">
                   Ảnh bìa
                 </span>
               )}
             </div>
-            <div className="flex items-center justify-between px-2 py-1.5">
+            <div className="flex items-center justify-between gap-2 px-2.5 py-2">
               <button
                 type="button"
                 disabled={image.primary}
                 onClick={() => setCover(image.url)}
-                className="text-[11px] font-bold text-[#0E7490] hover:underline disabled:text-client-muted disabled:no-underline"
+                className="truncate whitespace-nowrap text-[11px] font-bold text-[#0E7490] hover:underline disabled:text-client-muted disabled:no-underline"
               >
                 {image.primary ? 'Đang là ảnh bìa' : 'Đặt ảnh bìa'}
               </button>
@@ -146,7 +166,7 @@ export default function PhotoEditor({
                 type="button"
                 aria-label="Xóa ảnh"
                 onClick={() => remove(image.url)}
-                className="text-client-muted hover:text-client-danger"
+                className="shrink-0 text-client-muted hover:text-client-danger"
               >
                 <Icon name="delete" className="text-[18px]" />
               </button>
@@ -157,13 +177,13 @@ export default function PhotoEditor({
         {pending.map((item) => (
           <div
             key={item.id}
-            className="overflow-hidden rounded-xl border border-client-line bg-white"
+            className="flex flex-col overflow-hidden rounded-xl border border-client-line bg-white"
           >
-            <div className="relative">
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-client-field">
               <img
                 src={item.preview}
                 alt=""
-                className={`h-28 w-full object-cover ${item.error ? 'opacity-40' : 'opacity-60'}`}
+                className={`h-full w-full object-cover ${item.error ? 'opacity-40' : 'opacity-60'}`}
               />
               {item.error === null && (
                 <span className="absolute inset-0 flex items-center justify-center">
@@ -171,7 +191,7 @@ export default function PhotoEditor({
                 </span>
               )}
             </div>
-            <div className="flex items-center justify-between gap-2 px-2 py-1.5">
+            <div className="flex items-center justify-between gap-2 px-2.5 py-2">
               <span
                 className={`truncate text-[11px] ${item.error ? 'text-client-danger' : 'text-client-muted'}`}
                 title={item.error ?? undefined}
@@ -196,13 +216,23 @@ export default function PhotoEditor({
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="flex min-h-[9.5rem] flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-client-line bg-client-field text-client-muted transition-colors hover:border-client-primary hover:text-client-primary"
+            className="flex aspect-[4/3] min-h-[9.5rem] flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-client-line bg-client-field text-client-muted transition-colors hover:border-client-primary hover:text-client-primary"
           >
             <Icon name="add" className="text-[36px]" />
             <span className="text-[12px] font-bold">Thêm ảnh</span>
           </button>
         )}
       </div>
+
+      {previewIndex !== null && (
+        <PhotoLightbox
+          photos={images.map((item) => ({ url: item.url, primary: item.primary }))}
+          index={previewIndex}
+          onChange={setPreviewIndex}
+          onClose={() => setPreviewIndex(null)}
+          coverLabel="Ảnh bìa"
+        />
+      )}
 
       <input
         ref={inputRef}

@@ -125,6 +125,9 @@ interface TravelMapProps {
    */
   center?: [number, number];
 
+  /** Bật chế độ ảnh vệ tinh (Satellite). */
+  satellite?: boolean;
+
   className?: string;
 
   ref?: Ref<TravelMapHandle>;
@@ -291,6 +294,7 @@ export default function TravelMap({
                                     showCompass = false,
                                     onSelect,
                                     center = [16.05, 106.5],
+                                    satellite = false,
                                     className = 'h-64',
                                     ref,
                                   }: TravelMapProps) {
@@ -448,7 +452,7 @@ export default function TravelMap({
     const map = new maplibregl.Map({
       container: containerRef.current,
 
-      style: mapStyle(),
+      style: mapStyle(satellite),
 
       center: toLngLat(center),
 

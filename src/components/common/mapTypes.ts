@@ -47,11 +47,41 @@ const FALLBACK_STYLE: StyleSpecification = {
   layers: [{ id: 'carto', type: 'raster', source: 'carto' }],
 };
 
-/** Style nền bản đồ Goong (vector), hoặc CARTO nếu thiếu key */
-export const mapStyle = (): string | StyleSpecification =>
-  GOONG_MAPTILES_KEY
-    ? `https://tiles.goong.io/assets/goong_map_web.json?api_key=${GOONG_MAPTILES_KEY}`
-    : FALLBACK_STYLE;
+/** Nền ảnh vệ tinh dự phòng Esri khi chưa có Goong Maptiles key */
+const FALLBACK_SATELLITE_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    'esri-satellite': {
+      type: 'raster',
+      tiles: [
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      ],
+      tileSize: 256,
+      attribution: '&copy; Esri World Imagery',
+    },
+    'esri-labels': {
+      type: 'raster',
+      tiles: [
+        'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+      ],
+      tileSize: 256,
+    },
+  },
+  layers: [
+    { id: 'esri-satellite', type: 'raster', source: 'esri-satellite' },
+    { id: 'esri-labels', type: 'raster', source: 'esri-labels' },
+  ],
+};
+
+/** Style nền bản đồ Goong (mặc định hoặc vệ tinh chính thức của Goong), dự phòng nếu thiếu key */
+export const mapStyle = (satellite = false): string | StyleSpecification =>
+  satellite
+    ? GOONG_MAPTILES_KEY
+      ? `https://tiles.goong.io/assets/goong_satellite.json?api_key=${GOONG_MAPTILES_KEY}`
+      : FALLBACK_SATELLITE_STYLE
+    : GOONG_MAPTILES_KEY
+      ? `https://tiles.goong.io/assets/goong_map_web.json?api_key=${GOONG_MAPTILES_KEY}`
+      : FALLBACK_STYLE;
 
 export const round6 = (value: number) => Math.round(value * 1e6) / 1e6;
 

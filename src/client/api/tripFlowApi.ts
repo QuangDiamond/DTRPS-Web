@@ -1,4 +1,3 @@
-
 import { clientRequest } from './http';
 
 /**
@@ -12,12 +11,7 @@ import { clientRequest } from './http';
 
 export type TravelPace = 'RELAXED' | 'BALANCED' | 'PACKED';
 
-export type PlanStatus =
-  | 'DRAFT'
-  | 'PLANNED'
-  | 'IN_PROGRESS'
-  | 'COMPLETED'
-  | 'CANCELLED';
+export type PlanStatus = 'DRAFT' | 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
 export interface CreateTravelPlanInput {
   title: string;
@@ -122,10 +116,7 @@ export interface AiRecommendationResponse {
   warnings: string[];
 }
 
-export function toAiTripPlace(
-  place: AiRecommendedPlace,
-  destination: string,
-): TripPlace {
+export function toAiTripPlace(place: AiRecommendedPlace, destination: string): TripPlace {
   return {
     placeId: place.placeId,
     name: place.name,
@@ -274,23 +265,11 @@ export interface UpdateItineraryItemInput {
 // TRIP PROGRESS — TIẾN ĐỘ CHUYẾN ĐI
 // ==========================================================
 
-export type TripExecutionStatus =
-  | 'NOT_STARTED'
-  | 'IN_PROGRESS'
-  | 'COMPLETED'
-  | 'CANCELLED';
+export type TripExecutionStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
-export type TripActivityStatus =
-  | 'PENDING'
-  | 'COMPLETED'
-  | 'SKIPPED';
+export type TripActivityStatus = 'PENDING' | 'COMPLETED' | 'SKIPPED';
 
-export type GoongVehicle =
-  | 'car'
-  | 'bike'
-  | 'taxi'
-  | 'truck'
-  | 'hd';
+export type GoongVehicle = 'car' | 'bike' | 'taxi' | 'truck' | 'hd';
 
 /**
  * Tiến độ của từng địa điểm.
@@ -357,6 +336,9 @@ export interface GoongRoute {
    * Chỉ dẫn từng bước rẽ theo thứ tự đi. Có thể rỗng khi Goong không trả về.
    */
   steps?: GoongRouteStep[];
+
+  /** Các tuyến đường thay thế do Goong trả về khi bật alternatives=true */
+  alternatives?: GoongRoute[];
 }
 
 /**
@@ -427,17 +409,13 @@ export interface CreateTripFeedbackInput {
 // API PATHS
 // ==========================================================
 
-const progressPath = (planId: number) =>
-  `/travel-plans/${planId}/trip-progress`;
+const progressPath = (planId: number) => `/travel-plans/${planId}/trip-progress`;
 
-const planPath = (planId: number) =>
-  `/travel-plans/${planId}`;
+const planPath = (planId: number) => `/travel-plans/${planId}`;
 
-const dayItemsPath = (dayId: number) =>
-  `/itinerary-days/${dayId}/items`;
+const dayItemsPath = (dayId: number) => `/itinerary-days/${dayId}/items`;
 
-const feedbackPath = (planId: number) =>
-  `${planPath(planId)}/feedback`;
+const feedbackPath = (planId: number) => `${planPath(planId)}/feedback`;
 
 /** GET /travel-plans/{planId}/partner-places: điểm do đối tác đã xác minh đăng ký. */
 export interface PartnerPlace {
@@ -460,7 +438,6 @@ export interface PartnerPlace {
 // ==========================================================
 
 export const tripFlowApi = {
-
   // ========================================================
   // 1. TRAVEL PLAN
   // ========================================================
@@ -471,23 +448,18 @@ export const tripFlowApi = {
       body: input,
     }),
 
-  plans: () =>
-    clientRequest<TravelPlanResponse[]>('/travel-plans'),
+  plans: () => clientRequest<TravelPlanResponse[]>('/travel-plans'),
 
-  plan: (planId: number) =>
-    clientRequest<TravelPlanResponse>(planPath(planId)),
+  plan: (planId: number) => clientRequest<TravelPlanResponse>(planPath(planId)),
 
   // ========================================================
   // 2. AI RECOMMENDATION
   // ========================================================
 
   recommendedPlaces: (planId: number) =>
-    clientRequest<AiRecommendationResponse>(
-      `${planPath(planId)}/recommended-places`,
-      {
-        timeoutMs: 60_000,
-      },
-    ),
+    clientRequest<AiRecommendationResponse>(`${planPath(planId)}/recommended-places`, {
+      timeoutMs: 60_000,
+    }),
 
   /** Địa điểm của đối tác đã xác minh tại điểm đến của kế hoạch (cột riêng ở màn Gợi ý). */
   partnerPlaces: (planId: number) =>
@@ -497,10 +469,7 @@ export const tripFlowApi = {
   // 3. UPDATE / DELETE / STATUS
   // ========================================================
 
-  updatePlan: (
-    planId: number,
-    input: UpdateTravelPlanInput,
-  ) =>
+  updatePlan: (planId: number, input: UpdateTravelPlanInput) =>
     clientRequest<TravelPlanResponse>(planPath(planId), {
       method: 'PUT',
       body: input,
@@ -511,93 +480,56 @@ export const tripFlowApi = {
       method: 'DELETE',
     }),
 
-  changeStatus: (
-    planId: number,
-    status: PlanStatus,
-  ) =>
-    clientRequest<TravelPlanResponse>(
-      `${planPath(planId)}/status`,
-      {
-        method: 'PATCH',
-        body: { status },
-      },
-    ),
+  changeStatus: (planId: number, status: PlanStatus) =>
+    clientRequest<TravelPlanResponse>(`${planPath(planId)}/status`, {
+      method: 'PATCH',
+      body: { status },
+    }),
 
   // ========================================================
   // 4. PLACES
   // ========================================================
 
   candidatePlaces: (planId: number) =>
-    clientRequest<TripPlace[]>(
-      `${planPath(planId)}/candidate-places`,
-    ),
+    clientRequest<TripPlace[]>(`${planPath(planId)}/candidate-places`),
 
   selectedPlaces: (planId: number) =>
-    clientRequest<SelectedPlacesResponse>(
-      `${planPath(planId)}/places`,
-    ),
+    clientRequest<SelectedPlacesResponse>(`${planPath(planId)}/places`),
 
-  addPlace: (
-    planId: number,
-    placeId: number,
-  ) =>
-    clientRequest<TripPlace>(
-      `${planPath(planId)}/places`,
-      {
-        method: 'POST',
-        body: { placeId },
-      },
-    ),
+  addPlace: (planId: number, placeId: number) =>
+    clientRequest<TripPlace>(`${planPath(planId)}/places`, {
+      method: 'POST',
+      body: { placeId },
+    }),
 
-  removePlace: (
-    planId: number,
-    placeId: number,
-  ) =>
-    clientRequest<void>(
-      `${planPath(planId)}/places/${placeId}`,
-      {
-        method: 'DELETE',
-      },
-    ),
+  removePlace: (planId: number, placeId: number) =>
+    clientRequest<void>(`${planPath(planId)}/places/${placeId}`, {
+      method: 'DELETE',
+    }),
 
   // ========================================================
   // 5. GENERATE ITINERARY
   // ========================================================
 
-  generate: (
-    planId: number,
-    input: GenerateItineraryInput = {},
-  ) =>
-    clientRequest<GeneratedItinerary>(
-      `${planPath(planId)}/itineraries`,
-      {
-        method: 'POST',
-        body: input,
-        timeoutMs: 60_000,
-      },
-    ),
+  generate: (planId: number, input: GenerateItineraryInput = {}) =>
+    clientRequest<GeneratedItinerary>(`${planPath(planId)}/itineraries`, {
+      method: 'POST',
+      body: input,
+      timeoutMs: 60_000,
+    }),
 
   activeItinerary: (planId: number) =>
-    clientRequest<GeneratedItinerary>(
-      `${planPath(planId)}/itineraries/active`,
-    ),
+    clientRequest<GeneratedItinerary>(`${planPath(planId)}/itineraries/active`),
 
   // ========================================================
   // 6. ITINERARY OVERVIEW
   // ========================================================
 
   overview: (planId: number) =>
-    clientRequest<ItineraryOverview>(
-      `${planPath(planId)}/itineraries/active/overview`,
-    ),
+    clientRequest<ItineraryOverview>(`${planPath(planId)}/itineraries/active/overview`),
 
-  overviewById: (
-    planId: number,
-    itineraryId: number,
-  ) =>
-    clientRequest<ItineraryOverview>(
-      `${planPath(planId)}/itineraries/${itineraryId}/overview`,
-    ),
+  overviewById: (planId: number, itineraryId: number) =>
+    clientRequest<ItineraryOverview>(`${planPath(planId)}/itineraries/${itineraryId}/overview`),
 
   // ========================================================
   // 7. TRIP PROGRESS
@@ -608,26 +540,17 @@ export const tripFlowApi = {
    *
    * GET /travel-plans/{planId}/trip-progress
    */
-  tripProgress: (planId: number) =>
-    clientRequest<TripProgressResponse>(
-      progressPath(planId),
-    ),
+  tripProgress: (planId: number) => clientRequest<TripProgressResponse>(progressPath(planId)),
 
   /**
    * Bắt đầu một ngày.
    *
    * POST /trip-progress/days/{dayNumber}/start
    */
-  startTripDay: (
-    planId: number,
-    dayNumber: number,
-  ) =>
-    clientRequest<TripProgressResponse>(
-      `${progressPath(planId)}/days/${dayNumber}/start`,
-      {
-        method: 'POST',
-      },
-    ),
+  startTripDay: (planId: number, dayNumber: number) =>
+    clientRequest<TripProgressResponse>(`${progressPath(planId)}/days/${dayNumber}/start`, {
+      method: 'POST',
+    }),
 
   /**
    * Đánh dấu hoàn thành hoặc bỏ qua địa điểm.
@@ -657,16 +580,10 @@ export const tripFlowApi = {
    *
    * POST /trip-progress/days/{dayNumber}/complete
    */
-  completeTripDay: (
-    planId: number,
-    dayNumber: number,
-  ) =>
-    clientRequest<TripProgressResponse>(
-      `${progressPath(planId)}/days/${dayNumber}/complete`,
-      {
-        method: 'POST',
-      },
-    ),
+  completeTripDay: (planId: number, dayNumber: number) =>
+    clientRequest<TripProgressResponse>(`${progressPath(planId)}/days/${dayNumber}/complete`, {
+      method: 'POST',
+    }),
 
   // ========================================================
   // 8. GPS + GOONG MAPS NAVIGATION
@@ -712,58 +629,30 @@ export const tripFlowApi = {
   // 9. ITINERARY ITEM CRUD
   // ========================================================
 
-  dayItems: (dayId: number) =>
-    clientRequest<ItineraryItem[]>(
-      dayItemsPath(dayId),
-    ),
+  dayItems: (dayId: number) => clientRequest<ItineraryItem[]>(dayItemsPath(dayId)),
 
-  addItem: (
-    dayId: number,
-    input: CreateItineraryItemInput,
-  ) =>
-    clientRequest<ItineraryItem>(
-      dayItemsPath(dayId),
-      {
-        method: 'POST',
-        body: input,
-      },
-    ),
+  addItem: (dayId: number, input: CreateItineraryItemInput) =>
+    clientRequest<ItineraryItem>(dayItemsPath(dayId), {
+      method: 'POST',
+      body: input,
+    }),
 
-  updateItem: (
-    dayId: number,
-    itemId: number,
-    input: UpdateItineraryItemInput,
-  ) =>
-    clientRequest<ItineraryItem>(
-      `${dayItemsPath(dayId)}/${itemId}`,
-      {
-        method: 'PUT',
-        body: input,
-      },
-    ),
+  updateItem: (dayId: number, itemId: number, input: UpdateItineraryItemInput) =>
+    clientRequest<ItineraryItem>(`${dayItemsPath(dayId)}/${itemId}`, {
+      method: 'PUT',
+      body: input,
+    }),
 
-  removeItem: (
-    dayId: number,
-    itemId: number,
-  ) =>
-    clientRequest<void>(
-      `${dayItemsPath(dayId)}/${itemId}`,
-      {
-        method: 'DELETE',
-      },
-    ),
+  removeItem: (dayId: number, itemId: number) =>
+    clientRequest<void>(`${dayItemsPath(dayId)}/${itemId}`, {
+      method: 'DELETE',
+    }),
 
-  reorderItems: (
-    dayId: number,
-    itemIds: number[],
-  ) =>
-    clientRequest<ItineraryItem[]>(
-      `${dayItemsPath(dayId)}/order`,
-      {
-        method: 'PUT',
-        body: { itemIds },
-      },
-    ),
+  reorderItems: (dayId: number, itemIds: number[]) =>
+    clientRequest<ItineraryItem[]>(`${dayItemsPath(dayId)}/order`, {
+      method: 'PUT',
+      body: { itemIds },
+    }),
 
   // ========================================================
   // 10. TRIP FEEDBACK
@@ -775,20 +664,11 @@ export const tripFlowApi = {
    * GET /travel-plans/{planId}/feedback
    * Backend trả 404 nếu khách chưa đánh giá kế hoạch này.
    */
-  feedback: (planId: number) =>
-    clientRequest<TripFeedbackResponse>(
-      feedbackPath(planId),
-    ),
+  feedback: (planId: number) => clientRequest<TripFeedbackResponse>(feedbackPath(planId)),
 
-  createFeedback: (
-    planId: number,
-    input: CreateTripFeedbackInput,
-  ) =>
-    clientRequest<TripFeedbackResponse>(
-      feedbackPath(planId),
-      {
-        method: 'POST',
-        body: input,
-      },
-    ),
+  createFeedback: (planId: number, input: CreateTripFeedbackInput) =>
+    clientRequest<TripFeedbackResponse>(feedbackPath(planId), {
+      method: 'POST',
+      body: input,
+    }),
 };

@@ -17,6 +17,8 @@ export { default as NotFoundState } from './NotFoundState';
 export { default as PageHeader } from './PageHeader';
 export { default as PageLoader } from './PageLoader';
 export { default as Pagination } from './Pagination';
+export { default as PhotoLightbox } from './PhotoLightbox';
+export type { LightboxPhoto } from './PhotoLightbox';
 export { default as SendMessageModal } from './SendMessageModal';
 export { default as SortableHeader } from './SortableHeader';
 export { default as StatCard } from './StatCard';

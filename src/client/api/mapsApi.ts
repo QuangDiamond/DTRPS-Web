@@ -2,6 +2,15 @@ import type { AddressSuggestion, GeoLocation } from '@/components/common/mapType
 import type { GoongRoute, GoongVehicle } from '@/client/api/tripFlowApi';
 import { clientRequest } from './http';
 
+export interface NearbyPlace {
+  placeId: string;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  distanceMeters: number;
+}
+
 const query = (params: Record<string, string | number | undefined>) =>
   new URLSearchParams(
     Object.entries(params)
@@ -33,6 +42,15 @@ export const mapsApi = {
         toLat: params.toLat,
         toLng: params.toLng,
         vehicle: params.vehicle ?? 'car',
+      })}`,
+    ),
+  nearby: (params: { lat: number; lng: number; keyword?: string; radius?: number }) =>
+    clientRequest<NearbyPlace[]>(
+      `/maps/nearby?${query({
+        lat: params.lat,
+        lng: params.lng,
+        keyword: params.keyword ?? 'cây xăng',
+        radius: params.radius ?? 5,
       })}`,
     ),
 };

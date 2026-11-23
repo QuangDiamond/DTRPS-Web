@@ -358,14 +358,11 @@ export default function PlaceDetailsPage() {
   const [notFound, setNotFound] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [introExpanded, setIntroExpanded] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [notice, showNotice] = useNotice();
   // Trạng thái Lightbox xem ảnh phóng to (dùng chung cho ảnh địa điểm và ảnh đánh giá)
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
   // Chỉ số ảnh đang hiển thị ở khung ảnh chính (đổi khi bấm thumbnail hoặc nút < >)
   const [activeImage, setActiveImage] = useState(0);
-  // Tín hiệu kích hoạt chỉ đường Goong Map từ nút Chỉ đường ở cột phải
-  const [directionsSignal, setDirectionsSignal] = useState(0);
 
   const [reviews, setReviews] = useState<PlaceReview[]>([]);
   const [reviewsTotal, setReviewsTotal] = useState(0);
@@ -750,7 +747,6 @@ export default function PlaceDetailsPage() {
                 state: { from: `${location.pathname}${location.search}` },
               })
             }
-            directionsSignal={directionsSignal}
           />
         </div>
 
@@ -900,37 +896,6 @@ export default function PlaceDetailsPage() {
                   })}
               </ul>
             )}
-          </div>
-
-          <div className="fixed inset-x-0 bottom-[62px] z-20 flex items-center gap-2.5 border-t border-[#E6E9EE] bg-white px-4 py-3 md:static md:mt-5 md:rounded-[20px] md:border-0">
-            <button
-              type="button"
-              onClick={() => setDirectionsSignal((count) => count + 1)}
-              aria-label="Chỉ đường bằng Goong Maps"
-              title="Chỉ đường bằng Goong Maps"
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EBEDFF] text-[#405A82] transition-colors hover:bg-[#DCE0FF]"
-            >
-              <Icon name="directions" className="text-[22px]" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setSaved((value) => !value)}
-              aria-label="Lưu địa điểm"
-              aria-pressed={saved}
-              className={`flex h-12 w-12 items-center justify-center rounded-full ${
-                saved ? 'bg-[#C0F5FB] text-[#0891B2]' : 'bg-[#EBEDFF] text-[#405A82]'
-              }`}
-            >
-              <Icon name="bookmark" filled={saved} className="text-[22px]" />
-            </button>
-            <button
-              type="button"
-              onClick={() => showNotice(`Đã thêm "${place.name}" vào chuyến đi của bạn.`)}
-              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-[#0E7490] text-[15px] font-bold text-white shadow-md hover:bg-client-primary-strong"
-            >
-              <Icon name="add_circle" className="text-[21px]" />
-              Thêm vào Chuyến đi
-            </button>
           </div>
         </div>
       </div>

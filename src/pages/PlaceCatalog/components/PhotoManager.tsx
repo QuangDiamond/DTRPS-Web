@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Icon } from '@/components/common';
+import { Button, Icon, PhotoLightbox } from '@/components/common';
 import { placeCatalogService } from '@/services/placeCatalogService';
 import { getErrorMessage } from '@/utils/error';
 import {
@@ -47,6 +47,8 @@ export default function PhotoManager({
   const [uploading, setUploading] = useState(0);
   /** Link ảnh trình duyệt không hiển thị được (đã lưu từ trước) */
   const [broken, setBroken] = useState<Set<string>>(new Set());
+  /** Chỉ số ảnh đang mở xem phóng to (null = đóng) */
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
 
   const full = images.length >= maxImages;
   const brokenCount = images.filter((image) => broken.has(image.url)).length;
@@ -103,7 +105,8 @@ export default function PhotoManager({
   const uploadFiles = async (files: File[]) => {
     setError('');
     const room = maxImages - images.length;
-    if (files.length > room) setError(t('placeEditor.photos.tooMany', { count: room, max: maxImages }));
+    if (files.length > room)
+      setError(t('placeEditor.photos.tooMany', { count: room, max: maxImages }));
     for (const file of files.slice(0, Math.max(room, 0))) {
       if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
         setError(t('placeEditor.photos.badType'));
@@ -127,24 +130,28 @@ export default function PhotoManager({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {images.map((image) => {
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {images.map((image, idx) => {
           const isBroken = broken.has(image.url);
           return (
             <div
               key={image.key}
-              className={`overflow-hidden rounded-xl border bg-surface-container-lowest ${
-                isBroken ? 'border-error' : 'border-surface-container'
+              className={`group flex flex-col overflow-hidden rounded-xl border bg-surface-container-lowest transition-shadow hover:shadow-sm ${
+                isBroken
+                  ? 'border-error'
+                  : image.primary
+                    ? 'border-primary/60 ring-1 ring-primary/20'
+                    : 'border-surface-container'
               }`}
             >
-              <div className="relative">
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-container-low">
                 {isBroken ? (
                   <a
                     href={image.url}
                     target="_blank"
                     rel="noreferrer"
                     title={image.url}
-                    className="flex h-28 w-full flex-col items-center justify-center gap-1 bg-error-container/40 text-error"
+                    className="flex h-full w-full flex-col items-center justify-center gap-1 bg-error-container/40 text-error"
                   >
                     <Icon name="broken_image" className="text-[28px]" />
                     <span className="font-label-sm text-[11px] font-bold">
@@ -152,17 +159,27 @@ export default function PhotoManager({
                     </span>
                   </a>
                 ) : (
-                  <img
-                    src={image.url}
-                    alt=""
-                    referrerPolicy="no-referrer"
-                    onError={() => markBroken(image.url, true)}
-                    onLoad={() => markBroken(image.url, false)}
-                    className="h-28 w-full object-cover"
-                  />
+                  <button
+                    type="button"
+                    onClick={() => setPreviewIndex(idx)}
+                    aria-label={`Phóng to ảnh ${idx + 1}`}
+                    className="relative h-full w-full cursor-zoom-in"
+                  >
+                    <img
+                      src={image.url}
+                      alt=""
+                      referrerPolicy="no-referrer"
+                      onError={() => markBroken(image.url, true)}
+                      onLoad={() => markBroken(image.url, false)}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <span className="pointer-events-none absolute right-2 bottom-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white opacity-0 backdrop-blur-xs transition-opacity group-hover:opacity-100">
+                      <Icon name="zoom_in" className="text-[16px]" />
+                    </span>
+                  </button>
                 )}
                 {image.primary && (
-                  <span className="absolute top-2 left-2 rounded-full bg-primary px-2 py-0.5 font-label-sm text-[10px] font-bold text-on-primary">
+                  <span className="pointer-events-none absolute top-2 left-2 rounded-full bg-primary px-2 py-0.5 font-label-sm text-[10px] font-bold text-on-primary shadow-xs">
                     {t('placeEditor.photos.cover')}
                   </span>
                 )}
@@ -172,12 +189,12 @@ export default function PhotoManager({
                   </span>
                 )}
               </div>
-              <div className="flex items-center justify-between px-2 py-1.5">
+              <div className="flex items-center justify-between gap-2 px-2.5 py-2">
                 <button
                   type="button"
                   disabled={image.primary || isBroken || busyKey !== null}
                   onClick={() => void run(image.key, () => onSetCover(image))}
-                  className="font-label-sm text-[11px] font-bold text-primary hover:underline disabled:text-outline disabled:no-underline"
+                  className="truncate whitespace-nowrap font-label-sm text-[11px] font-bold text-primary hover:underline disabled:text-outline disabled:no-underline"
                 >
                   {image.primary
                     ? t('placeEditor.photos.isCover')
@@ -188,7 +205,7 @@ export default function PhotoManager({
                   aria-label={t('placeEditor.photos.remove')}
                   disabled={busyKey !== null}
                   onClick={() => void run(image.key, () => onRemove(image))}
-                  className="text-outline hover:text-error disabled:opacity-40"
+                  className="shrink-0 text-outline hover:text-error disabled:opacity-40"
                 >
                   <Icon name="delete" className="text-[18px]" />
                 </button>
@@ -199,7 +216,7 @@ export default function PhotoManager({
         {Array.from({ length: uploading }, (_, index) => (
           <div
             key={`uploading-${index}`}
-            className="flex h-[9.25rem] flex-col items-center justify-center gap-2 rounded-xl border border-surface-container bg-surface-container-low"
+            className="flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-xl border border-surface-container bg-surface-container-low"
           >
             <span className="h-6 w-6 animate-spin rounded-full border-[3px] border-outline/40 border-t-primary" />
             <span className="font-label-sm text-label-sm text-outline">
@@ -211,7 +228,7 @@ export default function PhotoManager({
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="flex h-[9.25rem] flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low text-outline transition-colors hover:border-primary hover:text-primary"
+            className="flex aspect-[4/3] min-h-[9.5rem] flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low text-outline transition-colors hover:border-primary hover:text-primary"
           >
             <Icon name="add_photo_alternate" className="text-[32px]" />
             <span className="font-label-sm text-label-sm font-bold">
@@ -220,6 +237,16 @@ export default function PhotoManager({
           </button>
         )}
       </div>
+
+      {previewIndex !== null && (
+        <PhotoLightbox
+          photos={images.map((item) => ({ url: item.url, primary: item.primary }))}
+          index={previewIndex}
+          onChange={setPreviewIndex}
+          onClose={() => setPreviewIndex(null)}
+          coverLabel={t('placeEditor.photos.cover')}
+        />
+      )}
 
       {!full && (
         <div className="flex flex-wrap gap-2">

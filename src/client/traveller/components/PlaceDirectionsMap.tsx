@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Icon } from '@/components/common';
 import { errorMessage } from '@/client/api/http';
-import { mapsApi } from '@/client/api/mapsApi';
+import { mapsApi, type NearbyPlace } from '@/client/api/mapsApi';
 import type { GoongRoute, GoongVehicle } from '@/client/api/tripFlowApi';
-import TravelMap, { type TravelMapHandle } from '@/client/traveller/components/TravelMap';
+import TravelMap, {
+  type MapPoint,
+  type TravelMapHandle,
+} from '@/client/traveller/components/TravelMap';
 import { formatMeters, formatSeconds, maneuverIcon } from '@/client/traveller/navigation/geo';
 
 type Coordinate = [number, number];
@@ -45,23 +48,46 @@ const VEHICLES: { value: GoongVehicle; label: string; icon: string }[] = [
   { value: 'bike', label: 'Xe máy', icon: 'two_wheeler' },
 ];
 
+/** Đọc chỉ đường tiếng Việt bằng Web Speech API (miễn phí, có sẵn trên trình duyệt) */
+function speakWebVi(text: string): void {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window) || !text.trim()) return;
+  try {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'vi-VN';
+    utterance.rate = 1.05;
+    window.speechSynthesis.speak(utterance);
+  } catch {
+    // Bỏ qua nếu trình duyệt chặn speechSynthesis
+  }
+}
+
+function stopWebSpeech(): void {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+  } catch {
+    // Bỏ qua
+  }
+}
+
 interface PlaceDirectionsMapProps {
   placeId: number;
   placeName: string;
   address: string | null;
   latitude: number;
   longitude: number;
-  /** Khách đã đăng nhập chưa (API /maps/directions yêu cầu đăng nhập để bảo vệ quota Goong) */
+  /** Khách đã đăng nhập chưa (API /maps/directions & /maps/nearby yêu cầu đăng nhập) */
   isAuthenticated: boolean;
   /** Gọi khi khách chưa đăng nhập bấm Chỉ đường */
   onRequireLogin: () => void;
   /** Tăng số này từ nút Chỉ đường bên ngoài để cuộn tới bản đồ và chạy chỉ đường Goong */
-  directionsSignal: number;
+  directionsSignal?: number;
 }
 
 /**
  * Khung "Vị trí & Đường đi" trên trang chi tiết địa điểm:
- * hoàn toàn dùng Goong Map (nền MapLibre + Goong Directions qua BE), không nhảy sang Google Maps.
+ * hoàn toàn dùng Goong Map, hỗ trợ chỉ đường, dẫn đường GPS và ghé tạm cây xăng gần nhất.
  */
 export default function PlaceDirectionsMap({
   placeId,
@@ -71,7 +97,7 @@ export default function PlaceDirectionsMap({
   longitude,
   isAuthenticated,
   onRequireLogin,
-  directionsSignal,
+  directionsSignal = 0,
 }: PlaceDirectionsMapProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const inlineMapRef = useRef<TravelMapHandle>(null);
@@ -84,32 +110,91 @@ export default function PlaceDirectionsMap({
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [navigating, setNavigating] = useState(false);
+  const [cameraPaused, setCameraPaused] = useState(false);
+  const cameraPausedRef = useRef(false);
+  const [satellite, setSatellite] = useState(false);
+  const [selectedRouteIndex, setSelectedRouteIndex] = useState(0);
+  const [showRoutesPanel, setShowRoutesPanel] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const lastSpokenRef = useRef<string | null>(null);
   const watchIdRef = useRef<number | null>(null);
 
-  const routeCoordinates = useMemo(
-    () => (route?.polyline ? decodePolyline(route.polyline) : null),
+  const pauseCamera = useCallback(() => {
+    cameraPausedRef.current = true;
+    setCameraPaused(true);
+  }, []);
+
+  const resumeCamera = useCallback(
+    (target?: Coordinate | null) => {
+      cameraPausedRef.current = false;
+      setCameraPaused(false);
+      const loc = target ?? userLocation;
+      if (loc) {
+        modalMapRef.current?.focus(loc, 16);
+      }
+    },
+    [userLocation],
+  );
+
+  // Tìm cây xăng gần & chế độ rẽ tạm (detour)
+  const [gasStations, setGasStations] = useState<NearbyPlace[]>([]);
+  const [gasLoading, setGasLoading] = useState(false);
+  const [gasError, setGasError] = useState<string | null>(null);
+  const [showGasPanel, setShowGasPanel] = useState(false);
+  const [detourStop, setDetourStop] = useState<NearbyPlace | null>(null);
+  const [detourRoute, setDetourRoute] = useState<GoongRoute | null>(null);
+
+  const allMainRoutes = useMemo<GoongRoute[]>(
+    () => (route ? [route, ...(route.alternatives ?? [])] : []),
     [route],
   );
+  const selectedMainRoute = allMainRoutes[selectedRouteIndex] ?? route;
+
+  const mainRouteCoordinates = useMemo(
+    () => (selectedMainRoute?.polyline ? decodePolyline(selectedMainRoute.polyline) : null),
+    [selectedMainRoute],
+  );
+  const detourRouteCoordinates = useMemo(
+    () => (detourRoute?.polyline ? decodePolyline(detourRoute.polyline) : null),
+    [detourRoute],
+  );
+
+  const activeRoute = detourStop && detourRoute ? detourRoute : selectedMainRoute;
+  const activeRouteCoordinates =
+    detourStop && detourRouteCoordinates ? detourRouteCoordinates : mainRouteCoordinates;
 
   const stopNavigation = useCallback(() => {
     if (watchIdRef.current !== null && navigator.geolocation) {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
     }
+    stopWebSpeech();
+    lastSpokenRef.current = null;
+    cameraPausedRef.current = false;
+    setCameraPaused(false);
     setNavigating(false);
+    setShowRoutesPanel(false);
   }, []);
 
-  // Khi đổi sang địa điểm khác thì xóa tuyến cũ và dừng dẫn đường
+  // Khi đổi sang địa điểm khác thì xóa tuyến cũ, cây xăng và dừng dẫn đường
   useEffect(() => {
     stopNavigation();
     setRoute(null);
+    setDetourStop(null);
+    setDetourRoute(null);
+    setGasStations([]);
+    setShowGasPanel(false);
+    setGasError(null);
     setError(null);
     setExpanded(false);
   }, [placeId, stopNavigation]);
 
   // Đóng modal hoặc unmount → dừng theo dõi GPS
   useEffect(() => {
-    if (!expanded) stopNavigation();
+    if (!expanded) {
+      stopNavigation();
+      setShowGasPanel(false);
+    }
   }, [expanded, stopNavigation]);
 
   useEffect(() => stopNavigation, [stopNavigation]);
@@ -126,13 +211,47 @@ export default function PlaceDirectionsMap({
 
   // Khi có tuyến mới thì thu phóng bản đồ vừa khít toàn tuyến
   useEffect(() => {
-    if (!routeCoordinates || routeCoordinates.length < 2) return;
+    if (!activeRouteCoordinates || activeRouteCoordinates.length < 2) return;
     const timer = window.setTimeout(() => {
       inlineMapRef.current?.fitRoute();
       modalMapRef.current?.fitRoute();
     }, 120);
     return () => window.clearTimeout(timer);
-  }, [routeCoordinates, expanded]);
+  }, [activeRouteCoordinates, expanded]);
+
+  const resolveOrigin = useCallback(
+    (): Promise<Coordinate | null> =>
+      new Promise((resolve) => {
+        if (userLocation) {
+          resolve(userLocation);
+          return;
+        }
+        if (!navigator.geolocation) {
+          setError('Trình duyệt không hỗ trợ định vị GPS để tính đường đi.');
+          resolve(null);
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const origin: Coordinate = [pos.coords.latitude, pos.coords.longitude];
+            setUserLocation(origin);
+            resolve(origin);
+          },
+          (geoError) => {
+            if (geoError.code === geoError.PERMISSION_DENIED) {
+              setError(
+                'Bạn cần cho phép quyền vị trí trên trình duyệt để xem đường đi từ vị trí hiện tại.',
+              );
+            } else {
+              setError('Không lấy được vị trí GPS hiện tại. Vui lòng thử lại.');
+            }
+            resolve(null);
+          },
+          { enableHighAccuracy: true, timeout: 10_000, maximumAge: 30_000 },
+        );
+      }),
+    [userLocation],
+  );
 
   const fetchRoute = useCallback(
     async (origin: Coordinate, mode: GoongVehicle) => {
@@ -147,6 +266,7 @@ export default function PlaceDirectionsMap({
           vehicle: mode,
         });
         setRoute(result);
+        setSelectedRouteIndex(0);
       } catch (failure: unknown) {
         setRoute(null);
         setError(errorMessage(failure));
@@ -157,8 +277,36 @@ export default function PlaceDirectionsMap({
     [latitude, longitude],
   );
 
+  const fetchDetourRoute = useCallback(
+    async (origin: Coordinate, station: NearbyPlace, mode: GoongVehicle) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await mapsApi.directions({
+          fromLat: origin[0],
+          fromLng: origin[1],
+          toLat: station.latitude,
+          toLng: station.longitude,
+          vehicle: mode,
+        });
+        setDetourStop(station);
+        setDetourRoute(result);
+        setShowGasPanel(false);
+        if (navigating) {
+          pauseCamera();
+        }
+        window.setTimeout(() => modalMapRef.current?.fitRoute(), 180);
+      } catch (failure: unknown) {
+        setError(errorMessage(failure));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [navigating, pauseCamera],
+  );
+
   const startDirections = useCallback(
-    (mode: GoongVehicle = vehicle, scrollToSection = true) => {
+    async (mode: GoongVehicle = vehicle, scrollToSection = true) => {
       if (!isAuthenticated) {
         onRequireLogin();
         return;
@@ -166,32 +314,16 @@ export default function PlaceDirectionsMap({
       if (scrollToSection) {
         sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-      if (!navigator.geolocation) {
-        setError('Trình duyệt không hỗ trợ định vị GPS để tính đường đi.');
-        return;
-      }
       setLoading(true);
       setError(null);
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const origin: Coordinate = [pos.coords.latitude, pos.coords.longitude];
-          setUserLocation(origin);
-          void fetchRoute(origin, mode);
-        },
-        (geoError) => {
-          setLoading(false);
-          if (geoError.code === geoError.PERMISSION_DENIED) {
-            setError(
-              'Bạn cần cho phép quyền vị trí trên trình duyệt để xem đường đi từ vị trí hiện tại.',
-            );
-          } else {
-            setError('Không lấy được vị trí GPS hiện tại. Vui lòng thử lại.');
-          }
-        },
-        { enableHighAccuracy: true, timeout: 10_000, maximumAge: 30_000 },
-      );
+      const origin = await resolveOrigin();
+      if (!origin) {
+        setLoading(false);
+        return;
+      }
+      await fetchRoute(origin, mode);
     },
-    [fetchRoute, isAuthenticated, onRequireLogin, vehicle],
+    [fetchRoute, isAuthenticated, onRequireLogin, resolveOrigin, vehicle],
   );
 
   // Nhận tín hiệu từ nút Chỉ đường ở cột phải của PlaceDetailsPage
@@ -199,24 +331,93 @@ export default function PlaceDirectionsMap({
   useEffect(() => {
     if (directionsSignal === handledSignalRef.current) return;
     handledSignalRef.current = directionsSignal;
-    startDirections(vehicle, true);
+    void startDirections(vehicle, true);
   }, [directionsSignal, startDirections, vehicle]);
 
   const changeVehicle = (next: GoongVehicle) => {
     setVehicle(next);
+    if (detourStop && userLocation) {
+      void fetchDetourRoute(userLocation, detourStop, next);
+      return;
+    }
     if (userLocation) {
       void fetchRoute(userLocation, next);
     } else {
-      startDirections(next, false);
+      void startDirections(next, false);
     }
   };
 
   const clearDirections = () => {
     stopNavigation();
     setRoute(null);
+    setDetourStop(null);
+    setDetourRoute(null);
+    setGasStations([]);
+    setShowGasPanel(false);
     setError(null);
     inlineMapRef.current?.focus([latitude, longitude], 14);
   };
+
+  /** Tìm cây xăng gần vị trí hiện tại qua Goong (dùng lại cache nếu đã tải để mở tức thì) */
+  const searchNearbyGas = useCallback(async () => {
+    if (!isAuthenticated) {
+      onRequireLogin();
+      return;
+    }
+    if (showGasPanel) {
+      setShowGasPanel(false);
+      return;
+    }
+    setShowGasPanel(true);
+    if (gasStations.length > 0) {
+      setGasError(null);
+      return;
+    }
+    setGasLoading(true);
+    setGasError(null);
+    const origin = await resolveOrigin();
+    if (!origin) {
+      setGasLoading(false);
+      setGasError('Chưa có vị trí GPS để tìm cây xăng gần bạn.');
+      return;
+    }
+    try {
+      const found = await mapsApi.nearby({
+        lat: origin[0],
+        lng: origin[1],
+        keyword: 'cây xăng',
+        radius: 5,
+      });
+      setGasStations(found);
+      if (found.length === 0) {
+        setGasError('Không tìm thấy cây xăng nào trong bán kính 5 km.');
+      }
+    } catch (failure: unknown) {
+      setGasError(errorMessage(failure));
+    } finally {
+      setGasLoading(false);
+    }
+  }, [gasStations.length, isAuthenticated, onRequireLogin, resolveOrigin, showGasPanel]);
+
+  const selectGasStation = useCallback(
+    async (station: NearbyPlace) => {
+      const origin = await resolveOrigin();
+      if (!origin) return;
+      await fetchDetourRoute(origin, station, vehicle);
+    },
+    [fetchDetourRoute, resolveOrigin, vehicle],
+  );
+
+  const returnToMainRoute = useCallback(async () => {
+    setDetourStop(null);
+    setDetourRoute(null);
+    setShowGasPanel(false);
+    setGasStations([]);
+    const origin = await resolveOrigin();
+    if (origin) {
+      await fetchRoute(origin, vehicle);
+    }
+  }, [fetchRoute, resolveOrigin, vehicle]);
 
   /** Bắt đầu / dừng chế độ dẫn đường GPS realtime trong modal bản đồ Goong */
   const toggleNavigation = useCallback(() => {
@@ -234,9 +435,11 @@ export default function PlaceDirectionsMap({
       return;
     }
     if (!route) {
-      startDirections(vehicle, false);
+      void startDirections(vehicle, false);
     }
     setNavigating(true);
+    cameraPausedRef.current = false;
+    setCameraPaused(false);
     if (userLocation) {
       modalMapRef.current?.focus(userLocation, 16);
     }
@@ -244,7 +447,9 @@ export default function PlaceDirectionsMap({
       (pos) => {
         const next: Coordinate = [pos.coords.latitude, pos.coords.longitude];
         setUserLocation(next);
-        modalMapRef.current?.focus(next, 16);
+        if (!cameraPausedRef.current) {
+          modalMapRef.current?.focus(next, 16);
+        }
       },
       () => {
         stopNavigation();
@@ -263,11 +468,11 @@ export default function PlaceDirectionsMap({
     vehicle,
   ]);
 
-  const mapPoints = useMemo(
+  const inlinePoints = useMemo<MapPoint[]>(
     () => [
       {
         id: String(placeId),
-        coordinate: [latitude, longitude] as Coordinate,
+        coordinate: [latitude, longitude],
         label: '•',
         title: placeName,
       },
@@ -275,8 +480,55 @@ export default function PlaceDirectionsMap({
     [latitude, longitude, placeId, placeName],
   );
 
-  const distanceLabel = route ? (route.distanceText ?? formatMeters(route.distanceMeters)) : null;
-  const durationLabel = route ? (route.durationText ?? formatSeconds(route.durationSeconds)) : null;
+  const modalPoints = useMemo<MapPoint[]>(() => {
+    const list: MapPoint[] = [
+      {
+        id: String(placeId),
+        coordinate: [latitude, longitude],
+        label: '•',
+        title: placeName,
+      },
+    ];
+    if (detourStop) {
+      list.push({
+        id: `gas:${detourStop.placeId}`,
+        coordinate: [detourStop.latitude, detourStop.longitude],
+        label: '⛽',
+        title: detourStop.name,
+      });
+    } else if (showGasPanel) {
+      for (const station of gasStations) {
+        list.push({
+          id: `gas:${station.placeId}`,
+          coordinate: [station.latitude, station.longitude],
+          label: '⛽',
+          title: station.name,
+        });
+      }
+    }
+    return list;
+  }, [detourStop, gasStations, latitude, longitude, placeId, placeName, showGasPanel]);
+
+  const distanceLabel = activeRoute
+    ? (activeRoute.distanceText ?? formatMeters(activeRoute.distanceMeters))
+    : null;
+  const durationLabel = activeRoute
+    ? (activeRoute.durationText ?? formatSeconds(activeRoute.durationSeconds))
+    : null;
+
+  // Đọc hướng dẫn bước đầu tiên bằng giọng tiếng Việt khi bật Bắt đầu đi hoặc đổi tuyến
+  useEffect(() => {
+    const firstStep = activeRoute?.steps?.[0];
+    if (!navigating || !voiceEnabled || !firstStep) return;
+    const key = `${detourStop?.placeId ?? 'main'}:${selectedRouteIndex}:${firstStep.instruction}`;
+    if (lastSpokenRef.current === key) return;
+    lastSpokenRef.current = key;
+    const dist =
+      firstStep.distanceMeters >= 30
+        ? `Trong ${firstStep.distanceText ?? formatMeters(firstStep.distanceMeters)}, `
+        : '';
+    speakWebVi(`${dist}${firstStep.instruction}`);
+  }, [activeRoute, detourStop?.placeId, navigating, selectedRouteIndex, voiceEnabled]);
 
   return (
     <div ref={sectionRef} className="mt-7 scroll-mt-24">
@@ -284,7 +536,7 @@ export default function PlaceDirectionsMap({
         <h2 className="text-[17px] font-extrabold text-[#13364A]">Vị trí & Đường đi</h2>
         <button
           type="button"
-          onClick={() => startDirections(vehicle, false)}
+          onClick={() => void startDirections(vehicle, false)}
           disabled={loading}
           className="inline-flex items-center gap-1 text-[12px] font-bold text-[#0891B2] hover:underline disabled:opacity-60"
         >
@@ -304,7 +556,7 @@ export default function PlaceDirectionsMap({
               </span>
               <button
                 type="button"
-                onClick={() => startDirections(vehicle, false)}
+                onClick={() => void startDirections(vehicle, false)}
                 className="shrink-0 rounded-full bg-white px-2.5 py-1 text-[11.5px] font-bold text-[#0891B2] ring-1 ring-[#DCEBEF]"
               >
                 Thử lại
@@ -315,12 +567,12 @@ export default function PlaceDirectionsMap({
               <div className="flex items-center gap-2 text-[13px] font-extrabold text-[#13364A]">
                 <span className="inline-flex items-center gap-1 text-[#0891B2]">
                   <Icon name="route" className="text-[17px]" />
-                  {distanceLabel}
+                  {route?.distanceText ?? (route ? formatMeters(route.distanceMeters) : '')}
                 </span>
                 <span className="text-[#94A3B8]">·</span>
                 <span className="inline-flex items-center gap-1">
                   <Icon name="schedule" className="text-[16px] text-[#0891B2]" />
-                  {durationLabel}
+                  {route?.durationText ?? (route ? formatSeconds(route.durationSeconds) : '')}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -362,9 +614,9 @@ export default function PlaceDirectionsMap({
             ref={inlineMapRef}
             className="aspect-[16/10] w-full md:aspect-[16/9]"
             center={[latitude, longitude]}
-            points={mapPoints}
+            points={inlinePoints}
             activeId={String(placeId)}
-            routeCoordinates={routeCoordinates}
+            routeCoordinates={mainRouteCoordinates}
             userLocation={userLocation}
           />
         </div>
@@ -390,7 +642,7 @@ export default function PlaceDirectionsMap({
         </div>
       </div>
 
-      {/* Hộp thoại bản đồ Goong phóng to kèm hướng dẫn từng bước rẽ (nếu đang bật chỉ đường) */}
+      {/* Hộp thoại bản đồ Goong phóng to kèm hướng dẫn từng bước rẽ và tìm cây xăng gần */}
       {expanded && (
         <div
           role="dialog"
@@ -405,10 +657,91 @@ export default function PlaceDirectionsMap({
           >
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E5ECEF] px-5 py-3.5">
               <div className="min-w-0">
-                <p className="truncate text-[16px] font-extrabold text-[#13364A]">{placeName}</p>
-                {address && <p className="truncate text-[12px] text-[#72818C]">{address}</p>}
+                <p className="truncate text-[16px] font-extrabold text-[#13364A]">
+                  {detourStop ? `${detourStop.name} (ghé tạm)` : placeName}
+                </p>
+                {detourStop ? (
+                  <p className="truncate text-[12px] font-semibold text-[#EA580C]">
+                    Điểm chính: {placeName}
+                  </p>
+                ) : (
+                  address && <p className="truncate text-[12px] text-[#72818C]">{address}</p>
+                )}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSatellite((v) => !v)}
+                  className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[12px] font-bold transition-colors ${
+                    satellite
+                      ? 'bg-[#13364A] text-white'
+                      : 'bg-[#F1F5F8] text-[#334E68] hover:bg-[#E2EBF0]'
+                  }`}
+                >
+                  <Icon name="layers" className="text-[15px]" />
+                  {satellite ? 'Bản đồ' : 'Vệ tinh'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void searchNearbyGas()}
+                  disabled={gasLoading}
+                  className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[12px] font-bold transition-colors ${
+                    showGasPanel || detourStop
+                      ? 'bg-[#EA580C] text-white'
+                      : 'bg-[#FFF7ED] text-[#C2410C] hover:bg-[#FFEDD5]'
+                  }`}
+                >
+                  <Icon name="local_gas_station" className="text-[15px]" />
+                  {gasLoading ? 'Đang tìm...' : 'Cây xăng gần'}
+                </button>
+                {!detourStop && allMainRoutes.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowGasPanel(false);
+                      setShowRoutesPanel((v) => {
+                        const next = !v;
+                        if (next && navigating) {
+                          pauseCamera();
+                          window.setTimeout(() => modalMapRef.current?.fitRoute(), 150);
+                        }
+                        return next;
+                      });
+                    }}
+                    className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[12px] font-bold transition-colors ${
+                      showRoutesPanel
+                        ? 'bg-[#0891B2] text-white'
+                        : 'bg-[#E7F8FA] text-[#0E7490] hover:bg-[#D2F2F6]'
+                    }`}
+                  >
+                    <Icon name="alt_route" className="text-[15px]" />
+                    Đổi tuyến ({allMainRoutes.length})
+                  </button>
+                )}
+                {navigating && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setVoiceEnabled((prev) => {
+                        const next = !prev;
+                        if (!next) stopWebSpeech();
+                        return next;
+                      })
+                    }
+                    title={voiceEnabled ? 'Tắt giọng đọc' : 'Bật giọng đọc'}
+                    className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[12px] font-bold transition-colors ${
+                      voiceEnabled
+                        ? 'bg-[#0F6A5B] text-white'
+                        : 'bg-[#F1F5F8] text-[#64748B] hover:bg-[#E2EBF0]'
+                    }`}
+                  >
+                    <Icon
+                      name={voiceEnabled ? 'volume_up' : 'volume_off'}
+                      className="text-[15px]"
+                    />
+                    {voiceEnabled ? 'Đang đọc' : 'Tắt tiếng'}
+                  </button>
+                )}
                 {VEHICLES.map((item) => (
                   <button
                     key={item.value}
@@ -416,7 +749,7 @@ export default function PlaceDirectionsMap({
                     onClick={() => changeVehicle(item.value)}
                     disabled={loading}
                     className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[12px] font-bold transition-colors ${
-                      vehicle === item.value && route
+                      vehicle === item.value && activeRoute
                         ? 'bg-[#0891B2] text-white'
                         : 'bg-[#F1F5F8] text-[#334E68] hover:bg-[#E2EBF0]'
                     }`}
@@ -427,7 +760,9 @@ export default function PlaceDirectionsMap({
                 ))}
                 <button
                   type="button"
-                  onClick={() => (route ? toggleNavigation() : startDirections(vehicle, false))}
+                  onClick={() =>
+                    route ? toggleNavigation() : void startDirections(vehicle, false)
+                  }
                   disabled={loading}
                   className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-bold text-white disabled:opacity-60 ${
                     navigating
@@ -458,21 +793,188 @@ export default function PlaceDirectionsMap({
               </div>
             </div>
 
+            {/* Thanh đổi cây xăng nhanh hoặc quay lại tuyến chính khi đang rẽ qua cây xăng */}
+            {detourStop && (
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#FED7AA] bg-[#FFF7ED] px-5 py-2.5">
+                <p className="flex items-center gap-2 text-[13px] font-bold text-[#9A3412]">
+                  <Icon name="undo" className="text-[17px] text-[#EA580C]" />
+                  Đang dẫn đường tới cây xăng {detourStop.name}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => void searchNearbyGas()}
+                    disabled={loading}
+                    className="shrink-0 rounded-full border border-[#FDBA74] bg-white px-3 py-1.5 text-[12px] font-bold text-[#C2410C] hover:bg-[#FFEDD5]"
+                  >
+                    Đổi cây xăng
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void returnToMainRoute()}
+                    disabled={loading}
+                    className="shrink-0 rounded-full bg-[#EA580C] px-3.5 py-1.5 text-[12px] font-bold text-white hover:bg-[#C2410C]"
+                  >
+                    Quay lại tuyến đi {placeName}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Danh sách chọn tuyến đường thay thế */}
+            {showRoutesPanel && !detourStop && allMainRoutes.length > 1 && (
+              <div className="border-b border-[#CBE7EE] bg-[#F4FBFD] px-5 py-3">
+                <div className="flex gap-2.5 overflow-x-auto pb-1">
+                  {allMainRoutes.map((option, idx) => {
+                    const selected = idx === selectedRouteIndex;
+                    const diffMin = Math.round(
+                      (option.durationSeconds - allMainRoutes[0].durationSeconds) / 60,
+                    );
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setSelectedRouteIndex(idx);
+                          lastSpokenRef.current = null;
+                          setShowRoutesPanel(false);
+                          window.setTimeout(() => modalMapRef.current?.fitRoute(), 150);
+                        }}
+                        className={`w-52 shrink-0 rounded-2xl border p-3 text-left transition-colors ${
+                          selected
+                            ? 'border-[#0891B2] bg-[#E7F8FA]'
+                            : 'border-[#DCEBEF] bg-white hover:bg-[#F8FBFD]'
+                        }`}
+                      >
+                        <p className="text-[11.5px] font-bold text-[#0E7490]">
+                          {idx === 0 ? 'Tuyến nhanh nhất' : `Tuyến ${idx + 1}`}
+                        </p>
+                        <p className="mt-0.5 text-[15px] font-extrabold text-[#13364A]">
+                          {option.durationText ?? formatSeconds(option.durationSeconds)}
+                        </p>
+                        <p className="mt-0.5 text-[12px] text-[#5C6E7E]">
+                          {option.distanceText ?? formatMeters(option.distanceMeters)}
+                          {idx > 0 && diffMin !== 0
+                            ? ` (${diffMin > 0 ? `+${diffMin}` : diffMin} phút)`
+                            : ''}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Danh sách cây xăng gần vị trí hiện tại */}
+            {showGasPanel && (
+              <div className="border-b border-[#FED7AA] bg-[#FFFBF7] px-5 py-3">
+                {gasLoading ? (
+                  <p className="text-[12.5px] text-[#72818C]">
+                    Đang tìm cây xăng gần vị trí của bạn...
+                  </p>
+                ) : gasError ? (
+                  <p className="text-[12.5px] text-[#B91C1C]">{gasError}</p>
+                ) : (
+                  <div className="flex gap-2.5 overflow-x-auto pb-1">
+                    {gasStations.map((station) => {
+                      const selected = detourStop?.placeId === station.placeId;
+                      return (
+                        <div
+                          key={station.placeId}
+                          className={`w-60 shrink-0 rounded-2xl border p-3 ${
+                            selected ? 'border-[#EA580C] bg-[#FFF7ED]' : 'border-[#FED7AA] bg-white'
+                          }`}
+                        >
+                          <p className="truncate text-[13px] font-extrabold text-[#13364A]">
+                            {station.name}
+                          </p>
+                          <p className="mt-0.5 line-clamp-1 text-[11.5px] text-[#72818C]">
+                            {station.address}
+                          </p>
+                          <div className="mt-2 flex items-center justify-between">
+                            <span className="text-[11.5px] font-bold text-[#EA580C]">
+                              Cách {formatMeters(station.distanceMeters)}
+                            </span>
+                            {selected ? (
+                              <span className="rounded-full bg-[#FFEDD5] px-2.5 py-1 text-[11.5px] font-bold text-[#C2410C]">
+                                Đang chọn
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                disabled={loading}
+                                onClick={() => void selectGasStation(station)}
+                                className="rounded-full bg-[#EA580C] px-3 py-1 text-[11.5px] font-bold text-white hover:bg-[#C2410C]"
+                              >
+                                {detourStop ? 'Đổi sang' : 'Rẽ qua'}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="flex min-h-0 flex-1 flex-col md:flex-row">
               <div className="relative isolate min-h-[260px] flex-1">
                 <TravelMap
+                  key={satellite ? 'sat' : 'map'}
                   ref={modalMapRef}
                   className="h-full w-full"
                   center={[latitude, longitude]}
-                  points={mapPoints}
-                  activeId={String(placeId)}
-                  routeCoordinates={routeCoordinates}
+                  points={modalPoints}
+                  activeId={detourStop ? `gas:${detourStop.placeId}` : String(placeId)}
+                  onSelect={(id) => {
+                    if (!id.startsWith('gas:')) return;
+                    const found = gasStations.find((s) => s.placeId === id.slice(4));
+                    if (found) void selectGasStation(found);
+                  }}
+                  routeCoordinates={activeRouteCoordinates}
                   userLocation={userLocation}
-                  followUser={navigating}
+                  followUser={navigating && !cameraPaused}
+                  onUserInteract={() => {
+                    if (navigating && !cameraPausedRef.current) {
+                      pauseCamera();
+                    }
+                  }}
+                  satellite={satellite}
                 />
+
+                {/* Nút nổi góc dưới trái bản đồ: chuyển nhanh Toàn tuyến ↔ Tiếp tục bám theo lúc đang đi */}
+                {navigating && (
+                  <div className="absolute bottom-4 left-4 z-10">
+                    {cameraPaused ? (
+                      <button
+                        type="button"
+                        onClick={() => resumeCamera()}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-[#0F6A5B] px-4 py-2 text-[12.5px] font-extrabold text-white shadow-lg hover:bg-[#0B5448]"
+                      >
+                        <Icon name="my_location" className="text-[17px]" />
+                        Tiếp tục bám theo
+                      </button>
+                    ) : (
+                      activeRoute && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            pauseCamera();
+                            modalMapRef.current?.fitRoute();
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[12.5px] font-extrabold text-[#13364A] shadow-lg ring-1 ring-black/10 hover:bg-[#F1F5F8]"
+                        >
+                          <Icon name="zoom_out_map" className="text-[17px]" />
+                          Toàn tuyến
+                        </button>
+                      )
+                    )}
+                  </div>
+                )}
               </div>
 
-              {(route || error) && (
+              {(activeRoute || error) && (
                 <div className="flex max-h-[38vh] w-full flex-col border-t border-[#E5ECEF] bg-[#F8FBFD] md:max-h-none md:w-80 md:border-t-0 md:border-l">
                   {error ? (
                     <p className="p-4 text-[13px] text-[#B91C1C]">{error}</p>
@@ -480,15 +982,15 @@ export default function PlaceDirectionsMap({
                     <>
                       <div className="border-b border-[#E5ECEF] bg-white px-4 py-3">
                         <p className="text-[11px] font-bold tracking-wide text-[#72818C] uppercase">
-                          Tuyến đường Goong Maps
+                          {detourStop ? `Tuyến tới ${detourStop.name}` : 'Tuyến đường Goong Maps'}
                         </p>
                         <p className="mt-1 text-[16px] font-extrabold text-[#13364A]">
                           {distanceLabel} · {durationLabel}
                         </p>
                       </div>
                       <ol className="flex-1 divide-y divide-[#EAF0F3] overflow-y-auto px-4 py-2">
-                        {route?.steps && route.steps.length > 0 ? (
-                          route.steps.map((step, idx) => (
+                        {activeRoute?.steps && activeRoute.steps.length > 0 ? (
+                          activeRoute.steps.map((step, idx) => (
                             <li key={idx} className="flex items-start gap-2.5 py-2.5 text-[12.5px]">
                               <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#E7F8FA] text-[#0891B2]">
                                 <Icon name={maneuverIcon(step.maneuver)} className="text-[15px]" />

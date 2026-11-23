@@ -212,6 +212,14 @@ export default function TripLiveMapPage() {
   const [following, setFollowing] =
     useState(false);
 
+  // Toàn màn hình kiểu Google Maps sau khi bấm "Bắt đầu dẫn đường".
+  const [navMode, setNavMode] =
+    useState(false);
+
+  // Thanh thông tin bên phải (ẩn/hiện được) khi đang ở chế độ dẫn đường.
+  const [panelOpen, setPanelOpen] =
+    useState(false);
+
   // Đang chờ người dùng bấm lên bản đồ để chọn vị trí xuất phát.
   const [picking, setPicking] =
     useState(false);
@@ -948,6 +956,19 @@ export default function TripLiveMapPage() {
   // ĐIỀU KHIỂN BẢN ĐỒ
   // ====================================================
 
+  const startNavigation = () => {
+    setNavMode(true);
+    setPanelOpen(false);
+    setPicking(false);
+    focusMyPosition();
+  };
+
+  const stopNavigation = () => {
+    setNavMode(false);
+    setFollowing(false);
+    setPanelOpen(false);
+  };
+
   const focusMyPosition = () => {
     if (myLocation) {
       // Bật lại chế độ bám theo; thao tác kéo bản đồ trước đó đã tắt nó.
@@ -1030,17 +1051,31 @@ export default function TripLiveMapPage() {
   // ====================================================
 
   return (
-    <div className="-mx-4 -mt-4 md:mx-0 md:mt-0 md:grid md:grid-cols-[1.4fr_1fr] md:gap-4">
+    <div
+      className={
+        navMode
+          ? 'fixed inset-0 z-[1000] flex bg-white'
+          : '-mx-4 -mt-4 md:mx-0 md:mt-0 md:grid md:grid-cols-[1.4fr_1fr] md:gap-4'
+      }
+    >
 
       {/* ============================================== */}
       {/* BẢN ĐỒ GOONG                                   */}
       {/* ============================================== */}
 
-      <div className="relative min-w-0 isolate">
+      <div
+        className={`relative min-w-0 isolate ${
+          navMode ? 'h-full flex-1' : ''
+        }`}
+      >
 
         <TravelMap
           ref={mapRef}
-          className="h-[45vh] md:h-[calc(100vh-180px)] md:rounded-[20px]"
+          className={
+            navMode
+              ? 'h-full'
+              : 'h-[45vh] md:h-[calc(100vh-180px)] md:rounded-[20px]'
+          }
           center={pointCenter}
           points={mapPoints}
           activeId={activeId}
@@ -1196,7 +1231,52 @@ export default function TripLiveMapPage() {
 
         {/* NÚT ĐIỀU KHIỂN BẢN ĐỒ */}
 
-        <div className="absolute bottom-4 right-3.5 z-[400] flex flex-col gap-2.5">
+        <div
+          className={`absolute right-3.5 z-[400] flex flex-col gap-2.5 ${
+            navMode && panelOpen
+              ? 'bottom-[58vh] md:bottom-4'
+              : 'bottom-4'
+          }`}
+        >
+
+          {navMode && (
+            <>
+              <button
+                type="button"
+                onClick={() =>
+                  setPanelOpen((open) => !open)
+                }
+                aria-label={
+                  panelOpen
+                    ? 'Ẩn thanh thông tin'
+                    : 'Hiện thanh thông tin'
+                }
+                aria-pressed={panelOpen}
+                className={`flex h-[47px] w-[47px] items-center justify-center rounded-[17px] shadow-md ${
+                  panelOpen
+                    ? 'bg-[#0E7490] text-white'
+                    : 'bg-white text-[#0E7490]'
+                }`}
+              >
+                <Icon
+                  name={panelOpen ? 'close' : 'menu'}
+                  className="text-[24px]"
+                />
+              </button>
+
+              <button
+                type="button"
+                onClick={stopNavigation}
+                aria-label="Thoát dẫn đường"
+                className="flex h-[47px] w-[47px] items-center justify-center rounded-[17px] bg-[#DC6666] text-white shadow-md"
+              >
+                <Icon
+                  name="logout"
+                  className="text-[22px]"
+                />
+              </button>
+            </>
+          )}
 
           <button
             type="button"
@@ -1240,7 +1320,15 @@ export default function TripLiveMapPage() {
       {/* THÔNG TIN HÀNH TRÌNH                            */}
       {/* ============================================== */}
 
-      <div className="relative z-10 -mt-5 min-w-0 rounded-t-[27px] bg-white px-[17px] pb-5 pt-2.5 shadow-[0_-6px_18px_rgba(0,0,0,0.08)] md:mt-0 md:rounded-[20px] md:shadow-none">
+      <div
+        className={`relative z-10 min-w-0 bg-white px-[17px] pb-5 pt-2.5 ${
+          navMode
+            ? panelOpen
+              ? 'absolute inset-x-0 bottom-0 z-[600] max-h-[55vh] overflow-y-auto rounded-t-[27px] shadow-[0_-6px_18px_rgba(0,0,0,0.15)] md:static md:inset-auto md:z-10 md:h-full md:max-h-none md:w-[380px] md:shrink-0 md:rounded-none md:shadow-[-6px_0_18px_rgba(0,0,0,0.1)]'
+              : 'hidden'
+            : '-mt-5 rounded-t-[27px] shadow-[0_-6px_18px_rgba(0,0,0,0.08)] md:mt-0 md:rounded-[20px] md:shadow-none'
+        }`}
+      >
 
         <span className="mx-auto mb-3.5 block h-[5px] w-[43px] rounded-full bg-[#DBE6E8] md:hidden" />
 
@@ -1537,14 +1625,14 @@ export default function TripLiveMapPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (following) {
-                      setFollowing(false);
+                    if (navMode) {
+                      stopNavigation();
                     } else {
-                      focusMyPosition();
+                      startNavigation();
                     }
                   }}
                   className={`inline-flex items-center gap-1 rounded-full px-3 py-2 text-[11px] font-extrabold ${
-                    following
+                    navMode
                       ? 'bg-[#0E7490] text-white'
                       : 'bg-white text-[#0E7490]'
                   }`}
@@ -1555,8 +1643,8 @@ export default function TripLiveMapPage() {
                     className="text-[16px]"
                   />
 
-                  {following
-                    ? 'Dừng bám theo'
+                  {navMode
+                    ? 'Thoát dẫn đường'
                     : 'Bắt đầu dẫn đường'}
 
                 </button>

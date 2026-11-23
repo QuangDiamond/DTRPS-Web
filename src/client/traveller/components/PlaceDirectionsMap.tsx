@@ -83,18 +83,36 @@ export default function PlaceDirectionsMap({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [navigating, setNavigating] = useState(false);
+  const watchIdRef = useRef<number | null>(null);
 
   const routeCoordinates = useMemo(
     () => (route?.polyline ? decodePolyline(route.polyline) : null),
     [route],
   );
 
-  // Khi đổi sang địa điểm khác thì xóa tuyến cũ
+  const stopNavigation = useCallback(() => {
+    if (watchIdRef.current !== null && navigator.geolocation) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+    }
+    setNavigating(false);
+  }, []);
+
+  // Khi đổi sang địa điểm khác thì xóa tuyến cũ và dừng dẫn đường
   useEffect(() => {
+    stopNavigation();
     setRoute(null);
     setError(null);
     setExpanded(false);
-  }, [placeId]);
+  }, [placeId, stopNavigation]);
+
+  // Đóng modal hoặc unmount → dừng theo dõi GPS
+  useEffect(() => {
+    if (!expanded) stopNavigation();
+  }, [expanded, stopNavigation]);
+
+  useEffect(() => stopNavigation, [stopNavigation]);
 
   // Đóng modal phóng to bằng phím Esc
   useEffect(() => {
@@ -194,10 +212,56 @@ export default function PlaceDirectionsMap({
   };
 
   const clearDirections = () => {
+    stopNavigation();
     setRoute(null);
     setError(null);
     inlineMapRef.current?.focus([latitude, longitude], 14);
   };
+
+  /** Bắt đầu / dừng chế độ dẫn đường GPS realtime trong modal bản đồ Goong */
+  const toggleNavigation = useCallback(() => {
+    if (navigating) {
+      stopNavigation();
+      modalMapRef.current?.fitRoute();
+      return;
+    }
+    if (!isAuthenticated) {
+      onRequireLogin();
+      return;
+    }
+    if (!navigator.geolocation) {
+      setError('Trình duyệt không hỗ trợ định vị GPS để bắt đầu đi.');
+      return;
+    }
+    if (!route) {
+      startDirections(vehicle, false);
+    }
+    setNavigating(true);
+    if (userLocation) {
+      modalMapRef.current?.focus(userLocation, 16);
+    }
+    watchIdRef.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        const next: Coordinate = [pos.coords.latitude, pos.coords.longitude];
+        setUserLocation(next);
+        modalMapRef.current?.focus(next, 16);
+      },
+      () => {
+        stopNavigation();
+        setError('Không thể theo dõi vị trí GPS. Vui lòng kiểm tra quyền vị trí.');
+      },
+      { enableHighAccuracy: true, timeout: 10_000, maximumAge: 5_000 },
+    );
+  }, [
+    isAuthenticated,
+    navigating,
+    onRequireLogin,
+    route,
+    startDirections,
+    stopNavigation,
+    userLocation,
+    vehicle,
+  ]);
 
   const mapPoints = useMemo(
     () => [
@@ -363,12 +427,25 @@ export default function PlaceDirectionsMap({
                 ))}
                 <button
                   type="button"
-                  onClick={() => startDirections(vehicle, false)}
+                  onClick={() => (route ? toggleNavigation() : startDirections(vehicle, false))}
                   disabled={loading}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-[#0E7490] px-3.5 py-1.5 text-[12px] font-bold text-white hover:bg-[#0C5E75] disabled:opacity-60"
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-bold text-white disabled:opacity-60 ${
+                    navigating
+                      ? 'bg-[#DC2626] hover:bg-[#B91C1C]'
+                      : 'bg-[#0E7490] hover:bg-[#0C5E75]'
+                  }`}
                 >
-                  <Icon name="directions" className="text-[16px]" />
-                  {loading ? 'Đang tìm...' : 'Chỉ đường'}
+                  <Icon
+                    name={!route ? 'directions' : navigating ? 'stop' : 'navigation'}
+                    className="text-[16px]"
+                  />
+                  {loading
+                    ? 'Đang tìm...'
+                    : !route
+                      ? 'Chỉ đường'
+                      : navigating
+                        ? 'Dừng đi'
+                        : 'Bắt đầu đi'}
                 </button>
                 <button
                   type="button"
@@ -391,6 +468,7 @@ export default function PlaceDirectionsMap({
                   activeId={String(placeId)}
                   routeCoordinates={routeCoordinates}
                   userLocation={userLocation}
+                  followUser={navigating}
                 />
               </div>
 

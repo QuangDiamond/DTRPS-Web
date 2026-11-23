@@ -27,30 +27,49 @@ export default function TodayWeatherCard({ placeId }: { placeId: number }) {
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [manualRetry, setManualRetry] = useState(0);
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
-    setError(null);
+    let autoRetryTimer: number | undefined;
+    let autoRetried = false;
+
+    const load = () => {
+      setLoading(true);
+      setError(null);
+      weatherApi
+        .forPlace(placeId)
+        .then((result) => {
+          if (!active) return;
+          setWeather(result);
+          setSelectedDate(result.daily[0]?.date ?? null);
+        })
+        .catch((caught: unknown) => {
+          if (!active) return;
+          setError(errorMessage(caught));
+          // Lần đầu xem 1 địa điểm, backend có thể phải gọi nguồn thời tiết ngoài nên chậm/lỗi
+          // tạm thời — tự thử lại 1 lần thay vì bắt người dùng tải lại cả trang.
+          if (!autoRetried) {
+            autoRetried = true;
+            autoRetryTimer = window.setTimeout(() => {
+              if (active) load();
+            }, 1500);
+          }
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+    };
+
     setExpanded(false);
     setSelectedDate(null);
-    weatherApi
-      .forPlace(placeId)
-      .then((result) => {
-        if (!active) return;
-        setWeather(result);
-        setSelectedDate(result.daily[0]?.date ?? null);
-      })
-      .catch((caught: unknown) => {
-        if (active) setError(errorMessage(caught));
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
+    load();
+
     return () => {
       active = false;
+      if (autoRetryTimer) window.clearTimeout(autoRetryTimer);
     };
-  }, [placeId]);
+  }, [placeId, manualRetry]);
 
   if (loading) {
     return (
@@ -63,7 +82,14 @@ export default function TodayWeatherCard({ placeId }: { placeId: number }) {
   if (error || !weather) {
     return (
       <div className="rounded-2xl bg-white p-4 text-center text-[12.5px] text-[#8793AB]">
-        Không tải được dự báo thời tiết.
+        <p>Không tải được dự báo thời tiết.</p>
+        <button
+          type="button"
+          onClick={() => setManualRetry((n) => n + 1)}
+          className="mt-1.5 font-bold text-[#3B6FD8] underline-offset-2 hover:underline"
+        >
+          Thử lại
+        </button>
       </div>
     );
   }

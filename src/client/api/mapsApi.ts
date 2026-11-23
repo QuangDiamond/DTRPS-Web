@@ -1,4 +1,5 @@
 import type { AddressSuggestion, GeoLocation } from '@/components/common/mapTypes';
+import type { GoongRoute, GoongVehicle } from '@/client/api/tripFlowApi';
 import { clientRequest } from './http';
 
 const query = (params: Record<string, string | number | undefined>) =>
@@ -8,7 +9,7 @@ const query = (params: Record<string, string | number | undefined>) =>
       .map(([key, value]) => [key, String(value)]),
   ).toString();
 
-/** Tìm địa chỉ / đổi tọa độ ↔ địa chỉ qua backend (Goong) — key Goong không nằm ở trình duyệt */
+/** Tìm địa chỉ / đổi tọa độ ↔ địa chỉ / chỉ đường qua backend (Goong) — key Goong không nằm ở trình duyệt */
 export const mapsApi = {
   autocomplete: (input: string, near?: { latitude: number; longitude: number }) =>
     clientRequest<AddressSuggestion[]>(
@@ -18,4 +19,20 @@ export const mapsApi = {
     clientRequest<GeoLocation>(`/maps/places/${encodeURIComponent(placeId)}`),
   reverse: (latitude: number, longitude: number) =>
     clientRequest<GeoLocation>(`/maps/reverse?${query({ lat: latitude, lng: longitude })}`),
+  directions: (params: {
+    fromLat: number;
+    fromLng: number;
+    toLat: number;
+    toLng: number;
+    vehicle?: GoongVehicle;
+  }) =>
+    clientRequest<GoongRoute>(
+      `/maps/directions?${query({
+        fromLat: params.fromLat,
+        fromLng: params.fromLng,
+        toLat: params.toLat,
+        toLng: params.toLng,
+        vehicle: params.vehicle ?? 'car',
+      })}`,
+    ),
 };

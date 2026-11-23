@@ -14,7 +14,7 @@ import FavoriteButton from '@/client/traveller/components/FavoriteButton';
 import ReportReviewDialog from '@/client/traveller/components/ReportReviewDialog';
 import StopReviewCard from '@/client/traveller/components/StopReviewCard';
 import TodayWeatherCard from '@/client/traveller/components/TodayWeatherCard';
-import TravelMap from '@/client/traveller/components/TravelMap';
+import PlaceDirectionsMap from '@/client/traveller/components/PlaceDirectionsMap';
 import { useTraveller } from '@/client/traveller/travellerContext';
 import { FormAlert, Spinner } from '@/client/ui/Blocks';
 import { NoticeToast } from '@/client/ui/Overlay';
@@ -339,9 +339,6 @@ function websiteLabel(website: string | null): string {
   }
 }
 
-const googleMapsUrl = (query: string) =>
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-
 /** Chi tiết điểm đến — gọi GET /api/places/{id} (công khai, chỉ ACTIVE) */
 export default function PlaceDetailsPage() {
   const { placeId } = useParams();
@@ -367,6 +364,8 @@ export default function PlaceDetailsPage() {
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
   // Chỉ số ảnh đang hiển thị ở khung ảnh chính (đổi khi bấm thumbnail hoặc nút < >)
   const [activeImage, setActiveImage] = useState(0);
+  // Tín hiệu kích hoạt chỉ đường Goong Map từ nút Chỉ đường ở cột phải
+  const [directionsSignal, setDirectionsSignal] = useState(0);
 
   const [reviews, setReviews] = useState<PlaceReview[]>([]);
   const [reviewsTotal, setReviewsTotal] = useState(0);
@@ -529,8 +528,6 @@ export default function PlaceDetailsPage() {
       // Người dùng huỷ chia sẻ
     }
   };
-
-  const locationQuery = `${place.name} ${place.province?.name ?? ''}`;
 
   return (
     <div className="pb-24 md:pb-4">
@@ -740,60 +737,21 @@ export default function PlaceDetailsPage() {
             </button>
           )}
 
-          {/* Chuyển bản đồ sang cột trái ngay dưới Giới thiệu để lấp khoảng trống và khung bản đồ rộng, rõ hơn */}
-          <div className="mt-7 mb-3 flex items-center justify-between">
-            <h2 className="text-[17px] font-extrabold text-[#13364A]">Vị trí & Đường đi</h2>
-            <a
-              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(locationQuery)}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 text-[12px] font-bold text-[#0891B2] hover:underline"
-            >
-              <Icon name="directions" className="text-[16px]" />
-              Chỉ đường
-            </a>
-          </div>
-          {/* isolate: z-index của bản đồ chỉ có tác dụng trong khung này, không đè lên hộp thoại / menu */}
-          <div className="overflow-hidden rounded-[22px] border border-[#E5ECEF] bg-white shadow-[0_4px_16px_rgba(19,27,46,0.05)]">
-            <div className="relative isolate">
-              <TravelMap
-                className="aspect-[16/10] w-full md:aspect-[16/9]"
-                center={[detail.latitude, detail.longitude]}
-                points={[
-                  {
-                    id: String(place.id),
-                    coordinate: [detail.latitude, detail.longitude],
-                    label: '•',
-                    title: place.name,
-                  },
-                ]}
-                activeId={String(place.id)}
-              />
-            </div>
-            {/* Thanh chân bản đồ đặt riêng bên dưới để không đè lên nhãn Goong Maps */}
-            <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-              <div className="flex min-w-0 flex-1 items-center gap-2">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#E7F8FA] text-[#0891B2]">
-                  <Icon name="near_me" className="text-[16px]" />
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-[13px] font-bold text-[#13364A]">{place.name}</p>
-                  {place.address && (
-                    <p className="truncate text-[11.5px] text-[#72818C]">{place.address}</p>
-                  )}
-                </div>
-              </div>
-              <a
-                href={googleMapsUrl(locationQuery)}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#F1F5F8] px-3.5 py-2 text-[12px] font-bold text-[#13364A] transition-colors hover:bg-[#E2EBF0]"
-              >
-                Mở Bản Đồ
-                <Icon name="open_in_new" className="text-[14px]" />
-              </a>
-            </div>
-          </div>
+          {/* Chuyển bản đồ sang cột trái ngay dưới Giới thiệu — dùng hoàn toàn Goong Maps */}
+          <PlaceDirectionsMap
+            placeId={place.id}
+            placeName={place.name}
+            address={place.address}
+            latitude={detail.latitude}
+            longitude={detail.longitude}
+            isAuthenticated={Boolean(user)}
+            onRequireLogin={() =>
+              navigate(CLIENT_ROUTES.LOGIN, {
+                state: { from: `${location.pathname}${location.search}` },
+              })
+            }
+            directionsSignal={directionsSignal}
+          />
         </div>
 
         <div className="min-w-0">
@@ -945,15 +903,15 @@ export default function PlaceDetailsPage() {
           </div>
 
           <div className="fixed inset-x-0 bottom-[62px] z-20 flex items-center gap-2.5 border-t border-[#E6E9EE] bg-white px-4 py-3 md:static md:mt-5 md:rounded-[20px] md:border-0">
-            <a
-              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(locationQuery)}`}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Chỉ đường"
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EBEDFF] text-[#405A82]"
+            <button
+              type="button"
+              onClick={() => setDirectionsSignal((count) => count + 1)}
+              aria-label="Chỉ đường bằng Goong Maps"
+              title="Chỉ đường bằng Goong Maps"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EBEDFF] text-[#405A82] transition-colors hover:bg-[#DCE0FF]"
             >
               <Icon name="directions" className="text-[22px]" />
-            </a>
+            </button>
             <button
               type="button"
               onClick={() => setSaved((value) => !value)}

@@ -624,8 +624,18 @@ export default function TravelMap({
 
     mapRef.current = map;
 
+    // Tự co giãn bản đồ khi khung chứa đổi kích thước (vào/ra toàn màn hình, ẩn/hiện panel).
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(() => map.resize());
+
+    resizeObserver?.observe(containerRef.current);
+
     // Xóa bản đồ khi component bị unmount.
     return () => {
+
+      resizeObserver?.disconnect();
 
       map.remove();
 

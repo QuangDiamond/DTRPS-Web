@@ -306,6 +306,13 @@ export default function TripLiveMapPage() {
   const allHandled =
     completedCount === stops.length;
 
+  // Điểm vừa hoàn thành gần nhất (không tính điểm bị bỏ qua) — dùng để hiện thẻ đánh giá, vì
+  // pendingStop luôn là điểm SẮP tới nên chưa thể đủ điều kiện đánh giá (chưa thực sự đến nơi).
+  const lastCompletedStop =
+    [...stops]
+      .reverse()
+      .find((item) => statusOf(item.itemId) === 'COMPLETED') ?? null;
+
   const nextItemId = pendingStop?.itemId ?? null;
 
   const latestNextItemRef = useRef(nextItemId);
@@ -1665,11 +1672,11 @@ export default function TripLiveMapPage() {
         {/* NHẬN XÉT ĐỊA ĐIỂM                         */}
         {/* ========================================== */}
 
-        {pendingStop && isRunning && (
+        {isRunning && lastCompletedStop && (
           <StopReviewCard
-            key={pendingStop.placeId}
-            placeId={pendingStop.placeId}
-            stopTitle={pendingStop.placeName}
+            key={lastCompletedStop.itemId}
+            placeId={lastCompletedStop.placeId}
+            stopTitle={lastCompletedStop.placeName}
           />
         )}
 

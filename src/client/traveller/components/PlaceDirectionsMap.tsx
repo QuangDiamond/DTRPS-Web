@@ -5,6 +5,7 @@ import { mapsApi, type NearbyPlace } from '@/client/api/mapsApi';
 import type { GoongRoute, GoongVehicle } from '@/client/api/tripFlowApi';
 import TravelMap, {
   type MapPoint,
+  type RouteOptionOverlay,
   type TravelMapHandle,
 } from '@/client/traveller/components/TravelMap';
 import { formatMeters, formatSeconds, maneuverIcon } from '@/client/traveller/navigation/geo';
@@ -468,6 +469,36 @@ export default function PlaceDirectionsMap({
     vehicle,
   ]);
 
+  // Mở khay cây xăng đã có dữ liệu → tạm dừng bám GPS & tự phóng to vừa khít các cây xăng gần
+  useEffect(() => {
+    if (!showGasPanel || gasStations.length === 0) return;
+    if (navigating) pauseCamera();
+    const targets: Coordinate[] = gasStations.map((s) => [s.latitude, s.longitude]);
+    if (userLocation) targets.push(userLocation);
+    const timer = window.setTimeout(() => modalMapRef.current?.fitPoints(targets), 160);
+    return () => window.clearTimeout(timer);
+  }, [gasStations, navigating, pauseCamera, showGasPanel, userLocation]);
+
+  // Danh sách toàn bộ tuyến (đang chọn + thay thế) kèm nhãn thời gian để vẽ đồng thời giống Google Maps
+  const routeOptionOverlays = useMemo<RouteOptionOverlay[] | undefined>(() => {
+    if (detourStop || allMainRoutes.length < 2) return undefined;
+    if (navigating && !cameraPaused && !showRoutesPanel) return undefined;
+    return allMainRoutes.map((option, idx) => {
+      const diffMin = Math.round(
+        (option.durationSeconds - allMainRoutes[0].durationSeconds) / 60,
+      );
+      return {
+        index: idx,
+        coordinates: option.polyline ? decodePolyline(option.polyline) : [],
+        durationLabel: option.durationText ?? formatSeconds(option.durationSeconds),
+        distanceLabel: option.distanceText ?? formatMeters(option.distanceMeters),
+        diffLabel:
+          idx > 0 && diffMin !== 0 ? `${diffMin > 0 ? `+${diffMin}` : diffMin}p` : undefined,
+        selected: idx === selectedRouteIndex,
+      };
+    });
+  }, [allMainRoutes, cameraPaused, detourStop, navigating, selectedRouteIndex, showRoutesPanel]);
+
   const inlinePoints = useMemo<MapPoint[]>(
     () => [
       {
@@ -534,15 +565,6 @@ export default function PlaceDirectionsMap({
     <div ref={sectionRef} className="mt-7 scroll-mt-24">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="text-[17px] font-extrabold text-[#13364A]">Vị trí & Đường đi</h2>
-        <button
-          type="button"
-          onClick={() => void startDirections(vehicle, false)}
-          disabled={loading}
-          className="inline-flex items-center gap-1 text-[12px] font-bold text-[#0891B2] hover:underline disabled:opacity-60"
-        >
-          <Icon name="directions" className="text-[16px]" />
-          {loading ? 'Đang tìm đường...' : route ? 'Cập nhật đường đi' : 'Chỉ đường'}
-        </button>
       </div>
 
       {/* Thanh tóm tắt tuyến Goong (chọn phương tiện, quãng đường, thời gian, đóng tuyến) */}
@@ -933,6 +955,13 @@ export default function PlaceDirectionsMap({
                     if (found) void selectGasStation(found);
                   }}
                   routeCoordinates={activeRouteCoordinates}
+                  routeOptions={routeOptionOverlays}
+                  onSelectRouteOption={(idx) => {
+                    setSelectedRouteIndex(idx);
+                    lastSpokenRef.current = null;
+                    setShowRoutesPanel(false);
+                    window.setTimeout(() => modalMapRef.current?.fitRoute(), 150);
+                  }}
                   userLocation={userLocation}
                   followUser={navigating && !cameraPaused}
                   onUserInteract={() => {
@@ -941,6 +970,7 @@ export default function PlaceDirectionsMap({
                     }
                   }}
                   satellite={satellite}
+                  showCompass
                 />
 
                 {/* Nút nổi góc dưới trái bản đồ: chuyển nhanh Toàn tuyến ↔ Tiếp tục bám theo lúc đang đi */}

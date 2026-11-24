@@ -37,6 +37,16 @@ export interface MapPoint {
   title: string;
 }
 
+/** Một tuyến đường kèm nhãn thời gian/km vẽ trực tiếp trên bản đồ giống Google Maps */
+export interface RouteOptionOverlay {
+  index: number;
+  coordinates: [number, number][];
+  durationLabel: string;
+  distanceLabel: string;
+  diffLabel?: string;
+  selected: boolean;
+}
+
 // ======================================================
 // CÁC HÀM ĐIỀU KHIỂN BẢN ĐỒ
 // ======================================================
@@ -53,6 +63,9 @@ export interface TravelMapHandle {
 
   /** Hiển thị toàn bộ tuyến đường Goong */
   fitRoute: () => void;
+
+  /** Thu/phóng vừa khít một tập tọa độ tùy chọn (vd. cụm cây xăng gần) */
+  fitPoints: (targets: [number, number][]) => void;
 }
 
 // ======================================================
@@ -128,6 +141,12 @@ interface TravelMapProps {
   /** Bật chế độ ảnh vệ tinh (Satellite). */
   satellite?: boolean;
 
+  /** Toàn bộ tuyến (đang chọn + thay thế) để vẽ đồng thời kèm nhãn thời gian giống Google Maps. */
+  routeOptions?: RouteOptionOverlay[];
+
+  /** Gọi khi người dùng bấm trực tiếp vào nhãn thời gian của 1 tuyến trên bản đồ. */
+  onSelectRouteOption?: (index: number) => void;
+
   className?: string;
 
   ref?: Ref<TravelMapHandle>;
@@ -138,6 +157,12 @@ interface TravelMapProps {
 // ======================================================
 
 const ROUTE_SOURCE = 'travel-route';
+
+const ALT_ROUTES_SOURCE = 'travel-alt-routes';
+
+const ALT_ROUTES_CASING_LAYER = 'travel-alt-routes-casing';
+
+const ALT_ROUTES_LINE_LAYER = 'travel-alt-routes-line';
 
 const ROUTE_PREVIEW_LAYER =
   'travel-route-preview';
@@ -277,6 +302,75 @@ function userElement() {
  * - Tuyến Goong Directions thực tế.
  * - Đường nối minh họa ở các màn hình khác.
  */
+/** Tìm điểm đặt nhãn thời gian trên tuyến phụ sao cho xa tuyến đang chọn nhất (tránh đè nhãn). */
+function pickRouteLabelAnchor(
+  coords: [number, number][],
+  reference: [number, number][],
+): [number, number] | null {
+  if (coords.length === 0) return null;
+  if (coords.length < 3) return coords[0];
+  const start = Math.floor(coords.length * 0.2);
+  const end = Math.max(start + 1, Math.floor(coords.length * 0.8));
+  if (reference.length === 0) return coords[Math.floor(coords.length * 0.5)];
+
+  const refStep = Math.max(1, Math.floor(reference.length / 25));
+  const refSample: [number, number][] = [];
+  for (let i = 0; i < reference.length; i += refStep) refSample.push(reference[i]);
+
+  const step = Math.max(1, Math.floor((end - start) / 25));
+  let best = coords[Math.floor((start + end) / 2)];
+  let bestMinDist = -1;
+  for (let i = start; i <= end; i += step) {
+    const p = coords[i];
+    let minDist = Infinity;
+    for (const r of refSample) {
+      const d = distanceBetween(p, r);
+      if (d < minDist) minDist = d;
+    }
+    if (minDist > bestMinDist) {
+      bestMinDist = minDist;
+      best = p;
+    }
+  }
+  return best;
+}
+
+/** Tạo phần tử DOM cho nhãn hộp thời gian + km gắn trực tiếp lên tuyến đường giống Google Maps. */
+function routeBadgeElement(opt: RouteOptionOverlay, onSelect: () => void): HTMLElement {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.style.cssText = [
+    'display:flex',
+    'flex-direction:column',
+    'align-items:flex-start',
+    'padding:4px 9px',
+    'border-radius:10px',
+    'cursor:pointer',
+    'line-height:1.2',
+    'white-space:nowrap',
+    'box-shadow:0 3px 10px rgba(15,42,59,0.22)',
+    opt.selected
+      ? 'background:#0E7490;color:#FFFFFF;border:1.5px solid #FFFFFF'
+      : 'background:#FFFFFF;color:#13364A;border:1.5px solid #CBD5E1',
+  ].join(';');
+
+  const top = document.createElement('span');
+  top.textContent = opt.durationLabel;
+  top.style.cssText = 'font-size:11.5px;font-weight:800';
+
+  const sub = document.createElement('span');
+  sub.textContent = opt.diffLabel ? `${opt.distanceLabel} · ${opt.diffLabel}` : opt.distanceLabel;
+  sub.style.cssText = `font-size:10px;font-weight:600;color:${opt.selected ? '#CCFBF1' : '#64748B'}`;
+
+  button.appendChild(top);
+  button.appendChild(sub);
+  button.addEventListener('click', (event) => {
+    event.stopPropagation();
+    onSelect();
+  });
+  return button;
+}
+
 export default function TravelMap({
                                     points,
                                     activeId = null,
@@ -295,6 +389,8 @@ export default function TravelMap({
                                     onSelect,
                                     center = [16.05, 106.5],
                                     satellite = false,
+                                    routeOptions,
+                                    onSelectRouteOption,
                                     className = 'h-64',
                                     ref,
                                   }: TravelMapProps) {
@@ -311,6 +407,12 @@ export default function TravelMap({
 
   const markersRef =
     useRef<maplibregl.Marker[]>([]);
+
+  const routeBadgeMarkersRef =
+    useRef<maplibregl.Marker[]>([]);
+
+  const onSelectRouteOptionRef = useRef(onSelectRouteOption);
+  onSelectRouteOptionRef.current = onSelectRouteOption;
 
   const userMarkerRef =
     useRef<maplibregl.Marker | null>(null);
@@ -420,6 +522,30 @@ export default function TravelMap({
     });
   };
 
+  const fitPoints = (targets: [number, number][]) => {
+    const map = mapRef.current;
+    if (!map || targets.length === 0) return;
+    if (targets.length === 1) {
+      map.easeTo({
+        center: toLngLat(targets[0]),
+        zoom: 15,
+        duration: 450,
+        bearing: 0,
+        pitch: 0,
+      });
+      return;
+    }
+    const bounds = new maplibregl.LngLatBounds();
+    targets.forEach((coord) => bounds.extend(toLngLat(coord)));
+    map.fitBounds(bounds, {
+      padding: 60,
+      maxZoom: 16,
+      duration: 450,
+      bearing: 0,
+      pitch: 0,
+    });
+  };
+
   // ====================================================
   // CUNG CẤP HÀM ĐIỀU KHIỂN CHO COMPONENT CHA
   // ====================================================
@@ -427,6 +553,7 @@ export default function TravelMap({
   useImperativeHandle(ref, () => ({
     fitAll,
     fitRoute,
+    fitPoints,
 
     focus: (
       coordinate,
@@ -498,6 +625,45 @@ export default function TravelMap({
 
     // Đợi Goong Map Style tải xong.
     map.on('load', () => {
+
+      // GeoJSON chứa các tuyến đường thay thế (vẽ dưới tuyến chính).
+      map.addSource(ALT_ROUTES_SOURCE, {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [],
+        },
+      });
+
+      map.addLayer({
+        id: ALT_ROUTES_CASING_LAYER,
+        type: 'line',
+        source: ALT_ROUTES_SOURCE,
+        paint: {
+          'line-color': '#475569',
+          'line-width': 7.5,
+          'line-opacity': 0.55,
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round',
+        },
+      });
+
+      map.addLayer({
+        id: ALT_ROUTES_LINE_LAYER,
+        type: 'line',
+        source: ALT_ROUTES_SOURCE,
+        paint: {
+          'line-color': '#BAE6FD',
+          'line-width': 5,
+          'line-opacity': 0.92,
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round',
+        },
+      });
 
       // GeoJSON chứa tọa độ tuyến đường.
       map.addSource(ROUTE_SOURCE, {
@@ -980,6 +1146,57 @@ export default function TravelMap({
     });
 
   }, [followUser, userLocation, userHeading]);
+
+  // ====================================================
+  // VẼ ĐỒNG THỜI CÁC TUYẾN THAY THẾ & NHÃN HỘP THỜI GIAN
+  // ====================================================
+
+  useEffect(() => {
+    const map = mapRef.current;
+
+    routeBadgeMarkersRef.current.forEach((marker) => marker.remove());
+    routeBadgeMarkersRef.current = [];
+
+    if (!map || !ready) return;
+
+    const altSource = map.getSource(ALT_ROUTES_SOURCE) as GeoJSONSource | undefined;
+    if (!routeOptions || routeOptions.length < 2) {
+      altSource?.setData({ type: 'FeatureCollection', features: [] });
+      return;
+    }
+
+    const features = routeOptions
+      .filter((opt) => !opt.selected && opt.coordinates.length >= 2)
+      .map((opt) => ({
+        type: 'Feature' as const,
+        properties: { index: opt.index },
+        geometry: {
+          type: 'LineString' as const,
+          coordinates: opt.coordinates.map(toLngLat),
+        },
+      }));
+    altSource?.setData({ type: 'FeatureCollection', features });
+
+    const selectedCoords =
+      routeOptions.find((o) => o.selected)?.coordinates ?? routeOptions[0].coordinates;
+
+    for (const opt of routeOptions) {
+      const anchor = opt.selected
+        ? opt.coordinates[Math.floor(opt.coordinates.length * 0.5)]
+        : pickRouteLabelAnchor(opt.coordinates, selectedCoords);
+      if (!anchor) continue;
+      const el = routeBadgeElement(opt, () => onSelectRouteOptionRef.current?.(opt.index));
+      const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+        .setLngLat(toLngLat(anchor))
+        .addTo(map);
+      routeBadgeMarkersRef.current.push(marker);
+    }
+
+    return () => {
+      routeBadgeMarkersRef.current.forEach((marker) => marker.remove());
+      routeBadgeMarkersRef.current = [];
+    };
+  }, [ready, routeOptions]);
 
   // ====================================================
   // CON TRỎ KHI ĐANG CHỌN VỊ TRÍ

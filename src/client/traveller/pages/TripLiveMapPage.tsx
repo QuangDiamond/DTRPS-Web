@@ -127,7 +127,6 @@ const VEHICLES: {
 }[] = [
   { value: 'car', label: 'Ô tô' },
   { value: 'bike', label: 'Xe máy' },
-  { value: 'taxi', label: 'Taxi' },
 ];
 
 // ======================================================
@@ -1747,6 +1746,51 @@ export default function TripLiveMapPage() {
                 ))}
               </select>
             </div>
+
+            {/* CHỌN TUYẾN ĐƯỜNG THAY THẾ */}
+
+            {!detourStop && allMainRoutes.length > 1 && (
+              <div className="mt-2.5 flex gap-2 overflow-x-auto pb-1">
+                {allMainRoutes.map((item, idx) => {
+                  const active = idx === selectedRouteIndex;
+                  const diffMin = Math.round(
+                    (item.durationSeconds - allMainRoutes[0].durationSeconds) / 60,
+                  );
+
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => chooseAlternativeRoute(idx)}
+                      className={`shrink-0 rounded-xl border px-3 py-1.5 text-left transition ${
+                        active
+                          ? 'border-[#0891B2] bg-white shadow-xs'
+                          : 'border-[#D6EDEF] bg-white/60 hover:bg-white'
+                      }`}
+                    >
+                      <p
+                        className={`text-[10.5px] font-bold ${
+                          active ? 'text-[#0E7490]' : 'text-[#557080]'
+                        }`}
+                      >
+                        {idx === 0 ? 'Tuyến nhanh nhất' : `Tuyến ${idx + 1}`}
+                      </p>
+                      <p className="text-[12px] font-extrabold text-[#14364F]">
+                        {item.durationText || formatSeconds(item.durationSeconds)}
+                      </p>
+                      <p className="text-[10.5px] text-[#617388]">
+                        {item.distanceText || formatMeters(item.distanceMeters)}
+                        {idx > 0 && diffMin > 0
+                          ? ` (+${diffMin}p)`
+                          : idx > 0 && diffMin < 0
+                            ? ` (${diffMin}p)`
+                            : ''}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* KHOẢNG CÁCH VÀ THỜI GIAN */}
 

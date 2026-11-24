@@ -612,6 +612,39 @@ export default function TravelMap({
         },
       });
 
+      // Vùng bấm trong suốt rộng hơn quanh sợi đường xanh mờ để người dùng click đổi tuyến dễ như Google Maps.
+      const ALT_ROUTES_HIT_LAYER = 'alt-routes-hit-layer';
+      map.addLayer({
+        id: ALT_ROUTES_HIT_LAYER,
+        type: 'line',
+        source: ALT_ROUTES_SOURCE,
+        paint: {
+          'line-color': '#000000',
+          'line-width': 20,
+          'line-opacity': 0,
+        },
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round',
+        },
+      });
+
+      map.on('click', ALT_ROUTES_HIT_LAYER, (event) => {
+        if (pickModeRef.current) return;
+        const idx = event.features?.[0]?.properties?.index;
+        if (typeof idx === 'number') {
+          onSelectRouteOptionRef.current?.(idx);
+        }
+      });
+
+      map.on('mouseenter', ALT_ROUTES_HIT_LAYER, () => {
+        if (!pickModeRef.current) map.getCanvas().style.cursor = 'pointer';
+      });
+
+      map.on('mouseleave', ALT_ROUTES_HIT_LAYER, () => {
+        map.getCanvas().style.cursor = pickModeRef.current ? 'crosshair' : '';
+      });
+
       // GeoJSON chứa tọa độ tuyến đường.
       map.addSource(ROUTE_SOURCE, {
         type: 'geojson',

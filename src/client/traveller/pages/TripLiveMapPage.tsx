@@ -38,6 +38,7 @@ import { speakWebVi, stopWebSpeech } from '@/client/traveller/navigation/voice';
 
 import TravelMap, {
   type MapPoint,
+  type RouteOptionOverlay,
   type TravelMapHandle,
 } from '@/client/traveller/components/TravelMap';
 
@@ -530,6 +531,59 @@ export default function TripLiveMapPage() {
   }, [detourStop, gasStations, showGasPanel]);
 
   const displayPoints = useMemo(() => [...mapPoints, ...gasPoints], [mapPoints, gasPoints]);
+
+  // Hiển thị đồng thời các tuyến thay thế + nhãn thời gian trên bản đồ giống Google Maps.
+  // Ẩn nhãn khi đang bám theo camera ở chế độ dẫn đường (trừ lúc mở bảng chọn tuyến) hoặc đang rẽ cây xăng.
+  const routeOptionOverlays = useMemo<RouteOptionOverlay[]>(() => {
+    if (detourStop || allMainRoutes.length < 2) return [];
+    if (navMode && following && !showRoutesPanel) return [];
+
+    const primaryDuration = allMainRoutes[0]?.durationSeconds ?? 0;
+    const overlays: RouteOptionOverlay[] = [];
+
+    allMainRoutes.forEach((item, idx) => {
+      const coords = decodePolyline(item.polyline ?? '');
+
+      if (coords.length < 2) return;
+
+      const diffMin = Math.round((item.durationSeconds - primaryDuration) / 60);
+      const diffLabel =
+        idx > 0 && diffMin > 0
+          ? `+${diffMin}p`
+          : idx > 0 && diffMin < 0
+            ? `${diffMin}p`
+            : undefined;
+
+      overlays.push({
+        index: idx,
+        coordinates: coords,
+        durationLabel: item.durationText || formatSeconds(item.durationSeconds),
+        distanceLabel: item.distanceText || formatMeters(item.distanceMeters),
+        diffLabel,
+        selected: idx === selectedRouteIndex,
+      });
+    });
+
+    return overlays;
+  }, [allMainRoutes, detourStop, following, navMode, selectedRouteIndex, showRoutesPanel]);
+
+  // Mở danh sách cây xăng quanh bạn: phóng to khung hình gom vừa vị trí hiện tại + các cây xăng.
+  useEffect(() => {
+    if (!showGasPanel || gasStations.length === 0) return;
+
+    const targets: Coordinate[] = gasStations.map((s) => [s.latitude, s.longitude]);
+    const origin = fixRef.current?.coordinate;
+
+    if (origin) targets.push(origin);
+
+    setFollowing(false);
+
+    const timer = window.setTimeout(() => {
+      mapRef.current?.fitPoints(targets);
+    }, 120);
+
+    return () => window.clearTimeout(timer);
+  }, [showGasPanel, gasStations]);
 
   // Xem toàn tuyến một lần cho mỗi địa điểm. Không căn lại ở mỗi lần tính lại đường,
   // và không làm khi đang bám theo vị trí (camera đã đi theo người dùng).
@@ -1167,6 +1221,8 @@ export default function TripLiveMapPage() {
           activeId={detourStop ? `gas:${detourStop.placeId}` : activeId}
           visitedIds={visitedIds}
           routeCoordinates={routeCoordinates}
+          routeOptions={routeOptionOverlays}
+          onSelectRouteOption={chooseAlternativeRoute}
           userLocation={displayLocation}
           userHeading={fix?.heading ?? null}
           userAccuracy={fix?.accuracy ?? null}

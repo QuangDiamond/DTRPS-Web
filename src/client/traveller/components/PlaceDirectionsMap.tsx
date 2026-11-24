@@ -484,9 +484,7 @@ export default function PlaceDirectionsMap({
     if (detourStop || allMainRoutes.length < 2) return undefined;
     if (navigating && !cameraPaused && !showRoutesPanel) return undefined;
     return allMainRoutes.map((option, idx) => {
-      const diffMin = Math.round(
-        (option.durationSeconds - allMainRoutes[0].durationSeconds) / 60,
-      );
+      const diffMin = Math.round((option.durationSeconds - allMainRoutes[0].durationSeconds) / 60);
       return {
         index: idx,
         coordinates: option.polyline ? decodePolyline(option.polyline) : [],

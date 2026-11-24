@@ -1,25 +1,12 @@
+import { type Ref, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
-import {
-  type Ref,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-
-import maplibregl, {
-  type GeoJSONSource,
-} from 'maplibre-gl';
+import maplibregl, { type GeoJSONSource } from 'maplibre-gl';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { mapStyle } from '@/components/common/mapTypes';
 
-import {
-  circleRing,
-  distanceBetween,
-} from '@/client/traveller/navigation/geo';
+import { circleRing, distanceBetween } from '@/client/traveller/navigation/geo';
 
 // ======================================================
 // KIỂU DỮ LIỆU ĐỊA ĐIỂM
@@ -56,10 +43,7 @@ export interface TravelMapHandle {
   fitAll: () => void;
 
   /** Di chuyển bản đồ tới một tọa độ */
-  focus: (
-    coordinate: [number, number],
-    zoom?: number,
-  ) => void;
+  focus: (coordinate: [number, number], zoom?: number) => void;
 
   /** Hiển thị toàn bộ tuyến đường Goong */
   fitRoute: () => void;
@@ -164,23 +148,18 @@ const ALT_ROUTES_CASING_LAYER = 'travel-alt-routes-casing';
 
 const ALT_ROUTES_LINE_LAYER = 'travel-alt-routes-line';
 
-const ROUTE_PREVIEW_LAYER =
-  'travel-route-preview';
+const ROUTE_PREVIEW_LAYER = 'travel-route-preview';
 
-const ROUTE_DIRECTIONS_LAYER =
-  'travel-route-directions';
+const ROUTE_DIRECTIONS_LAYER = 'travel-route-directions';
 
 /** Phần tuyến đã đi. */
-const ROUTE_DONE_LAYER =
-  'travel-route-done';
+const ROUTE_DONE_LAYER = 'travel-route-done';
 
 const ACCURACY_SOURCE = 'user-accuracy';
 
-const ACCURACY_FILL_LAYER =
-  'user-accuracy-fill';
+const ACCURACY_FILL_LAYER = 'user-accuracy-fill';
 
-const ACCURACY_LINE_LAYER =
-  'user-accuracy-line';
+const ACCURACY_LINE_LAYER = 'user-accuracy-line';
 
 // ======================================================
 // CHUYỂN ĐỔI TỌA ĐỘ
@@ -190,27 +169,16 @@ const ACCURACY_LINE_LAYER =
  * Backend sử dụng [latitude, longitude].
  * MapLibre sử dụng [longitude, latitude].
  */
-const toLngLat = (
-  [lat, lng]: [number, number],
-): [number, number] => [lng, lat];
+const toLngLat = ([lat, lng]: [number, number]): [number, number] => [lng, lat];
 
 // ======================================================
 // TẠO MARKER ĐỊA ĐIỂM
 // ======================================================
 
-function pinElement(
-  label: string,
-  active: boolean,
-  visited: boolean,
-  title: string,
-) {
+function pinElement(label: string, active: boolean, visited: boolean, title: string) {
   const size = active ? 42 : 34;
 
-  const color = visited
-    ? '#86969A'
-    : active
-      ? '#0E7490'
-      : '#0891B2';
+  const color = visited ? '#86969A' : active ? '#0E7490' : '#0891B2';
 
   const pin = document.createElement('span');
 
@@ -372,50 +340,44 @@ function routeBadgeElement(opt: RouteOptionOverlay, onSelect: () => void): HTMLE
 }
 
 export default function TravelMap({
-                                    points,
-                                    activeId = null,
-                                    visitedIds = [],
-                                    route = false,
-                                    routeCoordinates = null,
-                                    userLocation = null,
-                                    userHeading = null,
-                                    userAccuracy = null,
-                                    followUser = false,
-                                    onUserInteract,
-                                    routeProgress = null,
-                                    pickMode = false,
-                                    onPick,
-                                    showCompass = false,
-                                    onSelect,
-                                    center = [16.05, 106.5],
-                                    satellite = false,
-                                    routeOptions,
-                                    onSelectRouteOption,
-                                    className = 'h-64',
-                                    ref,
-                                  }: TravelMapProps) {
-
+  points,
+  activeId = null,
+  visitedIds = [],
+  route = false,
+  routeCoordinates = null,
+  userLocation = null,
+  userHeading = null,
+  userAccuracy = null,
+  followUser = false,
+  onUserInteract,
+  routeProgress = null,
+  pickMode = false,
+  onPick,
+  showCompass = false,
+  onSelect,
+  center = [16.05, 106.5],
+  satellite = false,
+  routeOptions,
+  onSelectRouteOption,
+  className = 'h-64',
+  ref,
+}: TravelMapProps) {
   // ====================================================
   // REFS
   // ====================================================
 
-  const containerRef =
-    useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const mapRef =
-    useRef<maplibregl.Map | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
 
-  const markersRef =
-    useRef<maplibregl.Marker[]>([]);
+  const markersRef = useRef<maplibregl.Marker[]>([]);
 
-  const routeBadgeMarkersRef =
-    useRef<maplibregl.Marker[]>([]);
+  const routeBadgeMarkersRef = useRef<maplibregl.Marker[]>([]);
 
   const onSelectRouteOptionRef = useRef(onSelectRouteOption);
   onSelectRouteOptionRef.current = onSelectRouteOption;
 
-  const userMarkerRef =
-    useRef<maplibregl.Marker | null>(null);
+  const userMarkerRef = useRef<maplibregl.Marker | null>(null);
 
   const pointsRef = useRef(points);
   pointsRef.current = points;
@@ -429,8 +391,7 @@ export default function TravelMap({
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
 
-  const userArrowRef =
-    useRef<HTMLSpanElement | null>(null);
+  const userArrowRef = useRef<HTMLSpanElement | null>(null);
 
   const onUserInteractRef = useRef(onUserInteract);
   onUserInteractRef.current = onUserInteract;
@@ -503,13 +464,7 @@ export default function TravelMap({
     // khác) sẽ kéo bản đồ thu nhỏ ra cả thế giới.
     const user = locationRef.current;
 
-    if (
-      user &&
-      coordinates.some(
-        (coordinate) =>
-          distanceBetween(coordinate, user) < 30_000,
-      )
-    ) {
+    if (user && coordinates.some((coordinate) => distanceBetween(coordinate, user) < 30_000)) {
       bounds.extend(toLngLat(user));
     }
 
@@ -555,10 +510,7 @@ export default function TravelMap({
     fitRoute,
     fitPoints,
 
-    focus: (
-      coordinate,
-      zoom = 14,
-    ) => {
+    focus: (coordinate, zoom = 14) => {
       mapRef.current?.flyTo({
         center: toLngLat(coordinate),
         zoom,
@@ -571,7 +523,6 @@ export default function TravelMap({
   // ====================================================
 
   useEffect(() => {
-
     if (!containerRef.current || mapRef.current) {
       return;
     }
@@ -616,16 +567,12 @@ export default function TravelMap({
     // Chế độ chọn vị trí trên bản đồ.
     map.on('click', (event) => {
       if (pickModeRef.current) {
-        onPickRef.current?.([
-          event.lngLat.lat,
-          event.lngLat.lng,
-        ]);
+        onPickRef.current?.([event.lngLat.lat, event.lngLat.lng]);
       }
     });
 
     // Đợi Goong Map Style tải xong.
     map.on('load', () => {
-
       // GeoJSON chứa các tuyến đường thay thế (vẽ dưới tuyến chính).
       map.addSource(ALT_ROUTES_SOURCE, {
         type: 'geojson',
@@ -796,15 +743,12 @@ export default function TravelMap({
 
     // Tự co giãn bản đồ khi khung chứa đổi kích thước (vào/ra toàn màn hình, ẩn/hiện panel).
     const resizeObserver =
-      typeof ResizeObserver === 'undefined'
-        ? null
-        : new ResizeObserver(() => map.resize());
+      typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => map.resize());
 
     resizeObserver?.observe(containerRef.current);
 
     // Xóa bản đồ khi component bị unmount.
     return () => {
-
       resizeObserver?.disconnect();
 
       map.remove();
@@ -829,7 +773,6 @@ export default function TravelMap({
   const visitedKey = visitedIds.join(',');
 
   useEffect(() => {
-
     const map = mapRef.current;
 
     if (!map) return;
@@ -839,21 +782,14 @@ export default function TravelMap({
       marker.remove();
     });
 
-    const visited = new Set(
-      visitedKey
-        ? visitedKey.split(',')
-        : [],
-    );
+    const visited = new Set(visitedKey ? visitedKey.split(',') : []);
 
     // Ghim đang được chọn sẽ hiển thị phía trên.
     const ordered = [...points].sort(
-      (a, b) =>
-        Number(a.id === activeId) -
-        Number(b.id === activeId),
+      (a, b) => Number(a.id === activeId) - Number(b.id === activeId),
     );
 
     markersRef.current = ordered.map((point) => {
-
       const element = pinElement(
         point.label,
         point.id === activeId,
@@ -873,12 +809,7 @@ export default function TravelMap({
         .setLngLat(toLngLat(point.coordinate))
         .addTo(map);
     });
-
-  }, [
-    points,
-    activeId,
-    visitedKey,
-  ]);
+  }, [points, activeId, visitedKey]);
 
   // ====================================================
   // VẼ TUYẾN ĐƯỜNG
@@ -887,29 +818,20 @@ export default function TravelMap({
   // Chuyển [lat, lng] sang [lng, lat] một lần mỗi khi tuyến đổi,
   // không làm lại ở mỗi lần GPS cập nhật.
   const routeLngLat = useMemo(
-    () =>
-      routeCoordinates && routeCoordinates.length > 1
-        ? routeCoordinates.map(toLngLat)
-        : null,
+    () => (routeCoordinates && routeCoordinates.length > 1 ? routeCoordinates.map(toLngLat) : null),
     [routeCoordinates],
   );
 
   useEffect(() => {
-
     const map = mapRef.current;
 
-    const source = map?.getSource(
-      ROUTE_SOURCE,
-    ) as GeoJSONSource | undefined;
+    const source = map?.getSource(ROUTE_SOURCE) as GeoJSONSource | undefined;
 
     if (!ready || !map || !source) {
       return;
     }
 
-    const line = (
-      part: 'preview' | 'todo' | 'done',
-      coordinates: [number, number][],
-    ) => ({
+    const line = (part: 'preview' | 'todo' | 'done', coordinates: [number, number][]) => ({
       type: 'Feature' as const,
       properties: { part },
       geometry: {
@@ -924,44 +846,29 @@ export default function TravelMap({
     const features = [];
 
     if (routeLngLat) {
-
       if (routeProgress) {
-        const index = Math.min(
-          Math.max(routeProgress.segmentIndex, 0),
-          routeLngLat.length - 2,
-        );
+        const index = Math.min(Math.max(routeProgress.segmentIndex, 0), routeLngLat.length - 2);
 
         const point = toLngLat(routeProgress.point);
 
-        const done = [
-          ...routeLngLat.slice(0, index + 1),
-          point,
-        ];
+        const done = [...routeLngLat.slice(0, index + 1), point];
 
-        const todo = [
-          point,
-          ...routeLngLat.slice(index + 1),
-        ];
+        const todo = [point, ...routeLngLat.slice(index + 1)];
 
         if (done.length > 1) {
           features.push(line('done', done));
         }
 
         features.push(line('todo', todo));
-
       } else {
         features.push(line('todo', routeLngLat));
       }
-
     } else if (route && points.length > 1) {
-
       // Đường nối minh họa khi không có tuyến Goong.
       features.push(
         line(
           'preview',
-          points.map((point) =>
-            toLngLat(point.coordinate),
-          ),
+          points.map((point) => toLngLat(point.coordinate)),
         ),
       );
     }
@@ -975,44 +882,29 @@ export default function TravelMap({
       ROUTE_PREVIEW_LAYER,
       'visibility',
 
-      features.length > 0 && !isGoongRoute
-        ? 'visible'
-        : 'none',
+      features.length > 0 && !isGoongRoute ? 'visible' : 'none',
     );
 
     map.setLayoutProperty(
       ROUTE_DIRECTIONS_LAYER,
       'visibility',
 
-      isGoongRoute
-        ? 'visible'
-        : 'none',
+      isGoongRoute ? 'visible' : 'none',
     );
 
     map.setLayoutProperty(
       ROUTE_DONE_LAYER,
       'visibility',
 
-      isGoongRoute
-        ? 'visible'
-        : 'none',
+      isGoongRoute ? 'visible' : 'none',
     );
-
-  }, [
-    ready,
-    route,
-    routeLngLat,
-    routeProgress,
-    points,
-  ]);
+  }, [ready, route, routeLngLat, routeProgress, points]);
 
   // ====================================================
   // TỰ ĐỘNG CĂN BẢN ĐỒ KHI ĐỔI DANH SÁCH ĐỊA ĐIỂM
   // ====================================================
 
-  const pointsKey = points
-    .map((point) => point.id)
-    .join(',');
+  const pointsKey = points.map((point) => point.id).join(',');
 
   useEffect(() => {
     fitAll();
@@ -1023,14 +915,12 @@ export default function TravelMap({
   // ====================================================
 
   useEffect(() => {
-
     const map = mapRef.current;
 
     if (!map) return;
 
     // Nếu không có GPS, xóa marker người dùng.
     if (!userLocation) {
-
       userMarkerRef.current?.remove();
 
       userMarkerRef.current = null;
@@ -1042,13 +932,8 @@ export default function TravelMap({
 
     // Nếu marker đã tồn tại, cập nhật vị trí mới.
     if (userMarkerRef.current) {
-
-      userMarkerRef.current.setLngLat(
-        toLngLat(userLocation),
-      );
-
+      userMarkerRef.current.setLngLat(toLngLat(userLocation));
     } else {
-
       // Tạo marker GPS lần đầu.
       const { wrapper, arrow } = userElement();
 
@@ -1065,14 +950,12 @@ export default function TravelMap({
 
     // Mũi tên chỉ hướng đi.
     if (userArrowRef.current) {
-      userArrowRef.current.style.display =
-        userHeading === null ? 'none' : 'block';
+      userArrowRef.current.style.display = userHeading === null ? 'none' : 'block';
     }
 
     if (userHeading !== null) {
       userMarkerRef.current.setRotation(userHeading);
     }
-
   }, [userLocation, userHeading]);
 
   // ====================================================
@@ -1080,22 +963,16 @@ export default function TravelMap({
   // ====================================================
 
   useEffect(() => {
-
     const map = mapRef.current;
 
-    const source = map?.getSource(
-      ACCURACY_SOURCE,
-    ) as GeoJSONSource | undefined;
+    const source = map?.getSource(ACCURACY_SOURCE) as GeoJSONSource | undefined;
 
     if (!ready || !map || !source) {
       return;
     }
 
     // Sai số rất lớn không vẽ hết, tránh một vòng tròn phủ cả thành phố.
-    const radius =
-      userAccuracy && userAccuracy > 0
-        ? Math.min(userAccuracy, 2_000)
-        : 0;
+    const radius = userAccuracy && userAccuracy > 0 ? Math.min(userAccuracy, 2_000) : 0;
 
     source.setData({
       type: 'FeatureCollection',
@@ -1103,21 +980,18 @@ export default function TravelMap({
       features:
         userLocation && radius >= 5
           ? [
-            {
-              type: 'Feature',
-              properties: {},
+              {
+                type: 'Feature',
+                properties: {},
 
-              geometry: {
-                type: 'Polygon',
-                coordinates: [
-                  circleRing(userLocation, radius),
-                ],
+                geometry: {
+                  type: 'Polygon',
+                  coordinates: [circleRing(userLocation, radius)],
+                },
               },
-            },
-          ]
+            ]
           : [],
     });
-
   }, [ready, userLocation, userAccuracy]);
 
   // ====================================================
@@ -1125,7 +999,6 @@ export default function TravelMap({
   // ====================================================
 
   useEffect(() => {
-
     const map = mapRef.current;
 
     if (!map || !followUser || !userLocation) {
@@ -1144,7 +1017,6 @@ export default function TravelMap({
 
       essential: true,
     });
-
   }, [followUser, userLocation, userHeading]);
 
   // ====================================================
@@ -1203,25 +1075,16 @@ export default function TravelMap({
   // ====================================================
 
   useEffect(() => {
-
     const canvas = mapRef.current?.getCanvas();
 
     if (canvas) {
-      canvas.style.cursor = pickMode
-        ? 'crosshair'
-        : '';
+      canvas.style.cursor = pickMode ? 'crosshair' : '';
     }
-
   }, [pickMode]);
 
   // ====================================================
   // RENDER
   // ====================================================
 
-  return (
-    <div
-      ref={containerRef}
-      className={`z-0 w-full overflow-hidden ${className}`}
-    />
-  );
+  return <div ref={containerRef} className={`z-0 w-full overflow-hidden ${className}`} />;
 }

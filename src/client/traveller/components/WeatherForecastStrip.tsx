@@ -58,7 +58,7 @@ export default function WeatherForecastStrip({ itineraryId }: { itineraryId: num
     <section className="mt-4 min-w-0 rounded-[20px] border border-[#E2EAEA] bg-white p-4 sm:mt-5 sm:p-5">
       <h3 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-[#163142]">
         <Icon name="wb_sunny" className="text-[19px] text-[#0891B2]" />
-        Dự báo thời tiết 7 ngày
+        Dự báo thời tiết {daily.length} ngày
       </h3>
       <HorizontalScrollRow>
         {daily.map((day) => (

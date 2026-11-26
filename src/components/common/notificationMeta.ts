@@ -4,6 +4,7 @@ export const NOTIFICATION_CATEGORIES: Record<string, { label: string; icon: stri
   ADS: { label: 'Quảng cáo', icon: 'campaign' },
   REVIEW: { label: 'Đánh giá', icon: 'reviews' },
   TRIP: { label: 'Chuyến đi', icon: 'luggage' },
+  WEATHER: { label: 'Thời tiết', icon: 'thunderstorm' },
   OTHER: { label: 'Khác', icon: 'notifications' },
 };
 
@@ -17,6 +18,26 @@ export interface NotificationTone {
 }
 
 const TONES: { match: RegExp; tone: NotificationTone }[] = [
+  {
+    match: /^WEATHER_SEVERE$/,
+    tone: { icon: 'thunderstorm', badge: 'bg-rose-50 text-rose-600', accent: 'bg-rose-500' },
+  },
+  {
+    match: /^WEATHER_/,
+    tone: { icon: 'rainy', badge: 'bg-amber-50 text-amber-600', accent: 'bg-amber-500' },
+  },
+  {
+    match: /^TRIP_UPCOMING_REMINDER$/,
+    tone: { icon: 'luggage', badge: 'bg-sky-50 text-sky-600', accent: 'bg-sky-500' },
+  },
+  {
+    match: /^TRIP_REVIEW_REMINDER$/,
+    tone: {
+      icon: 'rate_review',
+      badge: 'bg-emerald-50 text-emerald-600',
+      accent: 'bg-emerald-500',
+    },
+  },
   {
     match: /_(APPROVED|REACTIVATED)$/,
     tone: {

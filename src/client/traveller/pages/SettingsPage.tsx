@@ -1,10 +1,10 @@
 import { type ReactNode, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import Avatar from '@/client/traveller/components/Avatar';
-import { ConfirmDialog, NoticeToast } from '@/client/ui/Overlay';
+import { NoticeToast } from '@/client/ui/Overlay';
 import { useNotice } from '@/client/ui/useNotice';
 import PageBar from '@/client/ui/PageBar';
 
@@ -85,39 +85,6 @@ function Texts({ title, subtitle, badge }: { title: string; subtitle: string; ba
   );
 }
 
-function SelectSetting({
-  icon,
-  title,
-  subtitle,
-  value,
-  options,
-  onChange,
-}: {
-  icon: string;
-  title: string;
-  subtitle: string;
-  value: string;
-  options: string[];
-  onChange: (value: string) => void;
-}) {
-  return (
-    <Row>
-      <SettingIcon name={icon} />
-      <Texts title={title} subtitle={subtitle} />
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        aria-label={title}
-        className="ml-1 max-w-[150px] cursor-pointer rounded-lg bg-transparent text-right text-[11px] font-semibold text-[#0891B2] focus:outline-none"
-      >
-        {options.map((option) => (
-          <option key={option}>{option}</option>
-        ))}
-      </select>
-    </Row>
-  );
-}
-
 function SwitchSetting({
   icon,
   title,
@@ -162,10 +129,8 @@ function SwitchSetting({
 
 /** Cài đặt ứng dụng — theo SettingsScreen của mobile */
 export default function SettingsPage() {
-  const { user, logout } = useClientAuth();
-  const navigate = useNavigate();
+  const { user } = useClientAuth();
   const [settings, setSettings] = useState<AppSettings>(readSettings);
-  const [confirmLogout, setConfirmLogout] = useState(false);
   const [notice, showNotice] = useNotice();
   if (!user) return null;
 
@@ -177,13 +142,8 @@ export default function SettingsPage() {
     } catch {
       // Không lưu được thì chỉ áp dụng trong phiên này
     }
-    if (key === 'language' && value === 'English')
-      showNotice('Tiếng Anh sẽ có trong phiên bản sau.');
-    if (key === 'displayMode' && value !== DEFAULT_SETTINGS.displayMode)
-      showNotice('Giao diện tối sẽ có trong phiên bản sau.');
+    showNotice('Đã lưu cài đặt.');
   };
-  const comingSoon = (title: string) => () =>
-    showNotice(`${title}: chức năng đang được phát triển.`);
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -209,34 +169,6 @@ export default function SettingsPage() {
         >
           <Icon name="edit" className="text-[18px]" />
         </Link>
-      </div>
-
-      <SectionTitle>TÙY CHỌN CHUNG</SectionTitle>
-      <div className="overflow-hidden rounded-[18px] bg-white">
-        <SelectSetting
-          icon="translate"
-          title="Ngôn ngữ"
-          subtitle="Language & Localization"
-          value={settings.language}
-          options={['Tiếng Việt', 'English']}
-          onChange={(value) => update('language', value)}
-        />
-        <SelectSetting
-          icon="payments"
-          title="Tiền tệ mặc định"
-          subtitle="Định dạng giá vé & dịch vụ"
-          value={settings.currency}
-          options={['VND (₫)', 'USD ($)']}
-          onChange={(value) => update('currency', value)}
-        />
-        <SelectSetting
-          icon="light_mode"
-          title="Chế độ hiển thị"
-          subtitle="Giao diện màu sắc"
-          value={settings.displayMode}
-          options={['Sáng (Light Mode)', 'Tối (Dark Mode)']}
-          onChange={(value) => update('displayMode', value)}
-        />
       </div>
 
       <SectionTitle>THÔNG BÁO & ĐỊNH VỊ</SectionTitle>
@@ -274,29 +206,22 @@ export default function SettingsPage() {
 
       <SectionTitle>HỖ TRỢ & THÔNG TIN</SectionTitle>
       <div className="overflow-hidden rounded-[18px] bg-white">
-        {[
-          {
-            icon: 'help',
-            title: 'Trung tâm trợ giúp & FAQ',
-            subtitle: 'Hướng dẫn sử dụng & CSKH 24/7',
-          },
-          {
-            icon: 'description',
-            title: 'Điều khoản dịch vụ & Chính sách',
-            subtitle: 'Bảo vệ khách du lịch & bảo mật',
-          },
-        ].map((item) => (
-          <button
-            key={item.title}
-            type="button"
-            onClick={comingSoon(item.title)}
-            className="flex w-full items-center border-b border-[#F0F1F7] px-3 py-3.5 text-left hover:bg-[#F7F8FF]"
-          >
-            <SettingIcon name={item.icon} />
-            <Texts title={item.title} subtitle={item.subtitle} />
-            <Icon name="chevron_right" className="ml-1 text-[21px] text-[#8C9CAC]" />
-          </button>
-        ))}
+        <a
+          href="tel:0973954275"
+          className="flex w-full items-center border-b border-[#F0F1F7] px-3 py-3.5 text-left hover:bg-[#F7F8FF]"
+        >
+          <SettingIcon name="support_agent" />
+          <Texts title="Tổng đài hỗ trợ" subtitle="0973954275" />
+          <Icon name="chevron_right" className="ml-1 text-[21px] text-[#8C9CAC]" />
+        </a>
+        <a
+          href="mailto:smarttravel.dtrps@gmail.com"
+          className="flex w-full items-center border-b border-[#F0F1F7] px-3 py-3.5 text-left hover:bg-[#F7F8FF]"
+        >
+          <SettingIcon name="mail" />
+          <Texts title="Email hỗ trợ" subtitle="smarttravel.dtrps@gmail.com" />
+          <Icon name="chevron_right" className="ml-1 text-[21px] text-[#8C9CAC]" />
+        </a>
         <Row>
           <SettingIcon name="info" />
           <Texts title="Phiên bản ứng dụng" subtitle="Smart Travel AI Engine" />
@@ -304,38 +229,6 @@ export default function SettingsPage() {
         </Row>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setConfirmLogout(true)}
-        className="mt-5 flex w-full items-center rounded-[18px] bg-[#FFE5E5] px-4 py-4 text-left"
-      >
-        <span className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-[#FFD1D1] text-[#DF4E50]">
-          <Icon name="logout" className="text-[21px]" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-[14px] font-bold text-[#C83E43]">
-            Đăng xuất khỏi tài khoản
-          </span>
-          <span className="mt-1 block text-[10px] text-[#D07579]">
-            Kết thúc phiên trên thiết bị này
-          </span>
-        </span>
-        <Icon name="arrow_forward" className="text-[21px] text-[#D35358]" />
-      </button>
-
-      {confirmLogout && (
-        <ConfirmDialog
-          title="Đăng xuất"
-          message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?"
-          confirmLabel="Đăng xuất"
-          danger
-          onConfirm={() => {
-            logout();
-            navigate(CLIENT_ROUTES.LOGIN, { replace: true });
-          }}
-          onClose={() => setConfirmLogout(false)}
-        />
-      )}
       <NoticeToast message={notice} />
     </div>
   );

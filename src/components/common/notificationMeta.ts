@@ -19,11 +19,11 @@ export interface NotificationTone {
 
 const TONES: { match: RegExp; tone: NotificationTone }[] = [
   {
-    match: /^WEATHER_SEVERE$/,
+    match: /^(TRIP_)?WEATHER_SEVERE$/,
     tone: { icon: 'thunderstorm', badge: 'bg-rose-50 text-rose-600', accent: 'bg-rose-500' },
   },
   {
-    match: /^WEATHER_/,
+    match: /^(TRIP_)?WEATHER_/,
     tone: { icon: 'rainy', badge: 'bg-amber-50 text-amber-600', accent: 'bg-amber-500' },
   },
   {

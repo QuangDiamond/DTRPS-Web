@@ -2,6 +2,7 @@ import { Suspense, useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import ClientAuthProvider from '@/client/auth/ClientAuthProvider';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
+import { ClientI18nProvider } from '@/client/i18n/ClientI18nProvider';
 import ClientShell from '@/client/layouts/ClientShell';
 import ClientLiveProvider from '@/client/live/ClientLiveProvider';
 import PartnerProfileProvider from '@/client/partner/PartnerProfileProvider';
@@ -24,11 +25,13 @@ export function ClientRoot() {
     clientSessionEnd.clear();
   }, [pathname]);
   return (
-    <ClientAuthProvider>
-      <Suspense fallback={<Spinner />}>
-        <Outlet />
-      </Suspense>
-    </ClientAuthProvider>
+    <ClientI18nProvider>
+      <ClientAuthProvider>
+        <Suspense fallback={<Spinner />}>
+          <Outlet />
+        </Suspense>
+      </ClientAuthProvider>
+    </ClientI18nProvider>
   );
 }
 

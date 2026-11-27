@@ -2,6 +2,7 @@ import { type ReactNode, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '@/components/common';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
+import { useClientI18n } from '@/client/i18n/clientI18nContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import Avatar from '@/client/traveller/components/Avatar';
 import { NoticeToast } from '@/client/ui/Overlay';
@@ -130,6 +131,7 @@ function SwitchSetting({
 /** Cài đặt ứng dụng — theo SettingsScreen của mobile */
 export default function SettingsPage() {
   const { user } = useClientAuth();
+  const { lang, setLang, t } = useClientI18n();
   const [settings, setSettings] = useState<AppSettings>(readSettings);
   const [notice, showNotice] = useNotice();
   if (!user) return null;
@@ -171,7 +173,53 @@ export default function SettingsPage() {
         </Link>
       </div>
 
-      <SectionTitle>THÔNG BÁO & ĐỊNH VỊ</SectionTitle>
+      <SectionTitle>{t('NGÔN NGỮ')}</SectionTitle>
+      <div className="overflow-hidden rounded-[18px] bg-white p-3.5">
+        <div className="flex items-center">
+          <SettingIcon name="translate" />
+          <Texts
+            title={t('Ngôn ngữ')}
+            subtitle={t('Chọn ngôn ngữ hiển thị cho giao diện du khách')}
+          />
+        </div>
+        <div className="relative mt-3 grid grid-cols-2 rounded-2xl bg-[#EEF5F7] p-1">
+          <span
+            aria-hidden
+            className={`pointer-events-none absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-xl bg-white shadow-sm transition-transform duration-300 ease-out ${
+              lang === 'en' ? 'translate-x-full' : 'translate-x-0'
+            }`}
+          />
+          {(
+            [
+              { code: 'vi', flag: '🇻🇳', label: 'Tiếng Việt' },
+              { code: 'en', flag: '🇬🇧', label: 'English' },
+            ] as const
+          ).map((option) => {
+            const active = lang === option.code;
+            return (
+              <button
+                key={option.code}
+                type="button"
+                onClick={() => {
+                  if (lang === option.code) return;
+                  setLang(option.code);
+                  showNotice(
+                    option.code === 'en' ? 'Switched to English.' : 'Đã chuyển sang Tiếng Việt.',
+                  );
+                }}
+                className={`relative z-10 flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-[13px] font-bold transition-colors duration-200 active:scale-[0.98] ${
+                  active ? 'text-[#0E7490]' : 'text-[#557080] hover:text-[#15384D]'
+                }`}
+              >
+                <span className="text-[15px]">{option.flag}</span>
+                <span>{option.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <SectionTitle>{t('THÔNG BÁO & ĐỊNH VỊ')}</SectionTitle>
       <div className="overflow-hidden rounded-[18px] bg-white">
         <SwitchSetting
           icon="notifications"

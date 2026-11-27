@@ -4,6 +4,14 @@ import { Icon } from '@/components/common';
 import NotificationBell from '@/components/common/NotificationBell';
 import { useClientLive } from '@/client/live/clientLiveContext';
 import { useClientAuth } from '@/client/auth/clientAuthContext';
+import { useClientI18n } from '@/client/i18n/clientI18nContext';
+import {
+  getCachedAutoTranslation,
+  hasVietnameseChars,
+  queueAutoTranslation,
+  subscribeAutoTranslations,
+} from '@/client/i18n/autoTranslate';
+import { translateClientViToEn } from '@/client/i18n/clientTranslations';
 import { usePartnerProfile } from '@/client/partner/partnerProfileContext';
 import { CLIENT_ROUTES } from '@/client/routePaths';
 import { Spinner } from '@/client/ui/Blocks';
@@ -36,6 +44,8 @@ const PARTNER_NAV: NavItem[] = [
 
 function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
   const { user, logout, hasRole } = useClientAuth();
+  const { lang, t } = useClientI18n();
+  const tr = (text: string) => (partnerMode ? text : t(text));
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -57,7 +67,7 @@ function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
         className="flex h-9 items-center gap-1.5 rounded-full bg-white px-4 text-[13px] font-extrabold text-[#0F2A3B] shadow-sm hover:bg-[#DFF4F6]"
       >
         <Icon name="login" className="text-[18px]" />
-        Đăng nhập
+        {tr('Đăng nhập')}
       </Link>
     );
   const itemClass =
@@ -110,8 +120,8 @@ function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
               </>
             ) : (
               <Link to={CLIENT_ROUTES.PROFILE} className={itemClass} onClick={() => setOpen(false)}>
-                <Icon name="account_circle" className="text-[18px] text-client-primary" /> Hồ sơ của
-                tôi
+                <Icon name="account_circle" className="text-[18px] text-client-primary" />{' '}
+                {lang === 'en' ? 'My profile' : 'Hồ sơ của tôi'}
               </Link>
             )}
             {hasRole('ADMIN') && (
@@ -130,7 +140,7 @@ function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
                 });
               }}
             >
-              <Icon name="logout" className="text-[18px] text-client-danger" /> Đăng xuất
+              <Icon name="logout" className="text-[18px] text-client-danger" /> {tr('Đăng xuất')}
             </button>
           </div>
         </div>
@@ -143,6 +153,10 @@ function AccountMenu({ partnerMode }: { partnerMode: boolean }) {
 export default function ClientShell() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { lang, toggleLang, t } = useClientI18n();
+  const mainRef = useRef<HTMLElement>(null);
+  const originalsRef = useRef(new WeakMap<Text, string>());
+  const placeholderOriginalsRef = useRef(new WeakMap<Element, string>());
   const live = useClientLive();
   const { hasRole } = useClientAuth();
   const { profile } = usePartnerProfile();
@@ -191,7 +205,100 @@ export default function ClientShell() {
       observer?.disconnect();
       window.removeEventListener('resize', updatePill);
     };
-  }, [pathname, nav.length]);
+  }, [pathname, nav.length, lang]);
+
+  // Dịch tự động các nhãn giao diện trong khu Du khách (<main>) khi chọn English;
+  // đổi về Tiếng Việt khôi phục đúng chuỗi gốc, không đụng Đối tác & Admin.
+  useEffect(() => {
+    const root = mainRef.current;
+    if (!root || partnerMode) return;
+
+    const originals = originalsRef.current;
+    const placeholders = placeholderOriginalsRef.current;
+
+    const resolveText = (source: string): string => {
+      const staticHit = translateClientViToEn(source);
+      if (staticHit !== source) return staticHit;
+      const key = source.replace(/\s+/g, ' ').trim();
+      if (!hasVietnameseChars(key)) return source;
+      const cached = getCachedAutoTranslation(key);
+      if (cached !== undefined) return cached;
+      queueAutoTranslation(key);
+      return source;
+    };
+
+    const syncTree = (target: Node) => {
+      const walker = document.createTreeWalker(target, NodeFilter.SHOW_TEXT);
+      let current = walker.nextNode();
+      while (current) {
+        const textNode = current as Text;
+        const parentTag = textNode.parentElement?.tagName;
+        if (parentTag !== 'SCRIPT' && parentTag !== 'STYLE') {
+          const raw = textNode.nodeValue ?? '';
+          if (lang === 'en') {
+            const source = originals.get(textNode) ?? raw;
+            const translated = resolveText(source);
+            if (translated !== source) {
+              const lead = /^\s/.test(source) ? ' ' : '';
+              const trail = /\s$/.test(source) ? ' ' : '';
+              const nextVal = `${lead}${translated}${trail}`;
+              if (!originals.has(textNode)) originals.set(textNode, source);
+              if (textNode.nodeValue !== nextVal) textNode.nodeValue = nextVal;
+            }
+          } else {
+            const saved = originals.get(textNode);
+            if (saved !== undefined && textNode.nodeValue !== saved) {
+              textNode.nodeValue = saved;
+            }
+          }
+        }
+        current = walker.nextNode();
+      }
+
+      if (target instanceof Element) {
+        const inputs = target.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+          'input[placeholder], textarea[placeholder]',
+        );
+        inputs.forEach((el) => {
+          const currentPh = el.placeholder;
+          if (lang === 'en') {
+            const source = placeholders.get(el) ?? currentPh;
+            const translated = resolveText(source);
+            if (translated !== source) {
+              if (!placeholders.has(el)) placeholders.set(el, source);
+              if (el.placeholder !== translated) el.placeholder = translated;
+            }
+          } else {
+            const saved = placeholders.get(el);
+            if (saved !== undefined && el.placeholder !== saved) {
+              el.placeholder = saved;
+            }
+          }
+        });
+      }
+    };
+
+    syncTree(root);
+
+    if (lang !== 'en') return;
+
+    const unsubscribe = subscribeAutoTranslations(() => syncTree(root));
+
+    let scheduled = false;
+    const observer = new MutationObserver(() => {
+      if (scheduled) return;
+      scheduled = true;
+      window.requestAnimationFrame(() => {
+        scheduled = false;
+        syncTree(root);
+      });
+    });
+    observer.observe(root, { childList: true, subtree: true, characterData: true });
+    return () => {
+      unsubscribe();
+      observer.disconnect();
+    };
+  }, [lang, partnerMode, pathname]);
 
   useEffect(() => {
     document.title = partnerMode ? 'Đối tác · SmartTravel' : 'SmartTravel';
@@ -239,32 +346,60 @@ export default function ClientShell() {
                 className="pointer-events-none absolute top-0 bottom-0 left-0 rounded-full bg-white/18 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-300 ease-out motion-reduce:transition-none"
               />
             )}
-            {nav.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                title={item.label}
-                className={tabClass}
-              >
-                <Icon
-                  name={item.icon}
-                  className="text-[18px] transition-transform duration-200 group-hover:scale-110"
-                />
-                {/* Máy tính bảng (768–1023px): chỉ icon để menu không xuống dòng */}
-                <span className="hidden lg:inline">{item.label}</span>
-              </NavLink>
-            ))}
+            {nav.map((item) => {
+              const label = partnerMode ? item.label : t(item.label);
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  title={label}
+                  className={tabClass}
+                >
+                  <Icon
+                    name={item.icon}
+                    className="text-[18px] transition-transform duration-200 group-hover:scale-110"
+                  />
+                  {/* Máy tính bảng (768–1023px): chỉ icon để menu không xuống dòng */}
+                  <span className="hidden lg:inline">{label}</span>
+                </NavLink>
+              );
+            })}
           </nav>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setNotice('Tiếng Anh sẽ có trong phiên bản sau.')}
-              className="flex items-center gap-1 rounded-full bg-white/12 px-2.5 py-1 text-[11px] font-bold text-white transition-all duration-200 hover:bg-white/22 active:scale-95"
-            >
-              <Icon name="language" className="text-[14px]" />
-              VI | EN
-            </button>
+            {!partnerMode && (
+              <button
+                type="button"
+                onClick={() => {
+                  const next = lang === 'vi' ? 'en' : 'vi';
+                  toggleLang();
+                  setNotice(next === 'en' ? 'Switched to English.' : 'Đã chuyển sang Tiếng Việt.');
+                }}
+                aria-label={lang === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'}
+                className="relative flex h-8 w-[68px] items-center rounded-full border border-white/25 bg-white/14 p-0.5 text-[11px] font-extrabold transition-colors hover:bg-white/22 active:scale-95"
+              >
+                <span
+                  aria-hidden
+                  className={`pointer-events-none absolute top-0.5 bottom-0.5 left-0.5 w-[30px] rounded-full bg-white shadow-sm transition-transform duration-300 ease-out ${
+                    lang === 'en' ? 'translate-x-[32px]' : 'translate-x-0'
+                  }`}
+                />
+                <span
+                  className={`relative z-10 flex-1 text-center transition-colors duration-200 ${
+                    lang === 'vi' ? 'text-[#0E7490]' : 'text-white/85'
+                  }`}
+                >
+                  VI
+                </span>
+                <span
+                  className={`relative z-10 flex-1 text-center transition-colors duration-200 ${
+                    lang === 'en' ? 'text-[#0E7490]' : 'text-white/85'
+                  }`}
+                >
+                  EN
+                </span>
+              </button>
+            )}
             {live ? (
               <NotificationBell
                 tone="dark"
@@ -306,7 +441,7 @@ export default function ClientShell() {
 
       <SiteAnnouncementBanner partnerMode={partnerMode} />
 
-      <main className="w-full px-4 pt-6 md:px-6 lg:px-10">
+      <main ref={mainRef} className="w-full px-4 pt-6 md:px-6 lg:px-10">
         <Suspense fallback={<Spinner />}>
           {/* Hiệu ứng chuyển trang mượt (.page-enter trong index.css) mỗi khi đổi route */}
           <div key={pathname} className="page-enter">

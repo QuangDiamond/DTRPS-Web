@@ -223,25 +223,27 @@ export default function SettingsPage() {
       <div className="overflow-hidden rounded-[18px] bg-white">
         <SwitchSetting
           icon="notifications"
-          title="Thông báo đẩy"
-          subtitle="Tin tức & ưu đãi khách sạn, điểm đến"
+          title="Bật thông báo"
+          subtitle="Hiện thông báo nổi & trên thanh trạng thái"
           checked={settings.pushNotification}
           onChange={(value) => update('pushNotification', value)}
         />
-        <SwitchSetting
-          icon="event_upcoming"
-          title="Nhắc nhở lịch trình & Chuyến đi"
-          subtitle="Thông báo trước giờ khởi hành 2 giờ"
-          checked={settings.tripReminder}
-          onChange={(value) => update('tripReminder', value)}
-        />
-        <SwitchSetting
-          icon="partly_cloudy_day"
-          title="Cập nhật thời tiết điểm đến"
-          subtitle="Dự báo mưa bão hoặc nắng đẹp tại VN"
-          checked={settings.weatherNotification}
-          onChange={(value) => update('weatherNotification', value)}
-        />
+        <div className={settings.pushNotification ? '' : 'pointer-events-none opacity-45'}>
+          <SwitchSetting
+            icon="event_upcoming"
+            title="Nhắc nhở lịch trình & Chuyến đi"
+            subtitle="Nhắc trước ngày khởi hành & đánh giá chuyến"
+            checked={settings.pushNotification && settings.tripReminder}
+            onChange={(value) => update('tripReminder', value)}
+          />
+          <SwitchSetting
+            icon="partly_cloudy_day"
+            title="Cập nhật thời tiết điểm đến"
+            subtitle="Dự báo mưa bão hoặc nắng đẹp tại VN"
+            checked={settings.pushNotification && settings.weatherNotification}
+            onChange={(value) => update('weatherNotification', value)}
+          />
+        </div>
         <SwitchSetting
           icon="my_location"
           title="Dịch vụ định vị"
